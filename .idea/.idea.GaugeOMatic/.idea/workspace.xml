@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="32817785-a5fe-40d3-a3af-5c9b8c622d0a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GaugeOMatic/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GaugeOMatic/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Palettes/Palette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Palettes/Palette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Trackers/TrackerGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Trackers/TrackerGroup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Utility/Json.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Utility/Json.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/StackWidgets/ReaperFlame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/StackWidgets/ReaperFlame.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/WidgetUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/WidgetUI.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Windows/ConfigWindow.TrackerGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Windows/ConfigWindow.TrackerGroup.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/794fb30fb8e64d76957294836379a9711b7810/06/e9d4fead/IDalamudPlugin.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/889595c0c9f04f5199bbadadab8ed150b1d8a0/6d/06421208/Void.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e132336fa867915bfe77a5e9d72544ea9db2f2c7622e7d849c04cf2bbb0e/FieldOffsetAttribute.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2Z94vKqvDVfyv1R8QxeXTkxIDM1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "uiReorganize",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\rebec\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
+      "C:\\Users\\rebec\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
+      "C:\\Users\\rebec\\AppData\\Local\\Symbols\\src"
+    ]
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="32817785-a5fe-40d3-a3af-5c9b8c622d0a" name="Changes" comment="" />
+      <created>1701821192394</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1701821192394</updated>
+      <workItem from="1701821194148" duration="714000" />
+      <workItem from="1701821926272" duration="1559000" />
+      <workItem from="1701823511251" duration="31000" />
+      <workItem from="1701823645344" duration="10000" />
+      <workItem from="1701823664411" duration="1896000" />
+      <workItem from="1701844056246" duration="856000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="Dalamud.Plugin.Bootstrap.targets" />
+
+  <PropertyGroup>
+    <Authors>ItsBexy</Authors>
+    <Company></Company>
+    <Version>0.0.0.2</Version>
+    <Description>Gauge-O-Matic</Description>
+    <Copyright></Copyright>
+    <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <IsPackable>false</IsPackable>
+    <LangVersion>preview</LangVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="GameData\Structs\**" />
+    <EmbeddedResource Remove="GameData\Structs\**" />
+    <None Remove="GameData\Structs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\rebec\Source\Repos\GaugeOMatic\GaugeOMatic\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="C:\Users\rebec\Source\Repos\GaugeOMatic\GaugeOMatic\.editorconfig" />
+  </ItemGroup>
+
+</Project>
