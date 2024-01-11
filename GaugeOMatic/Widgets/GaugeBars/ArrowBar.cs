@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
@@ -47,7 +48,6 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
     public override CustomNode NumTextNode { get; set; }
 
     public CustomNode Backdrop;
-    public override DrainGainType DGType => Width;
     public override CustomNode Drain { get; set; }
     public override CustomNode Gain { get; set; }
     public override CustomNode Main { get; set; }
@@ -89,7 +89,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                        new(0) { X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Alpha = 255, Height = 34 },
                        new(kf1) { X = halfWidth - 19, Width = 68, AddRGB = 50, Alpha = 255, Height = 34 },
                        new(kf2) { X = halfWidth - 19, Width = 68, AddRGB = 255, Alpha = 0, Height = 26 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
 
         Bar.SetOrigin(Config.Width, 4);
 
@@ -97,13 +97,13 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                        new(0) {X=-halfWidth, Alpha = 255, ScaleX=1,ScaleY=1 },
                        new(kf1) { X = -halfWidth+19, Alpha = 255, ScaleX = 30f/Config.Width, ScaleY = 1 },
                        new(kf2) { X = -halfWidth + 19, Alpha = 128, ScaleX = 30f / Config.Width, ScaleY = 0 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
 
         Tweens.Add(new(BarFrame,
                        new(0) { Y = 0},
                        new(kf1) { Y = 0 },
                        new(kf2) { Y = 4 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
 
         Tweens.Add(new(LabelTextNode, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }));
         Tweens.Add(new(NumTextNode, new(0) { Alpha = 255 }, new(kf2) { Alpha = 0 }));
@@ -117,7 +117,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                        new(0) { Alpha = 0, X = -halfWidth - 69, Width = 68, AddRGB = new(200), Height = 26 },
                        new(kf1) { Alpha = 255, X = -halfWidth - 69, Width = 68, AddRGB = new(255), Height = 34 },
                        new(kf2) { Alpha = 255, X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Height = 34 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
 
         Bar.SetOrigin(0, 4);
 
@@ -125,13 +125,13 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                        new(0) { X = -halfWidth - 50, Alpha = 0, ScaleX = 30f / Config.Width, ScaleY = 0 },
                        new(kf1) { X = -halfWidth - 50, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
                        new(kf2) { X = -halfWidth, Alpha = 255, ScaleX=1, ScaleY = 1 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
 
         Tweens.Add(new(BarFrame,
                        new(0) { Y = 4 },
                        new(kf1) { Y = 0 },
                        new(kf2) { Y = 0 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
 
         Tweens.Add(new(LabelTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
         Tweens.Add(new(NumTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
@@ -143,7 +143,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                        new(0) { AddRGB = Config.MainColor + new AddRGB(-10) },
                        new(600) { AddRGB = Config.MainColor + new AddRGB(10) },
                        new(1200) { AddRGB = Config.MainColor + new AddRGB(-10) })
-                       { Ease = Tween.Eases.SinInOut, Repeat = true });
+                       { Ease = Eases.SinInOut, Repeat = true });
     }
 
     private void AnimateTickmark()
@@ -152,7 +152,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                        new(0) { ScaleX = 0.4f, ScaleY = 0.2f },
                        new(300) { ScaleX = 0.6f, ScaleY = 0.2f },
                        new(600) { ScaleX = 0.4f, ScaleY = 0.2f })
-                       { Ease = Tween.Eases.SinInOut, Repeat = true });
+                       { Ease = Eases.SinInOut, Repeat = true });
     }
 
     #endregion
@@ -166,7 +166,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarSize(prog);
+        var curWid = CalcBarProperty(prog);
         Main.SetWidth(curWid);
         Gain.SetWidth(curWid);
         Drain.SetWidth(curWid);
@@ -179,7 +179,8 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
             .SetVis(prog > 0);
     }
 
-    public override float CalcBarSize(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
+    public override DrainGainType DGType => Width;
+    public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
 
     #endregion
 
@@ -271,7 +272,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         LabelTextNode.SetWidth(Math.Max(0, Config.Width - 40));
 
         Main.SetAddRGB(Config.MainColor)
-            .SetWidth(CalcBarSize(CalcProg()));
+            .SetWidth(CalcBarProperty(CalcProg()));
 
         Gain.SetAddRGB(Config.GainColor)
             .SetWidth(0);

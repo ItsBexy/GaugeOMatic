@@ -1,15 +1,20 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using GaugeOMatic.Trackers;
 
 namespace GaugeOMatic.Widgets;
 
 public abstract class CounterWidgetConfig
 {
+    public enum CounterPulse { Never, Always, AtMax }
+
     public bool AsTimer;
     public bool InvertTimer;
     public int TimerSize = 10;
 }
 
+[SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
+[SuppressMessage("ReSharper", "UnusedParameter.Global")]
 public abstract class CounterWidget : Widget
 {
     public abstract CounterWidgetConfig GetConfig { get; }
@@ -25,6 +30,9 @@ public abstract class CounterWidget : Widget
     public virtual void ShowStack(int i) { }
     public virtual void HideStack(int i) { }
 
+    public virtual void PreUpdate(int i) { }
+    public virtual void PostUpdate(int i) { }
+
     public bool FirstRun = true;
 
     public override void Update()
@@ -32,6 +40,8 @@ public abstract class CounterWidget : Widget
         int max;
         int current;
         int previous;
+
+
         if (GetConfig.AsTimer)
         {
             max = GetConfig.TimerSize;
@@ -50,6 +60,8 @@ public abstract class CounterWidget : Widget
             current = Math.Clamp(Tracker.CurrentData.Count, 0, max);
             previous = Math.Clamp(Tracker.PreviousData.Count, 0, max);
         }
+
+        PreUpdate(current);
 
         if (FirstRun)
         {
@@ -73,6 +85,7 @@ public abstract class CounterWidget : Widget
         }
 
         RunTweens();
+        PostUpdate(current);
     }
 
     protected CounterWidget(Tracker tracker) : base(tracker) { }

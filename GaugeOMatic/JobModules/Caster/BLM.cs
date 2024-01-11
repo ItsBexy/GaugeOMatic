@@ -33,7 +33,7 @@ public class BLMModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Element",nameof(ElementTracker)),
+        new("Element Status",nameof(ElementTracker)),
         new("Astral Fire",nameof(AstralFireTracker)),
         new("Umbral Ice",nameof(UmbralIceTracker)),
         new("Enochian / Polyglot",nameof(EnochianTracker)),

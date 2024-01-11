@@ -62,7 +62,24 @@ public unsafe partial class CustomNodeManager
 
         public struct KeyFrame
         {
-            public KeyFrame(int time) { Time = time; }
+            public KeyFrame(int time) => Time = time;
+
+            public KeyFrame(int time, CustomNode n)
+            {
+                Time = time;
+                X = n.X;
+                Y = n.Y;
+                Width = n.Width;
+                Height = n.Height;
+                ScaleX = n.ScaleX;
+                ScaleY = n.ScaleY;
+                Alpha = n.Alpha;
+                Rotation = n.Rotation;
+                RGB = n.Color;
+                AddRGB = n.Add;
+                MultRGB = n.Multiply;
+            }
+
             public int Time { get; set; } = 0;
 
             public float? X { get; set; } = null;

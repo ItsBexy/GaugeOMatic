@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -92,7 +93,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                        new(0) { AddRGB = color },
                        new(560) { AddRGB = color + new AddRGB(30, 30, 100) + fxColor },
                        new(1000) { AddRGB = color })
-                       { Ease = Tween.Eases.SinInOut, Repeat = true, Label = "SigilPulse" });
+                       { Ease = Eases.SinInOut, Repeat = true, Label = "SigilPulse" });
     }
 
     private void SetUpLightning(CustomNode elecNoulith)
@@ -157,7 +158,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                        new(0) { AddRGB = new(0) },
                        new(360) { AddRGB = new(20, 20, 60) },
                        new(1000) { AddRGB = new(0) })
-                       { Repeat = true, Ease = Tween.Eases.SinInOut, Label = "NoulithPulse" });
+                       { Repeat = true, Ease = Eases.SinInOut, Label = "NoulithPulse" });
     }
 
     #endregion
@@ -187,8 +188,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
             LeftHalfInactive.SetAlpha(255);
             FullActive.SetAlpha(0);
             
-            Tween.ClearLabelTweens(ref Tweens, "NoulithPulse");
-            Tween.ClearLabelTweens(ref Tweens, "SigilPulse");
+            ClearLabelTweens(ref Tweens, "NoulithPulse");
+            ClearLabelTweens(ref Tweens, "SigilPulse");
         }
     }
 
@@ -227,8 +228,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
         for (var i = 0; i < 4; i++) Tweens.Add(new(Nouliths[i], new(0) { AddRGB = new(20, 20, 60), PartId = 0 }, new(360) { AddRGB = new(0), PartId = 1 }));
       
-        Tween.ClearLabelTweens(ref Tweens, "NoulithPulse");
-        Tween.ClearLabelTweens(ref Tweens, "SigilPulse");
+        ClearLabelTweens(ref Tweens, "NoulithPulse");
+        ClearLabelTweens(ref Tweens, "SigilPulse");
         Tweens.Add(new(Halo,
                        new(0) { Scale = 1.5f, Alpha = 255, AddRGB = fx + ColorOffset },
                        new(100) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
@@ -241,7 +242,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var fx = Config.GetFXColor(current);
         var prevFx = Config.GetFXColor(previous);
 
-        Tween.ClearLabelTweens(ref Tweens, "SigilPulse");
+        ClearLabelTweens(ref Tweens, "SigilPulse");
         SetupSigilPulse(current);
 
         Tweens.Add(new(Halo,
@@ -331,7 +332,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var noulithColor = Config.GetNoulithColor(state);
         NoulithContainer.SetAddRGB(state>0? noulithColor:new(0));
 
-        Tween.ClearLabelTweens(ref Tweens, "SigilPulse");
+        ClearLabelTweens(ref Tweens, "SigilPulse");
         SetupSigilPulse(Tracker.CurrentData.State);
 
         for (var i = 0; i < 4; i++)

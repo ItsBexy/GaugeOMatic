@@ -57,7 +57,7 @@ public struct Preset
     public static string Zip(string s) => Convert.ToBase64String(Util.CompressString(s));
     public static string Unzip(string s) => Util.DecompressString(Convert.FromBase64String(s));
 
-    public Preset Disable()
+    public readonly Preset Disable()
     {
         foreach (var t in Trackers) t.Enabled = false;
         return this;

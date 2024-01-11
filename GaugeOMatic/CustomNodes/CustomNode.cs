@@ -44,13 +44,6 @@ public unsafe partial class CustomNodeManager
             Children = children;
         }
 
-        public CustomNode(AtkResNode* node, params AtkResNode*[] children)
-        {
-            Node = node;
-            Children = new CustomNode[children.Length];
-            for (var i = 0; i < Children.Length; i++) Children[i] = new(children[i]);
-        }
-
         public CustomNode()
         {
             Node = null;

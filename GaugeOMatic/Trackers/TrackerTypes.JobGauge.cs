@@ -4,6 +4,7 @@ using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudACN0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBLM0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBRD0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudDNC0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudDNC1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudDRG0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudDRK0;
@@ -67,7 +68,6 @@ public sealed unsafe class LotDTracker : JobGaugeTracker<DragonGaugeData>
                 GaugeData->LotDMax / 1000f,
                 GaugeData->EyeCount >= 2 ? 1 : 0, 1,
                 preview);
-
 }
 
 [TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DRG)]
@@ -380,22 +380,41 @@ public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
             new(0, 1, 0, 100, 0, 1, preview) :
-            new(GaugeData->EspritValue / GaugeData->EspritMid,
-                GaugeData->EspritMax / GaugeData->EspritMid,
+            new(GaugeData->EspritValue / 50,
+                GaugeData->EspritMax / 50,
                 GaugeData->EspritValue,
                 GaugeData->EspritMax,
-                GaugeData->EspritValue >= GaugeData->EspritMid ? 1 : 0, 1,
+                GaugeData->EspritValue >= 50 ? 1 : 0, 1,
                 preview);
+}
+
+[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DNC)]
+public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
+{
+    public override string DisplayName => "Dance Steps";
+    public override string GaugeAddonName => "JobHudDNC0";
+    public override string[] StateNames => new[] { "None", "Emboite", "Entrechat", "Jete", "Pirouette" };
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null
+            ? new(0, 4, 0, 4, 0, 4, preview)
+            : new(GaugeData->CompletedSteps,
+                  4,
+                  GaugeData->CompletedSteps,
+                  4,
+                  GaugeData->CompletedSteps == 4 ? 0 : GaugeData->Steps[GaugeData->CompletedSteps],
+                  4,
+                  preview);
 }
 
 #endregion
 
 #region Caster
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Enochian / Polyglot", BLM)]
+[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
 public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override string DisplayName => "";
+    public override string DisplayName => "Enochian / Polyglot";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Polyglot Stacks";
     public override string TermGauge => "Timer";
@@ -404,9 +423,9 @@ public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
         GaugeAddon == null || GaugeData == null ?
             new(0, 2, 0, 30, 0, 1, preview) :
             new(GaugeData->PolyglotStacks,
-                GaugeData->PolyglotMax,
-                GaugeData->EnochianTimer / 1000f,
-                GaugeData->EnochianMaxTime / 1000f,
+                2,
+                GaugeData->EnochianTimer > 0 ? (GaugeData->EnochianMaxTime - GaugeData->EnochianTimer) / 1000f:0,
+                30,
                 GaugeData->EnochianTimer > 0 ? 1 : 0,
                 1,
                 preview);
@@ -478,16 +497,19 @@ public sealed unsafe class AstralFireTracker : JobGaugeTracker<ElementalGaugeDat
     public override string TermCount => "Astral Fire Stacks";
     public override string TermGauge => "Timer";
 
-    public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData == null ?
-            new(0, 3, 0, 3, 0, 1, preview) :
-            new(Math.Max(0, GaugeData->ElementStacks),
-                3,
-                GaugeData->ElementTimeLeft,
-                GaugeData->ElementMaxTime,
-                GaugeData->ElementTimeLeft > 0 ? 1 : 0,
-                1,
-                preview);
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null) return new(0, 3, 0, 3, 0, 1, preview);
+
+        var isFire = GaugeData->ElementStacks > 0;
+        return new(isFire?GaugeData->ElementStacks:0,
+                   3,
+                   isFire?GaugeData->ElementTimeLeft / 1000f : 0,
+                   GaugeData->ElementMaxTime/1000f,
+                   isFire ? 1 : 0,
+                   1,
+                   preview);
+    }
 }
 
 [TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
@@ -498,16 +520,20 @@ public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData
     public override string TermCount => "Umbral Ice Stacks";
     public override string TermGauge => "Timer";
 
-    public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData == null
-            ? new(0, 3, 0, 3, 0, 1, preview)
-            : new(-Math.Min(0, GaugeData->ElementStacks),
-                  3,
-                  GaugeData->ElementTimeLeft,
-                  GaugeData->ElementMaxTime,
-                  GaugeData->ElementTimeLeft > 0 ? 1 : 0,
-                  1,
-                  preview);
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null)
+            return new(0, 3, 0, 3, 0, 1, preview);
+
+        var isIce = GaugeData->ElementStacks < 0;
+        return new(isIce ? -GaugeData->ElementStacks:0,
+                   3,
+                   isIce ? GaugeData->ElementTimeLeft / 1000f : 0,
+                   GaugeData->ElementMaxTime / 1000f,
+                   isIce ? 1 : 0,
+                   1,
+                   preview);
+    }
 }
 
 [TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SMN)]

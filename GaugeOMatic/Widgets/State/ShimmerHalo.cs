@@ -1,4 +1,3 @@
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
@@ -40,7 +39,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     public override CustomNode BuildRoot()
     {
-        Halo = new CustomNode((AtkResNode*)CreateImageNode(PartsLists[0], 0))
+        Halo = ImageNodeFromPart(0,0)
                .SetAlpha(0)
                .SetImageFlag(32)
                .SetOrigin(128, 128)
@@ -92,7 +91,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
     {
         var color = Config.ColorList.ElementAtOrDefault(current);
 
-        Halo.SetVis(true);
+        Halo.Show();
         ClearLabelTweens(ref Tweens, "ShimmerAlpha");
         Tweens.Add(new(Halo, 
                        new(0) { Alpha = 0, MultRGB = color }, 
@@ -107,7 +106,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
         Tweens.Add(new(Halo, 
                        new(0) { Alpha = 255 }, 
                        new(200) { Alpha = 0 }) 
-                       { Complete = () => Halo.SetVis(false),
+                       { Complete = () => Halo.Hide(),
                          Label = "ShimmerAlpha" });
     }
 

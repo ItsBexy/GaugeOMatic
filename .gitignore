@@ -2,7 +2,4 @@
 obj/
 bin/
 *.user
-/GaugeOMatic/Trackers/Data/ref.txt
 /GaugeOMatic/ideas.txt
-/GaugeOMatic/GameData/ref.txt
-/GaugeOMatic/Widgets/Counters/TEMPLATECounterWidget.cs

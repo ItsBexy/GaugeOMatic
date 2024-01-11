@@ -202,8 +202,8 @@ public sealed unsafe class NinkiReplica : Widget
         }
         else
         {
-            AnimateDrainGain(Width, ref Tweens, GaugeBarH[3], GaugeBarH[2], GaugeBarH[1], sizeH, prevSizeH, spend ? 250 : 300);
-            AnimateDrainGain(Width, ref Tweens, GaugeBarV[3], GaugeBarV[2], GaugeBarV[1], sizeV, prevSizeV, 300);
+            AnimateDrainGain(Width, ref Tweens, GaugeBarH[3], GaugeBarH[2], GaugeBarH[1], sizeH, prevSizeH, 0, spend ? 250 : 300);
+            AnimateDrainGain(Width, ref Tweens, GaugeBarV[3], GaugeBarV[2], GaugeBarV[1], sizeV, prevSizeV, 0, 300);
         }
 
         var pastMid = prog >= midpoint;

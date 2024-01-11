@@ -100,8 +100,8 @@ public sealed unsafe class TargetReticle : StateWidget
     {
         var color = Config.ColorList.ElementAtOrDefault(current);
 
-        Halo.SetVis(true);
-        InnerHalo.SetVis(true);
+        Halo.Show();
+        InnerHalo.Show();
 
         ClearLabelTweens(ref Tweens, "HaloAlpha");
 
@@ -122,12 +122,12 @@ public sealed unsafe class TargetReticle : StateWidget
         Tweens.Add(new(Halo, 
                        new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 }, 
                        new(200) { Alpha = 0, ScaleX=1.2f,ScaleY=1.2f }) 
-                       { Complete = () => Halo.SetVis(false), Label = "HaloAlpha" });
+                       { Complete = () => Halo.Hide(), Label = "HaloAlpha" });
 
         Tweens.Add(new(InnerHalo, 
                        new(0) { Alpha = 255, ScaleX=0.6f,ScaleY=0.6f }, 
                        new(200) { Alpha = 0, ScaleX = 0.2f, ScaleY = 0.2f }) 
-                       { Complete = () => Halo.SetVis(false), Label = "HaloAlpha" });
+                       { Complete = () => Halo.Hide(), Label = "HaloAlpha" });
     }
 
     public override void StateChange(int current, int previous)

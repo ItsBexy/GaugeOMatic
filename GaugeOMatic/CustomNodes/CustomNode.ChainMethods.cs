@@ -114,6 +114,9 @@ public unsafe partial class CustomNodeManager
             return this;
         }
 
+        public readonly CustomNode Hide() => SetVis(false);
+        public readonly CustomNode Show() => SetVis(true);
+
         public readonly CustomNode SetPos(float x, float y)
         {
             Node->SetPositionFloat(x, y);
@@ -309,6 +312,12 @@ public unsafe partial class CustomNodeManager
         public readonly CustomNode SetNodeFlags(NodeFlags nodeFlags)
         {
             Node->NodeFlags |= nodeFlags;
+            return this;
+        }
+
+        public readonly CustomNode UnsetNodeFlags(NodeFlags nodeFlags)
+        {
+            Node->NodeFlags &= ~nodeFlags;
             return this;
         }
 

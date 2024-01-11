@@ -106,7 +106,7 @@ public sealed unsafe class NinkiOverlay : Widget
         var curWid = (ushort)Math.Round((prog * 229f) + 18f);
         var prevWid = (ushort)Math.Round((prevProg * 229f) + 18f);
 
-        AnimateDrainGain(DrainGainType.Width,ref Tweens, Scroll, curWid, prevWid, Config.AnimationLength);
+        AnimateDrainGain(DrainGainType.Width,ref Tweens, Scroll, curWid, prevWid, 0, Config.AnimationLength);
 
         var tweenWidth = Scroll.Node->Width;
         var tweenProg = (tweenWidth - 18f) / 229f;

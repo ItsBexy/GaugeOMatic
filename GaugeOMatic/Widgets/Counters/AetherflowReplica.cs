@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AetherflowReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -90,7 +91,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
             gemList[i] = new CustomNode(CreateResNode(), gem, pulse, pulsar, spendGlow).SetPos(15 + (38 * i), 15).SetOrigin(22, 22).SetAlpha(0);
 
-            Tweens.Add(new(pulse, new(0) { ScaleX = 1.2f, Alpha = 0 }, new(360) { ScaleX = 1, Alpha = 201 }, new(770) { ScaleX = 0.9f, Alpha = 0 }) { Repeat = true, Ease = Tween.Eases.SinInOut });
+            Tweens.Add(new(pulse, new(0) { ScaleX = 1.2f, Alpha = 0 }, new(360) { ScaleX = 1, Alpha = 201 }, new(770) { ScaleX = 0.9f, Alpha = 0 }) { Repeat = true, Ease = Eases.SinInOut });
         }
 
         return new(CreateResNode(), gemList);
@@ -131,7 +132,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         Tweens.Add(new(WidgetRoot,
                        new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 },
                        new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
     }
 
     private void PlateAppear()
@@ -141,7 +142,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         Tweens.Add(new(WidgetRoot,
                        new(0) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 },
                        new(200) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 })
-                       { Ease = Tween.Eases.SinInOut });
+                       { Ease = Eases.SinInOut });
     }
 
     #endregion

@@ -75,8 +75,6 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override string? SharedEventGroup => null;
 
-    public override DrainGainType DGType => DrainGainType.Rotation;
-
     public override void Update()
     {
         UpdateNumText();
@@ -106,27 +104,25 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         if (prog > prevProg)
         {
-            if (prog - prevProg >= GainThreshold) OnIncrease(prog, prevProg);
+            if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
             if (prog > 0 && prevProg <= 0) OnIncreaseFromMin(prog, prevProg);
             if (prog >= 1f && prevProg < 1f) OnIncreaseToMax(prog, prevProg);
-            if (prog >= MidPoint && prevProg < MidPoint) OnIncreasePastMid(prog, prevProg);
+            if (prog >= Milestone && prevProg < Milestone) OnIncreaseMilestone(prog, prevProg);
         }
 
         if (prevProg > prog)
         {
-            if (prevProg - prog >= DrainThreshold) OnDecrease(prog, prevProg);
+            if (prevProg - prog >= DrainTolerance) OnDecrease(prog, prevProg);
             if (prevProg >= 1f && prog < 1f) OnDecreaseFromMax(prog, prevProg);
             if (prevProg > 0 && prog <= 0) OnDecreaseToMin(prog, prevProg);
-            if (prevProg >= MidPoint && prog < MidPoint) OnDecreasePastMid(prog, prevProg);
+            if (prevProg >= Milestone && prog < Milestone) OnDecreaseMilestone(prog, prevProg);
         }
 
         RunTweens();
     }
 
-    public override float CalcBarSize(float prog)
-    {
-        return 0;
-    }
+    public override DrainGainType DGType => DrainGainType.Rotation;
+    public override float CalcBarProperty(float prog) { return 0; }
 
      public override void OnIncrease(float prog, float prevProg)
      {
@@ -207,7 +203,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         Heading("Behavior");
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        RadioIcons("Direction",ref Config.Direction, new[] { CW, CCW, Erode },new () { Redo ,Undo, CircleNotch },ref update);
+        RadioIcons("Direction",ref Config.Direction, new() { CW, CCW, Erode },new () { Redo ,Undo, CircleNotch },ref update);
        
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 

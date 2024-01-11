@@ -171,8 +171,6 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public override string? SharedEventGroup => null;
 
-    public override DrainGainType DGType => Width;
-
     public override void OnDecreaseToMin(float prog, float prevProg)
     {
         if(Config.Collapse) CollapseBar(200, 250);
@@ -198,7 +196,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                 _ => 255
             });
 
-    public override void PostUpdate(float prog)
+    public override void PostUpdate(float prog, float prevProg)
     {
         if (Drain.Node->Width > 0) Drain[0].SetPos(Backdrop[0].Node->X, 0);
         if (Gain.Node->Width > 0) Gain[0].SetPos(Main[0].Node->X, 0);
@@ -210,7 +208,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarSize(prog);
+        var curWid = CalcBarProperty(prog);
         Main.SetWidth(curWid);
         Gain.SetWidth(curWid);
         Drain.SetWidth(curWid);
@@ -219,7 +217,8 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         if (prog > 0) { StartBackdropTween(); }
     }
 
-    public override float CalcBarSize(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
+    public override DrainGainType DGType => Width;
+    public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
 
     private void StopBackdropTween()
     {

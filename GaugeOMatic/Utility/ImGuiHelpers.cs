@@ -54,7 +54,7 @@ public static class ImGuiHelpers
     public static bool IconButton(string label, FontAwesomeIcon icon, float minWidth = 15f, Vector4? defaultColor=null,Vector4? activeColor = null, Vector4? hoveredColor = null)
     {
         minWidth *= Dalamud.Interface.Utility.ImGuiHelpers.GlobalScale;
-        var iconText = icon.ToIconString() + "##" + label;
+        var iconText = icon.ToIconString();
         defaultColor ??= GetStyleColorUsableVec4(Button);
         activeColor ??= GetStyleColorUsableVec4(ButtonActive);
         hoveredColor ??= GetStyleColorUsableVec4(ButtonHovered);
@@ -77,7 +77,7 @@ public static class ImGuiHelpers
         var str = iconText;
         if (str.Contains('#'))
             str = str[..str.IndexOf("#", StringComparison.Ordinal)];
-        ImGui.PushID(iconText);
+        ImGui.PushID(label);
         ImGui.PushFont(UiBuilder.IconFont);
         var vector2 = ImGui.CalcTextSize(str);
 

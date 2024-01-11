@@ -2,11 +2,11 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.ManaDiamond;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -42,8 +42,9 @@ public sealed unsafe class ManaDiamond : CounterWidget
     #region Nodes
 
     public CustomNode SocketPlate;
-    public CustomNode Stacks;
+    public CustomNode StackContainer;
 
+    public List<CustomNode> Stacks = new();
     public List<CustomNode> Pulses = new();
     public List<CustomNode> Halos = new();
     public List<CustomNode> Gems = new();
@@ -55,9 +56,9 @@ public sealed unsafe class ManaDiamond : CounterWidget
         var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
 
         SocketPlate = BuildSocketPlate(count, out var size);
-        Stacks = BuildStacks(count);
+        StackContainer = BuildStacks(count);
 
-        return new CustomNode(CreateResNode(), SocketPlate, Stacks).SetOrigin(size/2,30.5f);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2,30.5f);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -82,19 +83,20 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     private CustomNode BuildStacks(int count)
     {
-        var stacks = new CustomNode[count];
+        Stacks = new List<CustomNode>();
         for (var i = 0; i < count; i++)
         {
-            Pulses.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0).SetVis(false).SetPos(17 + (26 * i), 10));
+            Pulses.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0).Hide().SetPos(17 + (26 * i), 10));
             Halos.Add(ImageNodeFromPart(0, 2).SetPos(-15,-10).SetOrigin(30,30).SetAlpha(0));
             Gems.Add(ImageNodeFromPart(0, 0).SetOrigin(15,20));
             Glows.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0));
+
             GemContainers.Add(new CustomNode(CreateResNode(), Halos[i], Gems[i], Glows[i]).SetPos(17 + (26 * i), 10).SetOrigin(18, 24));
 
-            stacks[i] = new(CreateResNode(), Pulses[i], GemContainers[i]);
+            Stacks.Add(new(CreateResNode(), Pulses[i], GemContainers[i]));
         }
 
-        return new(CreateResNode(), stacks);
+        return new(CreateResNode(), Stacks.ToArray());
     }
 
     #endregion
@@ -103,6 +105,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     public override void ShowStack(int i)
     {
+        Pulses[i].Show();
         Tweens.Add(new(Halos[i],
                        new(0){Scale=1,Alpha=0},
                        new(150){Scale=1.2f,Alpha=200},
@@ -126,6 +129,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     public override void HideStack(int i)
     {
+        Pulses[i].Hide();
         Tweens.Add(new(Gems[i], 
                        new(0) { Scale = 1, Alpha = 255 },
                        new(166) { Scale = 2, Alpha = 0 }));
@@ -134,32 +138,6 @@ public sealed unsafe class ManaDiamond : CounterWidget
                        new(0){Scale=1.8f,Alpha=0},
                        new(160){ Scale= 1.8f,Alpha=200 },
                        new(250){ Scale= 2.5f,Alpha=0 }));
-    }
-
-    private void SetupPulseTweens(int i)
-    {
-        if (Tweens.Any(t => t.Target == Stacks[i][0] || t.Target == Stacks[i][1])) return;
-
-        Tweens.Add(new(Stacks[i][0],
-                       new(0) { Scale= 0, Alpha = 0 },
-                       new(390) { Scale = 0f, Alpha = 0 },
-                       new(870) { Scale= 1.4f, Alpha = 152 },
-                       new(1290) { Scale= 1.8f, Alpha = 0 }) 
-                       { Repeat = true, Ease = Eases.SinInOut });
-
-        Tweens.Add(new(Stacks[i][1],
-                       new(0) { AddRGB = new(0) },
-                       new(870) { AddRGB = new(150) },
-                       new(1290) { AddRGB = new(0) })
-                       { Repeat = true, Ease = Eases.SinInOut });
-    }
-
-    private void StopPulseTweens(int i)
-    {
-        ClearNodeTweens(ref Tweens, Stacks[i][0]);
-        ClearNodeTweens(ref Tweens, Stacks[i][1]);
-
-        Stacks[i][1].SetAddRGB(0);
     }
 
     private void PlateAppear() =>
@@ -186,24 +164,45 @@ public sealed unsafe class ManaDiamond : CounterWidget
         for (var i = count; i < max; i++) Gems[i].SetAlpha(0);
     }
 
-    public override void OnIncreaseToMax(int max)
+    private void PulseAll()
     {
-        for (var i = 0; i < max; i++)
+        ClearLabelTweens(ref Tweens,"Pulse");
+        for (var i = 0; i < Stacks.Count; i++)
         {
-            Pulses[i].SetVis(true);
+            Tweens.Add(new(Stacks[i][0],
+                           new(0) { Scale = 0, Alpha = 0 },
+                           new(390) { Scale = 0f, Alpha = 0 },
+                           new(870) { Scale = 1.4f, Alpha = 152 },
+                           new(1290) { Scale = 1.8f, Alpha = 0 })
+                           { Repeat = true, Ease = Eases.SinInOut,Label="Pulse" });
 
-            StopPulseTweens(i);
-            SetupPulseTweens(i);
+            Tweens.Add(new(Stacks[i][1],
+                           new(0) { AddRGB = new(0) },
+                           new(870) { AddRGB = new(150) },
+                           new(1290) { AddRGB = new(0) })
+                           { Repeat = true, Ease = Eases.SinInOut, Label = "Pulse" });
         }
     }
 
-    public override void OnDecreaseFromMax(int max)
+    private void StopPulseAll()
     {
-        for (var i = 0; i < max; i++)
+        ClearLabelTweens(ref Tweens, "Pulse");
+        for (var i = 0; i < Stacks.Count; i++)
         {
-            Pulses[i].SetVis(false);
-            StopPulseTweens(i);
+            Tweens.Add(new(Stacks[i][1], new(0, Stacks[i][1]), new(150) { AddRGB = 0 }) { Label = "Pulse" });
+            Tweens.Add(new(Stacks[i][0], new(0, Stacks[i][0]), new(150) { Alpha = 0}) { Label = "Pulse" });
         }
+    }
+
+    public bool Pulsing;
+    public bool CheckPulse(int i) => i > 0 && (Config.Pulse == Always || (Config.Pulse == AtMax && i == Stacks.Count));
+
+    public override void PostUpdate(int i)
+    {
+        var checkPulse = CheckPulse(i);
+        if (!Pulsing && checkPulse) PulseAll();
+        else if (Pulsing && !checkPulse) StopPulseAll();
+        Pulsing = checkPulse;
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
@@ -219,6 +218,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
         public float Scale = 1f;
         public AddRGB GemColor = new(65, -120, -120);
         public bool HideEmpty;
+        public CounterPulse Pulse = AtMax;
 
         public ManaDiamondConfig(WidgetConfig widgetConfig)
         {
@@ -231,6 +231,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
             GemColor = config.GemColor;
             HideEmpty = config.HideEmpty;
 
+            Pulse=config.Pulse;
             AsTimer = config.AsTimer;
             TimerSize = config.TimerSize;
             InvertTimer = config.InvertTimer;
@@ -252,7 +253,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     {
         WidgetRoot.SetPos(Config.Position);
         WidgetRoot.SetScale(Config.Scale);
-        Stacks.SetAddRGB(Config.GemColor + ColorOffset);
+        StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -270,6 +271,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
             if (Config.HideEmpty && Tracker.CurrentData.Count == 0) PlateVanish();
             if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
         }
+
+        RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
 
         if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
         if (Config.AsTimer)

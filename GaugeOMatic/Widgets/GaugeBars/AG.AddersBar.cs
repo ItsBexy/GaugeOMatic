@@ -14,6 +14,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -95,13 +96,13 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     {
         var sparkleNodes = new[]
         {
-            ImageNodeFromPart(0,4).SetAddRGB(-100,0,0).SetScale(1,0.95f),
+            ImageNodeFromPart(0,4).SetScale(1,0.95f).SetAddRGB(-100,0,0),
             ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(-10,10).SetAddRGB(-100,0,0),
             ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(2.25f,6).SetAddRGB(-100,0,0),
             ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(4,9).SetAddRGB(-100,0,0),
             ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(2,3).SetAddRGB(-100,0,0),
             ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(4,0).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,5).SetPos(0,0).SetAddRGB(-100,0,0)
+            ImageNodeFromPart(0,5).SetPos(0,0)
         };
 
         AnimateSparkles(sparkleNodes);
@@ -245,7 +246,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarSize(prog);
+        var curWid = CalcBarProperty(prog);
         Main.SetWidth(curWid);
         Gain.SetWidth(curWid);
         Drain.SetWidth(curWid);
@@ -253,12 +254,47 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         if (prog <= 0 && Config.Collapse) CollapseBar(0, 0);
     }
 
-    public override void PostUpdate(float prog)
+    public bool Pulsing;
+    public override void PostUpdate(float prog, float prevProg)
     {
         MainOverlay.SetWidth(Main.Width);
 
-        prog %= 0.5f;
-        Main.SetAddRGB((prog < 0.25f ? new(0, (short)(120f * prog), (short)(160f * prog)) : new AddRGB(0, (short)(60 - (120f * prog)), (short)(80 - (160f * prog)))) + Config.MainColor + (AddRGB)new(116, -3, -30));
+        HandlePulse(prog);
+
+        if (!Pulsing)
+        {
+            prog %= 0.5f;
+            Main.SetAddRGB((prog < 0.25f ? new(0, (short)(120f * prog), (short)(160f * prog)) : new AddRGB(0, (short)(60 - (120f * prog)), (short)(80 - (160f * prog)))) + Config.MainColor + (AddRGB)new(116, -3, -30));
+        }
+    }
+
+    private void HandlePulse(float prog)
+    {
+        var checkPulse = Config.MilestoneCheck(prog, Milestone);
+        if (!Pulsing && checkPulse) SetupBarPulse(1600);
+        else if (Pulsing && !checkPulse) StopBarPulse();
+    }
+
+    private void SetupBarPulse(int time)
+    {
+        ClearLabelTweens(ref Tweens, "BarPulse");
+        var colorAdjust = new AddRGB(116, -3, -30);
+        for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.PulseSparkles);
+        Tweens.Add(new(Main,
+                       new(0) { AddRGB = Config.PulseColor2 + colorAdjust },
+                       new(time / 2) { AddRGB = Config.PulseColor + colorAdjust },
+                       new(time) { AddRGB = Config.PulseColor2 + colorAdjust })
+                       { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
+        Pulsing = true;
+    }
+
+    private void StopBarPulse()
+    {
+        var colorAdjust = new AddRGB(116, -3, -30);
+        ClearLabelTweens(ref Tweens, "BarPulse");
+        Main.SetAddRGB(Config.MainColor + colorAdjust);
+        for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.SparkleColor);
+        Pulsing = false;
     }
 
     public override void PlaceTickMark(float prog)
@@ -267,7 +303,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
                 .SetVis(prog > 0);
     }
 
-    public override float CalcBarSize(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
+    public override DrainGainType DGType => Width;
+    public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
 
     #endregion
 
@@ -287,6 +324,10 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         public AddRGB GainColor = new(5, 155, 93);
         public AddRGB DrainColor = new(-107, -159, -111);
         public AddRGB SparkleColor = new(-100, 0, 0);
+
+        public AddRGB PulseColor = "0x9D1E3FFF";
+        public AddRGB PulseColor2 = "0xAD6C5DFF";
+        public AddRGB PulseSparkles = "0xB35F2FFF";
 
         public bool Mirror;
         public bool Collapse;
@@ -314,6 +355,13 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             DrainColor = config.DrainColor;
             SparkleColor = config.SparkleColor;
 
+            PulseColor = config.PulseColor;
+            PulseColor2 = config.PulseColor2;
+            PulseSparkles = config.PulseSparkles;
+
+            MilestoneType = config.MilestoneType;
+            Milestone = config.Milestone;
+
             AnimationLength = config.AnimationLength;
             Invert = config.Invert;
             Mirror = config.Mirror;
@@ -332,8 +380,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public override GaugeBarWidgetConfig GetConfig => Config;
 
     public AddersBarConfig Config = null!;
-    
-    public override DrainGainType DGType => Width;
 
     public override void InitConfigs()
     {
@@ -375,9 +421,11 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         var barSize = Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge * Config.Width;
         Drain.SetAddRGB(Config.DrainColor + colorAdjust).SetWidth(0);
         Gain.SetAddRGB(Config.GainColor + colorAdjust).SetWidth(0);
-        Main.SetAddRGB(Config.MainColor + colorAdjust).SetWidth(Config.Invert ? 1 - barSize : barSize);
+        Main.SetWidth(Config.Invert ? 1 - barSize : barSize);
 
+        Pulsing = false;
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.SparkleColor);
+        HandlePulse(CalcProg());
 
         Sparkles.SetX(barSize - 13);
         
@@ -406,13 +454,23 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
         ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
         ColorPickerRGB("Sparkles", ref Config.SparkleColor, ref update);
+        
+        if (Config.MilestoneType > 0)
+        {
+            ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
+            ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+            ColorPickerRGB(" ##Pulse3", ref Config.PulseSparkles, ref update);
+        }
 
         Heading("Behavior");
 
-        RadioIcons("Fill Direction", ref Config.Mirror, new[] { false, true }, ArrowIcons, ref update);
+        RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck(Config.Collapse);
-      //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
+        RadioControls("Pulse", ref Config.MilestoneType, new() { MilestoneType.None, Above, Below }, new() { "Never", "Above Milestone", "Below Milestone" }, ref update);
+        if (Config.MilestoneType > 0) PercentControls(ref Config.Milestone, ref update);
+
+        //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
         LabelTextControls2("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);

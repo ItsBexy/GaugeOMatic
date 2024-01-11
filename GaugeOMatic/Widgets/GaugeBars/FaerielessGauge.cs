@@ -62,8 +62,8 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override string? SharedEventGroup => null;
 
-    public override float CalcBarSize(float prog) => (ushort)Math.Round(Math.Clamp(prog, 0f, 1f) * 174f);
     public override DrainGainType DGType => DrainGainType.Width;
+    public override float CalcBarProperty(float prog) => (ushort)Math.Round(Math.Clamp(prog, 0f, 1f) * 174f);
 
     #endregion
 

@@ -26,7 +26,8 @@ public class DNCModule : JobModule
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
         new("Fourfold Feathers",nameof(FourfoldTracker)),
-        new("Esprit Gauge",nameof(EspritGaugeTracker))
+        new("Esprit Gauge",nameof(EspritGaugeTracker)),
+        new("Dance Steps",nameof(DanceStepTracker))
     };
 
     public DNCModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }

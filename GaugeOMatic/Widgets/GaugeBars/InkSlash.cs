@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
@@ -65,13 +66,13 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     private CustomNode BuildBar()
     {
-        Tick = ImageNodeFromPart(1, 5).SetOrigin(17, 17).SetPos(0, 1).SetImageFlag(32).SetVis(false);
+        Tick = ImageNodeFromPart(1, 5).SetOrigin(17, 17).SetPos(0, 1).SetImageFlag(32).Hide();
 
         Tweens.Add(new(Tick,
                        new(0){ScaleX=0.5f, ScaleY=1.55f},
                        new(600){ScaleX=0.5f,ScaleY=1.6f},
                        new(1000){ScaleX = 0.5f, ScaleY=1.55f})
-                       {Repeat=true,Ease = Tween.Eases.SinInOut});
+                       {Repeat=true,Ease = Eases.SinInOut});
 
         Backdrop = ImageNodeFromPart(0, 1).SetRotation((float)(Math.PI / 2f)).SetPos(29,11).SetScale(0.8f,1.2f);
         DrainContainer = BuildFillNode();
@@ -106,8 +107,6 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     public override string? SharedEventGroup => null;
 
-    public override DrainGainType DGType => DrainGainType.Height;
-
     public override void OnDecreaseToMin(float prog, float prevProg)
     {
         Tweens.Add(new(Tick, new(0) { Alpha = 255 }, new(200) { Alpha = 0 }));
@@ -140,7 +139,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarSize(prog);
+        var curWid = CalcBarProperty(prog);
         MainContainer.SetWidth(curWid);
         GainContainer.SetWidth(curWid);
         DrainContainer.SetWidth(curWid);
@@ -150,7 +149,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     public override void OnIncrease(float prog, float prevProg)
     {
-        SplatterBox.SetPos(CalcBarSize(prog)-150, 30);
+        SplatterBox.SetPos(CalcBarProperty(prog)-150, 30);
 
         Tweens.Add(new(Splatter1,
                        new(0) { X = -90, Y = 20, Scale = 1, Alpha = 0, Rotation = 0.3f + (float)Math.PI },
@@ -214,11 +213,8 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                        ));
     }
 
-    public override void PostUpdate(float prog)
-    {
-    }
-
-    public override float CalcBarSize(float prog) => (Math.Clamp(prog, 0f, 1f) * 185f) + 3f;
+    public override DrainGainType DGType => DrainGainType.Height;
+    public override float CalcBarProperty(float prog) => (Math.Clamp(prog, 0f, 1f) * 185f) + 3f;
 
     #endregion
 

@@ -108,8 +108,8 @@ public sealed unsafe class NinkiBorders : Widget
 
         NumTextNode.UpdateNumText(Config.NumTextProps, current, max);
 
-        AnimateDrainGain(DrainGainType.Width,ref Tweens, BorderTop, curWid, prevWid, Config.AnimationLength);
-        AnimateDrainGain(DrainGainType.Width, ref Tweens, BorderBottom, curWid, prevWid, Config.AnimationLength);
+        AnimateDrainGain(DrainGainType.Width,ref Tweens, BorderTop, curWid, prevWid, 0, Config.AnimationLength);
+        AnimateDrainGain(DrainGainType.Width, ref Tweens, BorderBottom, curWid, prevWid, 0, Config.AnimationLength);
 
         var tweenWidth = BorderTop.Node->Width;
         var tweenProg = (tweenWidth - 10f) / 190f;

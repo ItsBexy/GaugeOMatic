@@ -8,6 +8,7 @@ using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ChakraBar;
+using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
@@ -45,16 +46,17 @@ public sealed unsafe class ChakraBar : CounterWidget
     #region Nodes
 
     public CustomNode SocketPlate;
-    public CustomNode Stacks;
+    public CustomNode StackContainer;
+    public List<CustomNode> Stacks = new();
 
     public override CustomNode BuildRoot()
     {
         var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
 
         SocketPlate = BuildSocketPlate(count, out var size).SetOrigin(size / 2, 29);
-        Stacks = BuildStacks(count);
+        StackContainer = BuildStacks(count);
 
-        return new CustomNode(CreateResNode(), SocketPlate, Stacks).SetOrigin(size/2,29);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2,29);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -89,7 +91,7 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     private CustomNode BuildStacks(int count)
     {
-        var stacks = new CustomNode[count];
+        Stacks = new List<CustomNode>();
         for (var i = 0; i < count; i++)
         {
             Pearls.Add(ImageNodeFromPart(1, 0).SetOrigin(19.2f,19.6f)
@@ -131,10 +133,10 @@ public sealed unsafe class ChakraBar : CounterWidget
                                                     .SetRotation(1.0471976f)
                                                     .SetAlpha(0));
 
-            stacks[i] = new CustomNode(CreateResNode(), Pearls[i], Lines[i], Rings[i], Glows[i], ActionLines[i], ActionLines2[i]).SetScale(0.8f).SetPos(29 + (i * 36), 13f);
+            Stacks.Add(new CustomNode(CreateResNode(), Pearls[i], Lines[i], Rings[i], Glows[i], ActionLines[i], ActionLines2[i]).SetScale(0.8f).SetPos(29 + (i * 36), 13f));
         }
 
-        return new(CreateResNode(),stacks);
+        return new(CreateResNode(),Stacks.ToArray());
     }
 
     #endregion
@@ -143,10 +145,9 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     public override void ShowStack(int i)
     {
-
         Tweens.Add(new(Pearls[i],
-                             new(0){Alpha = 0,Scale = 0.6f},
-                             new(80){Alpha=255,Scale = 1}));
+                       new(0){Alpha = 0,Scale = 0.6f},
+                       new(80){Alpha=255,Scale = 1}));
 
         Tweens.Add(new(Lines[i], 
                              new(0) { Alpha = 0, ScaleX = 0f, ScaleY = 1, AddRGB = new(200,100,-100), MultRGB = new(50)}, 
@@ -179,29 +180,16 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     public override void HideStack(int i)
     {
-
         Tweens.Add(new(Pearls[i], 
-                             new(0) { Alpha = 255, Scale = 1,AddRGB=new AddRGB(0) }, 
-                             new(100) { Alpha = 255, Scale = 1.1f, AddRGB = new(100) },
-                             new(250) { Alpha = 0, Scale = 0.2f, AddRGB = new(0) }));
+                       new(0) { Alpha = 255, Scale = 1,AddRGB=new AddRGB(0) }, 
+                       new(100) { Alpha = 255, Scale = 1.1f, AddRGB = new(100) },
+                       new(250) { Alpha = 0, Scale = 0.2f, AddRGB = new(0) }));
 
         Tweens.Add(new(Rings[i],
                              new(0) { Alpha = 0, Scale = 0.3f, AddRGB = new(183, 83, -250), MultRGB = new(50) },
                              new(80) { Alpha = 255, Scale = 1, AddRGB = new(100, 0, -250), MultRGB = new(100) },
                              new(300) { Alpha = 0, Scale = 1.2f, AddRGB = new(200, -100, -250), MultRGB = new(50) }));
 
-    }
-
-    public void SetupPulseTweens(int i)
-    {
-        StopPulseTweens(i);
-        Tweens.Add(new(Stacks[i], new(0) { AddRGB = new(0) }, new(460) { AddRGB = new(100, 90, 80) }, new(1000) { AddRGB = new(0) }) { Repeat = true, Ease = Eases.SinInOut });
-    }
-
-    public void StopPulseTweens(int i)
-    {
-        ClearNodeTweens(ref Tweens, Stacks[i]);
-        Stacks[i].SetAddRGB(0);
     }
 
     private void PlateAppear() =>
@@ -222,9 +210,6 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     public override string? SharedEventGroup => null;
 
-    public override void OnIncreaseToMax(int max) { for (var i = 0; i < max; i++) SetupPulseTweens(i); }
-    public override void OnDecreaseFromMax(int max) { for (var i = 0; i < max; i++) StopPulseTweens(i); }
-
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
     public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) PlateAppear(); }
 
@@ -232,6 +217,35 @@ public sealed unsafe class ChakraBar : CounterWidget
     {
         for (var i = 0; i < count; i++) Pearls[i].SetAlpha(255);
         for (var i = count; i < max; i++) Pearls[i].SetAlpha(0);
+    }
+
+    public bool Pulsing;
+    public bool CheckPulse(int i) => i > 0 && (Config.Pulse == Always || (Config.Pulse == AtMax && i == Stacks.Count));
+
+    public override void PostUpdate(int i)
+    {
+        var checkPulse = CheckPulse(i);
+        if (!Pulsing && checkPulse) PulseAll();
+        else if (Pulsing && !checkPulse) StopPulseAll();
+        Pulsing = checkPulse;
+    }
+
+    private void PulseAll()
+    {
+        foreach (var s in Stacks)
+        {
+            ClearNodeTweens(ref Tweens, s);
+            Tweens.Add(new(s, new(0) { AddRGB = new(0) }, new(460) { AddRGB = new(100, 90, 80) }, new(1000) { AddRGB = new(0) }) { Repeat = true, Ease = Eases.SinInOut });
+        }
+    }
+
+    private void StopPulseAll()
+    {
+        foreach (var s in Stacks)
+        {
+            ClearNodeTweens(ref Tweens, s);
+            s.SetAddRGB(0);
+        }
     }
 
     #endregion
@@ -246,6 +260,7 @@ public sealed unsafe class ChakraBar : CounterWidget
         public AddRGB GemColor = new(108, -25, -100);
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
+        public CounterPulse Pulse = AtMax;
 
         public ChakraBarConfig(WidgetConfig widgetConfig)
         {
@@ -260,6 +275,7 @@ public sealed unsafe class ChakraBar : CounterWidget
             FrameColor = config.FrameColor;
             HideEmpty = config.HideEmpty;
 
+            Pulse = config.Pulse;
             AsTimer = config.AsTimer;
             TimerSize = config.TimerSize;
             InvertTimer = config.InvertTimer;
@@ -286,7 +302,7 @@ public sealed unsafe class ChakraBar : CounterWidget
                   .SetScale(Config.Scale)
                   .SetRotation(angle);
         SocketPlate.SetMultiply(Config.FrameColor).SetScale(flipFactor);
-        Stacks.SetAddRGB(Config.GemColor + ColorOffset);
+        StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
 
         for (var i = 0; i < Tracker.CurrentData.MaxCount; i++) Pearls[i].SetRotation(-angle);
     }
@@ -308,6 +324,8 @@ public sealed unsafe class ChakraBar : CounterWidget
             if (Config.HideEmpty && Tracker.CurrentData.Count == 0) PlateVanish();
             if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
         }
+
+        RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
 
         if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
         if (Config.AsTimer)

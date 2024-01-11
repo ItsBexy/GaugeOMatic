@@ -78,13 +78,7 @@ public abstract partial class Tracker : IDisposable
 
     public void CreateWindow(Widget widget, Configuration configuration)
     {
-        var attr = TrackerConfig.DisplayAttributes();
-
-        var title = $"{attr.TypeDesc}: {DisplayName}";
-
-
-
-        Window = new(this, widget, configuration, $"{title}##{GetHashCode()}");
+        Window = new(this, widget, configuration, $"{TrackerConfig.DisplayAttributes().TypeDesc}: {DisplayName}##{GetHashCode()}");
         WindowSystem.AddWindow(Window);
     }
 

@@ -1,12 +1,11 @@
 using Dalamud.Interface;
-using Dalamud.Interface.Components;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Windows;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
@@ -78,16 +77,25 @@ internal static class WidgetUI
         return false;
     }
 
-    public static bool FloatControls(string label, ref float f, float min, float max, float step, ref UpdateFlags update)
+    public static bool FloatControls(string label, ref float f, float min, float max, float step, ref UpdateFlags update, string format = "%.2f")
     {
         LabelColumn(label);
 
-        if (FloatInputDrag(label, ref f, min, max, step))
+        if (FloatInputDrag(label, ref f, min, max, step, format: format))
         {
             update |= UpdateFlags.Save;
             return true;
         }
         return false;
+    }
+
+    public static void PercentControls(ref float p, ref UpdateFlags update)
+    {
+        var percent = p * 100f;
+        if (FloatControls("Milestone", ref percent, 0, 100, 1f, ref update, "%.0f%%"))
+        {
+            p = percent / 100f;
+        }
     }
 
     public static void ComboControls(string label, ref FontType val, List<FontType> options, List<string> optionNames, ref UpdateFlags update)
@@ -199,6 +207,7 @@ internal static class WidgetUI
     {
         LabelColumn(label);
 
+        var ret = false;
         for (var i = 0; i < options.Count; i++)
         {
             var option = options[i];
@@ -208,35 +217,36 @@ internal static class WidgetUI
             {
                 val = option;
                 update |= UpdateFlags.Save;
-                return true;
+                ret = true;
             }
         }
-        return false;
+        return ret;
     }
 
     public static bool RadioIcons<T>(
-        string label, ref T val, IReadOnlyList<T> options, List<FontAwesomeIcon> icons, ref UpdateFlags update)
+        string label, ref T val, List<T> options, List<FontAwesomeIcon> icons, ref UpdateFlags update)
     {
         LabelColumn(label);
 
         var buttonColor = GetStyleColorUsableVec4(Button);
         var activeColor = GetStyleColorUsableVec4(ButtonActive);
 
+        var ret = false;
         for (var i = 0; i < options.Count; i++)
         {
             var option = options[i];
             var icon = icons[i];
 
             if (i > 0) SameLineSquished();
-            if (ImGuiComponents.IconButton($"##{label}{option}", icon, val is not null && val.Equals(option) ? activeColor : buttonColor))
-            {
+            
+            if (IconButton($"{label}{option}{i}",icon,16f, val is not null && val.Equals(option) ? activeColor : buttonColor)) {
                 val = option;
                 update |= UpdateFlags.Save;
-                return true;
+                ret = true;
             }
         }
 
-        return false;
+        return ret;
     }
 
     public static bool PositionControls(string label, ref Vector2 pos, ref UpdateFlags update) => ControlXY(label, ref pos, -2560, 2560, 1, ref update, new() { ChevronLeft, ChevronRight, ChevronUp, ChevronDown });
@@ -260,11 +270,13 @@ internal static class WidgetUI
         return input1 || input2 || input3;
     }
 
-    public static bool FloatInputDrag(string label, ref float val, float min, float max, float step = 0.05f, FontAwesomeIcon icon1 = Minus, FontAwesomeIcon icon2 = Plus)
+    public static bool FloatInputDrag(
+        string label, ref float val, float min, float max, float step = 0.05f, FontAwesomeIcon icon1 = Minus,
+        FontAwesomeIcon icon2 = Plus, string format = "%.2f")
     {
         ImGui.SetNextItemWidth(90f * GlobalScale);
 
-        var input1 = ImGui.DragFloat($"##{label}Drag", ref val, step, min, max);
+        var input1 = ImGui.DragFloat($"##{label}Drag", ref val, step, min, max,format);
 
         ImGui.PushButtonRepeat(true);
         SameLineSquished();

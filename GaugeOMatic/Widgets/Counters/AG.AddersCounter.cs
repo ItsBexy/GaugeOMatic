@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersCounter;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -154,13 +155,13 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     private void SetupGemPulse(CustomNode gemContainer, int i)
     {
-        Tween.ClearLabelTweens(ref Tweens, $"GemPulse{i}");
+        ClearLabelTweens(ref Tweens, $"GemPulse{i}");
         var offset = Config.GemColor + new AddRGB(10, -49, -82);
         Tweens.Add(new(gemContainer[0],
                        new(0) { AddRGB = new AddRGB(0, 4, 5) + offset },
                        new(1150) { AddRGB = new AddRGB(9, 45, 54) + offset },
                        new(2300) { AddRGB = new AddRGB(0, 4, 5) + offset })
-                       { Repeat = true, Ease = Tween.Eases.SinInOut,Label= $"GemPulse{i}" });
+                       { Repeat = true, Ease = Eases.SinInOut,Label= $"GemPulse{i}" });
 
         Tweens.Add(new(gemContainer[1],
                        new(0) { Alpha = 102, PartId = 0 },
@@ -365,7 +366,7 @@ public sealed unsafe class AddersCounter : CounterWidget
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Spacing", ref Config.Spacing, 0, 1000, 0.5f, ref update);
+        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
         FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
         FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
 

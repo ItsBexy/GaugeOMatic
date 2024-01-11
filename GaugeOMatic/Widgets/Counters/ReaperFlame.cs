@@ -220,7 +220,7 @@ public sealed unsafe class ReaperFlame : CounterWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Spacing", ref Config.Spacing, 0, 1000, 0.5f, ref update);
+        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
         FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
         FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
 

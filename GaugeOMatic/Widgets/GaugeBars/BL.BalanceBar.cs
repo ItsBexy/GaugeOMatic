@@ -220,16 +220,15 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                    ));
     }
 
-    public override void PostUpdate(float prog)
+    public override void PostUpdate(float prog, float prevProg)
     {
         if (Gain.Height < Main.Height) Gain.SetHeight(Main.Height);
     }
 
-    public override float CalcBarSize(float prog) => prog*124;
-
-    public override void OnFirstRun(float prog) => Main.SetHeight(CalcBarSize(prog));
-
     public override DrainGainType DGType => DrainGainType.Height;
+    public override float CalcBarProperty(float prog) => prog*124;
+
+    public override void OnFirstRun(float prog) => Main.SetHeight(CalcBarProperty(prog));
 
     #endregion
 

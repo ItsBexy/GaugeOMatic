@@ -87,9 +87,10 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override float CalcBarSize(float prog) => 10 + (prog * 192);
+    public override DrainGainType DGType => DrainGainType.Height;
+    public override float CalcBarProperty(float prog) => 10 + (prog * 192);
 
-    public override void PostUpdate(float prog)
+    public override void PostUpdate(float prog, float prevProg)
     {
         PlateContainer.SetY(208 - PlateContainer.Height);
         Plate.SetY(-(208 - PlateContainer.Height));
@@ -111,7 +112,6 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         Tick.SetY(containerY-25).SetAlpha(alpha).SetScaleY(Math.Clamp(scaleY, 0, 2f));
     }
 
-    public override DrainGainType DGType => DrainGainType.Height;
     public override string SharedEventGroup => "BalanceGauge";
 
     #endregion

@@ -43,6 +43,7 @@ public partial class ActionData
         { 16475, new(16475, MNK,  "Anatman",                60     ) },
         { 25762, new(25762, MNK,  "Thunderclap",            30,  3 ) },
         { 25766, new(25766, MNK,  "Riddle of Wind",         90     ) },
+
         { 83,    new(83,    LNC,  "Life Surge",             40,  2 ) },
         { 85,    new(85,    LNC,  "Lance Charge",           60     ) },
         { 92,    new(92,    DRG,  "Jump",                   30     ) },
