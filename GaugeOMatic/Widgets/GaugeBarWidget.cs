@@ -2,10 +2,12 @@ using GaugeOMatic.Trackers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using GaugeOMatic.Windows;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.MilestoneType;
+using static GaugeOMatic.Widgets.WidgetUI;
 
 namespace GaugeOMatic.Widgets;
 
@@ -16,23 +18,31 @@ public abstract class GaugeBarWidgetConfig
     public bool Invert;
     public int AnimationLength = 250;
     public NumTextProps NumTextProps;
-    public bool SplitCharges;           //todo: implement on action trackers but not status trackers
+    public bool SplitCharges = false;
     public MilestoneType MilestoneType; //todo: implement on more bars
     public float Milestone = 0.5f;
-    public bool MilestoneCheck(float prog, float milestone) => prog > 0 && ((MilestoneType == Above && prog >= milestone) || (MilestoneType == Below && prog <= milestone));
+
+    public static void MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone, ref UpdateFlags update)
+    {
+        RadioControls(label, ref milestoneType, new() { None, Above, Below }, new() { "Never", "Above Threshold", "Below Threshold" }, ref update);
+        if (milestoneType > 0) PercentControls("Threshold", ref milestone, ref update);
+    }
+
+    public static void SplitChargeControls(ref bool splitCharges, RefType refType, int maxCount, ref UpdateFlags update)
+    {
+        if (refType != RefType.Action || maxCount <= 1) return;
+        RadioControls("Cooldown Style", ref splitCharges, new() { false, true }, new() { "All Charges", "Per Charge" }, ref update);
+    }
 }
 
 public enum MilestoneType {None,Above,Below}
 
 [SuppressMessage("ReSharper", "UnusedParameter.Global")]
-[SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
 public abstract class GaugeBarWidget : Widget
 {
     public enum DrainGainType { Width, Height, Rotation, X }
 
     protected GaugeBarWidget(Tracker tracker) : base(tracker) { }
-
-    public void UpdateNumText() => NumTextNode.UpdateNumText(NumTextProps, Tracker.CurrentData.GaugeValue, Tracker.CurrentData.MaxGauge);
 
     public abstract DrainGainType DGType { get; }
     public abstract GaugeBarWidgetConfig GetConfig { get; }
@@ -40,47 +50,70 @@ public abstract class GaugeBarWidget : Widget
     public bool Invert => GetConfig.Invert;
     public int AnimDelay => GetConfig.AnimationLength;
 
+    public float Milestone => GetConfig.Milestone;
+    public MilestoneType MilestoneType => GetConfig.MilestoneType;
     public float GainTolerance { get; set; } = 0.049f;
     public float DrainTolerance { get; set; } = 0.049f;
-    public float Milestone => GetConfig.Milestone;
+
     public bool FirstRun = true;
-    public virtual CustomNode Drain { get; set; } = new();
-    public virtual CustomNode Gain { get; set; } = new();
-    public virtual CustomNode Main { get; set; } = new();
-    public virtual CustomNode NumTextNode { get; set; }
+    public CustomNode Drain { get; set; } = new();
+    public CustomNode Gain { get; set; } = new();
+    public CustomNode Main { get; set; } = new();
+    public NumTextNode NumTextNode = null!;
+
+    public virtual void OnFirstRun(float prog) { } // used to instantly jump to the correct current state on first setup
 
     // handlers that can be used to trigger animations/behaviours at certain progress points
 
     public virtual void OnIncrease(float prog, float prevProg) { }
     public virtual void OnIncreaseFromMin(float prog, float prevProg) { }
-    public virtual void OnIncreaseToMax(float prog, float prevProg) { }
-    public virtual void OnIncreaseMilestone(float prog, float prevProg) { }
-    
-    public virtual void OnDecrease(float prog, float prevProg) { }
-    public virtual void OnDecreaseFromMax(float prog, float prevProg) { }
-    public virtual void OnDecreaseToMin(float prog, float prevProg) { }
-    public virtual void OnDecreaseMilestone(float prog, float prevProg) { }
 
-    public virtual void OnFirstRun(float prog) { } // used to instantly jump to the correct current state on first setup
+    public virtual void OnDecrease(float prog, float prevProg) { }
+    public virtual void OnDecreaseToMin(float prog, float prevProg) { }
+
     public virtual void PlaceTickMark(float prog) { }
 
     public virtual void PreUpdate(float prog, float prevProg) { }
     public virtual void PostUpdate(float prog, float prevProg) { }
 
+    protected virtual void StartMilestoneAnim() { }
+    protected virtual void StopMilestoneAnim() { }
+
+    public bool MilestoneActive;
+    protected void HandleMilestone(float prog,bool reset = false)
+    {
+        if (reset)
+        {
+            StopMilestoneAnim();
+            MilestoneActive = false;
+        }
+        var check = prog > 0 && ((MilestoneType == Above && prog >= Milestone) || (MilestoneType == Below && prog <= Milestone));
+        if (!MilestoneActive && check) StartMilestoneAnim();
+        else if (MilestoneActive && !check) StopMilestoneAnim();
+
+        MilestoneActive = check;
+    }
+
     protected float CalcProg(bool usePrev = false)
     {
-        var data = usePrev? Tracker.PreviousData : Tracker.CurrentData;
-        var prog = data.GaugeValue / data.MaxGauge;
+        var prog = (usePrev? PreviousGauge : CurrentGauge) / MaxGauge;
         return Invert ? 1 - prog : prog;
     }
 
+    private float PreviousGauge => Tracker.PreviousData.GaugeValue;
+    public float CurrentGauge => Tracker.CurrentData.GaugeValue;
+    private float MaxGauge => Tracker.CurrentData.MaxGauge;
+
     public override void Update()
     {
-        UpdateNumText();
-
+        var current = CurrentGauge;
+        var max = MaxGauge;
         var prog = CalcProg();
         var prevProg = CalcProg(true);
 
+        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+
+        NumTextNode.UpdateValue(current, max);
         PreUpdate(prog, prevProg);
 
         if (FirstRun) OnFirstRun(prog);
@@ -90,22 +123,39 @@ public abstract class GaugeBarWidget : Widget
         {
             if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
             if (prog > 0 && prevProg <= 0) OnIncreaseFromMin(prog, prevProg);
-            if (prog >= Milestone && prevProg < Milestone) OnIncreaseMilestone(prog, prevProg);
-            if (prog >= 1f && prevProg < 1f) OnIncreaseToMax(prog, prevProg);
         }
 
         if (prevProg > prog)
         {
             if (prevProg - prog >= DrainTolerance) OnDecrease(prog, prevProg);
-            if (prevProg >= 1f && prog < 1f) OnDecreaseFromMax(prog, prevProg);
-            if (prevProg >= Milestone && prog < Milestone) OnDecreaseMilestone(prog, prevProg);
             if (prevProg > 0 && prog <= 0) OnDecreaseToMin(prog, prevProg);
         }
 
         RunTweens();
+        HandleMilestone(prog);
+
         PostUpdate(prog, prevProg);
         PlaceTickMark(prog);
         FirstRun = false;
+    }
+
+    public void AdjustForCharges(ref float currentTime, ref float maxTime, ref float prog, ref float prevProg, bool splitTimerText = true, bool splitProg = true)
+    {
+        var maxCharges = Tracker.CurrentData.MaxCount;
+        if (maxCharges <= 1) return;
+
+        if (splitTimerText)
+        {
+            maxTime /= maxCharges;
+            currentTime %= maxTime;
+        }
+
+        if (splitProg)
+        {
+            var progPerCharge = 1f / maxCharges;
+            prog = prog / progPerCharge % 1f;
+            prevProg = prevProg / progPerCharge % 1f;
+        }
     }
 
     public abstract float CalcBarProperty(float prog);
@@ -126,29 +176,29 @@ public abstract class GaugeBarWidget : Widget
     {
         Func<CustomNode, float> getProp = static _ => 0;
         Func<CustomNode, float, CustomNode> setProp = static (node, _) => node;
-        Func<int, float, KeyFrame> createKeyFrame = static (kfTime, _) => new KeyFrame(kfTime);
+        Func<int, float, KeyFrame> createKeyFrame = static (kfTime, _) => new(kfTime);
 
         switch (type)
         {
             case Width:
                 getProp = static node => node.Node->Width;
                 setProp = static (node, val) => node.SetWidth(val);
-                createKeyFrame = static (kfTime, val) => new KeyFrame(kfTime) { Width = val };
+                createKeyFrame = static (kfTime, val) => new(kfTime) { Width = val };
                 break;
             case Height:
                 getProp = static node => node.Node->Height;
                 setProp = static (node, val) => node.SetHeight(val);
-                createKeyFrame = static (kfTime, val) => new KeyFrame(kfTime) { Height = val };
+                createKeyFrame = static (kfTime, val) => new(kfTime) { Height = val };
                 break;
             case X:
                 getProp = static node => node.Node->X;
                 setProp = static (node, val) => node.SetX(val);
-                createKeyFrame = static (kfTime, val) => new KeyFrame(kfTime) { X = val };
+                createKeyFrame = static (kfTime, val) => new(kfTime) { X = val };
                 break;
             case Rotation:
                 getProp = static node => node.Node->Rotation;
                 setProp = static (node, val) => node.SetRotation(val);
-                createKeyFrame = static (kfTime, val) => new KeyFrame(kfTime) { Rotation = val };
+                createKeyFrame = static (kfTime, val) => new(kfTime) { Rotation = val };
                 break;
         }
 

@@ -8,15 +8,17 @@ using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.HutonReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class HutonReplica : Widget
+public sealed unsafe class HutonReplica : GaugeBarWidget
 {
     public HutonReplica(Tracker tracker) : base(tracker) { }
 
@@ -44,7 +46,6 @@ public sealed unsafe class HutonReplica : Widget
 
     public CustomNode EmptyPinwheel;
     public CustomNode ActiveClock;
-    public CustomNode TextNode;
     public CustomNode Puff;
     public CustomNode Blades;
     public CustomNode Shuriken;
@@ -55,10 +56,10 @@ public sealed unsafe class HutonReplica : Widget
     {
         EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2).SetScale(0.9f).SetOrigin(71, 74);
         ActiveClock = BuildClock();
-        TextNode = new CustomNode(CreateTextNode("60", 18, 20)).SetTextColor(0xffffffff, 0x000000ff);
+        NumTextNode = new();
         Puff = ImageNodeFromPart(0, 4).SetPos(-2, -2).SetScale(0.6666667f).SetSize(144, 144).SetOrigin(72, 72).SetAlpha(0);
 
-        return new CustomNode(CreateResNode(), EmptyPinwheel, ActiveClock, TextNode, Puff).SetSize(150, 150).SetOrigin(75, 75);
+        return new CustomNode(CreateResNode(), EmptyPinwheel, ActiveClock, NumTextNode, Puff).SetSize(150, 150).SetOrigin(75, 75);
     }
 
     public CustomNode BuildClock()
@@ -135,17 +136,16 @@ public sealed unsafe class HutonReplica : Widget
     #endregion
 
     #region UpdateFuncs
+    
+    public override DrainGainType DGType => Rotation;
 
-    public override string? SharedEventGroup => null;
-
-    public bool FirstRun = true;
     public override void Update()
     {
         var current = Tracker.CurrentData.GaugeValue;
         var previous = Tracker.PreviousData.GaugeValue;
         var max = Tracker.CurrentData.MaxGauge;
 
-        WidgetRoot[2].UpdateNumText(Config.NumTextProps, current, max);
+        NumTextNode.UpdateValue(Tracker.CurrentData.GaugeValue, Tracker.CurrentData.MaxGauge);
 
         if (Config.Invert)
         {
@@ -164,9 +164,7 @@ public sealed unsafe class HutonReplica : Widget
         if (current - previous >= 5f) GainAnim();
         if (current == 0 && previous > 0) DepleteAnim();
 
-        var currentAdjusted = Config.Smooth ? current : Math.Ceiling(current);
-
-        ClockHand.SetRotation((float)(currentAdjusted / max) * -6.28318530717959f);
+        ClockHand.SetRotation(CalcBarProperty(current/max));
 
         ClockHand.SetVis(active);
         Shuriken.SetVis(active);
@@ -183,6 +181,12 @@ public sealed unsafe class HutonReplica : Widget
         for (var i = 5; i > bladeId; i--) UpdateOtherBlade(i);
 
         RunTweens();
+    }
+
+    public override float CalcBarProperty(float prog)
+    {
+        if (!Config.Smooth) prog = (float)Math.Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
+        return prog * -6.28318530717959f;
     }
 
     private void UpdateOtherBlade(int i)
@@ -208,19 +212,29 @@ public sealed unsafe class HutonReplica : Widget
 
     #region Configs
 
-    public class HutonReplicaConfig
+    public sealed class HutonReplicaConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position = new(0, 0);
         public float Scale = 1;
-        public NumTextProps NumTextProps = new(true, new(46, 72), 0xffffffFFu, 0x000000FFu, MiedingerMed, 18, Center, false);
-        public bool Invert;
         public bool Smooth;
         public ColorRGB ActiveColor = new(100);
         public ColorRGB FadeColor = new(0x32, 0x32, 0x64);
         public ColorRGB HandColor = new(100);
 
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(0, 0),
+                                                              color:     0xffffffFFu, 
+                                                              edgeColor: 0x000000FFu,
+                                                              showBg:    false, 
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed,
+                                                              fontSize:  18,
+                                                              align:     Center, 
+                                                              invert:    false);
+
         public HutonReplicaConfig(WidgetConfig widgetConfig)
         {
+            NumTextProps = NumTextDefault;
             var config = widgetConfig.HutonReplicaCfg;
 
             if (config == null) return;
@@ -233,12 +247,14 @@ public sealed unsafe class HutonReplica : Widget
             ActiveColor = config.ActiveColor;
             FadeColor = config.FadeColor;
             HandColor = config.HandColor;
+            SplitCharges = config.SplitCharges;
         }
 
-        public HutonReplicaConfig() { }
+        public HutonReplicaConfig() => NumTextProps = NumTextDefault;
     }
 
-    public HutonReplicaConfig Config = null!;
+    public HutonReplicaConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -255,7 +271,7 @@ public sealed unsafe class HutonReplica : Widget
 
         ClockHand.SetMultiply(Config.HandColor);
 
-        Config.NumTextProps.ApplyTo(WidgetRoot[2]);
+        NumTextNode.ApplyProps(Config.NumTextProps,new(69,72));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -270,6 +286,7 @@ public sealed unsafe class HutonReplica : Widget
         ColorPickerRGB("Clock Hand", ref Config.HandColor, ref update);
 
         Heading("Behavior");
+        
         ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 

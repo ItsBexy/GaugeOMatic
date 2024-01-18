@@ -11,11 +11,14 @@ using static GaugeOMatic.Widgets.ManaDiamond;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ManaDiamond : CounterWidget
 {
+    public ManaDiamond(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -24,7 +27,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
         Author = "ItsBexy",
         Description = "A recreation of Red Mage's Mana Stack counter",
         WidgetTags = Counter | MultiComponent | Replica,
-        KeyText = "BL4"
+        MultiCompData = new("BL", "Balance Gauge Replica", 4)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -83,7 +86,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     private CustomNode BuildStacks(int count)
     {
-        Stacks = new List<CustomNode>();
+        Stacks = new();
         for (var i = 0; i < count; i++)
         {
             Pulses.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0).Hide().SetPos(17 + (26 * i), 10));
@@ -156,8 +159,6 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < count; i++) Gems[i].SetAlpha(255);
@@ -167,16 +168,16 @@ public sealed unsafe class ManaDiamond : CounterWidget
     private void PulseAll()
     {
         ClearLabelTweens(ref Tweens,"Pulse");
-        for (var i = 0; i < Stacks.Count; i++)
+        foreach (var stack in Stacks)
         {
-            Tweens.Add(new(Stacks[i][0],
+            Tweens.Add(new(stack[0],
                            new(0) { Scale = 0, Alpha = 0 },
                            new(390) { Scale = 0f, Alpha = 0 },
                            new(870) { Scale = 1.4f, Alpha = 152 },
                            new(1290) { Scale = 1.8f, Alpha = 0 })
                            { Repeat = true, Ease = Eases.SinInOut,Label="Pulse" });
 
-            Tweens.Add(new(Stacks[i][1],
+            Tweens.Add(new(stack[1],
                            new(0) { AddRGB = new(0) },
                            new(870) { AddRGB = new(150) },
                            new(1290) { AddRGB = new(0) })
@@ -187,10 +188,10 @@ public sealed unsafe class ManaDiamond : CounterWidget
     private void StopPulseAll()
     {
         ClearLabelTweens(ref Tweens, "Pulse");
-        for (var i = 0; i < Stacks.Count; i++)
+        foreach (var stack in Stacks)
         {
-            Tweens.Add(new(Stacks[i][1], new(0, Stacks[i][1]), new(150) { AddRGB = 0 }) { Label = "Pulse" });
-            Tweens.Add(new(Stacks[i][0], new(0, Stacks[i][0]), new(150) { Alpha = 0}) { Label = "Pulse" });
+            Tweens.Add(new(stack[1], new(0, stack[1]), new(150) { AddRGB = 0 }) { Label = "Pulse" });
+            Tweens.Add(new(stack[0], new(0, stack[0]), new(150) { Alpha = 0}) { Label = "Pulse" });
         }
     }
 
@@ -242,7 +243,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public ManaDiamondConfig Config = null!;
+    public ManaDiamondConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -286,8 +287,6 @@ public sealed unsafe class ManaDiamond : CounterWidget
     }
 
     #endregion
-
-    public ManaDiamond(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

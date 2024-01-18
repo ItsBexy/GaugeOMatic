@@ -1,4 +1,5 @@
 using System;
+// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility;
 
@@ -14,4 +15,7 @@ public static class MiscMath
         for (var i = 0; i < coeff.Length; i++) result += (float)(Math.Pow(x, i) * coeff[i]);
         return result;
     }
+
+    public static float Radians(float deg) => deg * 0.0174532925199433F;
+    public static float Degrees(float rad) => rad / 0.0174532925199433F;
 }

@@ -8,18 +8,20 @@ using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidget;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.NinkiReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class NinkiReplica : Widget
+public sealed unsafe class NinkiReplica : GaugeBarWidget
 {
+    public NinkiReplica(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -28,7 +30,7 @@ public sealed unsafe class NinkiReplica : Widget
         Author = "ItsBexy",
         Description = "A recreation of Ninja's Ninki Gauge. Lights up in a different color when it reaches the halfway point, making it great for tracking actions with 2 charges.",
         WidgetTags = GaugeBar | MultiComponent | Replica,
-        KeyText = "NK1"
+        MultiCompData = new("NK", "Ninki Gauge Replica", 1)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -53,7 +55,6 @@ public sealed unsafe class NinkiReplica : Widget
     public CustomNode CalligraphyFlash1;
     public CustomNode Cloud1;
     public CustomNode Cloud2;
-    public CustomNode NumTextNode { get; set; }
 
     public CustomNode GaugeBarV;
     public CustomNode GaugeBarH;
@@ -70,7 +71,7 @@ public sealed unsafe class NinkiReplica : Widget
         CalligraphyFlash1 = ImageNodeFromPart(0, 3).SetPos(23, 29).SetOrigin(98, 28).SetRGBA(new(1, 1, 1, 0));
         Cloud1 = ImageNodeFromPart(0, 11).SetOrigin(20, 22).SetPos(70, 32).SetRGBA(new(1, 1, 1, 0)).SetAddRGB(-70, -70, -90);
         Cloud2 = ImageNodeFromPart(0, 11).SetOrigin(20, 22).SetPos(170, 32).SetRGBA(new(1, 1, 1, 0)).SetAddRGB(-40, -40, -60);
-        NumTextNode = BuildNumText();
+        NumTextNode = new();
 
         return new CustomNode(CreateResNode(), Scroll, CalligraphyFlash1, Cloud1, Cloud2, NumTextNode).SetSize(256, 100).SetOrigin(128, 50);
     }
@@ -99,8 +100,6 @@ public sealed unsafe class NinkiReplica : Widget
     {
         return new CustomNode(CreateResNode(), ImageNodeFromPart(0, 2).SetRGBA((ColorRGB)0xFFFFFFB2), NineGridFromPart(0, 10).SetAddRGB(Config.BarColorHigh).SetWidth(0), NineGridFromPart(0, 10).SetAddRGB(Config.GainColorH).SetWidth(0), NineGridFromPart(0, 1).SetAddRGB(Config.BarColorLow).SetWidth(0)).SetPos(32, 33).SetSize(174, 46).SetAddRGB(0);
     }
-
-    private CustomNode BuildNumText() => new CustomNode(CreateTextNode("0", 18, 20)).SetTextColor(Config.NumTextProps.Color, Config.NumTextProps.EdgeColor).SetPos(227, 83);
 
     #endregion
 
@@ -164,17 +163,13 @@ public sealed unsafe class NinkiReplica : Widget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
-    public bool FirstRun = true;
-
     public override void Update()
     {
         var current = Tracker.CurrentData.GaugeValue;
         var previous = Tracker.PreviousData.GaugeValue;
         var max = Tracker.CurrentData.MaxGauge;
 
-        NumTextNode.UpdateNumText(Config.NumTextProps,current,max);
+        NumTextNode.UpdateValue(current, max);
 
         if (Config.Invert)
         {
@@ -220,6 +215,9 @@ public sealed unsafe class NinkiReplica : Widget
         RunTweens();
     }
 
+    public override DrainGainType DGType => Width;
+    public override float CalcBarProperty(float prog) => 0;
+
     public void OnGain() => GainAnim();
     public void OnSpend() => SpendAnim();
     public void OnReachMax() => GaugeFullAnim();
@@ -246,11 +244,23 @@ public sealed unsafe class NinkiReplica : Widget
         public AddRGB FlashH = new(200, 100, 100);
         public AddRGB FlashH2 = new(100, -100, -50);
         public AddRGB BorderGlow = new(100, -50, -120);
-        protected override NumTextProps NumTextDefault => new(true, new(212, 83), 0xCCCCCCFFu, 0x5534C2FFu, MiedingerMed, 18, Center, false, 0, true);
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(0, 0), 
+                                                              color:     0xCCCCCCFFu, 
+                                                              edgeColor: 0x5534C2FFu, 
+                                                              showBg:    false, 
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed,
+                                                              fontSize:  18,
+                                                              align:     Center, 
+                                                              invert:    false, 
+                                                              precision: 0, 
+                                                              showZero:  true);
 
         public NinkiReplicaConfig(WidgetConfig widgetConfig)
         {
             NumTextProps = NumTextDefault;
+            SplitCharges = true;
             var config = widgetConfig.NinkiReplicaCfg;
 
             if (config == null) return;
@@ -269,12 +279,18 @@ public sealed unsafe class NinkiReplica : Widget
             FlashH2 = config.FlashH2;
             BorderGlow = config.BorderGlow;
             AnimationLength = config.AnimationLength;
+            SplitCharges = config.SplitCharges;
         }
 
-        public NinkiReplicaConfig() { }
+        public NinkiReplicaConfig()
+        {
+            NumTextProps = NumTextDefault;
+            SplitCharges = true;
+        }
     }
 
-    public NinkiReplicaConfig Config = null!;
+    public NinkiReplicaConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -301,7 +317,7 @@ public sealed unsafe class NinkiReplica : Widget
         TopBorder.SetAddRGB(Config.BorderGlow);
         BottomBorder.SetAddRGB(Config.BorderGlow);
 
-        Config.NumTextProps.ApplyTo(WidgetRoot[4]);
+        NumTextNode.ApplyProps(Config.NumTextProps,new(173,83));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -325,6 +341,7 @@ public sealed unsafe class NinkiReplica : Widget
         ColorPickerRGB("Drain Color", ref Config.DrainColorV, ref update);
 
         Heading("Behavior");
+        
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
@@ -334,8 +351,6 @@ public sealed unsafe class NinkiReplica : Widget
     }
 
     #endregion
-
-    public NinkiReplica(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

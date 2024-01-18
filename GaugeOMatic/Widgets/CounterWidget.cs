@@ -41,7 +41,6 @@ public abstract class CounterWidget : Widget
         int current;
         int previous;
 
-
         if (GetConfig.AsTimer)
         {
             max = GetConfig.TimerSize;

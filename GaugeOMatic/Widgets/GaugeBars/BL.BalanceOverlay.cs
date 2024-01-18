@@ -1,26 +1,25 @@
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.BalanceOverlay;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class BalanceOverlay : GaugeBarWidget
 {
-    public BalanceOverlay(Tracker tracker) : base(tracker)
-    {
-     //   SharedEvents.Add("SpendShake", () => BalanceBar.SpendShake(ref Tweens, WidgetRoot, Config.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y));
-    }
+    public BalanceOverlay(Tracker tracker) : base(tracker) { }
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
@@ -30,7 +29,7 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         Author = "ItsBexy",
         Description = "A glowing gauge bar fitted over the Balance Gauge (or a replica of it)",
         WidgetTags = GaugeBar | MultiComponent,
-        KeyText = "BL3"
+        MultiCompData = new("BL", "Balance Gauge Replica", 3)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -61,22 +60,20 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         })
     };
     #region Nodes
-
-    public CustomNode PlateContainer;
+    
     public CustomNode Plate;
     public CustomNode CrystalGlow;
     public CustomNode Tick;
-    public override CustomNode Main => PlateContainer;
 
     public override CustomNode BuildRoot()
     {
         Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32);
-        PlateContainer = new CustomNode(CreateResNode(), Plate).SetNodeFlags(NodeFlags.Clip).SetSize(116, 208);
+        Main = new CustomNode(CreateResNode(), Plate).SetNodeFlags(Clip).SetSize(116, 208);
         CrystalGlow = ImageNodeFromPart(0, 5).SetPos(39, 5).SetOrigin(20, 28).SetAlpha(0);
         Tick = ImageNodeFromPart(1, 0).SetRotation(1.5707963267949f).SetImageFlag(33).SetOrigin(20,44).SetPos(37.5f,-30);
-        NumTextNode = new(CreateTextNode("0", 18, 20));
+        NumTextNode = new();
 
-        return new(CreateResNode(), PlateContainer, CrystalGlow,Tick,NumTextNode);
+        return new(CreateResNode(), Main, CrystalGlow,Tick,NumTextNode);
     }
 
     #endregion
@@ -92,13 +89,13 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public override void PostUpdate(float prog, float prevProg)
     {
-        PlateContainer.SetY(208 - PlateContainer.Height);
-        Plate.SetY(-(208 - PlateContainer.Height));
+        Main.SetY(208 - Main.Height);
+        Plate.SetY(-(208 - Main.Height));
     }
 
     public override void PlaceTickMark(float prog)
     {
-        var containerY = PlateContainer.Node->Y;
+        var containerY = Main.Node->Y;
 
         var alpha = (byte)Math.Clamp((double)(containerY <= 163.5f ? 255 : PolyCalc(containerY, -6155.37357130828d, 79.3597925187652, -0.245581741361458)), 0, 255);
         var scaleY = containerY switch
@@ -108,7 +105,6 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             _ => PolyCalc(containerY, -88.9665931925754d, 1.53310683483466d, -0.00854319135223209d, 0.0000156241038226192d)
         };
         
-
         Tick.SetY(containerY-25).SetAlpha(alpha).SetScaleY(Math.Clamp(scaleY, 0, 2f));
     }
 
@@ -122,8 +118,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     {
         public Vector2 Position = new(0);
         public float Scale = 1;
-        public AddRGB Color = new(0);
-        public AddRGB TickColor = new(0);
+        public AddRGB Color = "0xCAA0A08F";
+        public AddRGB TickColor = "0xB04A4AFF";
 
         public BalanceOverlayConfig(WidgetConfig widgetConfig)
         {
@@ -139,13 +135,17 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             NumTextProps = config.NumTextProps;
             AnimationLength = config.AnimationLength;
             Invert = config.Invert;
+            SplitCharges = config.SplitCharges;
         }
 
-        public BalanceOverlayConfig() { }
+        public BalanceOverlayConfig()
+        {
+            NumTextProps = NumTextDefault;
+        }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
-    public BalanceOverlayConfig Config = null!;
+    public BalanceOverlayConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -157,7 +157,7 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         Plate.SetAddRGB(Config.Color,true);
         Tick.SetAddRGB(Config.TickColor, true);
 
-        Config.NumTextProps.ApplyTo(NumTextNode);
+        NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -171,6 +171,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
+
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);

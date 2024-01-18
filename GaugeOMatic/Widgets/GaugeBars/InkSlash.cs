@@ -8,16 +8,20 @@ using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.InkSlash;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class InkSlash : GaugeBarWidget
 {
+    public InkSlash(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -60,7 +64,8 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     public override CustomNode BuildRoot()
     {
         Bar = BuildBar().SetOrigin(-45, 25);
-        NumTextNode = CreateNumTextNode().SetSize(30,30).SetOrigin(-10,10);
+        NumTextNode = new();
+
         return new(CreateResNode(), Bar, NumTextNode);
     }
 
@@ -82,18 +87,16 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         Gain = GainContainer[0];
         Drain = DrainContainer[0];
 
-        Splatter1 = ImageNodeFromPart(1, 5).SetAlpha(0).SetRGBA(0,0,0,0);
-        Splatter2 = ImageNodeFromPart(1, 4).SetAlpha(0).SetRGBA(0, 0, 0, 0).SetOrigin(14,10);
-        Splatter3 = ImageNodeFromPart(1, 3).SetAlpha(0).SetRGBA(0, 0, 0, 0).SetOrigin(12,11);
-        Splatter4 = ImageNodeFromPart(1, 5).SetAlpha(0).SetRGBA(0, 0, 0, 0);
+        Splatter1 = ImageNodeFromPart(1, 5).SetAlpha(0);
+        Splatter2 = ImageNodeFromPart(1, 4).SetAlpha(0).SetOrigin(14,10);
+        Splatter3 = ImageNodeFromPart(1, 3).SetAlpha(0).SetOrigin(12,11);
+        Splatter4 = ImageNodeFromPart(1, 5).SetAlpha(0);
         Splatter5 = ImageNodeFromPart(1, 6).SetAlpha(0).SetAddRGB(-255).SetOrigin(0,59);
 
         SplatterBox = new CustomNode(CreateResNode(), Splatter1, Splatter2, Splatter3, Splatter4, Splatter5).SetPos(0,30);
 
         return new(CreateResNode(), Backdrop, SplatterBox, DrainContainer, GainContainer, MainContainer, Tick);
     }
-
-
 
     private CustomNode BuildFillNode() => new CustomNode(CreateResNode(), ImageNodeFromPart(0, 0).SetSize(16,0).SetImageWrap(1).SetPos(0,22).SetScale(1,1).SetRotation(-(float)(Math.PI / 2f))).SetPos(-152, 30).SetSize(192, 16);
 
@@ -104,8 +107,6 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     #endregion
 
     #region UpdateFuncs
-
-    public override string? SharedEventGroup => null;
 
     public override void OnDecreaseToMin(float prog, float prevProg)
     {
@@ -152,31 +153,31 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         SplatterBox.SetPos(CalcBarProperty(prog)-150, 30);
 
         Tweens.Add(new(Splatter1,
-                       new(0) { X = -90, Y = 20, Scale = 1, Alpha = 0, Rotation = 0.3f + (float)Math.PI },
-                       new(160) { X = 20, Y = -40, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = -0.1f + (float)Math.PI },
-                       new(300) { X = 20, Y = -40, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = -0.1f + (float)Math.PI },
-                       new(600) { X = 20, Y = -40, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 0, Rotation = -0.05f + (float)Math.PI }
+                       new(0) { X = -90, Y = 20, Scale = 1, Alpha = 0, Rotation = 3.45F },
+                       new(160) { X = 20, Y = -40, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = 3.05F },
+                       new(300) { X = 20, Y = -40, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = 3.05F },
+                       new(600) { X = 20, Y = -40, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 0, Rotation = 3.1F }
                    ));
 
         Tweens.Add(new(Splatter2,
-                       new(0) { X = -90, Y = 20, Scale = 1, Alpha = 0, Rotation = 0.3f + (float)Math.PI },
-                       new(150) { X = 50, Y = -5, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = -0.1f + (float)Math.PI },
-                       new(250) { X = 50, Y = -5, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = -0.1f + (float)Math.PI },
-                       new(600) { X = 50, Y = -5, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 0, Rotation = -0.05f + (float)Math.PI }
+                       new(0) { X = -90, Y = 20, Scale = 1, Alpha = 0, Rotation = 3.45F },
+                       new(150) { X = 50, Y = -5, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = 3.05F },
+                       new(250) { X = 50, Y = -5, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = 3.05F },
+                       new(600) { X = 50, Y = -5, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 0, Rotation = 3.1F }
                    ));
 
         Tweens.Add(new(Splatter3,
-                       new(0){X=-100,Scale = 1,Alpha=0,Rotation=-0.3f + (float)Math.PI },
-                       new(100) {X=-20, ScaleX = 3.2f, ScaleY = 2.9f,Alpha=255,Rotation=0.3f + (float)Math.PI },
-                       new(200) { X = -20, ScaleX = 3.2f, ScaleY = 2.9f, Alpha = 255, Rotation = 0.3f + (float)Math.PI },
-                       new(600){X=-20,ScaleX=3.2f,ScaleY=2.9f,Alpha=0, Rotation = 0.4f + (float)Math.PI }
+                       new(0){X=-100,Scale = 1,Alpha=0,Rotation = 2.85F },
+                       new(100) {X=-20, ScaleX = 3.2f, ScaleY = 2.9f,Alpha=255,Rotation=3.45F },
+                       new(200) { X = -20, ScaleX = 3.2f, ScaleY = 2.9f, Alpha = 255, Rotation = 3.45F },
+                       new(600){X=-20,ScaleX=3.2f,ScaleY=2.9f,Alpha=0, Rotation = 3.55F }
                        ));
         
         Tweens.Add(new(Splatter4,
-                       new(0) { X = -70, Y = 10, Scale = 1, Alpha = 0, Rotation = 0.3f + (float)Math.PI },
-                       new(180) { X = -40, Y = 30, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = -0.1f + (float)Math.PI },
-                       new(320) { X = -40, Y = 30, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = -0.1f + (float)Math.PI },
-                       new(600) { X = -40, Y = 30, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 0, Rotation = -0.05f + (float)Math.PI }
+                       new(0) { X = -70, Y = 10, Scale = 1, Alpha = 0, Rotation = 3.45F },
+                       new(180) { X = -40, Y = 30, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = 3.05F },
+                       new(320) { X = -40, Y = 30, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 255, Rotation = 3.05F },
+                       new(600) { X = -40, Y = 30, ScaleX = 2.5f, ScaleY = 1.6f, Alpha = 0, Rotation = 3.1F }
                        ));
 
         Tweens.Add(new(Splatter5,
@@ -186,10 +187,10 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                        new(700) { X = -200, Y = -80, ScaleX = 2f, ScaleY = 4f, Alpha = 0, Rotation = 1.4f }
                        ));
 
-        Tweens.Add(new(SplatterBox, 
-                       new(0){Rotation=0,ScaleX=1,ScaleY=1},
-                       new(600){Rotation=0.01f,ScaleX=1.05f,ScaleY=1.06f}));
-        
+        Tweens.Add(new(SplatterBox,
+                       new(0) { Rotation = 0, ScaleX = 1, ScaleY = 1 },
+                       new(600) { Rotation = 0.01f, ScaleX = 1.05f, ScaleY = 1.06f }));
+
         var flash = Config.MainColor/2;
         Tweens.Add(new(Bar,
                        new(0) { X = 0, Y = 0, AddRGB = new(0) },
@@ -201,7 +202,8 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                        new(500) { X = 0, Y = 0, AddRGB = new(0, 0, 0) }
                        ));
 
-        var pos = Config.NumTextProps.Position + new Vector2(-33,15);
+        var avgScale = (Config.Scale.Y + Config.Scale.X) / 2f;
+        var pos = Config.NumTextProps.Position + new Vector2((avgScale * -46.712f) - 30.915f, (avgScale * 0.7827f) +25.3f);
         Tweens.Add(new(NumTextNode,
                        new(0) { X = pos.X, Y = pos.Y },
                        new(30) { X = pos.X - 1.9f, Y = pos.Y + 0.85f },
@@ -231,7 +233,16 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         public AddRGB DrainColor = "0x6A003CFF";
         public float Rotation;
         public AddRGB TickColor = new(255, -100, -162);
-        protected override NumTextProps NumTextDefault => new(true, new(0, 0), 0xFFFFFFFF, 0x9B0000FF, MiedingerMed, 20, Center, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
+                                                              position:  new(0, 0), 
+                                                              color:     0xFFFFFFFF, 
+                                                              edgeColor: 0x9B0000FF,
+                                                              showBg:    false, 
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed,
+                                                              fontSize:  20,
+                                                              align:     Center, 
+                                                              invert:    false);
 
         public InkSlashConfig(WidgetConfig widgetConfig)
         {
@@ -251,6 +262,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
             Invert = config.Invert;
             AnimationLength = config.AnimationLength;
             BackdropInactive = config.BackdropInactive;
+            SplitCharges = config.SplitCharges;
         }
 
         public InkSlashConfig() => NumTextProps = NumTextDefault;
@@ -258,7 +270,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public InkSlashConfig Config = null!;
+    public InkSlashConfig Config;
 
     public override void InitConfigs()
     {
@@ -269,26 +281,34 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     public override void ResetConfigs() => Config = new();
 
     public AddRGB ColorOffset = new(-46, 110, 110, 0);
+    public AddRGB SplatterOffset = new(-102,128,112);
     public Vector2 PosAdjust = new(60,-50);
     public override void ApplyConfigs()
     {
         WidgetRoot.SetPos(Config.Position+PosAdjust);
         Bar.SetScale(Config.Scale);
-        NumTextNode.SetScale((Config.Scale.Y+Config.Scale.X) / 2f);
         Tick.SetAddRGB(Config.TickColor);
-
-        Splatter1.SetAddRGB(Config.MainColor*2);
-        Splatter2.SetAddRGB(Config.MainColor * 2);
-        Splatter3.SetAddRGB(Config.MainColor * 2);
-        Splatter4.SetAddRGB(Config.MainColor * 2);
+        
+        Splatter1.SetAddRGB(Config.MainColor + SplatterOffset);
+        Splatter2.SetAddRGB(Config.MainColor + SplatterOffset);
+        Splatter3.SetAddRGB(Config.MainColor + SplatterOffset);
+        Splatter4.SetAddRGB(Config.MainColor + SplatterOffset);
 
         Backdrop.SetAddRGB(Tracker.CurrentData.GaugeValue <= 0 ? Config.BackdropInactive : Config.BackdropColor, true);
         MainContainer.SetAddRGB(Config.MainColor + ColorOffset, true);
         GainContainer.SetAddRGB(Config.GainColor + ColorOffset, true);
         DrainContainer.SetAddRGB(Config.DrainColor + ColorOffset, true);
-        var numTextConfig = Config.NumTextProps;
-        numTextConfig.Position += new Vector2(-33, 15);
-        numTextConfig.ApplyTo(NumTextNode);
+
+        Main.SetHeight(CalcBarProperty(CalcProg()));
+        Gain.SetHeight(0);
+        Drain.SetHeight(0);
+
+        var avgScale = (Config.Scale.Y + Config.Scale.X) / 2f;
+        var pos = Config.NumTextProps.Position + new Vector2((avgScale * -46.712f) - 30.915f, (avgScale * 0.7827f) + 25.3f);
+
+        NumTextNode.SetScale(avgScale);
+        NumTextNode.ApplyProps(Config.NumTextProps);
+        NumTextNode.SetPos(pos);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -307,6 +327,8 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
+
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
@@ -316,8 +338,6 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     }
 
     #endregion
-
-    public InkSlash(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

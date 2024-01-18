@@ -1,27 +1,30 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Utility;
 using GaugeOMatic.Windows;
-using ImGuiNET;
 using Newtonsoft.Json;
 using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.Tween;
+using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EspritBar;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class EspritBar : GaugeBarWidget
 {
+    public EspritBar(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -34,18 +37,18 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudDNC1.tex",
-            new(0,0,168,76),    // 0  bar
-            new(1,77,166,74),   // 1  backdrop
-            new(168,0,48,108),  // 2  feather
-            new(216,0,84,100),  // 3  half fan
-            new(216,100,84,80), // 4  half frame
-            new(168,108,48,32), // 5  corner clip thingy
-            new(168,140,48,36), // 6  number bg
-            new(2,160,76,60),   // 7  feather glow
-            new(80,156,54,40),  // 8  spotlights
-            new(79,198,54,40),  // 9  streaks
-            new(132,153,20,20), // 10 star
-            new(216,180,84,80)  // 11 half frame cover
+             new(0,0,168,76),    // 0  bar
+             new(1,77,166,74),   // 1  backdrop
+             new(168,0,48,108),  // 2  feather
+             new(216,0,84,100),  // 3  half fan
+             new(216,100,84,80), // 4  half frame
+             new(168,108,48,32), // 5  corner clip thingy
+             new(168,140,48,36), // 6  number bg
+             new(2,160,76,60),   // 7  feather glow
+             new(80,156,54,40),  // 8  spotlights
+             new(79,198,54,40),  // 9  streaks
+             new(132,153,20,20), // 10 star
+             new(216,180,84,80)  // 11 half frame cover
             )};
 
     #region Nodes
@@ -55,27 +58,29 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public CustomNode BarContents;
     public CustomNode FrameCover;
     public CustomNode Frame;
-    public CustomNode TextBg;
-    public CustomNode TextNineGrid;
     public CustomNode FanClip;
     public CustomNode FillNodes;
-
-    public override CustomNode NumTextNode { get; set; }
+    public CustomNode Fan;
+    
     public CustomNode MainContainer;
     public CustomNode DrainContainer;
     public CustomNode GainContainer;
-    public override CustomNode Drain { get; set; }
-    public override CustomNode Gain { get; set; }
-    public override CustomNode Main { get; set; }
 
     public override CustomNode BuildRoot()
     {
+        Fan = BuildFan();
+        NumTextNode = new();
+        NumTextNode.SetAlpha(0);
+        return new CustomNode(CreateResNode(), Fan, NumTextNode).SetSize(200,128).SetOrigin(100,113);
+    }
+
+    private CustomNode BuildFan()
+    {
         FanPlate = ImageNodeFromPart(0, 3).SetImageWrap(3).SetPos(16, 22).SetSize(168, 100);
         BarContents = BuildBarContents();
-        FanClip = ImageNodeFromPart(0, 5).SetPos(76, 90).SetSize(48, 32).SetImageWrap(1);
+        FanClip = ImageNodeFromPart(0, 5).SetPos(76, 90).SetSize(48, 32).SetImageWrap(1).SetOrigin(24,32);
 
-        // feathers would go after fanplate if we kept them
-        return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetSize(200,128).SetOrigin(100,113);
+        return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetOrigin(100, 113).SetAlpha(0);
     }
 
     private CustomNode BuildBarContents()
@@ -85,11 +90,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         FrameCover = ImageNodeFromPart(0, 11).SetSize(168, 80).SetImageWrap(3).Hide(); // dunno whether/when to bother displaying this
         Frame = ImageNodeFromPart(0, 4).SetSize(168, 80).SetImageWrap(3);
 
-        TextBg = NineGridFromPart(0, 6).SetSize(64, 40).SetOrigin(32, 20).SetAlpha(0x7F).SetScale(0.5f,1);
-        NumTextNode = CreateNumTextNode().SetPos(15,5).SetSize(33,30);
-        TextNineGrid = new CustomNode(CreateResNode(), TextBg, NumTextNode).SetPos(52, 20).SetSize(64,40);
-
-        return new CustomNode(CreateResNode(), Backdrop, FillNodes, FrameCover, Frame, TextNineGrid).SetPos(16,22).SetSize(168,80);
+        return new CustomNode(CreateResNode(), Backdrop, FillNodes, FrameCover, Frame).SetPos(16,22).SetSize(168,80);
     }
 
     private CustomNode BuildFillNodes()
@@ -100,7 +101,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
             new CustomNode(CreateResNode(), node)
                 .SetSize(168, 70)
                 .SetNodeFlags(NodeFlags.Clip)
-                .SetDrawFlags(0x200);
+                .SetDrawFlags(0x200)
+                .SetOrigin(84,70);
 
         Drain = FillNode();
         Gain = FillNode();
@@ -110,58 +112,60 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         DrainContainer = FillContainer(Drain);
         GainContainer = FillContainer(Gain);
 
-        return new CustomNode(CreateResNode(),
-                              DrainContainer, 
-                              GainContainer,
-                              MainContainer).SetPos(0,1)
-                                            .SetSize(168,70).SetOrigin(0,-1);
+        return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0,1).SetSize(168,70).SetOrigin(0,-1);
     }
 
     #endregion
 
     #region Animations
 
-    public void SetupBarPulse(int time)
+    protected override void StartMilestoneAnim()
     {
         ClearLabelTweens(ref Tweens,"BarPulse");
         Tweens.Add(new(MainContainer,
                        new(0) {AddRGB = Config.PulseColor2 - Config.MainColor },
-                       new(time/2) {AddRGB = Config.PulseColor - Config.MainColor},
-                       new(time) { AddRGB = Config.PulseColor2 - Config.MainColor }) 
+                       new(800) {AddRGB = Config.PulseColor - Config.MainColor},
+                       new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor }) 
                        { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
-        Pulsing = true;
     }
 
-    private void StopBarPulse()
+    protected override void StopMilestoneAnim()
     {
         ClearLabelTweens(ref Tweens, "BarPulse");
         MainContainer.SetAddRGB(0);
-        Pulsing = false;
     }
 
     private void ShowBar()
     {
-        var flipFactor = Config.Mirror ? -1f : 1f;
-        Tweens.Add(new(WidgetRoot,
-                       new(0) { Alpha=0,ScaleX = 1.2f * Config.Scale, ScaleY = Config.Scale * 1.2f * flipFactor },
-                       new(150) { Alpha=255,ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor }) 
-                       { Ease = Eases.SinInOut });
+        ClearLabelTweens(ref Tweens, "Hide");
+        Tweens.Add(new(Fan,
+                       new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
+                       new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
+                       { Ease = Eases.SinInOut, Label = "Show" });
+
+        Tweens.Add(new(NumTextNode, 
+                       new(0) { Alpha = 0 }, 
+                       new(180) { Alpha = 255 }) 
+                       { Ease = Eases.SinInOut, Label = "Show" });
     }
 
     private void HideBar()
     {
-        var flipFactor = Config.Mirror ? -1f : 1f;
-        Tweens.Add(new(WidgetRoot,
-                       new(0) { Alpha = 255, ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor },
-                       new(150) { Alpha = 0, ScaleX = 0.8f * Config.Scale, ScaleY = Config.Scale * 0.8f * flipFactor })
-                       { Ease = Eases.SinInOut });
+        ClearLabelTweens(ref Tweens, "Show");
+        Tweens.Add(new(Fan,
+                       new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
+                       new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
+                       { Ease = Eases.SinInOut,Label="Hide" });
+
+        Tweens.Add(new(NumTextNode, 
+                       new(0) { Alpha = 255 }, 
+                       new(120) { Alpha = 0 }) 
+                       { Ease = Eases.SinInOut, Label = "Hide" });
     }
 
     #endregion
 
     #region UpdateFuncs
-
-    public override string? SharedEventGroup => null;
 
     public override DrainGainType DGType => Rotation;
     public override float CalcBarProperty(float prog) => (2.5639436751938f * prog) - 2.6542183675969f;
@@ -175,20 +179,16 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         Gain.SetRotation(-151,true);
         Drain.SetRotation(-151, true);
 
-        if (Config.HideEmpty && prog == 0) WidgetRoot.SetAlpha(0);
-    }
-
-    public bool Pulsing;
-
-    public override void PostUpdate(float prog, float prevProg)
-    {
-        var checkPulse = Config.MilestoneCheck(prog, Milestone);
-        if (!Pulsing && checkPulse) SetupBarPulse(1600);
-        else if (Pulsing && !checkPulse) StopBarPulse();
-
-        var nodeText = NumTextNode.Node->GetAsAtkTextNode()->NodeText.ToString();
-        var chars = nodeText.Length;
-        TextBg.SetScaleX(nodeText == " " ? 0 : (0.25f * chars) + 0.266666667f);
+        if (Config.HideEmpty && prog == 0)
+        {
+            Fan.SetAlpha(0);
+            NumTextNode.SetAlpha(0);
+        }
+        else
+        {
+            Fan.SetAlpha(255);
+            NumTextNode.SetAlpha(255);
+        }
     }
 
     #endregion
@@ -197,22 +197,35 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public sealed class EspritBarConfig : GaugeBarWidgetConfig
     {
+
         public Vector2 Position = new(0, 0);
         public float Scale = 1;
         public bool ShowPlate = true;
-        public bool Mirror;
+
+        public int Angle;
+        public bool Clockwise = true;
 
         public AddRGB Backdrop = new(0, 0, 0);
         public ColorRGB FrameColor = new(100, 100, 100);
         public AddRGB MainColor = new(120, 0, -190);
         public AddRGB GainColor = new(-80, 30, 160);
         public AddRGB DrainColor = new(-50, -140, -70);
-        public AddRGB PulseColor = new AddRGB(160, 100, 80)+ new AddRGB(120, 0, -190);
-        public AddRGB PulseColor2 = new AddRGB(-120) + new AddRGB(120, 0, -190);
-        public AddRGB TextBG = new(0,0,0,0x7f);
+        public AddRGB PulseColor = new(280, 100, -110);
+        public AddRGB PulseColor2 = new(0,-120,-255);
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), 0x8E6A0CFF, Jupiter, 16, Left);
-        protected override NumTextProps NumTextDefault => new(true, new(0,0), new(255), new(157,131,91), MiedingerMed,18,Center,false,0,true);
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0,0), 
+                                                              color: new(255),
+                                                              edgeColor: new(157,131,91), 
+                                                              showBg: true, 
+                                                              bgColor: new(0), 
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Center,
+                                                              invert: false,
+                                                              precision: 0,
+                                                              showZero: true);
 
         public EspritBarConfig(WidgetConfig widgetConfig)
         {
@@ -225,22 +238,22 @@ public sealed unsafe class EspritBar : GaugeBarWidget
                 Position = config.Position;
                 Scale = config.Scale;
                 ShowPlate = config.ShowPlate;
-                Mirror = config.Mirror;
+                Clockwise = config.Clockwise;
+                Angle = config.Angle;
 
                 Backdrop = config.Backdrop;
                 FrameColor = config.FrameColor;
                 MainColor = config.MainColor;
                 GainColor = config.GainColor;
                 DrainColor = config.DrainColor;
-                PulseColor= config.PulseColor;
+                PulseColor = config.PulseColor;
                 PulseColor2 = config.PulseColor2;
-                TextBG = config.TextBG;
 
                 MilestoneType = config.MilestoneType;
                 Milestone = config.Milestone;
                 Invert = config.Invert;
                 HideEmpty =config.HideEmpty;
-                AnimationLength = config.AnimationLength;
+                SplitCharges = config.SplitCharges;
 
                 NumTextProps = config.NumTextProps;
                 LabelText = config.LabelText;
@@ -256,7 +269,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public EspritBarConfig Config = null!;
+    public EspritBarConfig Config;
 
     public override void InitConfigs()
     {
@@ -268,47 +281,47 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
+        var flipFactor = Config.Clockwise ? 1 : -1;
+        var containerSize = Config.Angle is 0 or 180 ? new Vector2(168, 70) : new(70, 168);
+        var offsetX = Config.Clockwise == (Config.Angle >= 180) ? 168 : 0;
+        var offsetY = Config.Angle is 90 or 180 ? 70 : 0;
+        var textOffset = Config.Angle switch
+        {
+            90 => new Vector2(131, 113),
+            180 => new(100, 164),
+            270 => new(67, 113),
+            _ => new (100, 62)
+        };
+
         WidgetRoot.SetPos(Config.Position)
-                  .SetScale(Config.Scale,Config.Scale*(Config.Mirror ? -1 : 1));
+                  .SetScale(Config.Scale);
+
+        Fan.SetScaleX(flipFactor)
+           .SetRotation(Config.Angle);
 
         FanPlate.SetVis(Config.ShowPlate)
                 .SetMultiply(Config.FrameColor);
 
         FanClip.SetVis(Config.ShowPlate)
-               .SetMultiply(Config.FrameColor);
+               .SetMultiply(Config.FrameColor)
+               .SetScaleX(flipFactor);
 
         Frame.SetMultiply(Config.FrameColor);
 
         Backdrop.SetAddRGB(Config.Backdrop,true);
 
-        TextBg.SetAddRGB(Config.TextBG,true);
 
-        var flipOffset = Config.Mirror ? 70 : 0;
-        Main.SetAddRGB(Config.MainColor).SetY(-flipOffset);
-        Drain.SetAddRGB(Config.DrainColor).SetY(-flipOffset);
-        Gain.SetAddRGB(Config.GainColor).SetY(-flipOffset);
+        MainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
+        DrainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
+        GainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
 
-        MainContainer.SetY(flipOffset);
-        DrainContainer.SetY(flipOffset);
-        GainContainer.SetY(flipOffset);
+        Main.SetAddRGB(Config.MainColor).SetPos(-offsetX, -offsetY);
+        Drain.SetAddRGB(Config.DrainColor).SetPos(-offsetX, -offsetY);
+        Gain.SetAddRGB(Config.GainColor).SetPos(-offsetX, -offsetY);
 
-        var prog = CalcProg();
-        switch (Config.MilestoneType)
-        {
-            case Above when prog >= Milestone:
-            case Below when prog <= Milestone:
-                SetupBarPulse(1600);
-                break;
-            default:
-                StopBarPulse();
-                break;
-        }
+        HandleMilestone(CalcProg(),true);
 
-        var numTextProps = Config.NumTextProps;
-        if (Config.Mirror) numTextProps.Position *= new Vector2(1, -1);
-
-        numTextProps.ApplyTo(NumTextNode,new Vector2(15, Config.Mirror?35:5) - numTextProps.Position);
-        TextNineGrid.SetPos(numTextProps.Position + new Vector2(52, 20)).SetVis(numTextProps.Enabled);
+        NumTextNode.ApplyProps(Config.NumTextProps,textOffset);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -319,7 +332,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
         ToggleControls("Fan Plate", ref Config.ShowPlate, ref update);
 
-        ToggleControls("Mirror", ref Config.Mirror, ref update);
+        RadioIcons("Angle", ref Config.Angle, new() { 0,90,180,270 }, new() { ChevronUp, ChevronRight, ChevronDown, ChevronLeft }, ref update);
+        RadioIcons("Direction",ref Config.Clockwise,new() {true,false}, new() { RedoAlt,UndoAlt}, ref update);
 
         Heading("Colors");
 
@@ -336,13 +350,13 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         }
 
         Heading("Behavior");
+
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update)) HideCheck(Config.HideEmpty);
-        RadioControls("Pulse", ref Config.MilestoneType, new() { None, Above, Below }, new() { "Never", "Above Milestone", "Below Milestone" }, ref update);
+        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
-        if (Config.MilestoneType > 0) PercentControls(ref Config.Milestone, ref update);
-
-        NumTextControlsEsprit(ref update);
+        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.EspritBarCfg = Config;
@@ -357,47 +371,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         }
     }
 
-    private void NumTextControlsEsprit(ref UpdateFlags update)
-    {
-        var label = $"{Tracker.TermGauge} Text";
-        var numTextProps = Config.NumTextProps;
-        ImGuiHelpers.TableSeparator(2);
-
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        var treeNode = ImGui.TreeNodeEx($"{label}##{label}treeRow");
-
-        var enabled = numTextProps.Enabled;
-        ImGui.TableNextColumn();
-        if (ImGui.Checkbox($"##{label}Enabled", ref enabled))
-        {
-            numTextProps.Enabled = enabled;
-            update |= UpdateFlags.Save;
-        }
-
-        if (treeNode)
-        {
-            PositionControls("Position", ref numTextProps.Position, ref update);
-            ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
-            ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
-            ColorPickerRGBA($"Backdrop##{label}backdrop", ref Config.TextBG, ref update);
-
-            ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames, ref update);
-            RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons, ref update);
-            IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1, ref update);
-
-            RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update,true);
-            ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
-            ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
-            ImGui.TreePop();
-        }
-
-        if (update.HasFlag(UpdateFlags.Save)) Config.NumTextProps = numTextProps;
-    }
-
     #endregion
-
-    public EspritBar(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

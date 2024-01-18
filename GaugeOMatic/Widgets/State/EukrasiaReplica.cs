@@ -11,11 +11,14 @@ using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class EukrasiaReplica : StateWidget
 {
+    public EukrasiaReplica(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -165,13 +168,6 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
-    public override void OnUpdate()
-    {
-
-    }
-
     public override void OnFirstRun(int current)
     {
         if (current > 0)
@@ -315,11 +311,19 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         }
     }
 
-    public EukrasiaReplicaConfig Config = null!;
+    public EukrasiaReplicaConfig Config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override void InitConfigs()
+    {
+        Config = new(Tracker.WidgetConfig);
+        Config.FillColorLists(Tracker.CurrentData.MaxState);
+    }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs()
+    {
+        Config = new();
+        Config.FillColorLists(Tracker.CurrentData.MaxState);
+    }
 
     public AddRGB ColorOffset = new(109,47,-41);
     public override void ApplyConfigs()
@@ -349,8 +353,6 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
         ToggleControls("Show Nouliths", ref Config.ShowNouliths, ref update);
 
-        Config.FillColorLists(Tracker.CurrentData.MaxState);
-
         for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
         {
             Heading(Tracker.StateNames[i]);
@@ -368,8 +370,6 @@ public sealed unsafe class EukrasiaReplica : StateWidget
     }
 
     #endregion
-
-    public EukrasiaReplica(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

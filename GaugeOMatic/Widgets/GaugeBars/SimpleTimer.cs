@@ -10,11 +10,14 @@ using static GaugeOMatic.Widgets.SimpleTimer;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class SimpleTimer : Widget
+public sealed class SimpleTimer : GaugeBarWidget
 {
+    public SimpleTimer(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -26,8 +29,12 @@ public sealed unsafe class SimpleTimer : Widget
     };
 
     #region Nodes
-
-    public override CustomNode BuildRoot() => new(CreateNumTextNode());
+    
+    public override CustomNode BuildRoot()
+    {
+        NumTextNode = new();
+        return NumTextNode;
+    }
 
     #endregion
 
@@ -37,44 +44,61 @@ public sealed unsafe class SimpleTimer : Widget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
+    public override DrainGainType DGType => DrainGainType.Width;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void Update()
     {
-        WidgetRoot.UpdateNumText(Config.NumTextProps, Tracker.CurrentData.GaugeValue, Tracker.CurrentData.MaxGauge);
+        var current = Tracker.CurrentData.GaugeValue;
+        var max = Tracker.CurrentData.MaxGauge;
+        var prog = current / max;
+        var prevProg = prog;
+
+        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+
+        NumTextNode.UpdateValue(current,max);
         RunTweens();
     }
+
+    public override float CalcBarProperty(float prog) => 0;
 
     #endregion
 
     #region Configs
 
-    public class SimpleTimerConfig
+    public sealed class SimpleTimerConfig : GaugeBarWidgetConfig
     {
-        public NumTextProps NumTextProps = new(true, 
-                                               new(0), 
-                                               new(255, 255, 255), 
-                                               new(0, 0, 0), 
-                                               MiedingerMed,
-                                               20,
-                                               Center,
-                                               false);
+        protected override NumTextProps NumTextDefault => new(enabled: true, 
+                                                              position: new(0), 
+                                                              color: new(255, 255, 255), 
+                                                              edgeColor: new(0, 0, 0), showBg: false, bgColor: new(0), 
+                                                              font: MiedingerMed,
+                                                              fontSize: 20,
+                                                              align: Center,
+                                                              invert: false);
 
         public SimpleTimerConfig(WidgetConfig widgetConfig)
         {
-            if (widgetConfig.SimpleTimerCfg?.NumTextProps != null) NumTextProps = widgetConfig.SimpleTimerCfg.NumTextProps;
+            NumTextProps = NumTextDefault;
+
+            var config = widgetConfig.SimpleTimerCfg;
+            if (config != null)
+            {
+                NumTextProps = config.NumTextProps;
+                SplitCharges = config.SplitCharges;
+            }
         }
 
-        public SimpleTimerConfig() { }
+        public SimpleTimerConfig() { NumTextProps = NumTextDefault; }
     }
 
-    public SimpleTimerConfig Config = null!;
+    public SimpleTimerConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
     public override void ResetConfigs() => Config = new();
 
-    public override void ApplyConfigs() => Config.NumTextProps.ApplyTo(WidgetRoot);
+    public override void ApplyConfigs() => NumTextNode.ApplyProps(Config.NumTextProps);
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
@@ -86,6 +110,8 @@ public sealed unsafe class SimpleTimer : Widget
         PositionControls($"Position##{label}Pos",ref numTextProps.Position, ref update);
         ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
         ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
+        ToggleControls("Backdrop", ref numTextProps.ShowBg, ref update);
+        if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor, ref update);
 
         ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames, ref update);
 
@@ -95,7 +121,9 @@ public sealed unsafe class SimpleTimer : Widget
         RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update,true);
         ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
         ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
-        
+
+        GaugeBarWidgetConfig.SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+
         if (update.HasFlag(Save)) Config.NumTextProps = numTextProps;
 
         if (update.HasFlag(Save)) ApplyConfigs();
@@ -103,8 +131,6 @@ public sealed unsafe class SimpleTimer : Widget
     }
 
     #endregion
-
-    public SimpleTimer(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

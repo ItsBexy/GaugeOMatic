@@ -8,15 +8,19 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.FaerieLess;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class FaerieLess : GaugeBarWidget
 {
+    public FaerieLess(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -36,10 +40,6 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
     #region Nodes
 
     public CustomNode Backdrop;
-    public override CustomNode Drain { get; set; }
-    public override CustomNode Gain { get; set; }
-    public override CustomNode Main { get; set; }
-    public override CustomNode NumTextNode { get; set; }
 
     public override CustomNode BuildRoot()
     {
@@ -47,7 +47,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         Drain = ImageNodeFromPart(0,0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.DrainColor);
         Gain = ImageNodeFromPart(0,0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.GainColor);
         Main = ImageNodeFromPart(0,0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.MainColor);
-        NumTextNode = CreateNumTextNode();
+        NumTextNode = new();
 
         return new(CreateResNode(), Backdrop, Drain, Gain, Main, NumTextNode);
     }
@@ -59,8 +59,6 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
     #endregion
 
     #region UpdateFuncs
-
-    public override string? SharedEventGroup => null;
 
     public override DrainGainType DGType => DrainGainType.Width;
     public override float CalcBarProperty(float prog) => (ushort)Math.Round(Math.Clamp(prog, 0f, 1f) * 174f);
@@ -80,7 +78,16 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         public ColorRGB DrainColor = new(113, 5, 70);
         public bool Mirror;
 
-        protected override NumTextProps NumTextDefault => new(true, new(133, 40), 0xffffffff, 0x288246ff, MiedingerMed, 18, Right, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
+                                                              position:  new(0, 0), 
+                                                              color:     0xffffffff, 
+                                                              edgeColor: 0x288246ff, 
+                                                              showBg:    false, 
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed,
+                                                              fontSize:  18, 
+                                                              align:     Right,
+                                                              invert:    false);
 
         public FaerieLessConfig(WidgetConfig widgetConfig)
         {
@@ -99,6 +106,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
             NumTextProps = config.NumTextProps;
             Mirror = config.Mirror;
             Invert = config.Invert;
+            SplitCharges = config.SplitCharges;
         }
 
         public FaerieLessConfig()
@@ -109,7 +117,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public FaerieLessConfig Config = null!;
+    public FaerieLessConfig Config;
 
     public override void InitConfigs()
     {
@@ -127,11 +135,11 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         WidgetRoot.Node->DrawFlags |= 0xD;
 
         Backdrop.SetRGBA(Config.Background);
-        Main.SetRGBA(Config.MainColor);
-        Gain.SetRGBA(Config.GainColor);
-        Drain.SetRGBA(Config.DrainColor);
+        Main.SetRGBA(Config.MainColor).SetWidth(CalcBarProperty(CalcProg()));
+        Gain.SetRGBA(Config.GainColor).SetWidth(0);
+        Drain.SetRGBA(Config.DrainColor).SetWidth(0);
 
-        Config.NumTextProps.ApplyTo(NumTextNode);
+        NumTextNode.ApplyProps(Config.NumTextProps,new(109,40));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -149,6 +157,8 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
 
         Heading("Behavior");
+
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
@@ -158,8 +168,6 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
     }
 
     #endregion
-
-    public FaerieLess(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

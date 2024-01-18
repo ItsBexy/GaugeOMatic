@@ -89,13 +89,17 @@ internal static class WidgetUI
         return false;
     }
 
-    public static void PercentControls(ref float p, ref UpdateFlags update)
+    public static bool PercentControls(string label, ref float p, ref UpdateFlags update)
     {
+        var ret = false;
         var percent = p * 100f;
-        if (FloatControls("Milestone", ref percent, 0, 100, 1f, ref update, "%.0f%%"))
+        if (FloatControls(label, ref percent, 0, 100, 1f, ref update, "%.0f%%"))
         {
             p = percent / 100f;
+            ret = true;
         }
+
+        return ret;
     }
 
     public static void ComboControls(string label, ref FontType val, List<FontType> options, List<string> optionNames, ref UpdateFlags update)
@@ -318,4 +322,5 @@ internal static class WidgetUI
         ImGui.Text(headingText);
         ImGui.PopStyleColor();
     }
+
 }

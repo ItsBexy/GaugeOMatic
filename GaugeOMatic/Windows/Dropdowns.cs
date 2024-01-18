@@ -208,7 +208,6 @@ public class WidgetMenu : BranchingDropdown
 
             if (tags.HasFlag(Exclude)) continue;
             if (tags.HasFlag(HasFixedCount) && currentData.MaxCount != widgetInfo.FixedCount) continue;
-            if (tags.HasFlag(HasJobRestrictions) && (!widgetInfo.AllowedJobs?.Contains(Tracker.JobModule.Job) ?? false)) continue;
             if (tags.HasFlag(HasAddonRestrictions) && Tracker.JobModule.AddonOptions.All(a => widgetInfo.AllowedAddons?.Contains(a.Name) != true)) continue;
 
             AvailableWidgets.Add(widgetType, widgetInfo);
@@ -226,18 +225,53 @@ public class WidgetMenu : BranchingDropdown
     public override void DrawSubMenu(int i, ref UpdateFlags update)
     {
         var (label, tag) = SubMenus[i];
-        if (!ImGui.BeginMenu($"{label}##{Hash}{label}Menu")) return;
 
-        foreach (var w in AvailableWidgets.OrderBy(w => tag == MultiComponent && w.Value.KeyText != null ? w.Value.KeyText : w.Value.DisplayName)
-                                          .Where(w => w.Value.WidgetTags.HasFlag(tag) && (tag == MultiComponent && w.Value.KeyText != null ? ImGui.MenuItem(w.Value.DisplayName, w.Value.KeyText) : ImGui.MenuItem(w.Value.DisplayName))))
+        if (tag == MultiComponent) MultiCompSubMenu(label, tag, ref update);
+        else
         {
-            Tracker.WidgetType = w.Key;
-            update |= UpdateFlags.Reset | UpdateFlags.Save;
-        }
+            if (ImGui.BeginMenu($"{label}##{Hash}{label}Menu"))
+            {
+                var widgets = AvailableWidgets.Where(w => w.Value.WidgetTags.HasFlag(tag))
+                                              .OrderBy(static w => w.Value.DisplayName);
 
-        ImGui.EndMenu();
+                foreach (var w in widgets.Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
+                {
+                    Tracker.WidgetType = w.Key;
+                    update |= UpdateFlags.Reset | UpdateFlags.Save;
+                }
+
+                ImGui.EndMenu();
+            }
+        }
+    }
+
+    public void MultiCompSubMenu(string label, WidgetTags tag, ref UpdateFlags update)
+    {
+        if (ImGui.BeginMenu($"{label}##{Hash}{label}Menu"))
+        {
+            var mcWidgets = AvailableWidgets.Where(w => w.Value.WidgetTags.HasFlag(tag)).ToArray();
+            foreach (var (key, name) in MultiCompDict)
+            {
+                ImGui.PushStyleColor(ImGuiCol.Border,new Vector4(0,0,0,0));
+                if (ImGui.BeginMenu($"{name}##{Hash}{label}{key}Menu"))
+                {
+                    foreach (var w in mcWidgets.Where(w => w.Value.MultiCompData?.Key == key)
+                                               .OrderBy(static w => w.Value.MultiCompData?.Index)
+                                               .Where(static w => ImGui.MenuItem(
+                                                          w.Value.DisplayName)))
+                    {
+                        Tracker.WidgetType = w.Key;
+                        update |= UpdateFlags.Reset | UpdateFlags.Save;
+                    }
+
+                    ImGui.EndMenu();
+                }
+                ImGui.PopStyleColor();
+            }
+
+            ImGui.EndMenu();
+        }
     }
 
     public override string DropdownText(string fallback) => Tracker.WidgetType != null ? WidgetList[Tracker.WidgetType].DisplayName : fallback;
-
 }

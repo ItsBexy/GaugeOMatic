@@ -10,15 +10,19 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ArrowBar;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ArrowBar : GaugeBarWidget
 {
+    public ArrowBar(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -44,21 +48,16 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
     public CustomNode Frame;
     public CustomNode BarFrame;
     public CustomNode Tick;
-    public CustomNode LabelTextNode;
-    public override CustomNode NumTextNode { get; set; }
-
     public CustomNode Backdrop;
-    public override CustomNode Drain { get; set; }
-    public override CustomNode Gain { get; set; }
-    public override CustomNode Main { get; set; }
+    public LabelTextNode LabelTextNode;
 
     public override CustomNode BuildRoot()
     {
         Bar = BuildBar().SetPos(19, 13);
         Frame = NineGridFromPart(0, 0, 13, 38, 13, 56).SetSize(188, 34);
         BarFrame = new CustomNode(CreateResNode(), Bar, Frame).SetOrigin(0,17);
-        LabelTextNode = CreateLabelTextNode(Config.LabelText.Text, Tracker.DisplayName);
-        NumTextNode = CreateNumTextNode();
+        LabelTextNode = new(Config.LabelText.Text,Tracker.DisplayName);
+        NumTextNode = new();
 
         AnimateTickmark();
         AnimateBarPulse();
@@ -74,7 +73,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         Gain = NineGridFromPart(0, 2, 0, 2, 0, 2).SetSize(0, 8).SetPos(0, 1);
         Main = NineGridFromPart(0, 2, 0, 2, 0, 2).SetSize(0, 8).SetPos(0, 1);
 
-        return new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main,Tick);
+        return new(CreateResNode(), Backdrop, Drain, Gain, Main,Tick);
     }
 
     #endregion
@@ -159,8 +158,6 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnDecreaseToMin(float prog, float prevProg) { if (Config.Collapse) CollapseBar(250, 350); }
     public override void OnIncreaseFromMin(float prog, float prevProg) { if (Config.Collapse) ExpandBar(100, 350); }
 
@@ -201,7 +198,16 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
       
         public bool Collapse;
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), 0x8E6A0CFF, Jupiter, 16, Left);
-        protected override NumTextProps NumTextDefault => new(true, new(0, 17.5f), new(255), new(0), MiedingerMed, 18, Left, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(0, 17.5f), 
+                                                              color:     new(255), 
+                                                              edgeColor: new(0), 
+                                                              showBg:    false, 
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed, 
+                                                              fontSize:  18, 
+                                                              align:     Left, 
+                                                              invert:    false);
 
         public ArrowBarConfig(WidgetConfig widgetConfig)
         {
@@ -224,6 +230,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                 AnimationLength = config.AnimationLength;
                 Invert = config.Invert;
                 Collapse = config.Collapse;
+                SplitCharges = config.SplitCharges;
 
                 NumTextProps = config.NumTextProps;
                 LabelText = config.LabelText;
@@ -238,7 +245,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public ArrowBarConfig Config = null!;
+    public ArrowBarConfig Config;
 
     public override void InitConfigs()
     {
@@ -266,10 +273,10 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         Backdrop.SetWidth(Config.Width)
                 .SetAddRGB(Config.Background, true);
 
-        Config.LabelText.ApplyTo(LabelTextNode,new((frameWidth / -2f) + 38, 0));
-        Config.NumTextProps.ApplyTo(NumTextNode, new(frameWidth / 2f,0));
-
+        LabelTextNode.ApplyProps(Config.LabelText,new((frameWidth / -2f) + 38, 0));
         LabelTextNode.SetWidth(Math.Max(0, Config.Width - 40));
+
+        NumTextNode.ApplyProps(Config.NumTextProps,new((frameWidth / 2f) + 20,17.5f));
 
         Main.SetAddRGB(Config.MainColor)
             .SetWidth(CalcBarProperty(CalcProg()));
@@ -300,12 +307,12 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
         Heading("Behavior");
 
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck();
-      //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls2("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
+        LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.ArrowBarCfg = Config;
@@ -321,8 +328,6 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
     }
 
     #endregion
-
-    public ArrowBar(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

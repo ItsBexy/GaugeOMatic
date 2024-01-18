@@ -8,11 +8,14 @@ using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ParameterGlow : StateWidget
 {
+    public ParameterGlow(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -56,9 +59,7 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
-    public override void OnUpdate() { PlaceOnBar(); }
+    public override void PostUpdate() { PlaceOnBar(); }
 
     public override void OnFirstRun(int current)
     {
@@ -90,7 +91,7 @@ public sealed unsafe class ParameterGlow : StateWidget
         public ParameterGlowConfig() { }
     }
 
-    public ParameterGlowConfig Config = null!;
+    public ParameterGlowConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -118,8 +119,6 @@ public sealed unsafe class ParameterGlow : StateWidget
     }
 
     #endregion
-
-    public ParameterGlow(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

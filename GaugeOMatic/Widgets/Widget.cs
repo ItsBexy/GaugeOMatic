@@ -1,4 +1,3 @@
-using CustomNodes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
@@ -12,13 +11,6 @@ using static GaugeOMatic.GaugeOMatic.Service;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace GaugeOMatic.Widgets;
-
-public partial class WidgetConfig // each widget contributes a part to this in its own file
-{
-    public string? WidgetType { get; set; }
-    public static implicit operator string(WidgetConfig w) => SerializeObject(w, Json.JsonSettings);
-    public static implicit operator WidgetConfig?(string s) => DeserializeObject<WidgetConfig>(s) ?? null;
-}
 
 public abstract unsafe class Widget : IDisposable
 {
@@ -37,17 +29,19 @@ public abstract unsafe class Widget : IDisposable
         ApplyConfigs();
     }
 
+    public static Widget? Create(Tracker tracker) => string.IsNullOrEmpty(tracker.WidgetType) ? null :
+                                                     string.IsNullOrEmpty(tracker.AddonName) ? null :
+                                                     (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
+                                                     (Widget?)Activator.CreateInstance(Type.GetType($"{typeof(Widget).Namespace}.{tracker.WidgetType}") ?? typeof(Widget), tracker);
+
     public Tracker Tracker { get; set; }
+    public abstract WidgetInfo WidgetInfo { get; }
     public AtkUnitBase* Addon;
+
     public CustomNode WidgetRoot;
     public List<Tween> Tweens = new();
-
-    public abstract WidgetInfo WidgetInfo { get; }
+    public virtual CustomNode BuildRoot() => new(CreateResNode());
     public virtual CustomPartsList[] PartsLists { get; } = Array.Empty<CustomPartsList>();
-
-    public abstract CustomNode BuildRoot();
-
-    public abstract void InitConfigs();
 
     public void Dispose()
     {
@@ -62,18 +56,18 @@ public abstract unsafe class Widget : IDisposable
     public void Attach()
     {
         if (Addon == null || WidgetRoot.Node == null) return;
-        CustomNodeManager.Attach(Addon, WidgetRoot);
-        Addon->UldManager.UpdateDrawNodeList();
+        WidgetRoot.AttachTo(Addon);
     }
 
     public void Detach()
     {
-        if (WidgetRoot.Node != null) CustomNodeManager.Detach(WidgetRoot);
+        if (WidgetRoot.Node != null) WidgetRoot.Detach();
         if (Addon != null) Addon->UldManager.UpdateDrawNodeList();
     }
 
     public abstract void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update);
     public abstract void Update();
+    public abstract void InitConfigs();
     public abstract void ResetConfigs();
     public abstract void ApplyConfigs();
 
@@ -81,24 +75,29 @@ public abstract unsafe class Widget : IDisposable
     public CustomNode NineGridFromPart(int list, ushort partId) => new(CreateNineGridNode(PartsLists[list], partId));
     public CustomNode NineGridFromPart(int list, ushort partId, int x, int y, int z, int w) => new CustomNode(CreateNineGridNode(PartsLists[list], partId)).SetNineGridOffset(x,y,z,w);
 
-    // ReSharper disable once UnusedMember.Global
-    public CustomNode ImageNodeFromPart(int list, string partKey) => new(CreateImageNode(PartsLists[list], partKey));
+    public virtual string? SharedEventGroup => null;
 
-    public static Widget? Create(Tracker tracker) => string.IsNullOrEmpty(tracker.WidgetType) ? null :
-                                                     string.IsNullOrEmpty(tracker.AddonName) ? null :
-                                                     (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
-                                                     (Widget?)Activator.CreateInstance(Type.GetType($"{typeof(Widget).Namespace}.{tracker.WidgetType}") ?? typeof(Widget),tracker);
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public struct SharedEventArgs
+    {
+        public Color.ColorRGB? ColorRGB;
+        public Color.AddRGB? AddRGB;
+        public int? Intval;
+        public float? Floatval;
+    }
 
-    // Shared events allow conditions on one widget to trigger events on others. Useful for things like replica gauges made of multiple widgets.
-
-    public abstract string? SharedEventGroup { get; }
-    public Dictionary<string, Action> SharedEvents = new();
-
-    public void InvokeSharedEvent(string group, string eventLabel)
+    public Dictionary<string, Action<SharedEventArgs?>> SharedEvents = new();
+    public void InvokeSharedEvent(string group, string eventLabel,SharedEventArgs? args = null)
     {
         foreach (var widget in Tracker.JobModule.WidgetList.Where(widget => widget?.SharedEventGroup == group))
             if (widget!.SharedEvents.TryGetValue(eventLabel, out var action))
-                action.Invoke();
+                action.Invoke(args);
     }
 }
 
+public partial class WidgetConfig // each widget contributes a part to this in its own file
+{
+    public string? WidgetType { get; set; }
+    public static implicit operator string(WidgetConfig w) => SerializeObject(w, Json.JsonSettings);
+    public static implicit operator WidgetConfig?(string s) => DeserializeObject<WidgetConfig>(s) ?? null;
+}

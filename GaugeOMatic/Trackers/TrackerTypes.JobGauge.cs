@@ -210,6 +210,26 @@ public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
+[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SAM)]
+public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
+{
+    public override string DisplayName => "Sen Gauge - Seal Count";
+    public override string GaugeAddonName => "JobHudSAM1";
+    public override string[] StateNames => new[] { "None", "Higanbana", "Tenka Goken", "Midare Setsugekka" };
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null) return new(0, 3, 0, 3, 0, 3, preview);
+
+        var sum = 0;
+        if (GaugeData->HasKa) sum++;
+        if (GaugeData->HasGetsu) sum++;
+        if (GaugeData->HasSetsu) sum++;
+
+        return new(sum, 3, sum, 3, sum, 3);
+    }
+}
+
 [TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RPR)]
 public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
@@ -219,11 +239,11 @@ public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->SoulValue / GaugeData->SoulMid,
+            new(GaugeData->SoulValue / 50,
                 2,
                 GaugeData->SoulValue,
                 GaugeData->SoulMax,
-                GaugeData->SoulValue >= GaugeData->SoulMid ? 1 : 0, 1,
+                GaugeData->SoulValue >= 50 ? 1 : 0, 1,
                 preview);
 }
 
@@ -236,11 +256,11 @@ public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->ShroudValue / GaugeData->ShroudMid,
+            new(GaugeData->ShroudValue / 50,
                 2,
                 GaugeData->ShroudValue,
                 GaugeData->ShroudMax,
-                GaugeData->ShroudValue >= GaugeData->ShroudMid ? 1 : 0, 1,
+                GaugeData->ShroudValue >= 50 ? 1 : 0, 1,
                 preview);
 }
 
@@ -293,11 +313,11 @@ public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->SoulVoiceValue > GaugeData->SoulVoiceMinimumNeeded ? 1 : 0,
+            new(GaugeData->SoulVoiceValue >= GaugeData->SoulVoiceMinimumNeeded ? 1 : 0,
                 1,
                 GaugeData->SoulVoiceValue,
                 GaugeData->SoulVoiceMax,
-                GaugeData->SoulVoiceValue > GaugeData->SoulVoiceMinimumNeeded ? 1 : 0, 1,
+                GaugeData->SoulVoiceValue >= GaugeData->SoulVoiceMinimumNeeded ? 1 : 0, 1,
                 preview);
 }
 
@@ -310,7 +330,7 @@ public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->HeatValue / GaugeData->HeatMid,
+            new(GaugeData->HeatValue / 50,
                 2,
                 GaugeData->HeatValue,
                 GaugeData->HeatMax,
@@ -327,11 +347,11 @@ public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->BatteryValue > GaugeData->BatteryMid ? 1 : 0,
+            new(GaugeData->BatteryValue >= 50 ? 1 : 0,
                 1,
                 GaugeData->BatteryValue,
                 GaugeData->BatteryMax,
-                GaugeData->HeatValue >= GaugeData->BatteryMid ? 1 : 0, 1,
+                GaugeData->BatteryValue >= 50 ? 1 : 0, 1,
                 preview);
 }
 
@@ -345,11 +365,12 @@ public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->SummonTimeLeft > 0 ? 1 : 0,
+            new(GaugeData->SummonActive ? 1 : 0,
                 1,
-                GaugeData->SummonTimeLeft,
+                GaugeData->SummonTimeLeft/1000f,
                 12,
-                GaugeData->SummonTimeLeft > 0 ? 1 : 0, 1,
+                GaugeData->SummonActive ? 1 : 0, 
+                1,
                 preview);
 }
 
@@ -658,8 +679,8 @@ public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->BloodValue / GaugeData->BloodMid,
-                GaugeData->BloodMax / GaugeData->BloodMid,
+            new(GaugeData->BloodValue / 50,
+                2,
                 GaugeData->BloodValue,
                 GaugeData->BloodMax,
                 GaugeData->TankStance > 0 ? 1 : 0, 1,

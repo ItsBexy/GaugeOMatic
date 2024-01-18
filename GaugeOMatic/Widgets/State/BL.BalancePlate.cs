@@ -10,6 +10,7 @@ using static GaugeOMatic.Widgets.BalancePlate;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
@@ -17,7 +18,7 @@ public sealed unsafe class BalancePlate : StateWidget
 {
     public BalancePlate(Tracker tracker) : base(tracker)
     {
-        SharedEvents.Add("SpendShake", () => BalanceBar.SpendShake(ref Tweens, WidgetRoot, Config.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y));
+        SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(ref Tweens, WidgetRoot, Config!.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y));
     }
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
@@ -28,7 +29,7 @@ public sealed unsafe class BalancePlate : StateWidget
         Author = "ItsBexy",
         Description = "A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.",
         WidgetTags = MultiComponent | Replica | State,
-        KeyText = "BL1"
+        MultiCompData = new("BL", "Balance Gauge Replica", 1)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -127,8 +128,6 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public override string SharedEventGroup => "BalanceGauge";
 
-    public override void OnUpdate() { }
-
     public override void OnFirstRun(int current) => ApplyConfigs();
     public override void Activate(int current) => StateChange(Tracker.CurrentData.State, Tracker.PreviousData.State);
     public override void Deactivate(int previous) => StateChange(Tracker.CurrentData.State, Tracker.PreviousData.State);
@@ -179,11 +178,15 @@ public sealed unsafe class BalancePlate : StateWidget
         }
     }
 
-    public BalancePlateConfig Config = null!;
+    public BalancePlateConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs()
+    {
+        Config = new();
+        Config.FillColorLists(Tracker.CurrentData.MaxState);
+    }
 
     public override void ApplyConfigs()
     {

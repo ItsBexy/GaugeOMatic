@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using static GaugeOMatic.GameData.JobData;
 
 namespace GaugeOMatic.Widgets;
 
@@ -12,20 +11,31 @@ public class WidgetInfo
     public string? Author { get;  init; }
     public string? Description { get; init; }
     public WidgetTags WidgetTags { get; init; }
-    public string? KeyText { get; init; }
+    public MultiComponentData? MultiCompData;
 
-    // ReSharper disable once NotAccessedField.Global
+    public struct MultiComponentData
+    {
+        public string Key;
+        public int Index;
+
+        public MultiComponentData(string key, string groupName, int index)
+        {
+            Key = key;
+            Index = index;
+            if (!MultiCompDict.ContainsKey(key)) MultiCompDict.Add(key, groupName);
+        }
+    }
+
+    internal static Dictionary<string, string> MultiCompDict = new();
+
     public int? FixedCount;           // only applicable if tagged with HasFixedMaximum
     public List<string>? AllowedAddons; // only applicable if tagged with HasAddonRestrictions
-    // ReSharper disable once CollectionNeverUpdated.Global
-    // ReSharper disable once UnassignedField.Global
-    public List<Job>? AllowedJobs;
 
     internal static Dictionary<string, WidgetInfo> WidgetList = new();
 
     public static void BuildWidgetList()
     {
-        GaugeOMatic.Service.Log.Info("Generating list of Available Widgets");
+        GaugeOMatic.Service.Log.Verbose("Generating list of Available Widgets");
 
         var types = Assembly.GetExecutingAssembly()
                             .GetTypes()
@@ -40,7 +50,7 @@ public class WidgetInfo
 
             WidgetList.Add(type.Name,widgetInfo);
 
-            GaugeOMatic.Service.Log.Info($"Added Widget Option: {widgetInfo.DisplayName}");
+            GaugeOMatic.Service.Log.Verbose($"Added Widget Option: {widgetInfo.DisplayName}");
         }
     }
 }
@@ -54,9 +64,8 @@ public enum WidgetTags
     State                = 0x4,
 
     // restriction tags
-    HasFixedCount        = 0x8,   // is only designed to display up to a specific maximum number value
-    HasJobRestrictions   = 0x10,  // can only be used by certain jobs
-    HasAddonRestrictions = 0x20,  // is only designed to appear on certain HUD elements
+    HasFixedCount        = 0x8,  // is only designed to display up to a specific maximum number value
+    HasAddonRestrictions = 0x20, // is only designed to appear on certain HUD elements
 
     // ReSharper disable once UnusedMember.Global
     Replica              = 0x40,  // Designed to recreate (in full or in part) the appearance of an existing job gauge

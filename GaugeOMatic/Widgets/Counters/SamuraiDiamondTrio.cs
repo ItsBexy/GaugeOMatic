@@ -11,11 +11,14 @@ using static GaugeOMatic.Widgets.SamuraiDiamondTrio;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 {
+    public SamuraiDiamondTrio(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -125,8 +128,6 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < count; i++) Gems[i].Node->Color.A = 255;
@@ -202,7 +203,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public SamuraiDiamondConfig Config = null!;
+    public SamuraiDiamondConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -241,8 +242,6 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     }
 
     #endregion
-
-    public SamuraiDiamondTrio(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

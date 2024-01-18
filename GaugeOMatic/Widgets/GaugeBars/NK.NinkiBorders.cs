@@ -9,17 +9,20 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
-using static GaugeOMatic.Widgets.GaugeBarWidget;
+using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.NinkiBorders;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class NinkiBorders : Widget
+public sealed unsafe class NinkiBorders : GaugeBarWidget
 {
+    public NinkiBorders(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -28,7 +31,7 @@ public sealed unsafe class NinkiBorders : Widget
         Author = "ItsBexy",
         Description = "A set of gauge bars fitted over the top/bottom borders of the Ninki Gauge (or a replica of it). A tracker can use both bars, or just one.",
         WidgetTags = GaugeBar | MultiComponent,
-        KeyText = "NK3"
+        MultiCompData = new("NK", "Ninki Gauge Replica", 3)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -47,7 +50,6 @@ public sealed unsafe class NinkiBorders : Widget
     public CustomNode TickBottom;
     public CustomNode Shine;
     public CustomNode Calligraphy;
-    public CustomNode NumTextNode;
 
     public override CustomNode BuildRoot()
     {
@@ -57,7 +59,7 @@ public sealed unsafe class NinkiBorders : Widget
         TickBottom = ImageNodeFromPart(0, 2).SetPos(0,38).SetOrigin(22,43.5f).SetScale(0.5f,0.15f);
         Shine = ImageNodeFromPart(0, 2).SetAlpha(0).SetOrigin(22, 43.5f).SetImageFlag(32);
         Calligraphy = ImageNodeFromPart(0, 3).SetPos(23, 29).SetOrigin(98, 28).SetImageFlag(32).SetAlpha(0);
-        NumTextNode = CreateNumTextNode();
+        NumTextNode = new();
 
         return new(CreateResNode(), BorderTop, BorderBottom, TickTop, TickBottom, Shine, Calligraphy, NumTextNode);
     }
@@ -88,8 +90,6 @@ public sealed unsafe class NinkiBorders : Widget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public static float CalcTickY(float prog) => PolyCalc(prog, -14.8249956874245, 38.6612557476222, -102.819457745683, 62.3102095019424);
 
     public override void Update()
@@ -106,10 +106,10 @@ public sealed unsafe class NinkiBorders : Widget
         var curWid = (ushort)Math.Round((prog * 190f) + 10f);
         var prevWid = (ushort)Math.Round((prevProg * 190f) + 10f);
 
-        NumTextNode.UpdateNumText(Config.NumTextProps, current, max);
+        NumTextNode.UpdateValue(current, max);
 
-        AnimateDrainGain(DrainGainType.Width,ref Tweens, BorderTop, curWid, prevWid, 0, Config.AnimationLength);
-        AnimateDrainGain(DrainGainType.Width, ref Tweens, BorderBottom, curWid, prevWid, 0, Config.AnimationLength);
+        AnimateDrainGain(Width,ref Tweens, BorderTop, curWid, prevWid, 0, Config.AnimationLength);
+        AnimateDrainGain(Width, ref Tweens, BorderBottom, curWid, prevWid, 0, Config.AnimationLength);
 
         var tweenWidth = BorderTop.Node->Width;
         var tweenProg = (tweenWidth - 10f) / 190f;
@@ -143,6 +143,9 @@ public sealed unsafe class NinkiBorders : Widget
         RunTweens();
     }
 
+    public override DrainGainType DGType => Width;
+    public override float CalcBarProperty(float prog) => (ushort)Math.Round((prog * 190f) + 10f);
+
     #endregion
 
     #region Configs
@@ -155,7 +158,16 @@ public sealed unsafe class NinkiBorders : Widget
         public ColorRGB TickColor = new(255, 195, 144);
         public bool Top = true;
         public bool Bottom = true;
-        protected override NumTextProps NumTextDefault => new(true, new(212, 30), new(255, 241, 197), new(110, 25, 0), MiedingerMed, 20, Center, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
+                                                              position:  new(167, 30), 
+                                                              color:     new(255, 241, 197), 
+                                                              edgeColor: new(110, 25, 0),
+                                                              showBg:    false, 
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed, 
+                                                              fontSize:  20, 
+                                                              align:     Center,
+                                                              invert:    false);
 
         public NinkiBordersConfig(WidgetConfig widgetConfig)
         {
@@ -173,12 +185,17 @@ public sealed unsafe class NinkiBorders : Widget
             NumTextProps = config.NumTextProps;
             AnimationLength = config.AnimationLength;
             Invert = config.Invert;
+            SplitCharges = config.SplitCharges;
         }
 
-        public NinkiBordersConfig() { }
+        public NinkiBordersConfig()
+        {
+            NumTextProps = NumTextDefault;
+        }
     }
 
-    public NinkiBordersConfig Config = null!;
+    public NinkiBordersConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -201,7 +218,7 @@ public sealed unsafe class NinkiBorders : Widget
         BorderBottom.SetVis(Config.Bottom).SetRGB((Vector4)Config.BorderColor);
         TickBottom.SetVis(Config.Bottom).SetRGB((Vector4)Config.TickColor);
 
-        Config.NumTextProps.ApplyTo(NumTextNode);
+        NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -211,7 +228,7 @@ public sealed unsafe class NinkiBorders : Widget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         var borders = new List<bool> { Config.Top, Config.Bottom };
-        if (ToggleControls("Show", ref borders, new List<string> { "Top", "Bottom" }, ref update))
+        if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }, ref update))
         {
             Config.Top = borders[0];
             Config.Bottom = borders[1];
@@ -223,7 +240,7 @@ public sealed unsafe class NinkiBorders : Widget
         ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
-
+        
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 
       //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
@@ -235,8 +252,6 @@ public sealed unsafe class NinkiBorders : Widget
     }
 
     #endregion
-
-    public NinkiBorders(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

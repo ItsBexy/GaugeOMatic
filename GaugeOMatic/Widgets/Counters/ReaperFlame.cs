@@ -12,11 +12,14 @@ using static GaugeOMatic.Widgets.ReaperFlame;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ReaperFlame : CounterWidget
 {
+    public ReaperFlame(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -126,8 +129,6 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < count; i++)
@@ -185,7 +186,7 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public ReaperFlameConfig Config = null!;
+    public ReaperFlameConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -244,8 +245,6 @@ public sealed unsafe class ReaperFlame : CounterWidget
     }
 
     #endregion
-
-    public ReaperFlame(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

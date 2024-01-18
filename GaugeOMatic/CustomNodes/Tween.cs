@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Numerics;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
+using static System.Numerics.Vector4;
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 
 namespace CustomNodes;
@@ -30,6 +32,7 @@ public unsafe partial class CustomNodeManager
         public bool IsStale;
         public string Label = string.Empty;
         public Action? Complete { get; set; }
+        public Action? PerCycle { get; set; }
 
         public Func<float, float> Ease { get; set; } = Eases.Linear;
 
@@ -78,6 +81,22 @@ public unsafe partial class CustomNodeManager
                 RGB = n.Color;
                 AddRGB = n.Add;
                 MultRGB = n.Multiply;
+
+                if (n.Node->Type == NodeType.Image)
+                {
+                    var imageNode = n.Node->GetAsAtkImageNode();
+                    var part = imageNode->PartsList->Parts[imageNode->PartId];
+                    PartCoords = new(part.U,part.V,part.Width,part.Height);
+                } else if (n.Node->Type == NodeType.NineGrid)
+                {
+                    var nineGridNode = n.Node->GetAsAtkNineGridNode();
+                    var part = nineGridNode->PartsList->Parts[nineGridNode->PartID];
+                    PartCoords = new(part.U, part.V, part.Width, part.Height);
+                }
+                else
+                {
+                    PartCoords = null;
+                }
             }
 
             public int Time { get; set; } = 0;
@@ -95,6 +114,7 @@ public unsafe partial class CustomNodeManager
             public AddRGB? AddRGB { get; set; } = null;
             public ColorRGB? MultRGB { get; set; } = null;
             public ushort? PartId { get; set; } = null;
+            public Vector4? PartCoords { get; set; } = null;
         }
 
         private static KeyFrame Interpolate(KeyFrame start, KeyFrame end, float subProg) =>
@@ -111,13 +131,15 @@ public unsafe partial class CustomNodeManager
                 RGB = Interpolate(start.RGB, end.RGB, subProg),
                 AddRGB = Interpolate(start.AddRGB, end.AddRGB, subProg),
                 MultRGB = Interpolate(start.MultRGB, end.MultRGB, subProg),
-                PartId = Interpolate(start.PartId, end.PartId, subProg)
+                PartId = Interpolate(start.PartId, end.PartId, subProg),
+                PartCoords = Interpolate(start.PartCoords,end.PartCoords,subProg)
             };
+
+        private static Vector4? Interpolate(Vector4? start, Vector4? end, float subProg) => start.HasValue && end.HasValue ? Lerp(start.Value, end.Value, subProg) : null;
 
         public static float? Interpolate(float? start, float? end, float progress)
         {
-            if (start == null || end == null) return null;
-            return (progress * (end - start)) + start;
+            return start == null || end == null ? null : (progress * (end - start)) + start;
         }
 
         public static ushort? Interpolate(ushort? start, ushort? end, float progress)
@@ -129,31 +151,9 @@ public unsafe partial class CustomNodeManager
                                              Math.Clamp((ushort)Math.Ceiling(start.Value + (progress * (end.Value - start.Value - 1))), end.Value, start.Value);
         }
 
-        public static ColorRGB? Interpolate(ColorRGB? start, ColorRGB? end, float progress)
-        {
-            if (!start.HasValue || !end.HasValue) return null;
+        public static ColorRGB? Interpolate(ColorRGB? start, ColorRGB? end, float progress) => start.HasValue && end.HasValue ? Lerp((Vector4)start, (Vector4)end, progress) : null;
 
-            var s = start.Value;
-            var e = end.Value;
-
-            var progR = (byte)((progress * (e.R - s.R)) + s.R);
-            var progG = (byte)((progress * (e.G - s.G)) + s.G);
-            var progB = (byte)((progress * (e.B - s.B)) + s.B);
-            return new(progR, progG, progB);
-        }
-
-        public static AddRGB? Interpolate(AddRGB? start, AddRGB? end, float progress)
-        {
-            if (!start.HasValue || !end.HasValue) return null;
-
-            var s = start.Value;
-            var e = end.Value;
-
-            var progR = (progress * (e.R - s.R)) + s.R;
-            var progG = (progress * (e.G - s.G)) + s.G;
-            var progB = (progress * (e.B - s.B)) + s.B;
-            return new((short)progR, (short)progG, (short)progB);
-        }
+        public static AddRGB? Interpolate(AddRGB? start, AddRGB? end, float progress) => start.HasValue && end.HasValue ? Lerp((Vector4)start, (Vector4)end, progress) : null;
 
         public Tween Run()
         {
@@ -164,6 +164,7 @@ public unsafe partial class CustomNodeManager
 
             if (Repeat && timePassed > Length)
             {
+                PerCycle?.Invoke();
                 StartTime = StartTime.AddMilliseconds(Length);
                 timePassed %= Length;
             }
@@ -190,7 +191,7 @@ public unsafe partial class CustomNodeManager
 
             return this;
         }
-
+        
         private void ApplyFrameProps(KeyFrame props) {
 
             if (props.Alpha != null) Target->Color.A = (byte)props.Alpha;
@@ -238,6 +239,30 @@ public unsafe partial class CustomNodeManager
             {
                 if (Target->Type == NodeType.Image) Target->GetAsAtkImageNode()->PartId = props.PartId.Value;
                 if (Target->Type == NodeType.NineGrid) Target->GetAsAtkNineGridNode()->PartID = props.PartId.Value;
+            }
+
+            if (props.PartCoords.HasValue)
+            {
+                if (Target->Type == NodeType.Image)
+                {
+                    var imageNode = Target->GetAsAtkImageNode();
+                    var list = imageNode->PartsList;
+
+                    list->Parts[imageNode->PartId].U = (ushort)Math.Floor(props.PartCoords.Value.X);
+                    list->Parts[imageNode->PartId].V = (ushort)Math.Floor(props.PartCoords.Value.Y);
+                    list->Parts[imageNode->PartId].Width = (ushort)Math.Floor(props.PartCoords.Value.Z);
+                    list->Parts[imageNode->PartId].Height = (ushort)Math.Floor(props.PartCoords.Value.W);
+                }
+                if (Target->Type == NodeType.NineGrid)
+                {
+                    var nineGridNode = Target->GetAsAtkNineGridNode();
+                    var list = nineGridNode->PartsList;
+
+                    list->Parts[nineGridNode->PartID].U = (ushort)Math.Floor(props.PartCoords.Value.X);
+                    list->Parts[nineGridNode->PartID].V = (ushort)Math.Floor(props.PartCoords.Value.Y);
+                    list->Parts[nineGridNode->PartID].Width = (ushort)Math.Floor(props.PartCoords.Value.Z);
+                    list->Parts[nineGridNode->PartID].Height = (ushort)Math.Floor(props.PartCoords.Value.W);
+                }
             }
         }
 

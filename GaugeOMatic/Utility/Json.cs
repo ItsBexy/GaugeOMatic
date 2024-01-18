@@ -21,8 +21,7 @@ public class Json
         Formatting = Formatting.None,
         FloatFormatHandling = FloatFormatHandling.Symbol,
         FloatParseHandling = FloatParseHandling.Double,
-        StringEscapeHandling = StringEscapeHandling.Default,
-        DefaultValueHandling = DefaultValueHandling.Ignore
+        StringEscapeHandling = StringEscapeHandling.Default
     };
 
     public class ColorRGBConverter : JsonConverter<ColorRGB>

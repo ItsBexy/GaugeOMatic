@@ -8,10 +8,12 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalanceBar;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
@@ -19,10 +21,10 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 {
     public BalanceBar(Tracker tracker) : base(tracker)
     {
-        SharedEvents.Add("SpendShake", () =>
+        SharedEvents.Add("SpendShake", _ =>
         {
-            SpendShake(ref Tweens, BarContainer, Config.FlashColor, 30, 48);
-            SpendShake(ref Tweens, BarOverlay, Config.FlashColor, Config.Side == 0 ? 25 : 59, 40);
+            SpendShake(ref Tweens, BarContainer!, Config!.FlashColor, 30, 48);
+            SpendShake(ref Tweens, BarOverlay!, Config.FlashColor, Config.Side == 0 ? 25 : 59, 40);
         });
     }
 
@@ -34,52 +36,43 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         Author = "ItsBexy",
         Description = "A recreation of a mana bar from Red Mage's Balance Gauge",
         WidgetTags = GaugeBar | MultiComponent | Replica,
-        KeyText = "BL2"
+        MultiCompData = new("BL", "Balance Gauge Replica", 2)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/JobHudRDM0.tex",new Dictionary<string, Vector4>
-        {
-            {"Plate"              , new(0,0,116,208)},
-            {"WhiteBar"           , new(186,3,26,124)},
-            {"BlackBar"           , new(212,3,26,124)},
-            {"BarOverlay1"        , new(116,0,34,144)},
-            {"Crystal"            , new(0,208,40,56)},
-            {"CrystalBorder"      , new(40,208,40,56)},
-            {"Star"               , new(116,144,40,60)},
-            {"Backdrop"           , new(184,132,84,188)},
-            {"Petals3"            , new(125,212,24,22)},
-            {"Petals2"            , new(123,234,28,20)},
-            {"Petals1"            , new(148,222,14,15)},
-            {"BarTexture"         , new(242,3,26,124)},
-            {"MotionLinesObsolete", new(116,332,72,32)},
-            {"Slash"              , new(0,264,40,48)},
-            {"Diamond"            , new(81,239,30,40)},
-            {"DiamondGlow"        , new(81,279,30,40)},
-            {"DiamondSockets"     , new(0,319,117,61)},
-            {"Halo"               , new(114,258,60,60)},
-            {"MotionLines"        , new(118,321,89,59)},
-            {"Freckles"           , new(207,321,39,59)},
-            {"BarOverlay2"        , new(150,0,34,144)}
-        })
+        new("ui/uld/JobHudRDM0.tex",
+            new(0,0,116,208),    // 0  Plate
+            new(186,3,26,124),   // 1  WhiteBar
+            new(212,3,26,124),   // 2  BlackBar
+            new(116,0,34,144),   // 3  BarOverlay1
+            new(0,208,40,56),    // 4  Crystal
+            new(40,208,40,56),   // 5  CrystalBorder
+            new(116,144,40,60),  // 6  Star
+            new(184,132,84,188), // 7  Backdrop
+            new(125,212,24,22),  // 8  Petals3
+            new(123,234,28,20),  // 9  Petals2
+            new(148,222,14,15),  // 10 Petals1
+            new(242,3,26,124),   // 11 BarTexture
+            new(116,332,72,32),  // 12 MotionLinesObsolete
+            new(0,264,40,48),    // 13 Slash
+            new(81,239,30,40),   // 14 Diamond
+            new(81,279,30,40),   // 15 DiamondGlow
+            new(0,319,117,61),   // 16 DiamondSockets
+            new(114,258,60,60),  // 17 Halo
+            new(118,321,89,59),  // 18 MotionLines
+            new(207,321,39,59),  // 19 Freckles
+            new(150,0,34,144)    // 20 BarOverlay2
+        )
     };
 
     #region Nodes
 
     public CustomNode BarContainer;
-    public override CustomNode Drain { get; set; }
-    public override CustomNode Gain { get; set; }
-    public override CustomNode Main { get; set; }
-
     public CustomNode BarOverlay;
-
     public CustomNode PetalContainer;
-
-    public CustomNode Petal1 { get; set; }
-    public CustomNode Petal2 { get; set; }
-    public CustomNode Petal3 { get; set; }
-
-    public override CustomNode NumTextNode { get; set; }
+    public CustomNode Petal1;
+    public CustomNode Petal2;
+    public CustomNode Petal3;
 
     public override CustomNode BuildRoot()
     {
@@ -90,10 +83,10 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                                            .SetImageWrap(1);
 
         Gain = ImageNodeFromPart(0, 11).SetScale(1, -1)
-                                       .SetSize(26, 0)
-                                       .SetOrigin(0, 62)
-                                       .SetAddRGB(Config.GainColor)
-                                       .SetImageWrap(1);
+                                                 .SetSize(26, 0)
+                                                 .SetOrigin(0, 62)
+                                                 .SetAddRGB(Config.GainColor)
+                                                 .SetImageWrap(1);
 
         Main = ImageNodeFromPart(0, 1).SetScale(1, -1)
                                       .SetSize(26, 0)
@@ -127,7 +120,9 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
         PetalContainer = new CustomNode(CreateResNode(), Petal1, Petal2, Petal3).SetPos(-12,66.62929f).SetSize(116,125).SetDrawFlags(0xA);
 
-        NumTextNode = CreateNumTextNode().SetTextColor(0xffffffff, 0x440b00ff).SetPos(0, 0);
+        NumTextNode = new();
+
+        NumTextNode.SetTextColor(0xffffffff, 0x440b00ff).SetPos(0, 0);
         NumTextNode.Node->GetAsAtkTextNode()->CharSpacing = 255;
 
         BarContainer = new CustomNode(CreateResNode(), Drain, Gain, Main).SetPos(30,48).SetSize(26,124).SetOrigin(28,62);
@@ -153,7 +148,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override void OnDecrease(float prog, float prevProg)
     {
-        if (Config.PetalDec) PetalAnim((CalcProg() + CalcProg(true)) / 2f);
+        if (Config.PetalDec) PetalAnim((prog + prevProg) / 2f);
     }
 
     public override void OnIncrease(float prog, float prevProg)
@@ -247,7 +242,18 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         public bool PetalInc;
         public bool PetalDec = true;
         public AddRGB PetalColor = new(124, -125, -125);
-        protected override NumTextProps NumTextDefault => new(true, new(0), 0xffffffff, 0x440b00ff, MiedingerMed, 18, Center, false, 0, true);
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(0), 
+                                                              color:     0xffffffff,
+                                                              edgeColor: 0x440b00ff, 
+                                                              showBg:    false, 
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed, 
+                                                              fontSize:  18, 
+                                                              align:     Center,
+                                                              invert:    false, 
+                                                              precision: 0, 
+                                                              showZero:  true);
 
         public BalanceBarConfig(WidgetConfig widgetConfig)
         {
@@ -269,14 +275,18 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
             PetalDec = config.PetalDec;
             PetalInc = config.PetalInc;
             PetalColor = config.PetalColor;
+            SplitCharges = config.SplitCharges;
         }
 
-        public BalanceBarConfig() { }
+        public BalanceBarConfig()
+        {
+            NumTextProps = NumTextDefault;
+        }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public BalanceBarConfig Config = null!;
+    public BalanceBarConfig Config;
 
     public override void InitConfigs()
     {
@@ -307,9 +317,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         Drain.SetAddRGB(Config.DrainColor);
         PetalContainer.SetAddRGB(Config.PetalColor + new AddRGB(-124, 125, 125));
 
-        var configNumText = Config.NumTextProps;
-        configNumText.Position += new Vector2(left ? 16 : 68, 172);
-        configNumText.ApplyTo(NumTextNode);
+        NumTextNode.ApplyProps(Config.NumTextProps, new Vector2(left ? 32 : 83, 172));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -331,14 +339,14 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
         Heading("Behavior");
 
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         var petalEffect = new List<bool> { Config.PetalInc, Config.PetalDec };
-        if (ToggleControls("Petal Effect", ref petalEffect, new List<string> { "On Increase", "On Decrease" }, ref update))
+        if (ToggleControls("Petal Effect", ref petalEffect, new() { "On Increase", "On Decrease" }, ref update))
         {
             Config.PetalInc = petalEffect[0];
             Config.PetalDec = petalEffect[1];
         }
-        // IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 

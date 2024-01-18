@@ -59,9 +59,19 @@ public abstract partial class Tracker
                     }
                 }
 
-                State = found?1:0;
-                Count = found ? status?.StackCount ?? 1 : 0;
-                GaugeValue = found ? Math.Abs(status?.RemainingTime ?? 0f) : 0f;
+                if (found)
+                {
+                    State = 1;
+                    Count = status is { StackCount: > 0 } ? status.StackCount : 1;
+                    GaugeValue = Math.Abs(status?.RemainingTime ?? 0f);
+                }
+                else
+                {
+                    State = 0;
+                    Count = 0;
+                    GaugeValue = 0;
+                }
+                
             }
             else
             {

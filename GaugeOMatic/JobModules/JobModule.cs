@@ -22,7 +22,10 @@ public abstract class JobModule : IDisposable
     public abstract Job Job { get; }
     public abstract Job Class { get; }
     public abstract Role Role { get; }
-    public abstract List<AddonOption> AddonOptions { get; }
+    public string Abbr => Job.ToString();
+
+    public virtual List<AddonOption> AddonOptions => new() { new("_ParameterWidget", "Parameter Bar") };
+    public string WatchedAddon => AddonOptions[0].Name;
 
     public Configuration Configuration;
     public TrackerManager TrackerManager;
@@ -31,11 +34,8 @@ public abstract class JobModule : IDisposable
     public IEnumerable<Widget?> WidgetList => TrackerList.Select(static t => t.Widget);
     public TrackerConfig[] TrackerConfigList;
 
-
-    public string WatchedAddon => AddonOptions[0].Name;
-    public string Abbr => Job.ToString();
     public IEnumerable<Tracker> DrawOrder => TrackerList.ToArray().OrderBy(static t => t.TrackerConfig.Index);
-    private IEnumerable<Tracker> BuildOrder => DrawOrder.Where(static t => t.TrackerConfig.Enabled).Reverse();
+    public IEnumerable<Tracker> BuildOrder => DrawOrder.Where(static t => t.TrackerConfig.Enabled).Reverse();
     public TrackerConfig[] SaveOrder => TrackerConfigList.OrderBy(static t => t.Index).ToArray();
 
     protected unsafe JobModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
@@ -81,13 +81,6 @@ public abstract class JobModule : IDisposable
         return trackerList;
     }
 
-    public void RebuildTrackerList()
-    {
-        DisposeTrackers();
-        TrackerList = BuildTrackerList();
-        BuildWidgets();
-    }
-
     private bool JobCheck(TrackerConfig trackerConfig)
     {
         var itemId = trackerConfig.ItemId;
@@ -98,6 +91,13 @@ public abstract class JobModule : IDisposable
             nameof(ActionTracker) => ((ActionRef)itemId).CheckJob(this),
             _ => true
         };
+    }
+
+    public void RebuildTrackerList()
+    {
+        DisposeTrackers();
+        TrackerList = BuildTrackerList();
+        BuildWidgets();
     }
 
     public void AddTrackerConfig(TrackerConfig newConfig)
@@ -181,11 +181,6 @@ public abstract class JobModule : IDisposable
         foreach (var tracker in BuildOrder) tracker.Widget?.Attach();
     }
 
-    public abstract void Save();
-    public abstract void TweakUI(ref UpdateFlags update);
-    public abstract void ApplyTweaks();
-    public abstract List<MenuOption> JobGaugeMenu { get; }
-
     public void RemoveTracker(Tracker tracker)
     {
         tracker.Dispose();
@@ -195,8 +190,12 @@ public abstract class JobModule : IDisposable
         Save();
     }
 
-    public void AddBlankTracker() => AddTrackerConfig(new(nameof(EmptyTracker), "Empty Tracker", true, AddonOptions[0].Name,
-                                                          new()));
+    public void AddBlankTracker() => AddTrackerConfig(new(nameof(EmptyTracker), "Empty Tracker", true, AddonOptions[0].Name, new()));
+
+    public abstract void Save();
+    public abstract void TweakUI(ref UpdateFlags update);
+    public abstract void ApplyTweaks();
+    public abstract List<MenuOption> JobGaugeMenu { get; }
 
     public Tracker? BuildTracker(TrackerConfig trackerConfig)
     {

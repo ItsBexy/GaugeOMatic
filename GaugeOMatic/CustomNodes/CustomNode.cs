@@ -11,7 +11,7 @@ namespace CustomNodes;
 public unsafe partial class CustomNodeManager
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public partial struct CustomNode : IDisposable
+    public partial class CustomNode : IDisposable
     {
         public AtkResNode* Node;
         public CustomNode[] Children { get; set; }
@@ -19,15 +19,17 @@ public unsafe partial class CustomNodeManager
         public CustomNode(AtkImageNode* node) : this((AtkResNode*)node) { }
         public CustomNode(AtkNineGridNode* node) : this((AtkResNode*)node) { }
         public CustomNode(AtkTextNode* node) : this((AtkResNode*)node) { }
-        public static implicit operator AtkResNode*(CustomNode c) => c.Node;
 
-        public readonly CustomNode this[int i]
+        public static implicit operator AtkResNode*(CustomNode c) => c.Node;
+        public static implicit operator CustomNode(AtkResNode* a) => new(a);
+
+        public CustomNode this[int i]
         {
             get
             {
                 if (i < Children.Length) return Children[i];
                 var ex = new StackTrace();
-                Log.Error("No child node found at index "+i+"\n"+ex);
+                Log.Warning("No child node found at index " + i + "\n" + ex);
                 return this;
             }
         }
@@ -35,10 +37,10 @@ public unsafe partial class CustomNodeManager
         public CustomNode(AtkResNode* node)
         {
             Node = node;
-            Children = null!;
+            Children = Array.Empty<CustomNode>();
         }
 
-        public CustomNode(AtkResNode* node,params CustomNode[] children)
+        public CustomNode(AtkResNode* node, params CustomNode[] children)
         {
             Node = node;
             Children = children;
@@ -52,10 +54,7 @@ public unsafe partial class CustomNodeManager
 
         public int AssembleNodeTree()
         {
-            if (Children == null || Children.Length == 0)
-            {
-                return Node->ChildCount;
-            }
+            if (Children.Length == 0) return Node->ChildCount;
 
             var count = Children.Length;
             for (var i = 0; i < Children.Length; i++)
@@ -72,17 +71,15 @@ public unsafe partial class CustomNodeManager
 
         public void Dispose()
         {
-            if (Children != null)
-                for (var i = 0; i < Children.Length; i++)
-                    Children[i].Dispose();
-            
+            foreach (var child in Children) child.Dispose();
+
             Node->Destroy(true);
             Node = null;
         }
 
-        public readonly Tween CreateTween(params KeyFrame[] keyFrames) => new(this, keyFrames);
+        public Tween CreateTween(params KeyFrame[] keyFrames) => new(this, keyFrames);
 
-        public readonly Tween CreateTweenTo(KeyFrame keyFrame) => new(this,this,keyFrame);
+        public Tween CreateTweenTo(KeyFrame keyFrame) => new(this,this,keyFrame);
 
         public static implicit operator KeyFrame(CustomNode n) =>
             new(0)
@@ -99,16 +96,20 @@ public unsafe partial class CustomNodeManager
                 AddRGB = new(n.Node->AddRed,n.Node->AddGreen,n.Node->AddBlue),
                 MultRGB = new(n.Node->MultiplyRed, n.Node->MultiplyGreen, n.Node->MultiplyBlue)
             };
+
+        public void Detach() => DetachNode(Node);
+        public void AttachTo(AtkUnitBase* parentAddon) => AttachNode(parentAddon,Node);
+        public void AttachTo(AtkResNode* parentNode) => AttachNode(parentNode,Node);
     }
 
-    public static void Attach(AtkUnitBase* parentAddon, AtkResNode* newChildNode)
+    public static void AttachNode(AtkUnitBase* parentAddon, AtkResNode* newChildNode)
     {
         if (parentAddon == null) return;
-        Attach(parentAddon->RootNode, newChildNode);
+        AttachNode(parentAddon->RootNode, newChildNode);
         parentAddon->UldManager.UpdateDrawNodeList();
     }
 
-    public static void Attach(AtkResNode* parentNode, AtkResNode* newChildNode)
+    public static void AttachNode(AtkResNode* parentNode, AtkResNode* newChildNode)
     {
         if (parentNode == null) return;
         try
@@ -136,9 +137,7 @@ public unsafe partial class CustomNodeManager
         nodeB->NextSiblingNode = nodeA;
     }
 
-    public static void Detach(CustomNode customNode) => Detach(customNode.Node);
-
-    public static void Detach(AtkResNode* node)
+    public static void DetachNode(AtkResNode* node)
     {
         var sibling = node->NextSiblingNode;
         if (sibling != null && sibling->PrevSiblingNode == node) sibling->PrevSiblingNode = null;

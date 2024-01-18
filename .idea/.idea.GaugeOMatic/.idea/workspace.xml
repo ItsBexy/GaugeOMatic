@@ -5,13 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="32817785-a5fe-40d3-a3af-5c9b8c622d0a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.GaugeOMatic/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GaugeOMatic/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Palettes/Palette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Palettes/Palette.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Trackers/TrackerGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Trackers/TrackerGroup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/CustomNodes/CustomNode.ChainMethods.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/CustomNodes/CustomNode.ChainMethods.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Trackers/Presets/PluginPresets.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Trackers/Presets/PluginPresets.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GaugeOMatic/Utility/Json.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Utility/Json.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/StackWidgets/ReaperFlame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/StackWidgets/ReaperFlame.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/WidgetUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/WidgetUI.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Windows/ConfigWindow.TrackerGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Windows/ConfigWindow.TrackerGroup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBarWidget.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBarWidget.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/AG.AddersBar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/AG.AddersBar.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/BL.BalanceBar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/BL.BalanceBar.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/EL.EnochianBar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/EL.EnochianBar.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/EspritBar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/EspritBar.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/SimpleCircle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/GaugeBars/SimpleCircle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/BL.BalancePlate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/BL.BalancePlate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/EL.ElementOrb.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/EL.ElementOrb.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/EukrasiaReplica.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/EukrasiaReplica.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/ParameterGlow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/ParameterGlow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/ShimmerHalo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/ShimmerHalo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/TargetReticle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/State/TargetReticle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GaugeOMatic/Widgets/StateWidget.cs" beforeDir="false" afterPath="$PROJECT_DIR$/GaugeOMatic/Widgets/StateWidget.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,13 +55,13 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "uiReorganize",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "settings.editor.selected.configurable": "advanced.settings",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -77,6 +86,7 @@
       <workItem from="1701823645344" duration="10000" />
       <workItem from="1701823664411" duration="1896000" />
       <workItem from="1701844056246" duration="856000" />
+      <workItem from="1705274820137" duration="296000" />
     </task>
     <servers />
   </component>

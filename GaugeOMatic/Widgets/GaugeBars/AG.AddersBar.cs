@@ -13,16 +13,19 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
-using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class AddersBar : GaugeBarWidget
 {
+    public AddersBar(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -31,7 +34,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Author = "ItsBexy",
         Description = "A recreation of Sage's Addersgall Gauge Bar",
         WidgetTags = GaugeBar | Replica | MultiComponent,
-        KeyText = "AG1"
+        MultiCompData = new("AG","Addersgall Gauge Replica",1)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -58,13 +61,9 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public CustomNode Bar;
     public CustomNode Frame;
     public CustomNode Plate;
-    public CustomNode LabelTextNode;
-    public override CustomNode NumTextNode { get; set; }
+    public LabelTextNode LabelTextNode;
 
     public CustomNode Backdrop;
-    public override CustomNode Drain { get; set; }
-    public override CustomNode Gain { get; set; }
-    public override CustomNode Main { get; set; }
     public CustomNode MainOverlay;
     public CustomNode Sparkles;
 
@@ -73,8 +72,10 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Bar = BuildBar();
         Plate = ImageNodeFromPart(0, 1).SetPos(-100, -24).SetOrigin(100,24);
         Frame = NineGridFromPart(0, 0, 0, 32, 0, 32);
-        LabelTextNode = CreateLabelTextNode(Config.LabelTextProps.Text, Tracker.DisplayName).SetWidth(144);
-        NumTextNode = CreateNumTextNode();
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
+        LabelTextNode.SetWidth(144);
+
+        NumTextNode = new();
         BarFrame = new CustomNode(CreateResNode(), Plate, Bar, Frame).SetOrigin(0,11);
 
         return new CustomNode(CreateResNode(), BarFrame, LabelTextNode, NumTextNode).SetOrigin(28, 12);
@@ -118,72 +119,75 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     {
         var frameWidth = Config.Width + 56;
 
+        ClearLabelTweens(ref Tweens, "Expand");
         Tweens.Add(new(BarFrame,
                        new(0) { Y = 0 },
                        new(kf1) { Y = 1 },
                        new(kf2) { Y = 10 })
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut, Label = "Collapse" });
 
         Tweens.Add(new(Frame,
                        new(0) { X = frameWidth / -2f, Width = frameWidth, AddRGB = 0, Alpha = 255 },
                        new(kf1) { X = -28, Width = 56, AddRGB = 50, Alpha = 255 },
                        new(kf2) { X = -28, Width = 56, AddRGB = 255, Alpha = 0 })
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut, Label = "Collapse" });
 
         Tweens.Add(new(Plate,
                        new(0) { Alpha=255, AddRGB = 0, ScaleY =1, ScaleX = 1,Y=-24 },
                        new(kf1) { Alpha=255, AddRGB = 255, ScaleY = 0, ScaleX = 0.1f, Y = -20 },
                        new(kf2) { Alpha=0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 })
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut, Label = "Collapse" });
 
         Tweens.Add(new(Bar,
                        new(0) { ScaleX = Config.Mirror?-1:1, Alpha = 255 },
                        new(kf1) { ScaleX = 0, Alpha = 128 },
                        new(kf2) { ScaleX = 0, Alpha = 128 }) 
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut, Label = "Collapse" });
 
         Tweens.Add(new(Sparkles,
                        new(0) { Alpha = 255 },
-                       new((int)(kf1 * 0.6f)) { Alpha = 0 }));
+                       new((int)(kf1 * 0.6f)) { Alpha = 0 }){ Label = "Collapse" });
 
-        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }));
-        Tweens.Add(new(NumTextNode, new(0) { Alpha = 255 }, new(kf2) { Alpha = 0 }));
+        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }) { Label = "Collapse" });
+        Tweens.Add(new(NumTextNode, new(0) { Alpha = 255 }, new(kf2) { Alpha = 0 }) { Label = "Collapse" });
     }
 
     public void ExpandBar(int kf1, int kf2)
     {
         var frameWidth = Config.Width + 56;
 
+        ClearLabelTweens(ref Tweens, "Collapse");
         BarFrame.SetY(0);
 
         Tweens.Add(new(Frame,
                        new(0) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
                        new(kf1) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
                        new(kf2) { Alpha = 255, X = frameWidth / -2f, Width = frameWidth, AddRGB = 0 })
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut, Label = "Expand" });
 
         Tweens.Add(new(Plate,
                        new(0) { Alpha = 0, AddRGB = 200, ScaleY = 0, ScaleX = 0, Y = -20 },
                        new(kf1) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 },
                        new(kf2) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 })
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut, Label = "Expand" });
 
         Tweens.Add(new(Bar,
                        new(0) { Alpha = 0, ScaleX = 0 },
                        new(kf1) { Alpha = 128, ScaleX = 0 },
                        new(kf2) { Alpha = 255, ScaleX = Config.Mirror?-1:1 }) 
-                       { Ease = Eases.SinInOut });
+                       { Ease = Eases.SinInOut,Label="Expand" });
 
         Tweens.Add(new(Sparkles,
                        new(0) { Alpha = 0 },
                        new(200) { Alpha = 0 },
-                       new(kf2) { Alpha = 255 }));
+                       new(kf2) { Alpha = 255 })
+                       { Label = "Expand" });
 
-        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
-        Tweens.Add(new(NumTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
+        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }) { Label = "Expand" });
+        Tweens.Add(new(NumTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }) { Label = "Expand" });
     }
 
-    private void AnimateSparkles(CustomNode[] sparkleNodes)
+    private void AnimateSparkles(IReadOnlyList<CustomNode> sparkleNodes)
     {
         Tweens.Add(new(sparkleNodes[0], 
                        new(0) { Alpha = 255 }, 
@@ -238,8 +242,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnDecreaseToMin(float prog, float prevProg) { if (Config.Collapse) CollapseBar(250, 350); }
 
     public override void OnIncreaseFromMin(float prog, float prevProg) { if (Config.Collapse) ExpandBar(100, 350); }
@@ -254,54 +256,38 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         if (prog <= 0 && Config.Collapse) CollapseBar(0, 0);
     }
 
-    public bool Pulsing;
     public override void PostUpdate(float prog, float prevProg)
     {
         MainOverlay.SetWidth(Main.Width);
 
-        HandlePulse(prog);
-
-        if (!Pulsing)
+        if (!MilestoneActive)
         {
             prog %= 0.5f;
             Main.SetAddRGB((prog < 0.25f ? new(0, (short)(120f * prog), (short)(160f * prog)) : new AddRGB(0, (short)(60 - (120f * prog)), (short)(80 - (160f * prog)))) + Config.MainColor + (AddRGB)new(116, -3, -30));
         }
     }
 
-    private void HandlePulse(float prog)
-    {
-        var checkPulse = Config.MilestoneCheck(prog, Milestone);
-        if (!Pulsing && checkPulse) SetupBarPulse(1600);
-        else if (Pulsing && !checkPulse) StopBarPulse();
-    }
-
-    private void SetupBarPulse(int time)
+    protected override void StartMilestoneAnim()
     {
         ClearLabelTweens(ref Tweens, "BarPulse");
         var colorAdjust = new AddRGB(116, -3, -30);
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.PulseSparkles);
         Tweens.Add(new(Main,
                        new(0) { AddRGB = Config.PulseColor2 + colorAdjust },
-                       new(time / 2) { AddRGB = Config.PulseColor + colorAdjust },
-                       new(time) { AddRGB = Config.PulseColor2 + colorAdjust })
+                       new(800) { AddRGB = Config.PulseColor + colorAdjust },
+                       new(1600) { AddRGB = Config.PulseColor2 + colorAdjust })
                        { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
-        Pulsing = true;
     }
 
-    private void StopBarPulse()
+    protected override void StopMilestoneAnim()
     {
         var colorAdjust = new AddRGB(116, -3, -30);
         ClearLabelTweens(ref Tweens, "BarPulse");
         Main.SetAddRGB(Config.MainColor + colorAdjust);
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.SparkleColor);
-        Pulsing = false;
     }
 
-    public override void PlaceTickMark(float prog)
-    {
-        Sparkles.SetPos(Main.Node->Width - 13f, -0.5f)
-                .SetVis(prog > 0);
-    }
+    public override void PlaceTickMark(float prog) => Sparkles.SetPos(Main.Node->Width - 13f, -0.5f).SetVis(prog > 0);
 
     public override DrainGainType DGType => Width;
     public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
@@ -333,7 +319,16 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         public bool Collapse;
         
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 20), new(255), new(0), TrumpGothic, 22, Center);
-        protected override NumTextProps NumTextDefault => new(true, new(0, 12.5f), new(255), new(0), MiedingerMed, 18, Left, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(0, 0), 
+                                                              color:     new(255), 
+                                                              edgeColor: new(0), 
+                                                              showBg:    true, 
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed, 
+                                                              fontSize:  18, 
+                                                              align:     Left, 
+                                                              invert:    false);
 
         public AddersBarConfig(WidgetConfig widgetConfig)
         {
@@ -361,6 +356,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
             MilestoneType = config.MilestoneType;
             Milestone = config.Milestone;
+            SplitCharges = config.SplitCharges;
 
             AnimationLength = config.AnimationLength;
             Invert = config.Invert;
@@ -379,7 +375,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public AddersBarConfig Config = null!;
+    public AddersBarConfig Config;
 
     public override void InitConfigs()
     {
@@ -395,7 +391,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         var halfFrame = frameWidth / 2f;
         var halfWidth = Config.Width / 2;
 
-        WidgetRoot.SetPos(Config.Position)
+        WidgetRoot.SetPos(Config.Position+new Vector2(100,38.5f))
                   .SetOrigin(0, 16f)
                   .SetScale(Config.Scale);
 
@@ -421,18 +417,18 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         var barSize = Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge * Config.Width;
         Drain.SetAddRGB(Config.DrainColor + colorAdjust).SetWidth(0);
         Gain.SetAddRGB(Config.GainColor + colorAdjust).SetWidth(0);
-        Main.SetWidth(Config.Invert ? 1 - barSize : barSize);
-
-        Pulsing = false;
+        Main.SetWidth(CalcBarProperty(CalcProg()));
+        
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.SparkleColor);
-        HandlePulse(CalcProg());
+
+        HandleMilestone(CalcProg(),true);
 
         Sparkles.SetX(barSize - 13);
         
-        Config.LabelTextProps.ApplyTo(LabelTextNode, new(Config.Width/-2,0));
-        LabelTextNode.SetWidth(Config.Width).SetText(Config.LabelTextProps.Text.Length > 0 ? Config.LabelTextProps.Text : Tracker.DisplayName);
-        
-        Config.NumTextProps.ApplyTo(NumTextNode, new((Config.Width / 2) + 28, 0));
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width/-2,0));
+        LabelTextNode.SetWidth(Config.Width);
+
+        NumTextNode.ApplyProps(Config.NumTextProps,new((Config.Width / 2) + 88,11.5f));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -443,6 +439,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144:30, 2000, 1, ref update);
         FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
         ToggleControls("Backplate", ref Config.ShowPlate, ref update);
         if (Config.ShowPlate) Config.Width = Math.Max(Config.Width, 144);
 
@@ -464,16 +461,16 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
         Heading("Behavior");
 
-        RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck(Config.Collapse);
-        RadioControls("Pulse", ref Config.MilestoneType, new() { MilestoneType.None, Above, Below }, new() { "Never", "Above Milestone", "Below Milestone" }, ref update);
-        if (Config.MilestoneType > 0) PercentControls(ref Config.Milestone, ref update);
 
-        //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
+
+        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls2("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
+        LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.AddersBarCfg = Config;
@@ -495,8 +492,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     }
 
     #endregion
-
-    public AddersBar(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

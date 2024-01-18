@@ -8,6 +8,8 @@ public static partial class CustomNodeManager
 {
     internal static Dictionary<uint, Pointer<AtkResNode>> RegisteredNodes = new();
 
+
+
     public static unsafe uint GetFreeId()
     {
         for (uint i = 10000; i < 90000; i++)

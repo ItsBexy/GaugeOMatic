@@ -12,11 +12,14 @@ using static GaugeOMatic.Widgets.ShimmerHalo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ShimmerHalo : StateWidget
 {
+    public ShimmerHalo(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -27,12 +30,10 @@ public sealed unsafe class ShimmerHalo : StateWidget
         WidgetTags = State
     };
 
-    public override CustomPartsList[] PartsLists { get; } =
-    {
-        new("ui/uld/gachaeffect03.tex", 
-            new Vector4(0, 0, 256, 256) 
-            )
+    public override CustomPartsList[] PartsLists { get; } = {
+        new("ui/uld/gachaeffect03.tex", new Vector4(0, 0, 256, 256))
     };
+
     #region Nodes
 
     public CustomNode Halo;
@@ -77,9 +78,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
-    public override void OnUpdate() { if (!Halo.Visible) StopRotation(); }
+    public override void PostUpdate() { if (!Halo.Visible) StopRotation(); }
 
     public override void OnFirstRun(int current)
     {
@@ -148,7 +147,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
         }
     }
 
-    public ShimmerHaloConfig Config = null!;
+    public ShimmerHaloConfig Config;
 
     public override void InitConfigs()
     {
@@ -156,7 +155,11 @@ public sealed unsafe class ShimmerHalo : StateWidget
         Config.FillColorList(Tracker.CurrentData.MaxState);
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs()
+    {
+        Config = new();
+        Config.FillColorList(Tracker.CurrentData.MaxState);
+    }
 
     public override void ApplyConfigs()
     {
@@ -195,7 +198,6 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     #endregion
 
-    public ShimmerHalo(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

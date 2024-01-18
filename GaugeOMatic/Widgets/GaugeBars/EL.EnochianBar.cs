@@ -11,18 +11,22 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.EnochianBar;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.EnochianBar.EnochianBarConfig;
 using static GaugeOMatic.Widgets.EnochianBar.EnochianBarConfig.Quadrants;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class EnochianBar : GaugeBarWidget
 {
+    public EnochianBar(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -31,55 +35,17 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Author = "ItsBexy",
         Description = "A curved bar based on BLM's Enochian timer.",
         WidgetTags = GaugeBar | MultiComponent | Replica,
-        KeyText = "EL1"
+        MultiCompData = new("EL", "Elemental Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = {
-        new ("ui/uld/JobHudBLM0.tex",
-            new(0,0,162,144),   // 0  moon
-            new(290,0,52,52),   // 1  blue orb
-            new(290,52,52,52),  // 2  red orb
-            new(342,0,20,48),   // 3  blue crystal
-            new(342,48,20,48),  // 4  red crystal
-            new(182,236,24,68), // 5  icicle
-            new(342,96,20,48),  // 6  blue glow
-            new(342,144,20,48), // 7  red glow
-            new(162,0,128,124), // 8  lattice
-            new(0,146,90,90),   // 9  curved plate
-            new(95,153,80,78),  // 10  bar fill
-            new(180,146,90,90), // 11 bar backdrop
-            new(362,0,30,128),  // 12 clock hand
-            new(324,192,30,46), // 13 diamond
-            new(354,192,30,46), // 14 diamond glow
-            new(0,236,90,90),   // 15 flash
-            new(90,236,68,68),  // 16 eclipse
-            new(290,104,46,46), // 17 halo
-            new(362,128,28,28), // 18 glowball
-            new(270,150,54,83), // 19 diamond frame
-            new(158,236,24,68), // 20 icicle glow
-            new(206,236,64,36), // 21 text bg
-            new(206,272,32,32), // 22 simple icon thingy
-            new(270,233,32,42), // 23 diamond cover
-            new(302,238,52,52), // 24 grey orb
-            new(307,290,85,36), // 25 double pointy
-            new(0,324,86,40),   // 26 null paradox gem
-            new(86,324,86,40),  // 27 active paradox gem
-            new(172,324,86,40), // 28 paradox glow
-            new(90,306,29,18),  // 29 blue sparkles
-            new(119,306,29,36)  // 30 red sparkles
-            )};
+    public override CustomPartsList[] PartsLists { get; } = { BLM0Parts };
 
     #region Nodes
 
-    public override CustomNode NumTextNode { get; set; }
-
-    public CustomNode Contents { get; set; }
+    public CustomNode Contents;
     public CustomNode MainContainer;
     public CustomNode DrainContainer;
     public CustomNode GainContainer;
-    public override CustomNode Drain { get; set; }
-    public override CustomNode Gain { get; set; }
-    public override CustomNode Main { get; set; }
 
     public CustomNode Backplate;
     public CustomNode Lattice;
@@ -96,7 +62,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Plate = ImageNodeFromPart(0, 9).SetPos(9, 8).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
         Groove = ImageNodeFromPart(0, 11).SetPos(6, 5).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
 
-        Backplate = new CustomNode(CreateResNode(), Lattice, Plate, Groove);
+        Backplate = new(CreateResNode(), Lattice, Plate, Groove);
 
         Drain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4);
         Gain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4);
@@ -115,8 +81,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
         ClockHandContainer = new CustomNode(CreateResNode(), ClockHand).SetPos(-6, -2).SetSize(30, 128);
 
-        NumTextNode = CreateNumTextNode();
-
+        NumTextNode = new();
         NumTextNode.Node->SetPriority(1);
 
         Contents = new CustomNode(CreateResNode(),
@@ -125,7 +90,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                               ClockHandContainer
                               ).SetSize(128, 124).SetOrigin(8, 8);
 
-        return new CustomNode(CreateResNode(), Contents,NumTextNode);
+        return new(CreateResNode(), NumTextNode,Contents );
     }
 
     #endregion
@@ -142,7 +107,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     private void HideBar()
     {
-        var scaleX = Config.Direction == 1 ? -1 :1;
+        var scaleX = Config.Direction == 1 ? -1 : 1;
         Tweens.Add(new(Contents,
                        new(0) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 },
                        new(150) { ScaleX = scaleX * 0.8f, ScaleY = 0.8f, Alpha = 0 }));
@@ -151,8 +116,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     #endregion
 
     #region UpdateFuncs
-
-    public override string? SharedEventGroup => null;
 
     public override DrainGainType DGType => Rotation;
     public override float CalcBarProperty(float prog)
@@ -191,16 +154,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                        new(0) { AddRGB = -20, MultRGB = new(53) },
                        new(150) { AddRGB = 0, MultRGB = new(100) },
                        new(250) { AddRGB = 70, MultRGB = new(100) },
-                       new(360) { AddRGB = 0, MultRGB = new(100) })
-        { Label = "Activate" });
-
-    public override void OnIncreaseMilestone(float prog, float prevProg) { }
-
-    public override void OnIncreaseToMax(float prog, float prevProg) { }
-
-    public override void OnDecreaseFromMax(float prog, float prevProg) { }
-
-    public override void OnDecreaseMilestone(float prog, float prevProg) { }
+                       new(360) { AddRGB = 0, MultRGB = new(100) }) 
+                       { Label = "Activate" });
 
     public override void OnDecreaseToMin(float prog, float prevProg)
     {
@@ -233,13 +188,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public sealed class EnochianBarConfig : GaugeBarWidgetConfig
     {
-        public enum Quadrants
-        {
-            BR = 0,
-            BL = 1,
-            TL = 2,
-            TR = 3
-        }
+        public enum Quadrants { BR = 0, BL = 1, TL = 2, TR = 3 }
 
         public Vector2 Position = new(0, 0);
         public float Scale = 1;
@@ -256,7 +205,16 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         public bool DimEmpty = true;
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), new(0), Jupiter, 16, Left);
-        protected override NumTextProps NumTextDefault => new(false, new(0, 0), new(255), new(0), MiedingerMed, 20, Center, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   false,
+                                                              position:  new(0, 0), 
+                                                              color:     new(255),
+                                                              edgeColor: new(0),
+                                                              showBg:    true, 
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed, 
+                                                              fontSize:  20, 
+                                                              align:     Center,
+                                                              invert:    false);
 
         public EnochianBarConfig(WidgetConfig widgetConfig)
         {
@@ -279,6 +237,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 HideEmpty = config.HideEmpty;
                 HideHand = config.HideHand;
                 DimEmpty = config.DimEmpty;
+                SplitCharges = config.SplitCharges;
 
                 AnimationLength = config.Smooth ? 250 : 0;
                 Invert = config.Invert;
@@ -292,7 +251,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public EnochianBarConfig Config = null!;
+    public EnochianBarConfig Config;
 
     public override void InitConfigs()
     {
@@ -355,7 +314,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         GainContainer.SetPos(containerPos);
         MainContainer.SetPos(containerPos);
 
-        NumTextProps.ApplyTo(NumTextNode,new (-8,5));
+        NumTextNode.ApplyProps(NumTextProps,new Vector2(8, 5));
+        NumTextNode.Show().SetAlpha(NumTextProps.Enabled?255:0);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -374,6 +334,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
 
         Heading("Behavior");
+
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
@@ -413,11 +375,9 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     }
 
     #endregion
-
-    public EnochianBar(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public EnochianBarConfig? EnochianBarCfg { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public EnochianBar.EnochianBarConfig? EnochianBarCfg { get; set; }
 }

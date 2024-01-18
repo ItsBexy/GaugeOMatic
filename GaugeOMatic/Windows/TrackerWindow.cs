@@ -93,8 +93,7 @@ public class TrackerWindow : Window, IDisposable
 
     private void WidgetOptionTable(WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        if (ImGui.BeginTable("TrackerWidgetOptionTable" + Hash, 2,
-                             ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.PadOuterX))
+        if (ImGui.BeginTable("TrackerWidgetOptionTable" + Hash, 2, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.PadOuterX))
         {
             ImGui.TableSetupColumn("Labels");
 

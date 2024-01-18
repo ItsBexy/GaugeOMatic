@@ -10,11 +10,14 @@ using static GaugeOMatic.Widgets.AetherflowReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class AetherflowReplica : CounterWidget
 {
+    public AetherflowReplica(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -149,8 +152,6 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < count; i++) Gems[i].SetAlpha(255);
@@ -199,7 +200,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public AetherflowReplicaConfig Config = null!;
+    public AetherflowReplicaConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -256,8 +257,6 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     }
 
     #endregion
-
-    public AetherflowReplica(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

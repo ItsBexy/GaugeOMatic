@@ -11,11 +11,14 @@ using static GaugeOMatic.Widgets.AddersCounter;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class AddersCounter : CounterWidget
 {
+    public AddersCounter(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -24,7 +27,7 @@ public sealed unsafe class AddersCounter : CounterWidget
         Author = "ItsBexy",
         Description = "A set of gems recreating those on the Addersgall Gauge.",
         WidgetTags = Counter | Replica | MultiComponent,
-        KeyText = "AG2"
+        MultiCompData = new("AG", "Addersgall Gauge Replica", 2)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -58,7 +61,7 @@ public sealed unsafe class AddersCounter : CounterWidget
 
         BuildStacks(count);
 
-        return new CustomNode(CreateResNode(), Stacks.ToArray());
+        return new(CreateResNode(), Stacks.ToArray());
     }
 
     private void BuildStacks(int count)
@@ -269,8 +272,6 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < count; i++) Stacks[i][1].SetAlpha(255);
@@ -323,7 +324,7 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public AddersCounterConfig Config = null!;
+    public AddersCounterConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -394,8 +395,6 @@ public sealed unsafe class AddersCounter : CounterWidget
     }
 
     #endregion
-
-    public AddersCounter(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

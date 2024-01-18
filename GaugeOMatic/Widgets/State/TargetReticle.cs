@@ -12,11 +12,14 @@ using static GaugeOMatic.Widgets.TargetReticle;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class TargetReticle : StateWidget
 {
+    public TargetReticle(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -31,6 +34,7 @@ public sealed unsafe class TargetReticle : StateWidget
     {
         new("ui/uld/mycrelicwindowsymbol3.tex", new Vector4(0, 0, 450, 450))
     };
+
     #region Nodes
 
     public CustomNode Halo;
@@ -90,9 +94,7 @@ public sealed unsafe class TargetReticle : StateWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
-    public override void OnUpdate() { if (!Halo.Visible) StopRotation(); }
+    public override void PostUpdate() { if (!Halo.Visible) StopRotation(); }
 
     public override void OnFirstRun(int current) => Halo.SetAlpha(current > 0 ? 255:0);
 
@@ -166,17 +168,26 @@ public sealed unsafe class TargetReticle : StateWidget
         }
 
         public TargetReticleConfig() { }
+
+        public void FillColorLists(int max)
+        {
+            while (ColorList.Count <= max) ColorList.Add(new(100, 70, 50));
+        }
     }
 
-    public TargetReticleConfig Config = null!;
+    public TargetReticleConfig Config;
 
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        while (Config.ColorList.Count <= Tracker.CurrentData.MaxState) Config.ColorList.Add(new(100,70,50));
+        Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs()
+    {
+        Config = new();
+        Config.FillColorLists(Tracker.CurrentData.MaxState);
+    }
 
     public override void ApplyConfigs()
     {
@@ -213,8 +224,6 @@ public sealed unsafe class TargetReticle : StateWidget
     }
 
     #endregion
-
-    public TargetReticle(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

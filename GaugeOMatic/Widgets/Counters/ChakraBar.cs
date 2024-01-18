@@ -12,11 +12,14 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ChakraBar : CounterWidget
 {
+    public ChakraBar(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new() 
@@ -91,7 +94,7 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     private CustomNode BuildStacks(int count)
     {
-        Stacks = new List<CustomNode>();
+        Stacks = new();
         for (var i = 0; i < count; i++)
         {
             Pearls.Add(ImageNodeFromPart(1, 0).SetOrigin(19.2f,19.6f)
@@ -208,8 +211,6 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
     public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) PlateAppear(); }
 
@@ -286,7 +287,7 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public ChakraBarConfig Config = null!;
+    public ChakraBarConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -339,8 +340,6 @@ public sealed unsafe class ChakraBar : CounterWidget
     }
 
     #endregion
-
-    public ChakraBar(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

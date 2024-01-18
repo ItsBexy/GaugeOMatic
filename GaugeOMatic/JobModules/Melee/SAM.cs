@@ -26,6 +26,7 @@ public class SAMModule : JobModule
     public override List<MenuOption> JobGaugeMenu { get; } = new(){
         new("Kenki Gauge",nameof(KenkiGaugeTracker)),
         new("Meditation Gauge",nameof(MeditationGaugeTracker)),
+        new("Sen Gauge - Seal Count",nameof(SenSealTracker)),
         new("Sen Gauge - Setsu Seal",nameof(SenGaugeSetsuTracker)),
         new("Sen Gauge - Getsu Seal",nameof(SenGaugeGetsuTracker)),
         new("Sen Gauge - Ka Seal",nameof(SenGaugeKaTracker))

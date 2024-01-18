@@ -1,4 +1,3 @@
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
@@ -10,16 +9,20 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.MahjongRibbon;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class MahjongRibbon : GaugeBarWidget
 {
+    public MahjongRibbon(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -31,7 +34,9 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new ("ui/uld/emjintroparts08.tex", new Vector4(0,0,720,64) ),
+        new ("ui/uld/emjintroparts08.tex", 
+             new Vector4(0, 17, 720, 32),
+             new Vector4(0, 17, 720, 32) ),
         new ("ui/uld/emjintroparts03.tex", new Vector4(0,0,64,64)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4(256, 152, 20, 88))
     };
@@ -39,19 +44,23 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public CustomNode Bar;
     public CustomNode Frame;
-    public CustomNode LabelText;
+    public LabelTextNode LabelTextNode;
+    public CustomNode Contents;
 
     public CustomNode Backdrop;
 
+    public CustomNode TickWrapper;
     public CustomNode Tick;
 
     public override CustomNode BuildRoot()
     {
         Bar = BuildBar();
-        Frame = NineGridFromPart(1, 0, 28, 28, 28, 28).SetSize(0,32);
-        Tick = ImageNodeFromPart(2, 0).SetAlpha(0).SetOrigin(20,44).SetPos(0,-27.5f).SetScale(0.8f,0.55f).SetImageFlag(32);
-        LabelText = CreateLabelTextNode(Config.LabelText.Text, Tracker.DisplayName);
-        NumTextNode = CreateNumTextNode();
+        Frame = NineGridFromPart(1, 0, 28, 28, 28, 28).SetSize(0, 32);
+        LabelTextNode = new(Config.LabelText.Text,Tracker.DisplayName);
+        NumTextNode = new();
+
+        Tick = ImageNodeFromPart(2, 0).SetAlpha(0).SetOrigin(20, 44).SetPos(0, -27.5f).SetScale(0.8f, 0.55f).SetImageFlag(32);
+        TickWrapper = new CustomNode(CreateResNode(),Tick).SetX(Config.Width/-2);
 
         Tweens.Add(new(Tick,
                        new(0){ScaleY=0.54f,ScaleX=0.81f},
@@ -59,24 +68,20 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                        new(600){ ScaleY = 0.54f, ScaleX = 0.81f })
                        {Repeat = true,Ease = Eases.SinInOut});
 
-        return new CustomNode(CreateResNode(), Bar, Frame, Tick, LabelText, NumTextNode).SetOrigin(0,32);
+        Contents = new(CreateResNode(), Bar, Frame, TickWrapper);
+
+        return new CustomNode(CreateResNode(), Contents, LabelTextNode, NumTextNode).SetOrigin(0,32);
     }
 
     private CustomNode BuildBar()
     {
-        Backdrop = BuildRibbon();
-        Drain = BuildRibbon();
-        Gain = BuildRibbon();
-        Main = BuildRibbon();
-
-        Main[0].SetSize(4320, 50);
-
-        Tweens.Add(new(Main[0],new(0){X=0},new(10000){X=-1440}){Repeat = true});
+        Backdrop = ImageNodeFromPart(0, 1).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32);
+        Drain = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32).SetOrigin(0, 16);
+        Gain = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32).SetOrigin(0,16);
+        Main = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32).SetOrigin(0, 16);
 
         return new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main).SetPos(0, 0).SetSize(Config.Width, 32);
     }
-
-    private CustomNode BuildRibbon() => new CustomNode(CreateResNode(), ImageNodeFromPart(0, 0).SetPos(0,-18).SetSize(2880, 50).SetImageWrap(3)).SetSize(0,32).SetNodeFlags(NodeFlags.Clip);
 
     #endregion
 
@@ -93,30 +98,17 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                       { Ease = Eases.SinInOut });
 
         Tweens.Add(new(Bar,
-                       new(0) { X = -halfWidth, Alpha = 255, Y = 0, Width = Config.Width, Height = 32 },
-                       new(kf1) { X = 0 , Alpha = 255, Y = 0, Width = 0, Height = 32 },
-                       new(kf2) { X = 0 , Alpha = 128, Y = 16, Width = 0, Height = 0 })
+                       new(0) { X = -halfWidth, Alpha = 255, Y = 0, ScaleX=1, Height = 32 },
+                       new((int)(kf1*0.9f)) { X = 0 , Alpha = 128, Y = 0, ScaleX = 0, Height = 32 },
+                       new(kf2) { X = 0 , Alpha = 0, Y = 16, ScaleX = 0, Height = 0 })
                       { Ease = Eases.SinInOut });
 
-        Tweens.Add(new(Backdrop,
-                       new(0) { Width = Config.Width, Alpha = Config.Background.A },
-                       new(kf1) { Width = 0, Alpha = 0 },
-                       new(kf2) { Width = 0, Alpha = 0 })
-        { Ease = Eases.SinInOut });
+        Tweens.Add(new(TickWrapper,
+                       new(0) { Alpha = 255, X = -halfWidth, ScaleX = 1 },
+                       new(kf1) { Alpha = 128, X = 0, ScaleX = 0 },
+                       new(kf2) { Alpha = 0, X = 0, ScaleX = 0 }));
 
-        Tweens.Add(new(Drain,
-                       new(0) { Alpha = Config.DrainColor.A },
-                       new(kf1) { Alpha = 0 }));
-
-        Tweens.Add(new(Gain,
-                       new(0) { Alpha = Config.GainColor.A },
-                       new(kf1) { Alpha = 0 }));
-
-        Tweens.Add(new(Tick,
-                       new(0) { Alpha = Config.TickColor.A },
-                       new(kf1) { Alpha = 0 }));
-
-        Tweens.Add(new(LabelText, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }));
+        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }));
         Tweens.Add(new(NumTextNode, new(0) { Alpha = 255 }, new(kf2) { Alpha = 0 }));
     }
 
@@ -127,41 +119,27 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         Tweens.Add(new(Frame,
                        new(0) { Alpha = 0, Y = 16, X = -16, Width = 32, Height=0, AddRGB = new(200) },
                        new(kf1) { Alpha = 255, Y = 0, X = -16, Width = 32, Height=32, AddRGB = new(255) },
-                       new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, Height = 32, Width = Config.Width, AddRGB = 0 })
-        { Ease = Eases.SinInOut });
-
-        Tweens.Add(new(Bar,
-                       new(0) { Alpha = 0, Y = 16, X = -16 , Width = 32, Height=0 },
-                       new(kf1) { Alpha = 255, Y = 0, X = -16 , Width = 32, Height=32 },
-                       new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, Width = Config.Width, Height = 32 })
-        { Ease = Eases.SinInOut });
-
-        Tweens.Add(new(Backdrop,
-                       new(0) { X=0,Width = 32, Height=0,Alpha = 255 },
-                       new(kf1) { X = 0, Width = 32, Height=32,Alpha = Config.Background.A },
-                       new(kf2) { X = 0, Width = Config.Width, Alpha = Config.Background.A })
+                       new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, Height = 32, Width = Config.Width, AddRGB = 0 }) 
                        { Ease = Eases.SinInOut });
 
-        Tweens.Add(new(Main,
-                       new(0) { Height = 0 },
-                       new(kf1) { Height = 32 }));
+        Tweens.Add(new(Bar,
+                       new(0) { Alpha = 0, Y = 16, X = -16,ScaleY=0, ScaleX = 32f/Config.Width, Height=0 },
+                       new(kf1) { Alpha = 255, Y = 0, X = -16 ,ScaleY=1, ScaleX = 32f / Config.Width, Height=32 },
+                       new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, ScaleX = 1, Height = 32 }) 
+                       { Ease = Eases.SinInOut });
 
-        Tweens.Add(new(Drain,
-                       new(0) { Alpha = 0, Height = 0 },
-                       new(kf1) { Alpha = 0, Height = 32 },
-                       new(kf2) { Alpha = Config.DrainColor.A, Height = 32 }));
+        Tweens.Add(new(Backdrop,
+                       new(0) { X=0,Height=0,Alpha = 255 },
+                       new(kf1) { X = 0,Height=32,Alpha = Config.Background.A },
+                       new(kf2) { X = 0, Alpha = Config.Background.A })
+                       { Ease = Eases.SinInOut });
 
-        Tweens.Add(new(Gain,
-                       new(0) { Alpha = 0, Height = 0 },
-                       new(kf1) { Alpha = 0, Height = 32 },
-                       new(kf2) { Alpha = Config.GainColor.A, Height = 32 }));
+        Tweens.Add(new(TickWrapper,
+                       new(0) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
+                       new(kf1) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
+                       new(kf2) { Alpha = 255, X = -halfWidth, ScaleX = 1 }));
 
-        Tweens.Add(new(Tick,
-                       new(0) { Alpha = 0 },
-                       new(kf1) { Alpha = 0 },
-                       new(kf2) { Alpha = Config.TickColor.A }));
-
-        Tweens.Add(new(LabelText, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
+        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
         Tweens.Add(new(NumTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
     }
 
@@ -169,11 +147,9 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public override void OnDecreaseToMin(float prog, float prevProg)
     {
-        if(Config.Collapse) CollapseBar(200, 250);
+        if(Config.Collapse) CollapseBar(300, 450);
 
         Tweens.Add(new(Tick, new(0) { Alpha = 255 }, new(200) { Alpha = 0 }));
         StopBackdropTween();
@@ -181,29 +157,27 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public override void OnIncreaseFromMin(float prog, float prevProg)
     {
-        if (Config.Collapse) ExpandBar(100, 250);
+        if (Config.Collapse) ExpandBar(150, 350);
 
         Tweens.Add(new(Tick, new(0) { Alpha = 0 }, new(200) { Alpha = 255 }));
         StartBackdropTween();
     }
 
-    public override void PlaceTickMark(float prog) =>
-        Tick.SetPos(Main.Node->Width - (Backdrop.Node->Width / 2f) - 20, -27.5f)
-            .SetAlpha(prog switch
-            {
-                < 0.025f => (byte)(prog * 10200F),
-                > 0.975f => (byte)((1 - prog) * 10200F),
-                _ => 255
-            });
+    public override void PlaceTickMark(float prog)
+    {
+        Tick.SetPos(Main.Node->Width - 20, -27.5f)
+            .SetAlpha(prog switch {
+            < 0.025f => (byte)(prog * 10200F),
+            > 0.975f => (byte)((1 - prog) * 10200F),
+            _ => 255
+        });
+        
+    }
 
     public override void PostUpdate(float prog, float prevProg)
     {
-        if (Drain.Node->Width > 0) Drain[0].SetPos(Backdrop[0].Node->X, 0);
-        if (Gain.Node->Width > 0) Gain[0].SetPos(Main[0].Node->X, 0);
 
-        Main.SetWidth(Math.Clamp((float)Main.Node->Width, 0, Backdrop.Node->Width));
-        Drain.SetWidth(Math.Clamp((float)Drain.Node->Width, 0, Backdrop.Node->Width));
-        Gain.SetWidth(Math.Clamp((float)Gain.Node->Width, 0, Backdrop.Node->Width));
+
     }
 
     public override void OnFirstRun(float prog)
@@ -222,14 +196,30 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     private void StopBackdropTween()
     {
-        ClearNodeTweens(ref Tweens, Backdrop[0]);
-        Tweens.Add(new(Backdrop[0], new(0) { X = Backdrop[0].Node->X }, new(250) { X = 0 }) { Ease = Eases.SinInOut });
+        ClearLabelTweens(ref Tweens,"ScrollAni");
+        Tweens.Add(new(Main,
+                       new(0,Main),
+                       new(200) { PartCoords = new(720, 17, 720, 32) })
+                       { Ease = Eases.SinInOut, Label = "ScrollAni" });
+
+        Tweens.Add(new(Backdrop,
+                       new(0,Backdrop),
+                       new(200) { PartCoords = new(0, 17, 720, 32) })
+                       { Ease = Eases.SinInOut, Label = "ScrollAni" });
     }
 
     private void StartBackdropTween()
     {
-        ClearNodeTweens(ref Tweens, Backdrop[0]);
-        Tweens.Add(new(Backdrop[0], new(0) { X = -1440 }, new(20000) { X = 0 }) { Repeat = true });
+        ClearLabelTweens(ref Tweens, "ScrollAni");
+        Tweens.Add(new(Main,
+                       new(0) { PartCoords = new(0, 17, 720, 32) },
+                       new(5000) { PartCoords = new(720, 17, 720, 32) })
+                       { Repeat = true, Label = "ScrollAni" });
+
+        Tweens.Add(new(Backdrop,
+                       new(0) { PartCoords = new(720, 17, 720, 32) },
+                       new(10000) { PartCoords = new(0, 17, 720, 32) })
+                       { Repeat = true, Label = "ScrollAni" });
     }
 
     #endregion
@@ -241,6 +231,8 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         public Vector2 Position = new(0, -27);
         public float Scale = 1;
         public float Width = 144;
+        public float Angle;
+
         public AddRGB Background = "0x777777FF";
         public AddRGB MainColor = "0x987B7BFF";
         public AddRGB GainColor = "0xDE56B2A0";
@@ -248,7 +240,16 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         public AddRGB TickColor = "0xD36E27FF"; 
         public bool Collapse;
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 0), new(255), 0x8E6A0CFF, Jupiter, 20, Left);
-        protected override NumTextProps NumTextDefault => new(true, new(0, 12.5f), new(255), new(0), MiedingerMed, 18, Left, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(0), 
+                                                              color:     new(255), 
+                                                              edgeColor: new(0),
+                                                              showBg:    false,
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed,
+                                                              fontSize:  18, 
+                                                              align:     Center,
+                                                              invert:    false);
 
         public MahjongRibbonConfig(WidgetConfig widgetConfig)
         {
@@ -260,6 +261,8 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             Position = config.Position;
             Scale = config.Scale;
             Width = config.Width;
+            Angle = config.Angle;
+
             Invert = config.Invert;
             Background = config.Background;
             MainColor = config.MainColor;
@@ -269,6 +272,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             NumTextProps = config.NumTextProps;
             LabelText = config.LabelText;
             Collapse = config.Collapse;
+            SplitCharges = config.SplitCharges;
         }
 
         public MahjongRibbonConfig() => NumTextProps = NumTextDefault;
@@ -276,7 +280,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public override GaugeBarWidgetConfig GetConfig => Config;
 
-    public MahjongRibbonConfig Config = null!;
+    public MahjongRibbonConfig Config;
 
     public override void InitConfigs()
     {
@@ -289,25 +293,29 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     public Vector2 PosAdjust = new(0, -32);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position+PosAdjust).SetWidth(Config.Width).SetScale(Config.Scale);
+        WidgetRoot.SetPos(Config.Position + PosAdjust)
+                  .SetWidth(Config.Width)
+                  .SetScale(Config.Scale);
+
+        Contents.SetRotation(Config.Angle,true).SetOrigin(0,16);
+
         Frame.SetPos(Config.Width / -2, 0).SetWidth(Config.Width);
         Bar.SetPos(Config.Width / -2, 0).SetWidth(Config.Width);
-        Backdrop.SetSize(Config.Width, 64);
-       // Main.SetWidth((Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge) * Config.Width);
+        Backdrop.SetWidth(Config.Width);
 
-        Main.SetAddRGB(Config.MainColor, true);
+        Main.SetAddRGB(Config.MainColor, true).SetOrigin(Config.Width / 2f, 16).SetWidth(CalcBarProperty(CalcProg()));
         Backdrop.SetAddRGB(Config.Background,true);
-        Drain.SetAddRGB(Config.DrainColor, true);
-        Gain.SetAddRGB(Config.GainColor, true);
+        Drain.SetAddRGB(Config.DrainColor, true).SetWidth(0).SetOrigin(Config.Width/2f, 16);
+        Gain.SetAddRGB(Config.GainColor, true).SetWidth(0).SetOrigin(Config.Width / 2f, 16);
+
+        TickWrapper.SetX(Config.Width / -2);
         Tick.SetAddRGB(Config.TickColor);
+        
+        LabelTextNode.ApplyProps(Config.LabelText, new Vector2(Config.Width / -2, -15));
 
-        var configLabelText = Config.LabelText;
-        configLabelText.Position += new Vector2(Config.Width/-2,-15);
-        LabelText.SetText(configLabelText.Text.Length > 0 ? configLabelText.Text : Tracker.DisplayName);
-        configLabelText.ApplyTo(LabelText);
+        NumTextNode.ApplyProps(Config.NumTextProps,new(-1,17));
+        NumTextNode.SetOrigin((NumTextNode.Width / 2) + 1, (NumTextNode.Height / 2) - 1);
 
-        Config.NumTextProps.ApplyTo(NumTextNode);
-        NumTextNode.SetPos(Config.NumTextProps.Position.X + (Config.Width / 2) + 10, Config.NumTextProps.Position.Y);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -316,6 +324,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 64, 1440, 1, ref update);
+        FloatControls("Angle", ref Config.Angle, -180, 180, 1, ref update);
 
         Heading("Colors");
         ColorPickerRGBA("Backdrop", ref Config.Background, ref update);
@@ -325,13 +334,13 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         ColorPickerRGB("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
+
+        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck();
-      //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
-
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls2("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
+        LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.MahjongRibbonCfg = Config;
@@ -341,14 +350,12 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     {
         if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
-            if (Config.Collapse) CollapseBar(250, 350);
+            if (Config.Collapse) CollapseBar(350, 450);
             else ExpandBar(100, 350);
         }
     }
 
     #endregion
-
-    public MahjongRibbon(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig

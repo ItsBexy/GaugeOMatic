@@ -3,7 +3,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -43,33 +42,19 @@ public unsafe partial class CustomNodeManager
         }
     }
 
-    public static AtkImageNode* CreateImageNode(CustomPartsList customPartsList, string partKey)
-    {
-        var id = customPartsList.Keys.IndexOf(partKey);
-        return id >= 0 ? CreateImageNode(customPartsList, (ushort)id) : CreateResNode()->GetAsAtkImageNode();
-    }
-
     public struct CustomPartsList : IDisposable
     {
         public string TexturePath { get; set; }
         public AtkUldPartsList* AtkPartsList;
         private static AtkUldAsset* Asset;
 
-        public List<string> Keys { get; set; } = new();
+        public static implicit operator AtkUldPartsList*(CustomPartsList c) => c.AtkPartsList;
 
         public CustomPartsList(string texturePath, params Vector4[] customParts)
         {
             TexturePath = texturePath;
             Asset = CreateAsset(texturePath, 1);
             AtkPartsList = CreateAtkPartsList(customParts);
-        }
-
-        public CustomPartsList(string texturePath, Dictionary<string, Vector4> customParts)
-        {
-            TexturePath = texturePath;
-            Asset = CreateAsset(texturePath, 1);
-            Keys = customParts.Keys.ToList();
-            AtkPartsList = CreateAtkPartsList(customParts.Values.ToArray());
         }
 
         private static AtkUldPartsList* CreateAtkPartsList(IReadOnlyList<Vector4> customParts)

@@ -8,17 +8,20 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
-using static GaugeOMatic.Widgets.GaugeBarWidget;
+using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.NinkiOverlay;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+#pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class NinkiOverlay : Widget
+public sealed unsafe class NinkiOverlay : GaugeBarWidget
 {
+    public NinkiOverlay(Tracker tracker) : base(tracker) { }
+
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
@@ -27,7 +30,7 @@ public sealed unsafe class NinkiOverlay : Widget
         Author = "ItsBexy",
         Description = "A glowing gauge bar aura fitted over the shape of the Ninki Gauge (or a replica of it).",
         WidgetTags = GaugeBar | MultiComponent,
-        KeyText = "NK2"
+        MultiCompData = new("NK", "Ninki Gauge Replica", 2)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -43,7 +46,6 @@ public sealed unsafe class NinkiOverlay : Widget
     public CustomNode Tick;
     public CustomNode Shine;
     public CustomNode Calligraphy;
-    public CustomNode NumTextNode;
 
     public override CustomNode BuildRoot()
     {
@@ -51,7 +53,7 @@ public sealed unsafe class NinkiOverlay : Widget
         Tick = ImageNodeFromPart(0, 1).SetAlpha(0).SetOrigin(22, 43.5f).SetImageFlag(32);
         Shine = ImageNodeFromPart(0, 1).SetAlpha(0).SetOrigin(22, 43.5f).SetImageFlag(32);
         Calligraphy = ImageNodeFromPart(0, 2).SetPos(23, 29).SetOrigin(98, 28).SetImageFlag(32).SetRGBA(new(1, 1, 1, 0));
-        NumTextNode = CreateNumTextNode();
+        NumTextNode = new();
 
        //Flippy(Tick, 10f);
 
@@ -84,11 +86,10 @@ public sealed unsafe class NinkiOverlay : Widget
 
     #region UpdateFuncs
 
-    public override string? SharedEventGroup => null;
-
     public static float CalcTickY(float prog) => prog >= 0.845 ? PolyCalc(prog, 674.909344670314, -1438.55803705433, 771.474668979089) : PolyCalc(prog, 11.6767206839834, 52.8756304874818, -160.237711149177, 114.469149751575);
 
     public static float CalcTickScale(float prog) => prog < 0.845 ? 1 : PolyCalc(prog, -40.6519205182959, 91.1244645648548, -49.4678579360407);
+
 
     public override void Update()
     {
@@ -101,12 +102,12 @@ public sealed unsafe class NinkiOverlay : Widget
 
         if (prog > 0 && prevProg == 0) AppearAnim();
 
-        NumTextNode.UpdateNumText(Config.NumTextProps, current, max);
+        NumTextNode.UpdateValue(current, max);
 
         var curWid = (ushort)Math.Round((prog * 229f) + 18f);
         var prevWid = (ushort)Math.Round((prevProg * 229f) + 18f);
 
-        AnimateDrainGain(DrainGainType.Width,ref Tweens, Scroll, curWid, prevWid, 0, Config.AnimationLength);
+        AnimateDrainGain(Width,ref Tweens, Scroll, curWid, prevWid, 0, Config.AnimationLength);
 
         var tweenWidth = Scroll.Node->Width;
         var tweenProg = (tweenWidth - 18f) / 229f;
@@ -129,6 +130,9 @@ public sealed unsafe class NinkiOverlay : Widget
         RunTweens();
     }
 
+    public override DrainGainType DGType => Width;
+    public override float CalcBarProperty(float prog) => (ushort)Math.Round((prog * 229f) + 18f);
+
     #endregion
 
     #region Configs
@@ -139,7 +143,16 @@ public sealed unsafe class NinkiOverlay : Widget
         public float Scale = 1;
         public AddRGB ScrollColor = new(80, 30, -70, 90);
         public ColorRGB TickColor = new(255, 164, 93);
-        protected override NumTextProps NumTextDefault => new(true, new(212, 58), new(255, 241, 197), new(110, 25, 0), MiedingerMed, 20, Center, false);
+        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+                                                              position:  new(167, 58),
+                                                              color:     new(255, 241, 197),
+                                                              edgeColor: new(110, 25, 0),
+                                                              showBg:    false,
+                                                              bgColor:   new(0), 
+                                                              font:      MiedingerMed, 
+                                                              fontSize:  20, 
+                                                              align:     Center,
+                                                              invert:    false);
 
         public NinkiOverlayConfig(WidgetConfig widgetConfig)
         {
@@ -155,12 +168,17 @@ public sealed unsafe class NinkiOverlay : Widget
             NumTextProps = config.NumTextProps;
             AnimationLength = config.AnimationLength;
             Invert = config.Invert;
+            SplitCharges = config.SplitCharges;
         }
 
-        public NinkiOverlayConfig() { }
+        public NinkiOverlayConfig()
+        {
+            NumTextProps = NumTextDefault;
+        }
     }
 
-    public NinkiOverlayConfig Config = null!;
+    public NinkiOverlayConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -179,7 +197,7 @@ public sealed unsafe class NinkiOverlay : Widget
         Shine.SetRGB(Config.TickColor);
         Calligraphy.SetAddRGB((Vector4)Config.TickColor);
 
-        Config.NumTextProps.ApplyTo(NumTextNode);
+        NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -193,8 +211,10 @@ public sealed unsafe class NinkiOverlay : Widget
         ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
+        
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
+
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
@@ -203,8 +223,6 @@ public sealed unsafe class NinkiOverlay : Widget
     }
 
     #endregion
-
-    public NinkiOverlay(Tracker tracker) : base(tracker) { }
 }
 
 public partial class WidgetConfig
