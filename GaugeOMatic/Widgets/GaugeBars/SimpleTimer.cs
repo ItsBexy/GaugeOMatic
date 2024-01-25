@@ -1,8 +1,8 @@
+using CustomNodes;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Widgets.NumTextProps;
@@ -44,7 +44,6 @@ public sealed class SimpleTimer : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override DrainGainType DGType => DrainGainType.Width;
     public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void Update()
@@ -57,10 +56,8 @@ public sealed class SimpleTimer : GaugeBarWidget
         if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
 
         NumTextNode.UpdateValue(current,max);
-        RunTweens();
+        Animator.RunTweens();
     }
-
-    public override float CalcBarProperty(float prog) => 0;
 
     #endregion
 
@@ -77,19 +74,8 @@ public sealed class SimpleTimer : GaugeBarWidget
                                                               align: Center,
                                                               invert: false);
 
-        public SimpleTimerConfig(WidgetConfig widgetConfig)
-        {
-            NumTextProps = NumTextDefault;
-
-            var config = widgetConfig.SimpleTimerCfg;
-            if (config != null)
-            {
-                NumTextProps = config.NumTextProps;
-                SplitCharges = config.SplitCharges;
-            }
-        }
-
-        public SimpleTimerConfig() { NumTextProps = NumTextDefault; }
+        public SimpleTimerConfig(WidgetConfig widgetConfig) : base(widgetConfig.SimpleTimerCfg) { }
+        public SimpleTimerConfig() { }
     }
 
     public SimpleTimerConfig Config;
@@ -105,7 +91,7 @@ public sealed class SimpleTimer : GaugeBarWidget
         var numTextProps = Config.NumTextProps;
 
         var label = $"{Tracker.TermGauge} Text";
-        ImGuiHelpers.TableSeparator(2);
+        ImGuiHelpy.TableSeparator(2);
 
         PositionControls($"Position##{label}Pos",ref numTextProps.Position, ref update);
         ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);

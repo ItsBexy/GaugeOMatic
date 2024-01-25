@@ -1,3 +1,5 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
@@ -6,6 +8,7 @@ using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalanceBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -13,6 +16,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -23,8 +27,8 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     {
         SharedEvents.Add("SpendShake", _ =>
         {
-            SpendShake(ref Tweens, BarContainer!, Config!.FlashColor, 30, 48);
-            SpendShake(ref Tweens, BarOverlay!, Config.FlashColor, Config.Side == 0 ? 25 : 59, 40);
+            SpendShake(BarContainer!, Config!.FlashColor, 30, 48, ref Animator);
+            SpendShake(BarOverlay!, Config.FlashColor, Config.Side == 0 ? 25 : 59, 40, ref Animator);
         });
     }
 
@@ -77,22 +81,25 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     public override CustomNode BuildRoot()
     {
         Drain = ImageNodeFromPart(0, 11).SetScale(1, -1)
-                                           .SetSize(26, 0)
-                                           .SetOrigin(0, 62)
-                                           .SetAddRGB(Config.DrainColor)
-                                           .SetImageWrap(1);
+                                        .SetSize(26, 0)
+                                        .SetOrigin(0, 62)
+                                        .SetAddRGB(Config.DrainColor)
+                                        .SetImageWrap(1)
+                                        .DefineTimeline(BarTimeline);
 
         Gain = ImageNodeFromPart(0, 11).SetScale(1, -1)
-                                                 .SetSize(26, 0)
-                                                 .SetOrigin(0, 62)
-                                                 .SetAddRGB(Config.GainColor)
-                                                 .SetImageWrap(1);
+                                       .SetSize(26, 0)
+                                       .SetOrigin(0, 62)
+                                       .SetAddRGB(Config.GainColor)
+                                       .SetImageWrap(1)
+                                       .DefineTimeline(BarTimeline);
 
         Main = ImageNodeFromPart(0, 1).SetScale(1, -1)
                                       .SetSize(26, 0)
                                       .SetOrigin(0, 62)
                                       .SetAlpha(0xCC)
-                                      .SetImageWrap(1);
+                                      .SetImageWrap(1)
+                                      .DefineTimeline(BarTimeline);
 
         Petal1 = ImageNodeFromPart(0, 10).SetPos(53,70)
                                          .SetScale(1.277778f)
@@ -140,6 +147,8 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     #region Animations
 
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 0 }, new(1) { Height = 124 } };
+
     #endregion
 
     #region UpdateFuncs
@@ -153,7 +162,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override void OnIncrease(float prog, float prevProg)
     {
-        if (Config.PetalInc) PetalAnim(CalcProg());
+        if (Config.PetalInc) PetalAnim(Interpolate(prog,prevProg,0.05f)!.Value);
     }
 
     private void PetalAnim(float pos)
@@ -167,63 +176,51 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     {
         if (Config.Side == 0)
         {
-            Tweens.Add(new(Petal1,
-                           new(0) { X = 65, Y = 70, Scale = 0.5f, Rotation = 0.6981317F, Alpha = 255 },
-                           new(300) { X = 50, Y = 70, Scale = 1.5f, Rotation = 2.443461F, Alpha = 255 },
-                           new(500) { X = 30, Y = 60, Scale = 1.3f, Rotation = 3.490659F, Alpha = 0 }));
-
-            Tweens.Add(new(Petal2,
-                           new(0) { X = 40, Y = 70, Scale = 0.5f, Rotation = 0, Alpha = 175 },
-                           new(275) { X = 30, Y = 62.6f, Scale = 1.2f, Rotation = 1.22173F, Alpha = 88 },
-                           new(425) { X = 24, Y = 60, Scale = 2, Rotation = 2.094395F, Alpha = 0 }));
-
-
-            Tweens.Add(new(Petal3,
-                           new(0) { X = 45, Y = 70, Scale = 0.5f, Rotation = 0.3490658F, Alpha = 180 },
-                           new(125) { X = 30, Y = 80, Scale = 1, Rotation = 0.3490658F, Alpha = 150 },
-                           new(460) { X = 15, Y = 90, Scale = 1.5f, Rotation = -0.3490658F, Alpha = 0 }));
+            Animator += new Tween[]
+            {
+                new(Petal1,
+                    new(0) { X = 65, Y = 70, Scale = 0.5f, Rotation = 0.6981317F, Alpha = 255 },
+                    new(300) { X = 50, Y = 70, Scale = 1.5f, Rotation = 2.443461F, Alpha = 255 },
+                    new(500) { X = 30, Y = 60, Scale = 1.3f, Rotation = 3.490659F, Alpha = 0 }),
+                new(Petal2,
+                    new(0) { X = 40, Y = 70, Scale = 0.5f, Rotation = 0, Alpha = 175 },
+                    new(275) { X = 30, Y = 62.6f, Scale = 1.2f, Rotation = 1.22173F, Alpha = 88 },
+                    new(425) { X = 24, Y = 60, Scale = 2, Rotation = 2.094395F, Alpha = 0 }),
+                new(Petal3,
+                    new(0) { X = 45, Y = 70, Scale = 0.5f, Rotation = 0.3490658F, Alpha = 180 },
+                    new(125) { X = 30, Y = 80, Scale = 1, Rotation = 0.3490658F, Alpha = 150 },
+                    new(460) { X = 15, Y = 90, Scale = 1.5f, Rotation = -0.3490658F, Alpha = 0 })
+            };
         }
         else
         {
-            Tweens.Add(new(Petal1,
-                           new(0) { X = 70, Y = 70, Scale = 0.4f, Rotation = -2.544358F, Alpha = 180 },
-                           new(160) { X = 80, Y = 96, Scale = 1.4f, Rotation = -1.3918093F, Alpha = 150 },
-                           new(560) { X = 90, Y = 110, Scale = 1.2f, Rotation = 0.5235988F, Alpha = 0 }));
-
-            Tweens.Add(new(Petal2,
-                           new(0) { X = 70, Y = 60, Scale = 0.4f, Rotation = -0.032460704F, Alpha = 180 },
-                           new(190) { X = 80, Y = 50, Scale = 1.2f, Rotation = -0.6809802F, Alpha = 150 },
-                           new(460) { X = 90, Y = 30, Scale = 1.2f, Rotation = -2.443461F, Alpha = 0 }));
-
-            Tweens.Add(new(Petal3,
-                           new(0) { X = 70, Y = 60, Scale = 0.2f, Rotation = -1.3916008F, Alpha = 255 },
-                           new(210) { X = 80, Y = 80, Scale = 1.5f, Rotation = -0.8393953F, Alpha = 128 },
-                           new(470) { X = 90, Y = 84, Scale = 1.2f, Rotation = 0.34906584F, Alpha = 0 }));
+            Animator += new Tween[]
+            {
+                new(Petal1,
+                    new(0) { X = 70, Y = 70, Scale = 0.4f, Rotation = -2.544358F, Alpha = 180 },
+                    new(160) { X = 80, Y = 96, Scale = 1.4f, Rotation = -1.3918093F, Alpha = 150 },
+                    new(560) { X = 90, Y = 110, Scale = 1.2f, Rotation = 0.5235988F, Alpha = 0 }),
+                new(Petal2,
+                    new(0) { X = 70, Y = 60, Scale = 0.4f, Rotation = -0.032460704F, Alpha = 180 },
+                    new(190) { X = 80, Y = 50, Scale = 1.2f, Rotation = -0.6809802F, Alpha = 150 },
+                    new(460) { X = 90, Y = 30, Scale = 1.2f, Rotation = -2.443461F, Alpha = 0 }),
+                new(Petal3,
+                    new(0) { X = 70, Y = 60, Scale = 0.2f, Rotation = -1.3916008F, Alpha = 255 },
+                    new(210) { X = 80, Y = 80, Scale = 1.5f, Rotation = -0.8393953F, Alpha = 128 },
+                    new(470) { X = 90, Y = 84, Scale = 1.2f, Rotation = 0.34906584F, Alpha = 0 })
+            };
         }
     }
 
-    public static void SpendShake(ref List<Tween> tweens, CustomNode node, AddRGB flash, float x, float y)
-    {
-        tweens.Add(new(node,
-                       new(0) { X = x, Y = y, AddRGB = new(0) },
-                       new(30) { X = x + 1.9f, Y = y + 0.95f, AddRGB = flash*0.1f },
-                       new(100) { X = x - 0.8f, Y = y - 0.9f, AddRGB = flash*0.45f },
-                       new(160) { X = x + 1.9f, Y = y + 0.9f, AddRGB = flash*1 },
-                       new(180) { X = x + 1.75f, Y = y + 0.85f, AddRGB = flash*0.9f },
-                       new(240) { X = x, Y = y, AddRGB = flash*0.5f },
-                       new(500) { X = x, Y = y, AddRGB = new(0, 0, 0) }
-                   ));
-    }
-
-    public override void PostUpdate(float prog, float prevProg)
-    {
-        if (Gain.Height < Main.Height) Gain.SetHeight(Main.Height);
-    }
-
-    public override DrainGainType DGType => DrainGainType.Height;
-    public override float CalcBarProperty(float prog) => prog*124;
-
-    public override void OnFirstRun(float prog) => Main.SetHeight(CalcBarProperty(prog));
+    public static void SpendShake(CustomNode node, AddRGB flash, float x, float y, ref Animator animator) =>
+        animator += new Tween(node,
+                                  new(0) { X = x, Y = y, AddRGB = new(0) },
+                                  new(30) { X = x + 1.9f, Y = y + 0.95f, AddRGB = flash * 0.1f },
+                                  new(100) { X = x - 0.8f, Y = y - 0.9f, AddRGB = flash * 0.45f },
+                                  new(160) { X = x + 1.9f, Y = y + 0.9f, AddRGB = flash * 1 },
+                                  new(180) { X = x + 1.75f, Y = y + 0.85f, AddRGB = flash * 0.9f },
+                                  new(240) { X = x, Y = y, AddRGB = flash * 0.5f },
+                                  new(500) { X = x, Y = y, AddRGB = new(0, 0, 0) });
 
     #endregion
 
@@ -231,7 +228,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public sealed class BalanceBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public AddRGB MainColor = new(0);
         public AddRGB GainColor = new(100, -20, -20);
@@ -255,9 +252,8 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                                                               precision: 0, 
                                                               showZero:  true);
 
-        public BalanceBarConfig(WidgetConfig widgetConfig)
+        public BalanceBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.BalanceBarCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.BalanceBarCfg;
 
             if (config == null) return;
@@ -267,21 +263,15 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
             MainColor = config.MainColor;
             GainColor = config.GainColor;
             DrainColor = config.DrainColor;
-            NumTextProps = config.NumTextProps;
-            Invert = config.Invert;
             Side = config.Side;
             BaseColor = config.BaseColor;
             FlashColor = config.FlashColor;
             PetalDec = config.PetalDec;
             PetalInc = config.PetalInc;
             PetalColor = config.PetalColor;
-            SplitCharges = config.SplitCharges;
         }
 
-        public BalanceBarConfig()
-        {
-            NumTextProps = NumTextDefault;
-        }
+        public BalanceBarConfig() { }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -295,7 +285,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     }
 
     public override void ResetConfigs() => Config = new();
-
+    
     public override void ApplyConfigs()
     {
         var left = Config.Side == 0;

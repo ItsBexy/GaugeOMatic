@@ -35,7 +35,7 @@ public class WidgetInfo
 
     public static void BuildWidgetList()
     {
-        GaugeOMatic.Service.Log.Verbose("Generating list of Available Widgets");
+        Log.Verbose("Generating list of Available Widgets");
 
         var types = Assembly.GetExecutingAssembly()
                             .GetTypes()
@@ -45,12 +45,10 @@ public class WidgetInfo
         foreach (var type in types)
         {
             var widgetInfo = (WidgetInfo?)type.GetProperty("GetWidgetInfo")?.GetValue(null);
-
             if (widgetInfo == null) continue;
 
             WidgetList.Add(type.Name,widgetInfo);
-
-            GaugeOMatic.Service.Log.Verbose($"Added Widget Option: {widgetInfo.DisplayName}");
+            Log.Verbose($"Added Widget Option: {widgetInfo.DisplayName}");
         }
     }
 }
@@ -65,9 +63,10 @@ public enum WidgetTags
 
     // restriction tags
     HasFixedCount        = 0x8,  // is only designed to display up to a specific maximum number value
-    HasAddonRestrictions = 0x20, // is only designed to appear on certain HUD elements
-
     // ReSharper disable once UnusedMember.Global
+    HasJobRestrictions   = 0x10,
+    HasAddonRestrictions = 0x20, // is only designed to appear on certain HUD elements
+    
     Replica              = 0x40,  // Designed to recreate (in full or in part) the appearance of an existing job gauge
     MultiComponent       = 0x80,
 

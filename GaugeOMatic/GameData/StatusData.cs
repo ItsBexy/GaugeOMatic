@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 
 namespace GaugeOMatic.GameData;
 
@@ -37,6 +36,42 @@ public abstract partial class StatusData
         public StatusRef() { }
 
         public static implicit operator StatusRef(uint i) => Statuses.TryGetValue(i, out var result) ? result : new();
+
+        public bool TryGetStatus(out Status? result)
+        {
+            var statusList = StatusHolder == StatusHolder.Self ? PlayerStatus : TargetStatus;
+
+            if (statusList != null)
+            {
+                foreach (var status in statusList.Where(StatusMatch(ID)))
+                {
+                    result = status;
+                    return true;
+                }
+
+                if (SeeAlso != null)
+                {
+                    foreach (var seeID in SeeAlso)
+                    {
+                        foreach (var status in statusList.Where(StatusMatch(seeID)))
+                        {
+                            result = status;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            result = null;
+            return false;
+        }
+
+        public bool TryGetStatus()
+        {
+            var statusList = StatusHolder == StatusHolder.Self ? PlayerStatus : TargetStatus;
+            return statusList != null && (statusList.Any(StatusMatch(ID)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
+        }
+
     }
 
     public enum StatusHolder { Self, Target }
@@ -47,20 +82,6 @@ public abstract partial class StatusData
         ClientState.LocalPlayer?.TargetObject?.ObjectKind == ObjectKind.BattleNpc
             ? ((BattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
             : null;
-    
-    public static bool TryGetStatus(StatusList? statusList, uint id, out Status? result)
-    {
-        if (statusList != null)
-        {
-            foreach (var status in statusList.Where(StatusMatch(id)))
-            {
-                result = status;
-                return true;
-            }
-        }
-        result = null;
-        return false;
-    }
 
     private static Func<Status, bool> StatusMatch(uint id) => s => s.StatusId == id && s.SourceId == ClientState.LocalPlayer?.ObjectId;
 }

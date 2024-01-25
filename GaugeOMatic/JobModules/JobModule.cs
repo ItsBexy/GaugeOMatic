@@ -12,7 +12,6 @@ using static Dalamud.Game.Addon.Lifecycle.AddonEvent;
 using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.StatusData;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -31,11 +30,12 @@ public abstract class JobModule : IDisposable
     public TrackerManager TrackerManager;
     public TweakConfigs TweakConfigs => Configuration.TweakConfigs;
     public List<Tracker> TrackerList;
-    public IEnumerable<Widget?> WidgetList => TrackerList.Select(static t => t.Widget);
-    public TrackerConfig[] TrackerConfigList;
 
+    public IEnumerable<Widget?> WidgetList => TrackerList.Select(static t => t.Widget);
     public IEnumerable<Tracker> DrawOrder => TrackerList.ToArray().OrderBy(static t => t.TrackerConfig.Index);
     public IEnumerable<Tracker> BuildOrder => DrawOrder.Where(static t => t.TrackerConfig.Enabled).Reverse();
+  
+    public TrackerConfig[] TrackerConfigList;
     public TrackerConfig[] SaveOrder => TrackerConfigList.OrderBy(static t => t.Index).ToArray();
 
     protected unsafe JobModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
@@ -56,16 +56,12 @@ public abstract class JobModule : IDisposable
         DisposeTrackers();
     }
 
-    public static int SortTrackerConfigs(TrackerConfig a, TrackerConfig b) => a.Index - b.Index;
-
     private List<Tracker> BuildTrackerList()
     {
         var trackerList = new List<Tracker>();
         if (TrackerConfigList.Length <= 0) return trackerList;
 
-        Array.Sort(TrackerConfigList, SortTrackerConfigs);
-        
-        foreach (var trackerConfig in TrackerConfigList)
+        foreach (var trackerConfig in SaveOrder)
         {
             if (!JobCheck(trackerConfig))
             {
@@ -74,7 +70,7 @@ public abstract class JobModule : IDisposable
                 trackerConfig.AddonName = "_ParameterWidget";
             }
             trackerConfig.Index = trackerList.Count;
-            var newtracker = BuildTracker(trackerConfig);
+            var newtracker = Tracker.Create(this, trackerConfig);
             if (newtracker != null) trackerList.Add(newtracker);
         }
         
@@ -196,35 +192,4 @@ public abstract class JobModule : IDisposable
     public abstract void TweakUI(ref UpdateFlags update);
     public abstract void ApplyTweaks();
     public abstract List<MenuOption> JobGaugeMenu { get; }
-
-    public Tracker? BuildTracker(TrackerConfig trackerConfig)
-    {
-        var qualifiedTypeStr = $"{typeof(Tracker).Namespace}.{trackerConfig.TrackerType}";
-        var tracker = (Tracker?)Activator.CreateInstance(Type.GetType(qualifiedTypeStr) ?? typeof(EmptyTracker));
-
-        if (tracker == null) return null;
-
-        tracker.JobModule = this;
-
-        if (trackerConfig.ItemId != 0)
-        {
-            tracker.ItemRef = trackerConfig.TrackerType switch
-            {
-                nameof(ActionTracker) => (ActionRef)trackerConfig.ItemId,
-                nameof(StatusTracker) => (StatusRef)trackerConfig.ItemId,
-                _ => null
-            };
-        }
-
-        tracker.TrackerConfig = trackerConfig;
-
-        tracker.AddonDropdown = new(tracker);
-        tracker.WidgetMenuTable = new(tracker);
-        tracker.WidgetMenuWindow = new(tracker);
-        tracker.ItemRefMenu = new(tracker);
-
-        trackerConfig.DefaultName = tracker.DisplayName;
-
-        return tracker;
-    }
 }

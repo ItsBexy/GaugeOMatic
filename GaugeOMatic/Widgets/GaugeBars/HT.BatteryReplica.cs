@@ -1,15 +1,16 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BatteryReplica;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -83,60 +84,65 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     #region Animations
 
+    public virtual KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 20 }, new(1) { Width = Config.Width } };
+
     protected override void StartMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens, "BarPulse");
+        Animator -= "BarPulse";
         StartPulse(Barrel);
         StartPulse(BatteryClock);
     }
 
     private void StartPulse(CustomNode target) =>
-        Tweens.Add(new(target,
-                       new(0) { AddRGB = 0, MultRGB = new(90) },
-                       new(400) { AddRGB = 30, MultRGB = new(100) },
-                       new(800) { AddRGB = 0, MultRGB = new(90) })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
+        Animator += new Tween(target,
+                              new(0) { AddRGB = 0, MultRGB = new(90) },
+                              new(400) { AddRGB = 30, MultRGB = new(100) },
+                              new(800) { AddRGB = 0, MultRGB = new(90) })
+                              { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
 
     protected override void StopMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens, "BarPulse");
+        Animator -= "BarPulse";
 
         StopPulse(Barrel);
         StopPulse(BatteryClock);
     }
 
     private void StopPulse(CustomNode target) =>
-        Tweens.Add(new(target,
-                       new(0, target),
-                       new(400) { AddRGB = 0, MultRGB = new(100) })
-                       { Ease = Eases.SinInOut, Label = "BarPulse" });
+        Animator += new Tween(target,
+                              new(0, target),
+                              new(400) { AddRGB = 0, MultRGB = new(100) })
+                              { Ease = SinInOut, Label = "BarPulse" };
 
     private void EndOverlayPulse()
     {
-        ClearLabelTweens(ref Tweens, "OverlayPulse");
-        Tweens.Add(new(ClockFace,
-                       new(0,ClockFace),
-                       new(400) { AddRGB = new(0) })
-                       { Ease = Eases.SinInOut, Label = "OverlayPulse" });
-        Tweens.Add(new(Barrel,
-                       new(0, ClockFace),
-                       new(400) { AddRGB = new(0) })
-                       { Ease = Eases.SinInOut, Label = "OverlayPulse" });
+        Animator -= "OverlayPulse";
+        Animator += new Tween[]
+        {
+            new(ClockFace,
+                new(0,ClockFace),
+                new(400) { AddRGB = new(0) })
+                { Ease = SinInOut, Label = "OverlayPulse" },
+            new(Barrel,
+                new(0, ClockFace),
+                new(400) { AddRGB = new(0) })
+                { Ease = SinInOut, Label = "OverlayPulse" }
+        };
     }
 
     private void BeginOverlayPulse(AddRGB addRGB)
     {
-        ClearLabelTweens(ref Tweens,"OverlayPulse");
-        Tweens.Add(new(ClockFace,
-                       new(0) {AddRGB=new(0)}, 
-                       new(400) { AddRGB = addRGB },
-                       new(780) { AddRGB = new(0) }) 
-                       {Repeat=true,Ease=Eases.SinInOut,Label="OverlayPulse"});
-        Tweens.Add(new(Barrel,
-                       new(0) { AddRGB = new(0) },
-                       new(400) { AddRGB = addRGB },
-                       new(780) { AddRGB = new(0) })
-                       { Repeat = true, Ease = Eases.SinInOut, Label = "OverlayPulse" });
+        Animator -= "OverlayPulse";
+        Animator += new Tween(ClockFace, 
+                              new(0) {AddRGB=new(0)}, 
+                              new(400) { AddRGB = addRGB },
+                              new(780) { AddRGB = new(0) })
+                              { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
+        Animator += new Tween(Barrel,
+                              new(0) { AddRGB = new(0) },
+                              new(400) { AddRGB = addRGB },
+                              new(780) { AddRGB = new(0) })
+                              { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
     }
 
     #endregion
@@ -145,12 +151,9 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     public override string SharedEventGroup => "HeatGauge";
 
-    public override DrainGainType DGType => Width;
-    public override float CalcBarProperty(float prog) => (prog * (Config.Width-20))+20;
-
     public override void PostUpdate(float prog, float prevProg)
     {
-        Main.SetAlpha(Main.Width <= 20 ? 0 : 255);
+        Main.SetAlpha(Main.Width > 20);
 
         var orange = Config.BaseColor == 12;
         var gainA = orange ? Config.GainColorOrange.A : Config.GainColorBlue.A;
@@ -209,9 +212,8 @@ public unsafe class BatteryReplica : GaugeBarWidget
                                                               font: MiedingerMed, 
                                                               align: Right);
 
-        public BatteryReplicaConfig(WidgetConfig widgetConfig)
+        public BatteryReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.BatteryReplicaCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.BatteryReplicaCfg;
 
             if (config == null) return;
@@ -230,15 +232,9 @@ public unsafe class BatteryReplica : GaugeBarWidget
             MainColorBlue = config.MainColorBlue;
             GainColorBlue = config.GainColorBlue;
             DrainColorBlue = config.DrainColorBlue;
-
-            NumTextProps = config.NumTextProps;
-            Invert = config.Invert;
-            SplitCharges = config.SplitCharges;
-            Milestone = config.Milestone;
-            MilestoneType = config.MilestoneType;
         }
 
-        public BatteryReplicaConfig() => NumTextProps = NumTextDefault;
+        public BatteryReplicaConfig() { }
     }
 
     public BatteryReplicaConfig Config;
@@ -268,14 +264,17 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
         Main.SetPartId(Config.BaseColor)
             .SetAddRGB(colorOffset + (orange ? Config.MainColorOrange : Config.MainColorBlue),true)
-            .SetWidth(CalcBarProperty(CalcProg()));
+            .DefineTimeline(BarTimeline)
+            .SetWidth(AdjustProg(CalcProg()));
 
         Drain.SetPartId(Config.BaseColor)
              .SetAddRGB(colorOffset + (orange ? Config.DrainColorOrange : Config.DrainColorBlue), true)
+             .DefineTimeline(BarTimeline)
              .SetWidth(0);
 
         Gain.SetPartId(Config.BaseColor)
             .SetAddRGB(colorOffset + (orange ? Config.GainColorOrange : Config.GainColorBlue), true)
+            .DefineTimeline(BarTimeline)
             .SetWidth(0);
 
         NumTextNode.ApplyProps(Config.NumTextProps,new(Config.Width+6,74));

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,15 +41,11 @@ public class SCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAetherflow = TweakConfigs.SCHHideAetherflow;
-        var hideFaerie = TweakConfigs.SCHHideFaerie;
-        var schDissTimer = TweakConfigs.SCHDissHideText;
-
-        if (Bool1("Hide Aetherflow Gauge", ref hideAetherflow, ref update)) TweakConfigs.SCHHideAetherflow = hideAetherflow;
-        HideWarning(hideAetherflow);
-        if (Bool1("Hide Faerie Gauge", ref hideFaerie, ref update)) TweakConfigs.SCHHideFaerie = hideFaerie;
-        HideWarning(hideFaerie);
-        if (Bool1("Hide Fae Aether value while faerie-less", ref schDissTimer, ref update)) TweakConfigs.SCHDissHideText = schDissTimer;
+        ToggleControls("Hide Aetherflow Gauge",ref TweakConfigs.SCHHideAetherflow, ref update);
+        HideWarning(TweakConfigs.SCHHideAetherflow);
+        ToggleControls("Hide Faerie Gauge",ref TweakConfigs.SCHHideFaerie, ref update);
+        HideWarning(TweakConfigs.SCHHideFaerie);
+        ToggleControls("Hide Fae Aether value while faerie-less",ref TweakConfigs.SCHDissHideText, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -82,7 +78,7 @@ public class SCHModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool SCHHideAetherflow { get; set; }
-    public bool SCHHideFaerie { get; set; }
-    public bool SCHDissHideText { get; set; }
+    public bool SCHHideAetherflow;
+    public bool SCHHideFaerie;
+    public bool SCHDissHideText;
 }

@@ -1,7 +1,8 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -13,6 +14,8 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -56,12 +59,11 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     #region Animations
 
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 174 } };
+
     #endregion
 
     #region UpdateFuncs
-
-    public override DrainGainType DGType => DrainGainType.Width;
-    public override float CalcBarProperty(float prog) => (ushort)Math.Round(Math.Clamp(prog, 0f, 1f) * 174f);
 
     #endregion
 
@@ -89,9 +91,8 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
                                                               align:     Right,
                                                               invert:    false);
 
-        public FaerieLessConfig(WidgetConfig widgetConfig)
+        public FaerieLessConfig(WidgetConfig widgetConfig) : base(widgetConfig.FaerieLessCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.FaerieLessCfg;
 
             if (config == null) return;
@@ -103,16 +104,10 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
             Background = config.Background;
             GainColor = config.GainColor;
             DrainColor = config.DrainColor;
-            NumTextProps = config.NumTextProps;
             Mirror = config.Mirror;
-            Invert = config.Invert;
-            SplitCharges = config.SplitCharges;
         }
 
-        public FaerieLessConfig()
-        {
-            NumTextProps = NumTextDefault;
-        }
+        public FaerieLessConfig() { }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -131,13 +126,13 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
     {
         WidgetRoot.SetPos(Config.Position);
         WidgetRoot.SetScale(Config.Scale.X, Config.Scale.Y * (Config.Mirror ? -1f : 1f));
-        WidgetRoot.Node->Rotation = (float)(Config.Angle * (Math.PI / 180f));
+        WidgetRoot.Node->Rotation = (float)(Config.Angle * (PI / 180f));
         WidgetRoot.Node->DrawFlags |= 0xD;
 
         Backdrop.SetRGBA(Config.Background);
-        Main.SetRGBA(Config.MainColor).SetWidth(CalcBarProperty(CalcProg()));
-        Gain.SetRGBA(Config.GainColor).SetWidth(0);
-        Drain.SetRGBA(Config.DrainColor).SetWidth(0);
+        Main.SetRGBA(Config.MainColor).DefineTimeline(BarTimeline);
+        Gain.SetRGBA(Config.GainColor).DefineTimeline(BarTimeline);
+        Drain.SetRGBA(Config.DrainColor).DefineTimeline(BarTimeline);
 
         NumTextNode.ApplyProps(Config.NumTextProps,new(109,40));
     }

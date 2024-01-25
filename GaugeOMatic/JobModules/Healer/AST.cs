@@ -1,15 +1,15 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using ImGuiNET;
 using System.Collections.Generic;
-using GaugeOMatic.Trackers;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -37,18 +37,15 @@ public class ASTModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var font = TweakConfigs.ASTCardFont;
-        var fontIndex = FontList.IndexOf(font);
+        var fontIndex = FontList.IndexOf(TweakConfigs.ASTCardFont);
 
-        ImGui.Text("Card Font");
-        ImGui.SameLine();
+        LabelColumn("Card Font");
 
         ImGui.SetNextItemWidth(142 * GlobalScale);
         if (ImGui.Combo("##TweakASTCardFont", ref fontIndex, FontNames, FontNames.Length))
         {
             update |= UpdateFlags.Save;
-            font = FontList[fontIndex];
-            TweakConfigs.ASTCardFont = font;
+            TweakConfigs.ASTCardFont = FontList[fontIndex];
         }
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
@@ -84,5 +81,5 @@ public class ASTModule : JobModule
 }
 public partial class TweakConfigs
 {
-    public FontType ASTCardFont { get; set; } = Axis;
+    public FontType ASTCardFont = Axis;
 }

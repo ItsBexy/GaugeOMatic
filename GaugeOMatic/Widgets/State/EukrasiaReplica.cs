@@ -1,16 +1,21 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -29,15 +34,16 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         WidgetTags = State
     };
 
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    {
         new("ui/uld/JobHudGFF0.tex",
-            new(0,0,36,56),
-            new(36,0,36,56),
-            new(0,176,40,40),
-            new(0,56,24,24),
-            new(40,176,40,40),
-            new(0,80,40,96),
-            new(40,80,40,96))
+            new(0, 0, 36, 56),
+            new(36, 0, 36, 56),
+            new(0, 176, 40, 40),
+            new(0, 56, 24, 24),
+            new(40, 176, 40, 40),
+            new(0, 80, 40, 96),
+            new(40, 80, 40, 96))
     };
 
     #region Nodes
@@ -56,26 +62,65 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         LeftHalfInactive = ImageNodeFromPart(0, 2).SetSize(40, 80).SetImageWrap(3).SetImageFlag(1);
         FullActive = ImageNodeFromPart(0, 4).SetSize(80, 80).SetImageWrap(3).SetAlpha(0);
 
-        Nouliths[0] = ImageNodeFromPart(0, 1).SetPos(32, -30).SetRotation(225).SetSize(36, 52).SetOrigin(18, 60).SetImageWrap(2);
-        Nouliths[1] = ImageNodeFromPart(0, 1).SetPos(12, -30).SetRotation(135).SetSize(36, 52).SetOrigin(18, 60).SetImageWrap(2);
-        Nouliths[2] = ImageNodeFromPart(0, 1).SetPos(12, -10).SetRotation(45).SetSize(36, 52).SetOrigin(18, 60).SetImageWrap(2);
-        Nouliths[3] = ImageNodeFromPart(0, 1).SetPos(32, -10).SetRotation(315).SetSize(36, 52).SetOrigin(18, 60).SetImageWrap(2);
+        Nouliths[0] = ImageNodeFromPart(0, 1).SetPos(32, -30)
+                                             .SetRotation(225)
+                                             .SetSize(36, 52)
+                                             .SetOrigin(18, 60)
+                                             .SetImageWrap(2)
+                                             .RemoveFlags(SetVisByAlpha);
 
-        ElectricNouliths[0] = BuildElectricNoulith(0).SetAlpha(0);
-        ElectricNouliths[1] = BuildElectricNoulith(1).SetAlpha(0);
-        ElectricNouliths[2] = BuildElectricNoulith(2).SetAlpha(0);
-        ElectricNouliths[3] = BuildElectricNoulith(3).SetAlpha(0);
+        Nouliths[1] = ImageNodeFromPart(0, 1).SetPos(12, -30)
+                                             .SetRotation(135)
+                                             .SetSize(36, 52)
+                                             .SetOrigin(18, 60)
+                                             .SetImageWrap(2)
+                                             .RemoveFlags(SetVisByAlpha);
 
-        NoulithContainer = new CustomNode(CreateResNode(), Nouliths[0], Nouliths[1], Nouliths[2], Nouliths[3], ElectricNouliths[0], ElectricNouliths[1], ElectricNouliths[2], ElectricNouliths[3]).SetOrigin(40,40);
+        Nouliths[2] = ImageNodeFromPart(0, 1).SetPos(12, -10)
+                                             .SetRotation(45)
+                                             .SetSize(36, 52)
+                                             .SetOrigin(18, 60)
+                                             .SetImageWrap(2)
+                                             .RemoveFlags(SetVisByAlpha);
 
-        Halo = ImageNodeFromPart(0, 3).SetPos(28, 28).SetScale(4).SetSize(24, 24).SetOrigin(12, 12).SetImageWrap(2).SetImageFlag(32).SetAlpha(0);
+        Nouliths[3] = ImageNodeFromPart(0, 1).SetPos(32, -10)
+                                             .SetRotation(315)
+                                             .SetSize(36, 52)
+                                             .SetOrigin(18, 60)
+                                             .SetImageWrap(2)
+                                             .RemoveFlags(SetVisByAlpha);
 
-        return new CustomNode(CreateResNode(), RightHalfInactive, LeftHalfInactive, FullActive, NoulithContainer, Halo).SetOrigin(40,40).SetSize(80,80);
+        ElectricNouliths[0] = BuildElectricNoulith(0).RemoveFlags(SetVisByAlpha).SetAlpha(0);
+        ElectricNouliths[1] = BuildElectricNoulith(1).RemoveFlags(SetVisByAlpha).SetAlpha(0);
+        ElectricNouliths[2] = BuildElectricNoulith(2).RemoveFlags(SetVisByAlpha).SetAlpha(0);
+        ElectricNouliths[3] = BuildElectricNoulith(3).RemoveFlags(SetVisByAlpha).SetAlpha(0);
+
+        NoulithContainer = new CustomNode(CreateResNode(), Nouliths[0], Nouliths[1], Nouliths[2], Nouliths[3],
+                                          ElectricNouliths[0], ElectricNouliths[1], ElectricNouliths[2],
+                                          ElectricNouliths[3]).SetOrigin(40, 40);
+
+        Halo = ImageNodeFromPart(0, 3).SetPos(28, 28).SetScale(4).SetSize(24, 24).SetOrigin(12, 12).SetImageWrap(2)
+                                      .SetImageFlag(32).SetAlpha(0);
+
+        return new CustomNode(CreateResNode(), RightHalfInactive, LeftHalfInactive, FullActive, NoulithContainer, Halo)
+               .SetOrigin(40, 40).SetSize(80, 80);
     }
 
     private CustomNode BuildElectricNoulith(int i)
     {
-        var elecNoulith = new CustomNode(CreateResNode(), ImageNodeFromPart(0,0).SetSize(36,56).SetOrigin(24,90).SetImageWrap(2).SetAddRGB(0,0,100), ImageNodeFromPart(0,6).SetSize(40,96).SetPos(10,-4).SetScale(0.6f).SetImageFlag(32).SetImageWrap(2).SetAddRGB(0,0,200).SetMultiply(50), ImageNodeFromPart(0,6).SetSize(40,96).SetScale(0.55f).SetImageFlag(35).SetImageWrap(2).SetAddRGB(-191,-200,200).SetMultiply(54,54,54), ImageNodeFromPart(0,5).SetSize(40,96).SetPos(4,2).SetScale(0.6f).SetImageWrap(2).SetImageFlag(32).SetAddRGB(-100,-200,200).SetMultiply(50)).SetPos(22, -20).SetSize(36, 56).SetOrigin(18, 60).SetRotation((405 - (90 * i)) % 360);
+        var elecNoulith = new CustomNode(CreateResNode(),
+                                         ImageNodeFromPart(0, 0).SetSize(36, 56).SetOrigin(24, 90).SetImageWrap(2)
+                                                                .SetAddRGB(0, 0, 100),
+                                         ImageNodeFromPart(0, 6).SetSize(40, 96).SetPos(10, -4).SetScale(0.6f)
+                                                                .SetImageFlag(32).SetImageWrap(2).SetAddRGB(0, 0, 200)
+                                                                .SetMultiply(50),
+                                         ImageNodeFromPart(0, 6).SetSize(40, 96).SetScale(0.55f).SetImageFlag(35)
+                                                                .SetImageWrap(2).SetAddRGB(-191, -200, 200)
+                                                                .SetMultiply(54, 54, 54),
+                                         ImageNodeFromPart(0, 5).SetSize(40, 96).SetPos(4, 2).SetScale(0.6f)
+                                                                .SetImageWrap(2).SetImageFlag(32)
+                                                                .SetAddRGB(-100, -200, 200).SetMultiply(50))
+                          .SetPos(22, -20).SetSize(36, 56).SetOrigin(18, 60).SetRotation((405 - (90 * i)) % 360);
 
         SetUpLightning(elecNoulith);
 
@@ -92,41 +137,42 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
         var color = Config.GetColor(state) + ColorOffset;
         var fxColor = Config.GetFXColor(state);
-        Tweens.Add(new(FullActive,
-                       new(0) { AddRGB = color },
-                       new(560) { AddRGB = color + new AddRGB(30, 30, 100) + fxColor },
-                       new(1000) { AddRGB = color })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "SigilPulse" });
+        Animator += new Tween(FullActive,
+                              new(0) { AddRGB = color },
+                              new(560) { AddRGB = color + new AddRGB(30, 30, 100) + fxColor },
+                              new(1000) { AddRGB = color })
+            { Ease = SinInOut, Repeat = true, Label = "SigilPulse" };
     }
 
     private void SetUpLightning(CustomNode elecNoulith)
     {
-        Tweens.Add(new(elecNoulith[1],
-                       new(0) { Alpha = 255, AddRGB = new(-200, -200, 100), MultRGB = new(0x63) },
-                       new(200) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) },
-                       new(500) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) })
-                       { Repeat = true });
-
-        Tweens.Add(new(elecNoulith[2],
-                       new(0) { Alpha = 49, AddRGB = new(-181, -200, 200), MultRGB = new(0x3b) },
-                       new(100) { Alpha = 49, AddRGB = new(-181, -200, 200), MultRGB = new(0x3b) },
-                       new(300) { Alpha = 0, AddRGB = new(-200, -200, 200), MultRGB = new(0x32) },
-                       new(496) { Alpha = 0, AddRGB = new(-200, -200, 200), MultRGB = new(0x32) })
-                       { Repeat = true });
-
-        Tweens.Add(new(elecNoulith[3],
-                       new(0) { Alpha = 255, AddRGB = new(-200, -200, 100), MultRGB = new(0x63) },
-                       new(200) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) },
-                       new(505) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) })
-                       { Repeat = true });
+        Animator += new Tween[]
+        {
+            new(elecNoulith[1],
+                new(0) { Alpha = 255, AddRGB = new(-200, -200, 100), MultRGB = new(0x63) },
+                new(200) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) },
+                new(500) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) })
+                { Repeat = true },
+            new(elecNoulith[2],
+                new(0) { Alpha = 49, AddRGB = new(-181, -200, 200), MultRGB = new(0x3b) },
+                new(100) { Alpha = 49, AddRGB = new(-181, -200, 200), MultRGB = new(0x3b) },
+                new(300) { Alpha = 0, AddRGB = new(-200, -200, 200), MultRGB = new(0x32) },
+                new(496) { Alpha = 0, AddRGB = new(-200, -200, 200), MultRGB = new(0x32) })
+                { Repeat = true },
+            new(elecNoulith[3],
+                new(0) { Alpha = 255, AddRGB = new(-200, -200, 100), MultRGB = new(0x63) },
+                new(200) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) },
+                new(505) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) })
+                { Repeat = true }
+        };
     }
 
     private void NoulithSpin()
     {
-        Tweens.Add(new(NoulithContainer,
-                       new(0) { Rotation = 0 },
-                       new(300) { Rotation = 0 },
-                       new(560) { Rotation = 3.141593f }));
+        Animator += new Tween(NoulithContainer,
+                              new(0) { Rotation = 0 },
+                              new(300) { Rotation = 0 },
+                              new(560) { Rotation = 3.141593f });
 
         for (var i = 0; i < 4; i++) NoulithInOut(i);
     }
@@ -137,32 +183,29 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var initY = i < 2 ? -30 : -10;
 
         SetupNoulithPulse(i);
-
-        Tweens.Add(new(Nouliths[i],
-                       new(0) { X = initX, Y = initY, AddRGB = new(0), PartId = 1 },
-                       new(120) { X = 22, Y = -20, AddRGB = new(50, 80, 80), PartId = 0 },
-                       new(560) { X = 22, Y = -20, AddRGB = new(50, 80, 80), PartId = 0 },
-                       new(860) { X = 22, Y = -20, AddRGB = new(0), PartId = 0 },
-                       new(1000) { X = initX, Y = initY, AddRGB = new(0), PartId = 0 }
-                   ));
-
-        Tweens.Add(new(ElectricNouliths[i],
-                       new(0) { AddRGB = new(50, 80, 80), Alpha = 0 },
-                       new(299) { AddRGB = new(50, 80, 80), Alpha = 0 },
-                       new(300) { AddRGB = new(50, 80, 80), Alpha = 255 },
-                       new(560) { AddRGB = new(50, 80, 80), Alpha = 255 },
-                       new(860) { AddRGB = new(0), Alpha = 0 }
-                   ));
+        Animator += new Tween[]
+        {
+            new(Nouliths[i],
+                new(0) { X = initX, Y = initY, AddRGB = new(0), PartId = 1 },
+                new(120) { X = 22, Y = -20, AddRGB = new(50, 80, 80), PartId = 0 },
+                new(560) { X = 22, Y = -20, AddRGB = new(50, 80, 80), PartId = 0 },
+                new(860) { X = 22, Y = -20, AddRGB = new(0), PartId = 0 },
+                new(1000) { X = initX, Y = initY, AddRGB = new(0), PartId = 0 }),
+            new(ElectricNouliths[i],
+                new(0) { AddRGB = new(50, 80, 80), Alpha = 0 },
+                new(299) { AddRGB = new(50, 80, 80), Alpha = 0 },
+                new(300) { AddRGB = new(50, 80, 80), Alpha = 255 },
+                new(560) { AddRGB = new(50, 80, 80), Alpha = 255 },
+                new(860) { AddRGB = new(0), Alpha = 0 })
+        };
     }
 
-    private void SetupNoulithPulse(int i)
-    {
-        Tweens.Add(new(Nouliths[i],
-                       new(0) { AddRGB = new(0) },
-                       new(360) { AddRGB = new(20, 20, 60) },
-                       new(1000) { AddRGB = new(0) })
-                       { Repeat = true, Ease = Eases.SinInOut, Label = "NoulithPulse" });
-    }
+    private void SetupNoulithPulse(int i) =>
+        Animator += new Tween(Nouliths[i],
+                              new(0) { AddRGB = new(0) },
+                              new(360) { AddRGB = new(20, 20, 60) },
+                              new(1000) { AddRGB = new(0) })
+                              { Repeat = true, Ease = SinInOut, Label = "NoulithPulse" };
 
     #endregion
 
@@ -183,54 +226,57 @@ public sealed unsafe class EukrasiaReplica : StateWidget
             RightHalfInactive.SetAlpha(255);
             LeftHalfInactive.SetAlpha(255);
             FullActive.SetAlpha(0);
-            
-            ClearLabelTweens(ref Tweens, "NoulithPulse");
-            ClearLabelTweens(ref Tweens, "SigilPulse");
+
+            Animator -= "NoulithPulse";
+            Animator -= "SigilPulse";
         }
     }
 
     public override void Activate(int current)
     {
-        Tweens.Add(new(RightHalfInactive, new(0) { Alpha = 255 }, new(600) { Alpha = 0 }));
-        Tweens.Add(new(LeftHalfInactive, new(0) { Alpha = 255 }, new(600) { Alpha = 0 }));
-        Tweens.Add(new(FullActive, new(0) { Alpha = 0 }, new(560) { Alpha = 255 }));
         SetupSigilPulse(current);
 
         var fx = Config.GetNoulithColor(current);
-        Tweens.Add(new(NoulithContainer,new(0){AddRGB=new(0)},new(120){AddRGB=fx}));
-
         NoulithSpin();
 
-        Tweens.Add(new(Halo,
-                       new(0){Scale = 1.4f,Alpha=255, AddRGB = fx+ColorOffset },
-                       new(360){Scale = 3,Alpha=255, AddRGB = fx + ColorOffset },
-                       new(660){Scale = 4,Alpha=0, AddRGB = fx + ColorOffset }
-                   ));
+        Animator += new Tween[]
+        {
+            new(RightHalfInactive, Visible[0], Hidden[600]),
+            new(LeftHalfInactive, Visible[0], Hidden[600]),
+            new(FullActive, Hidden[0], Visible[560]),
+            new(NoulithContainer, new(0) { AddRGB = new(0) }, new(120) { AddRGB = fx }),
+            new(Halo,
+                new(0) { Scale = 1.4f, Alpha = 255, AddRGB = fx + ColorOffset },
+                new(360) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
+                new(660) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
+            )
+        };
     }
 
     public override void Deactivate(int previous)
     {
-        Tweens.Add(new(RightHalfInactive, new(0) { Alpha = 0 }, new(160) { Alpha = 255 }));
-        Tweens.Add(new(LeftHalfInactive, new(0) { Alpha = 0 }, new(160) { Alpha = 255 }));
+        Animator -= "NoulithPulse";
+        Animator -= "SigilPulse";
 
         var fx = Config.GetFXColor(previous);
         var color = Config.GetColor(previous);
+        Animator += new Tween[]
+        {
+            new(RightHalfInactive, Hidden[0], Visible[160]),
+            new(LeftHalfInactive, Hidden[0], Visible[160]),
+            new(FullActive,
+                new(0) { Alpha = 255, AddRGB = new AddRGB(30, 30, 100) + fx + ColorOffset },
+                new(300) { Alpha = 0, AddRGB = color + ColorOffset }),
+            new(NoulithContainer, new(0) { AddRGB = fx + ColorOffset }, new(300) { AddRGB = new(0) }),
+            new(Halo,
+                new(0) { Scale = 1.5f, Alpha = 255, AddRGB = fx + ColorOffset },
+                new(100) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
+                new(200) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
+            )
+        };
 
-        Tweens.Add(new(FullActive, 
-                       new(0) { Alpha = 255, AddRGB = new AddRGB(30, 30, 100) + fx + ColorOffset }, 
-                       new(300) { Alpha = 0, AddRGB = color + ColorOffset }));
-
-        Tweens.Add(new(NoulithContainer, new(0) { AddRGB = fx + ColorOffset }, new(300) { AddRGB = new(0) }));
-
-        for (var i = 0; i < 4; i++) Tweens.Add(new(Nouliths[i], new(0) { AddRGB = new(20, 20, 60), PartId = 0 }, new(360) { AddRGB = new(0), PartId = 1 }));
-      
-        ClearLabelTweens(ref Tweens, "NoulithPulse");
-        ClearLabelTweens(ref Tweens, "SigilPulse");
-        Tweens.Add(new(Halo,
-                       new(0) { Scale = 1.5f, Alpha = 255, AddRGB = fx + ColorOffset },
-                       new(100) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
-                       new(200) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
-                   ));
+        Animator += Nouliths.Select(static n => new Tween(n, new(0) { AddRGB = new(20, 20, 60), PartId = 0 },
+                                                          new(360) { AddRGB = new(0), PartId = 1 })).ToList();
     }
 
     public override void StateChange(int current, int previous)
@@ -238,20 +284,22 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var fx = Config.GetFXColor(current);
         var prevFx = Config.GetFXColor(previous);
 
-        ClearLabelTweens(ref Tweens, "SigilPulse");
+        Animator -= "SigilPulse";
         SetupSigilPulse(current);
 
-        Tweens.Add(new(Halo,
-                       new(0) { Scale = 1.4f, Alpha = 255, AddRGB = prevFx + ColorOffset },
-                       new(360) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
-                       new(660) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
-                   ));
+        Animator += new Tween[]
+        {
+            new(Halo,
+                new(0) { Scale = 1.4f, Alpha = 255, AddRGB = prevFx + ColorOffset },
+                new(360) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
+                new(660) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
+            ),
+            new(NoulithContainer,
+                new(0) { AddRGB = prevFx },
+                new(360) { AddRGB = fx }
+            )
+        };
 
-        Tweens.Add(new(NoulithContainer,
-                       new(0) { AddRGB = prevFx },
-                       new(360) {AddRGB = fx }
-                   ));
-        
         NoulithSpin();
     }
 
@@ -261,7 +309,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     public class EukrasiaReplicaConfig
     {
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public bool ShowNouliths = true;
         public List<AddRGB> Colors = new();
@@ -278,7 +326,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
             Scale = config.Scale;
             ShowNouliths = config.ShowNouliths;
             Colors = config.Colors;
-            FXColors= config.FXColors;
+            FXColors = config.FXColors;
             NoulithColors = config.NoulithColors;
         }
 
@@ -325,7 +373,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
-    public AddRGB ColorOffset = new(109,47,-41);
+    public AddRGB ColorOffset = new(109, 47, -41);
+
     public override void ApplyConfigs()
     {
         WidgetRoot.SetPos(Config.Position);
@@ -334,9 +383,9 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var state = Tracker.CurrentData.State;
 
         var noulithColor = Config.GetNoulithColor(state);
-        NoulithContainer.SetAddRGB(state>0? noulithColor:new(0));
+        NoulithContainer.SetAddRGB(state > 0 ? noulithColor : new(0));
 
-        ClearLabelTweens(ref Tweens, "SigilPulse");
+        Animator -= "SigilPulse";
         SetupSigilPulse(Tracker.CurrentData.State);
 
         for (var i = 0; i < 4; i++)
@@ -362,7 +411,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
             var noulithColor = Config.NoulithColors[i];
             if (ColorPickerRGB($"Color##{i}", ref color, ref update)) Config.Colors[i] = color;
             if (ColorPickerRGB($"Pulse##{i}", ref fxColor, ref update)) Config.FXColors[i] = fxColor;
-            if (Config.ShowNouliths && ColorPickerRGB($"Nouliths##{i}", ref noulithColor, ref update)) Config.NoulithColors[i] = noulithColor;
+            if (Config.ShowNouliths && ColorPickerRGB($"Nouliths##{i}", ref noulithColor, ref update))
+                Config.NoulithColors[i] = noulithColor;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();
@@ -374,5 +424,6 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
 public partial class WidgetConfig
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public EukrasiaReplicaConfig? EukrasiaReplicaCfg { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public EukrasiaReplicaConfig? EukrasiaReplicaCfg { get; set; }
 }

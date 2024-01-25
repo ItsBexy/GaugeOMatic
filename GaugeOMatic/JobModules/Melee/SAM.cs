@@ -2,11 +2,12 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
+using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -42,16 +43,22 @@ public class SAMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideKenki = TweakConfigs.SAMHideKenki;
-        var hideMeditation = TweakConfigs.SAMHideMeditation;
-        var hideSen = TweakConfigs.SAMHideSen;
+        ToggleControls("Hide Kenki Gauge",ref TweakConfigs.SAMHideKenki, ref update);
+        HideWarning(TweakConfigs.SAMHideKenki);
 
-        if (Bool1("Hide Kenki Gauge", ref hideKenki, ref update)) TweakConfigs.SAMHideKenki = hideKenki;
-        HideWarning(hideKenki);
-        if (Bool1("Hide Meditation Gauge", ref hideMeditation, ref update)) TweakConfigs.SAMHideMeditation = hideMeditation;
-        HideWarning(hideMeditation);
-        if (Bool1("Hide Sen Gauge", ref hideSen, ref update)) TweakConfigs.SAMHideSen = hideSen;
-        HideWarning(hideSen);
+        ToggleControls("Hide Meditation Gauge",ref TweakConfigs.SAMHideMeditation, ref update);
+        HideWarning(TweakConfigs.SAMHideMeditation);
+
+        ToggleControls("Hide Sen Gauge",ref TweakConfigs.SAMHideSen, ref update);
+        HideWarning(TweakConfigs.SAMHideSen);
+
+        if (!TweakConfigs.SAMHideSen)
+        {
+            Heading("Reposition Seals");
+            PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu, ref update);
+            PositionControls("Getsu", ref TweakConfigs.SAMSealPosGetsu, ref update);
+            PositionControls("Ka", ref TweakConfigs.SAMSealPosKa, ref update);
+        }
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -79,13 +86,35 @@ public class SAMModule : JobModule
             var simple1 = senGauge->JobHud.UseSimpleGauge;
             senGauge->GaugeStandard.Container->ToggleVisibility(!hideSen && !simple1);
             senGauge->GaugeSimple.Container->Color.A = (byte)(hideSen || !simple1 ? 0 : 255);
+
+            if (!hideSen)
+            {
+                var setsuPos = TweakConfigs.SAMSealPosSetsu;
+                var getsuPos = TweakConfigs.SAMSealPosGetsu;
+                var kaPos = TweakConfigs.SAMSealPosKa;
+                if (!simple1)
+                {
+                    senGauge->GaugeStandard.SetsuNode->SetPositionFloat(setsuPos.X + 44, setsuPos.Y + 4);
+                    senGauge->GaugeStandard.GetsuNode->SetPositionFloat(getsuPos.X, getsuPos.Y + 76);
+                    senGauge->GaugeStandard.KaNode->SetPositionFloat(kaPos.X + 90, kaPos.Y + 73);
+                }
+                else
+                {
+                    senGauge->GaugeSimple.SetsuNode->SetPositionFloat(setsuPos.X + 0, setsuPos.Y);
+                    senGauge->GaugeSimple.GetsuNode->SetPositionFloat(getsuPos.X + 19, getsuPos.Y);
+                    senGauge->GaugeSimple.KaNode->SetPositionFloat(kaPos.X + 38, kaPos.Y);
+                }
+            }
         }
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool SAMHideKenki { get; set; }
-    public bool SAMHideMeditation { get; set; }
-    public bool SAMHideSen { get; set; }
+    public bool SAMHideKenki;
+    public bool SAMHideMeditation;
+    public bool SAMHideSen;
+    public Vector2 SAMSealPosSetsu;
+    public Vector2 SAMSealPosGetsu;
+    public Vector2 SAMSealPosKa;
 }

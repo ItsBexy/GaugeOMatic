@@ -1,7 +1,8 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
@@ -9,7 +10,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.NinkiBorders;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -44,7 +44,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     #region Nodes
 
-    public CustomNode BorderTop;
+    public CustomNode BorderTop => Main;
     public CustomNode BorderBottom;
     public CustomNode TickTop;
     public CustomNode TickBottom;
@@ -53,12 +53,36 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        BorderTop = ImageNodeFromPart(0, 0).SetPos(11,19).SetAlpha(255).SetImageFlag(32).SetImageWrap(1);
-        BorderBottom = ImageNodeFromPart(0, 1).SetPos(11,77).SetAlpha(255).SetImageFlag(32).SetImageWrap(1);
-        TickTop = ImageNodeFromPart(0, 2).SetPos(0,-16).SetOrigin(22,43.5f).SetScale(0.5f,0.15f);
-        TickBottom = ImageNodeFromPart(0, 2).SetPos(0,38).SetOrigin(22,43.5f).SetScale(0.5f,0.15f);
-        Shine = ImageNodeFromPart(0, 2).SetAlpha(0).SetOrigin(22, 43.5f).SetImageFlag(32);
-        Calligraphy = ImageNodeFromPart(0, 3).SetPos(23, 29).SetOrigin(98, 28).SetImageFlag(32).SetAlpha(0);
+        Main = ImageNodeFromPart(0, 0).SetPos(11,19)
+                                      .SetAlpha(0)
+                                      .SetImageFlag(32)
+                                      .SetImageWrap(1)
+                                      .DefineTimeline(BarTimeline);
+
+        BorderBottom = ImageNodeFromPart(0, 1).SetPos(11,77)
+                                              .SetAlpha(0)
+                                              .SetImageFlag(32)
+                                              .SetImageWrap(1)
+                                              .DefineTimeline(BarTimeline);
+
+        TickTop = ImageNodeFromPart(0, 2).SetPos(0,-16)
+                                         .SetOrigin(22,43.5f)
+                                         .SetScale(0.5f,0.15f)
+                                         .DefineTimeline(TickTimeline);
+
+        TickBottom = ImageNodeFromPart(0, 2).SetPos(0,38)
+                                            .SetOrigin(22,43.5f)
+                                            .SetScale(0.5f,0.15f)
+                                            .DefineTimeline(TickTimeline);
+       
+        Shine = ImageNodeFromPart(0, 2).SetAlpha(0)
+                                       .SetOrigin(22, 43.5f)
+                                       .SetImageFlag(32);
+
+        Calligraphy = ImageNodeFromPart(0, 3).SetPos(23, 29)
+                                             .SetOrigin(98, 28)
+                                             .SetImageFlag(32)
+                                             .SetAlpha(0);
         NumTextNode = new();
 
         return new(CreateResNode(), BorderTop, BorderBottom, TickTop, TickBottom, Shine, Calligraphy, NumTextNode);
@@ -68,23 +92,38 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     #region Animations
 
-    private void AppearAnim()
+    public KeyFrame[] BarTimeline => new KeyFrame[]
     {
-        Tweens.Add(new(Calligraphy,
-                       new(0) { Scale = 1, Alpha = 70 },
-                       new(100) { Scale = 1, Alpha = 160 },
-                       new(300) { Scale = 1.5f, Alpha = 0 }));
+        new(0) { Width = 10, Alpha = 0 },
+        new(10) { Width = 20, Alpha = Config.BorderColor.A },
+        new(95) { Width = 105, Alpha = Config.BorderColor.A * 0.7f },
+        new(180) { Width = 190, Alpha = Config.BorderColor.A },
+        new(190) { Width = 200, Alpha = Config.BorderColor.A * 0.7f }
+    };
+    
+    public KeyFrame[] TickTimeline => new KeyFrame[]
+    {
+        new(0) { X = 2, Alpha = 0 },
+        new(10) { X = 12, Alpha = Config.TickColor.A },
+        new(180) { X = 182, Alpha = Config.TickColor.A },
+        new(190) { X = 192, Alpha = 0 }
+    };
 
-        Tweens.Add(new(Shine,
-                       new(0) { X = 11, Y = 14, Alpha = 76 },
-                       new(200) { X = 190, Y = 10, Alpha = 76 },
-                       new(400) { X = 300, Y = 10, Alpha = 0 }));
-
-        Tweens.Add(new(Shine,
-                       new(0) { ScaleX = 1.15f, ScaleY = 1.5f, Rotation = 0 },
-                       new(100) { ScaleX = 3f, ScaleY = 1.2f, Rotation = -0.065f },
-                       new(400) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 }));
-    }
+    private void AppearAnim() =>
+        Animator += new Tween[] { 
+            new(Calligraphy,
+                new(0) { Scale = 1, Alpha = 70 },
+                new(100) { Scale = 1, Alpha = 160 },
+                new(300) { Scale = 1.5f, Alpha = 0 }),
+            new(Shine,
+                new(0) { X = 11, Y = 14, Alpha = 76 },
+                new(200) { X = 190, Y = 10, Alpha = 76 },
+                new(400) { X = 300, Y = 10, Alpha = 0 }),
+            new(Shine,
+                new(0) { ScaleX = 1.15f, ScaleY = 1.5f, Rotation = 0 },
+                new(100) { ScaleX = 3f, ScaleY = 1.2f, Rotation = -0.065f },
+                new(400) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 })
+        };
 
     #endregion
 
@@ -95,56 +134,25 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
     public override void Update()
     {
         var current = Tracker.CurrentData.GaugeValue;
-        var previous = Tracker.PreviousData.GaugeValue;
         var max = Tracker.CurrentData.MaxGauge;
+        var prog = CalcProg();
+        var prevProg = CalcProg(true);
 
-        var prog = Math.Clamp(current / max, 0f, 1f);
-        var prevProg = Math.Clamp(previous / max, 0f, 1f);
-
-        if (prog > 0 && prevProg == 0) AppearAnim();
-
-        var curWid = (ushort)Math.Round((prog * 190f) + 10f);
-        var prevWid = (ushort)Math.Round((prevProg * 190f) + 10f);
-
+        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
         NumTextNode.UpdateValue(current, max);
 
-        AnimateDrainGain(Width,ref Tweens, BorderTop, curWid, prevWid, 0, Config.AnimationLength);
-        AnimateDrainGain(Width, ref Tweens, BorderBottom, curWid, prevWid, 0, Config.AnimationLength);
+        if (prog > 0 && prevProg == 0) AppearAnim();
+        
+        AnimateDrainGain(prog, prevProg);
+        Animator.RunTweens();
 
-        var tweenWidth = BorderTop.Node->Width;
-        var tweenProg = (tweenWidth - 10f) / 190f;
+        var timelineProg = BorderTop.Progress;
+        var tickY = CalcTickY(timelineProg);
 
-        if (tweenProg > 0)
-        {
-            var tickY = CalcTickY(tweenProg);
-            TickTop.SetPos(tweenWidth - 7, tickY);
-            TickBottom.SetPos(tweenWidth - 7, tickY + 54);
-        }
-
-        var borderAlpha = Config.BorderColor.A;
-        var tickAlpha = Config.TickColor.A;
-
-        switch (tweenProg)
-        {
-            case < 0.05f:
-                BorderTop.Node->Color.A = (byte)(tweenProg / 0.05f * borderAlpha);
-                TickTop.Node->Color.A = (byte)(tweenProg / 0.05f * tickAlpha);
-                BorderBottom.Node->Color.A = (byte)(tweenProg / 0.05f * borderAlpha);
-                TickBottom.Node->Color.A = (byte)(tweenProg / 0.05f * tickAlpha);
-                break;
-            default:
-                BorderTop.Node->Color.A = borderAlpha;
-                TickTop.Node->Color.A = tickAlpha;
-                BorderBottom.Node->Color.A = borderAlpha;
-                TickBottom.Node->Color.A = tickAlpha;
-                break;
-        }
-
-        RunTweens();
+        BorderBottom.SetProgress(timelineProg);
+        TickTop.SetY(tickY).SetProgress(timelineProg);
+        TickBottom.SetY(tickY + 54).SetProgress(timelineProg);
     }
-
-    public override DrainGainType DGType => Width;
-    public override float CalcBarProperty(float prog) => (ushort)Math.Round((prog * 190f) + 10f);
 
     #endregion
 
@@ -152,14 +160,14 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public sealed class NinkiBordersConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
         public ColorRGB BorderColor = new(255, 90, 0);
         public ColorRGB TickColor = new(255, 195, 144);
         public bool Top = true;
         public bool Bottom = true;
         protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(167, 30), 
+                                                              position:  new(227, 30), 
                                                               color:     new(255, 241, 197), 
                                                               edgeColor: new(110, 25, 0),
                                                               showBg:    false, 
@@ -169,9 +177,8 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
                                                               align:     Center,
                                                               invert:    false);
 
-        public NinkiBordersConfig(WidgetConfig widgetConfig)
+        public NinkiBordersConfig(WidgetConfig widgetConfig) : base(widgetConfig.NinkiBordersCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.NinkiBordersCfg;
 
             if (config == null) return;
@@ -182,16 +189,9 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
             TickColor = config.TickColor;
             Top = config.Top;
             Bottom = config.Bottom;
-            NumTextProps = config.NumTextProps;
-            AnimationLength = config.AnimationLength;
-            Invert = config.Invert;
-            SplitCharges = config.SplitCharges;
         }
 
-        public NinkiBordersConfig()
-        {
-            NumTextProps = NumTextDefault;
-        }
+        public NinkiBordersConfig() { }
     }
 
     public NinkiBordersConfig Config;
@@ -209,7 +209,10 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
     {
         WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
 
-        BorderTop.SetVis(Config.Top).SetRGB((Vector4)Config.BorderColor);
+
+        //(ushort)Math.Round((prog * 190f) + 10f)
+        BorderTop.SetVis(Config.Top)
+                 .SetRGB((Vector4)Config.BorderColor);
         TickTop.SetVis(Config.Top).SetRGB((Vector4)Config.TickColor);
 
         Shine.SetRGB(Config.TickColor);

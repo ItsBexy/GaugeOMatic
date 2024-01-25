@@ -1,7 +1,8 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
@@ -13,7 +14,7 @@ using static GaugeOMatic.Widgets.SimpleGem.SimpleGemConfig;
 using static GaugeOMatic.Widgets.SimpleGem.SimpleGemConfig.GemShapes;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -52,9 +53,9 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override CustomNode BuildRoot()
     {
-        var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
+        Max = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
 
-        BuildStacks(count);
+        BuildStacks(Max);
 
         return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(16,16);
     }
@@ -85,28 +86,28 @@ public sealed unsafe class SimpleGem : CounterWidget
     public override void ShowStack(int i)
     {
         var colorOffset = GetColorOffset();
-        Tweens.Add(new(Gems[i],
-                       new(0){Scale=2.4f,Alpha=0,AddRGB = Config.GemColor + colorOffset + new AddRGB(80)},
-                       new(125) { Scale=1,Alpha=255,AddRGB=Config.GemColor + colorOffset }));
+        Animator += new Tween(Gems[i], 
+                              new(0){Scale=2.4f,Alpha=0,AddRGB = Config.GemColor + colorOffset + new AddRGB(80)},
+                              new(125) { Scale=1,Alpha=255,AddRGB=Config.GemColor + colorOffset });
     }
 
     public override void HideStack(int i)
     {
         var colorOffset = GetColorOffset();
-        Tweens.Add(new(Gems[i],
-                       new(0) { Alpha = 255, AddRGB = Config.GemColor + colorOffset, Scale=1 },
-                       new(90) { Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80),Scale=0.8f }));
+        Animator += new Tween(Gems[i],
+                              new(0) { Alpha = 255, AddRGB = Config.GemColor + colorOffset, Scale=1 },
+                              new(90) { Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80),Scale=0.8f });
     }
 
     private void AllVanish() =>
-        Tweens.Add(new(WidgetRoot,
-                       new(0){Alpha=255,AddRGB=0},
-                       new(200){Alpha=0,AddRGB=100}));
+        Animator += new Tween(WidgetRoot,
+                              new(0){Alpha=255,AddRGB=0},
+                              new(200){Alpha=0,AddRGB=100});
 
     private void AllAppear() =>
-        Tweens.Add(new(WidgetRoot,
-                       new(0) { Alpha = 0, AddRGB = 100 },
-                       new(200) { Alpha = 255, AddRGB = 0 }));
+        Animator += new Tween(WidgetRoot,
+                              new(0) { Alpha = 0, AddRGB = 100 },
+                              new(200) { Alpha = 255, AddRGB = 0 });
 
     #endregion
 
@@ -114,11 +115,8 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override void OnFirstRun(int count, int max)
     {
-        for (var i = 0; i < count; i++) {Gems[i].SetAlpha(255); }
-
+        for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count);
         if (count == 0 && Config.HideEmpty) WidgetRoot.SetAlpha(0);
-
-        FirstRun = false;
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
@@ -146,7 +144,7 @@ public sealed unsafe class SimpleGem : CounterWidget
             Ka
         }
 
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public AddRGB GemColor = new(120,30,-40);
         public GemShapes GemShape;
@@ -195,7 +193,6 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override void ApplyConfigs()
     {
-
         var widgetAngle = Config.Angle+(Config.Curve/2f);
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale)
@@ -225,8 +222,8 @@ public sealed unsafe class SimpleGem : CounterWidget
                      .SetRotation(gemAngle, true);
 
             var angleRad = Radians(posAngle);
-            x += Math.Cos(angleRad) * Config.Spacing;
-            y += Math.Sin(angleRad) * Config.Spacing;
+            x += Cos(angleRad) * Config.Spacing;
+            y += Sin(angleRad) * Config.Spacing;
             posAngle += Config.Curve;
         }
     }
@@ -245,7 +242,7 @@ public sealed unsafe class SimpleGem : CounterWidget
 
         var scale = Config.GemShape switch
         {
-            Chevron => new(1, Math.Abs(gemAngle + widgetAngle) % 360 <= 90 ? 1 : -1),
+            Chevron => new(1, Abs(gemAngle + widgetAngle) % 360 <= 90 ? 1 : -1),
             Rectangle => CalcRectFlip((gemAngle + widgetAngle) % 360),
             _ => new(1, 1)
         };
@@ -299,16 +296,11 @@ public sealed unsafe class SimpleGem : CounterWidget
         Heading("Behavior");
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
-            if (Config.HideEmpty && Tracker.CurrentData.Count == 0) AllVanish();
+            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
             if (!Config.HideEmpty && WidgetRoot.Alpha < 255) AllAppear();
         }
 
-        if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
-        if (Config.AsTimer)
-        {
-            if (ToggleControls($"Invert {Tracker.TermGauge}", ref Config.InvertTimer, ref update)) update |= Reset;
-            if (IntControls($"{Tracker.TermGauge} Size", ref Config.TimerSize, 1, 30, 1, ref update)) update |= Reset;
-        }
+        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.SimpleGemCfg = Config;

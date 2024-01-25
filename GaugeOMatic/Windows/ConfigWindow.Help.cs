@@ -1,6 +1,6 @@
 using Dalamud.Interface;
 using ImGuiNET;
-using static GaugeOMatic.Utility.ImGuiHelpers;
+using static GaugeOMatic.Utility.ImGuiHelpy;
 
 namespace GaugeOMatic.Windows;
 

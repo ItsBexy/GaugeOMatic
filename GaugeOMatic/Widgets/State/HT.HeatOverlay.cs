@@ -1,12 +1,13 @@
-using System;
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.HeatOverlay;
@@ -45,7 +46,6 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override CustomNode BuildRoot()
     {
-        
         Smoke1 = ImageNodeFromPart(0, 16).SetPos(-11, -9).SetOrigin(32,85).SetAlpha(0);
         Smoke2 = ImageNodeFromPart(0, 16).SetPos(71, -26).SetOrigin(32, 85).SetAlpha(0);
         Smoke3 = ImageNodeFromPart(0, 16).SetPos(171, -1).SetOrigin(32, 85).SetAlpha(0);
@@ -66,66 +66,64 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override string SharedEventGroup => "HeatGauge";
 
-    public override void OnFirstRun(int current)
-    {
-
-
-    }
+    public override void OnFirstRun(int current) { }
 
     public Random R = new();
-    public void RandomPosition(CustomNode node,float minX,float maxX)
+    public void RandomPosition(CustomNode node, float minX, float maxX)
     {
         minX = (minX * (Config.Width + 50f)) - 11f;
         maxX = (maxX * (Config.Width + 50f)) - 11f;
-        node.Node->SetPositionFloat((R.NextSingle() * (maxX - minX)) + minX,R.NextSingle() * -20f);
+        node.Node->SetPositionFloat((R.NextSingle() * (maxX - minX)) + minX, R.NextSingle() * -20f);
     }
 
     public override void Activate(int current)
     {
-        ClearLabelTweens(ref Tweens,"Pulse");
+        Animator -= "Pulse";
         InvokeSharedEvent("HeatGauge", "StartHeatGlow");
 
-        Tweens.Add(new(Glow,
-                       new(0) {Alpha=0,ScaleY=1},
-                       new(450) {Alpha=101,ScaleY=1.04f},
-                       new(950) {Alpha=0,ScaleY=1.08f})
-                       {Repeat = true, Label = "Pulse"});
-
-        Tweens.Add(new(Smoke1,
-                       new(0) { Scale = 0.9f, Alpha = 0 },
-                       new(160) { Scale = 1, Alpha = 125 },
-                       new(260) { ScaleX = 1, ScaleY = 1.05f, Alpha = 100 },
-                       new(360) { ScaleX = 1, ScaleY = 1.1f, Alpha = 50 },
-                       new(460) { ScaleX = 1, ScaleY = 1.15f, Alpha = 25 },
-                       new(560) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
-                       new(660) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
-                       new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
-                       { Repeat = true, Label = "Pulse",PerCycle = () => RandomPosition(Smoke1,0,0.2f) });
-
-
-        Tweens.Add(new(Smoke2,
-                       new(0) { Scale = 0.9f, Alpha = 0 },
-                       new(100) { Scale = 0.9f, Alpha = 0 },
-                       new(260) { Scale = 1, Alpha = 125 },
-                       new(360) { ScaleX = 1, ScaleY = 1.05f, Alpha = 100 },
-                       new(460) { ScaleX = 1, ScaleY = 1.1f, Alpha = 50 },
-                       new(560) { ScaleX = 1, ScaleY = 1.15f, Alpha = 25 },
-                       new(660) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
-                       new(760) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
-                       new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
-                       { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke2,0.4f,0.6f) });
-
-        Tweens.Add(new(Smoke3,
-                       new(0) { Scale = 0.9f, Alpha = 0 },
-                       new(200) { Scale = 0.9f, Alpha = 0 },
-                       new(360) { Scale = 1, Alpha = 125 },
-                       new(460) { ScaleX = 1, ScaleY = 1.05f, Alpha = 100 },
-                       new(560) { ScaleX = 1, ScaleY = 1.1f, Alpha = 50 },
-                       new(660) { ScaleX = 1, ScaleY = 1.15f, Alpha = 25 },
-                       new(760) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
-                       new(860) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
-                       new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
-                       { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke3,0.8f,1f) });
+        Animator += new Tween[]
+        {
+            new(Glow,
+                new(0) {Alpha=0,ScaleY=1},
+                new(450) {Alpha=101,ScaleY=1.04f},
+                new(950) {Alpha=0,ScaleY=1.08f})
+                {Repeat = true, Label = "Pulse"},
+           
+            new(Smoke1,
+                new(0) { Scale = 0.9f, Alpha = 0 },
+                new(160) { Scale = 1, Alpha = 125 },
+                new(260) { ScaleX = 1, ScaleY = 1.05f, Alpha = 100 },
+                new(360) { ScaleX = 1, ScaleY = 1.1f, Alpha = 50 },
+                new(460) { ScaleX = 1, ScaleY = 1.15f, Alpha = 25 },
+                new(560) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
+                new(660) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
+                new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
+                { Repeat = true, Label = "Pulse",PerCycle = () => RandomPosition(Smoke1,0,0.2f) },
+           
+            new(Smoke2,
+                new(0) { Scale = 0.9f, Alpha = 0 },
+                new(100) { Scale = 0.9f, Alpha = 0 },
+                new(260) { Scale = 1, Alpha = 125 },
+                new(360) { ScaleX = 1, ScaleY = 1.05f, Alpha = 100 },
+                new(460) { ScaleX = 1, ScaleY = 1.1f, Alpha = 50 },
+                new(560) { ScaleX = 1, ScaleY = 1.15f, Alpha = 25 },
+                new(660) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
+                new(760) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
+                new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
+                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke2,0.4f,0.6f) },
+           
+            new(Smoke3,
+                new(0) { Scale = 0.9f, Alpha = 0 },
+                new(200) { Scale = 0.9f, Alpha = 0 },
+                new(360) { Scale = 1, Alpha = 125 },
+                new(460) { ScaleX = 1, ScaleY = 1.05f, Alpha = 100 },
+                new(560) { ScaleX = 1, ScaleY = 1.1f, Alpha = 50 },
+                new(660) { ScaleX = 1, ScaleY = 1.15f, Alpha = 25 },
+                new(760) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
+                new(860) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
+                new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
+                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke3,0.8f,1f) }
+        };
 
     }
 
@@ -133,36 +131,36 @@ public sealed unsafe class HeatOverlay : StateWidget
     {
         InvokeSharedEvent("HeatGauge", "StopHeatGlow");
 
-        ClearLabelTweens(ref Tweens, "Pulse");
-        Tweens.Add(new(Glow,
-                       new(0, Glow),
-                       new(450) { Alpha = 0, ScaleY = 1.08f})
-                       {Label = "Pulse"});
+        Animator -= "Pulse";
+        Animator += new Tween[] {
+            new(Glow,
+                new(0, Glow),
+                new(450) { Alpha = 0, ScaleY = 1.08f})
+                {Label = "Pulse"},
 
-        Tweens.Add(new(Smoke1,
-                       new(0, Smoke1),
-                       new(400) { ScaleY = 1.4f, Alpha = 0 })
-                       { Label = "Pulse" });
+            new(Smoke1,
+                new(0, Smoke1),
+                new(400) { ScaleY = 1.4f, Alpha = 0 })
+                { Label = "Pulse" },
 
-        Tweens.Add(new(Smoke2,
-                       new(0, Smoke2),
-                       new(460) { ScaleY = 1.4f, Alpha = 0 })
-                       { Label = "Pulse" });
+            new(Smoke2,
+                new(0, Smoke2),
+                new(460) { ScaleY = 1.4f, Alpha = 0 })
+                { Label = "Pulse" },
 
-        Tweens.Add(new(Smoke3,
-                       new(0, Smoke3),
-                       new(400) { ScaleY = 1.4f, Alpha = 0 })
-                       { Label = "Pulse" });
-
-
+            new(Smoke3,
+                new(0, Smoke3),
+                new(400) { ScaleY = 1.4f, Alpha = 0 })
+                { Label = "Pulse" }
+        };
     }
 
     public override void StateChange(int current, int previous)
     {
         var color = Config.Colors.ElementAtOrDefault(current);
-        Tweens.Add(new(Glow,
-                       new(0,Glow),
-                       new(300){AddRGB = color+ColorOffset}));
+        Animator += new Tween(Glow,
+                              new(0,Glow),
+                              new(300){ AddRGB = color + ColorOffset });
     }
 
     #endregion

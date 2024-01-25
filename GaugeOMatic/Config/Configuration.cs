@@ -1,10 +1,10 @@
+using System;
+using System.Collections.Generic;
 using Dalamud.Configuration;
 using Dalamud.Plugin;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Trackers.Presets;
-using System;
-using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Windows.ConfigWindow;
 using static GaugeOMatic.Windows.ConfigWindow.GeneralTab;

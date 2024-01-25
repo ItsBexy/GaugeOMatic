@@ -1,4 +1,5 @@
-using System;
+using static System.Math;
+
 // ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility;
@@ -12,7 +13,7 @@ public static class MiscMath
     public static float PolyCalc(float x, params double[] coeff)
     {
         var result = 0f;
-        for (var i = 0; i < coeff.Length; i++) result += (float)(Math.Pow(x, i) * coeff[i]);
+        for (var i = 0; i < coeff.Length; i++) result += (float)(Pow(x, i) * coeff[i]);
         return result;
     }
 

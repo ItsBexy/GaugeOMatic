@@ -1,4 +1,6 @@
+using CustomNodes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Windows;
@@ -7,8 +9,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.GaugeOMatic.Service;
+using static GaugeOMatic.Utility.Color;
 using static Newtonsoft.Json.JsonConvert;
+using static System.Activator;
 
 namespace GaugeOMatic.Widgets;
 
@@ -29,29 +32,34 @@ public abstract unsafe class Widget : IDisposable
         ApplyConfigs();
     }
 
-    public static Widget? Create(Tracker tracker) => string.IsNullOrEmpty(tracker.WidgetType) ? null :
-                                                     string.IsNullOrEmpty(tracker.AddonName) ? null :
-                                                     (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
-                                                     (Widget?)Activator.CreateInstance(Type.GetType($"{typeof(Widget).Namespace}.{tracker.WidgetType}") ?? typeof(Widget), tracker);
+    public static Widget? Create(Tracker tracker)
+    {
+        if (string.IsNullOrEmpty(tracker.WidgetType)) return null;
 
-    public Tracker Tracker { get; set; }
+        var type = Type.GetType($"{typeof(Widget).Namespace}.{tracker.WidgetType}");
+
+        return type == null ? null : 
+                   string.IsNullOrEmpty(tracker.AddonName) ? null : 
+                       (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null : 
+                       (Widget?)CreateInstance(type, tracker);
+    }
+
     public abstract WidgetInfo WidgetInfo { get; }
+    public Tracker Tracker { get; set; }
     public AtkUnitBase* Addon;
 
+    public Animator Animator = new();
     public CustomNode WidgetRoot;
-    public List<Tween> Tweens = new();
     public virtual CustomNode BuildRoot() => new(CreateResNode());
     public virtual CustomPartsList[] PartsLists { get; } = Array.Empty<CustomPartsList>();
 
     public void Dispose()
     {
-        Tweens.Clear();
+        Animator.Dispose();
         Detach();
         if (WidgetRoot.Node != null) WidgetRoot.Dispose();
         foreach (var partsList in PartsLists) partsList.Dispose();
     }
-
-    public void RunTweens() => Tweens = new(Tweens.Where(static t => !t.IsStale).Select(static t => t.Run()));
 
     public void Attach()
     {
@@ -80,8 +88,8 @@ public abstract unsafe class Widget : IDisposable
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public struct SharedEventArgs
     {
-        public Color.ColorRGB? ColorRGB;
-        public Color.AddRGB? AddRGB;
+        public ColorRGB? ColorRGB;
+        public AddRGB? AddRGB;
         public int? Intval;
         public float? Floatval;
     }
@@ -100,4 +108,9 @@ public partial class WidgetConfig // each widget contributes a part to this in i
     public string? WidgetType { get; set; }
     public static implicit operator string(WidgetConfig w) => SerializeObject(w, Json.JsonSettings);
     public static implicit operator WidgetConfig?(string s) => DeserializeObject<WidgetConfig>(s) ?? null;
+}
+
+public abstract class WidgetTypeConfig
+{
+
 }

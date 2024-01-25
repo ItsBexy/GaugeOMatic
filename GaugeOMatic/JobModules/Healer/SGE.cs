@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,13 +41,10 @@ public class SGEModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideEukrasia = TweakConfigs.SGEHideEukrasia;
-        var hideAddersgall = TweakConfigs.SGEHideAddersgall;
-
-        if (Bool1("Hide Eukrasia", ref hideEukrasia, ref update)) TweakConfigs.SGEHideEukrasia = hideEukrasia;
-        HideWarning(hideEukrasia);
-        if (Bool1("Hide Addersgall Gauge", ref hideAddersgall, ref update)) TweakConfigs.SGEHideAddersgall = hideAddersgall;
-        HideWarning(hideAddersgall);
+        ToggleControls("Hide Eukrasia",ref TweakConfigs.SGEHideEukrasia, ref update);
+        HideWarning(TweakConfigs.SGEHideEukrasia);
+        ToggleControls("Hide Addersgall Gauge",ref TweakConfigs.SGEHideAddersgall, ref update);
+        HideWarning(TweakConfigs.SGEHideAddersgall);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -76,6 +73,6 @@ public class SGEModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool SGEHideEukrasia { get; set; }
-    public bool SGEHideAddersgall { get; set; }
+    public bool SGEHideEukrasia;
+    public bool SGEHideAddersgall;
 }

@@ -7,8 +7,8 @@ using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,13 +41,10 @@ public class MCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAll = TweakConfigs.MCHHideAll;
-        var batteryPos = TweakConfigs.MCHBatteryPos;
+        ToggleControls("Hide Heat Gauge",ref TweakConfigs.MCHHideAll, ref update);
+        HideWarning(TweakConfigs.MCHHideAll);
 
-        if (Bool1("Hide Heat Gauge", ref hideAll, ref update)) TweakConfigs.MCHHideAll = hideAll;
-        HideWarning(hideAll);
-
-        if (PositionControls("Move Battery Gauge", ref batteryPos, ref update)) TweakConfigs.MCHBatteryPos = batteryPos;
+        PositionControls("Move Battery Gauge", ref TweakConfigs.MCHBatteryPos, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -73,6 +70,6 @@ public class MCHModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool MCHHideAll { get; set; }
-    public Vector2 MCHBatteryPos { get; set; }
+    public bool MCHHideAll;
+    public Vector2 MCHBatteryPos;
 }

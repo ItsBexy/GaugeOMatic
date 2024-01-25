@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -43,10 +43,10 @@ public class BLMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAll = TweakConfigs.BLMHideAll;
+        // todo: "recolor MP bar by element" tweak
 
-        if (Bool1("Hide Elemental Gauge", ref hideAll, ref update)) TweakConfigs.BLMHideAll = hideAll;
-        HideWarning(hideAll);
+        ToggleControls("Hide Elemental Gauge",ref TweakConfigs.BLMHideAll, ref update);
+        HideWarning(TweakConfigs.BLMHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -66,5 +66,5 @@ public class BLMModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool BLMHideAll { get; set; }
+    public bool BLMHideAll;
 }

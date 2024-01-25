@@ -1,17 +1,20 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.TargetReticle;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -42,12 +45,14 @@ public sealed unsafe class TargetReticle : StateWidget
 
     public override CustomNode BuildRoot()
     {
-        Halo = ImageNodeFromPart(0, 0).SetAlpha(0)
+        Halo = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
+                                      .SetAlpha(0)
                                       .SetImageFlag(32)
                                       .SetOrigin(225, 225)
                                       .SetPos(-225, -225);
 
-        InnerHalo = ImageNodeFromPart(0,0).SetAlpha(0)
+        InnerHalo = ImageNodeFromPart(0,0).RemoveFlags(SetVisByAlpha)
+                                          .SetAlpha(0)
                                           .SetImageFlag(32)
                                           .SetOrigin(225, 225)
                                           .SetPos(-225, -225)
@@ -61,7 +66,7 @@ public sealed unsafe class TargetReticle : StateWidget
     private void BeginRotation()
     {
         StopRotation();
-        var rpm = Math.Abs(Config.Speed);
+        var rpm = Abs(Config.Speed);
 
         if (rpm > 0.005f)
         {
@@ -69,22 +74,26 @@ public sealed unsafe class TargetReticle : StateWidget
 
             var startAngle = (Halo.Node->Rotation + 6.283185f) % 6.283185f;
             var endAngle = startAngle + (Config.Speed >= 0 ? 6.283185f : -6.283185f);
-            Tweens.Add(new(Halo, 
-                           new(0) { Rotation = startAngle }, 
-                           new((int)rotationTime) { Rotation = endAngle }) 
-                           { Repeat = true, Label="RotationTween" });
 
 
             var startAngle2 = (InnerHalo.Node->Rotation + 6.283185f) % 6.283185f;
             var endAngle2 = startAngle2 + (Config.Speed >= 0 ? -6.283185f : 6.283185f);
-            Tweens.Add(new(InnerHalo,
-                           new(0) { Rotation = startAngle2 },
-                           new((int)(rotationTime*1.2f)) { Rotation = endAngle2 })
-                           { Repeat = true, Label = "RotationTween" });
+
+            Animator += new Tween[]
+            {
+                new(Halo,
+                    new(0) { Rotation = startAngle },
+                    new((int)rotationTime) { Rotation = endAngle })
+                    { Repeat = true, Label="RotationTween" },
+                new(InnerHalo,
+                    new(0) { Rotation = startAngle2 },
+                    new((int)(rotationTime*1.2f)) { Rotation = endAngle2 })
+                    { Repeat = true, Label = "RotationTween" }
+            };
         }
     }
 
-    private void StopRotation() => ClearLabelTweens(ref Tweens, "RotationTween");
+    private void StopRotation() => Animator -= "RotationTween";
 
     #endregion
 
@@ -96,7 +105,7 @@ public sealed unsafe class TargetReticle : StateWidget
 
     public override void PostUpdate() { if (!Halo.Visible) StopRotation(); }
 
-    public override void OnFirstRun(int current) => Halo.SetAlpha(current > 0 ? 255:0);
+    public override void OnFirstRun(int current) => Halo.SetAlpha(current > 0);
 
     public override void Activate(int current)
     {
@@ -105,42 +114,47 @@ public sealed unsafe class TargetReticle : StateWidget
         Halo.Show();
         InnerHalo.Show();
 
-        ClearLabelTweens(ref Tweens, "HaloAlpha");
+        Animator -= "HaloAlpha";
+        Animator += new Tween[]
+        {
+            new(Halo,
+                new(0) { Alpha = 0, Scale = 0.2f, MultRGB = color },
+                new(400) { Alpha = 255, Scale = 1, MultRGB = color }){ Label = "HaloAlpha" },
+            new(InnerHalo,
+                new(0) { Alpha = 0, Scale = 2.1f, MultRGB = color },
+                new(200) { Alpha = 255, Scale = 0.6f, MultRGB = color })
+                { Label = "HaloAlpha" }
 
-        Tweens.Add(new(Halo, 
-                       new(0) { Alpha = 0, Scale = 0.2f, MultRGB = color }, 
-                       new(400) { Alpha = 255, Scale = 1, MultRGB = color }){ Label = "HaloAlpha" });
-        Tweens.Add(new(InnerHalo,
-                       new(0) { Alpha = 0, Scale = 2.1f, MultRGB = color },
-                       new(200) { Alpha = 255, Scale = 0.6f, MultRGB = color })
-                       { Label = "HaloAlpha" });
+        };
 
         BeginRotation();
     }
 
     public override void Deactivate(int previous)
     {
-        ClearLabelTweens(ref Tweens, "HaloAlpha");
-        Tweens.Add(new(Halo, 
-                       new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 }, 
-                       new(200) { Alpha = 0, ScaleX=1.2f,ScaleY=1.2f }) 
-                       { Complete = () => Halo.Hide(), Label = "HaloAlpha" });
-
-        Tweens.Add(new(InnerHalo, 
-                       new(0) { Alpha = 255, ScaleX=0.6f,ScaleY=0.6f }, 
-                       new(200) { Alpha = 0, ScaleX = 0.2f, ScaleY = 0.2f }) 
-                       { Complete = () => Halo.Hide(), Label = "HaloAlpha" });
+        Animator -= "HaloAlpha";
+        Animator += new Tween[] {
+            new(Halo,
+                new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
+                new(200) { Alpha = 0, ScaleX=1.2f,ScaleY=1.2f })
+            { Complete = () => Halo.Hide(), Label = "HaloAlpha" },
+            new(InnerHalo,
+                new(0) { Alpha = 255, ScaleX=0.6f,ScaleY=0.6f },
+                new(200) { Alpha = 0, ScaleX = 0.2f, ScaleY = 0.2f })
+                { Complete = () => Halo.Hide(), Label = "HaloAlpha" }
+        };
     }
 
-    public override void StateChange(int current, int previous)
-    {
-        Tweens.Add(new(Halo,
-                       new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
-                       new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) }));
-        Tweens.Add(new(InnerHalo,
-                       new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
-                       new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) }));
-    }
+    public override void StateChange(int current, int previous) =>
+        Animator += new Tween[]
+        {
+            new(Halo,
+                new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
+                new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) }),
+            new(InnerHalo,
+                new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
+                new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) })
+        };
 
     #endregion
 

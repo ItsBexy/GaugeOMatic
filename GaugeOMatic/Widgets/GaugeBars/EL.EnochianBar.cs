@@ -1,24 +1,24 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.EnochianBar.EnochianBarConfig;
 using static GaugeOMatic.Widgets.EnochianBar.EnochianBarConfig.Quadrants;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -64,18 +64,17 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
         Backplate = new(CreateResNode(), Lattice, Plate, Groove);
 
-        Drain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4);
-        Gain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4);
-        Main = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4);
+        Drain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline);
+        Gain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline);
+        Main = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline);
 
         DrainContainer = new CustomNode(CreateResNode(), Drain).SetSize(85, 85).SetNodeFlags(Clip);
         GainContainer = new CustomNode(CreateResNode(), Gain).SetSize(85, 85).SetNodeFlags(Clip);
         MainContainer = new CustomNode(CreateResNode(), Main).SetSize(85, 85).SetNodeFlags(Clip);
 
-        Bar = new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer)
-              .SetPos(11, 10).SetSize(86, 86).SetAddRGB(-20).SetMultiply(50);
+        Bar = new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(11, 10).SetSize(86, 86).SetAddRGB(-20).SetMultiply(50);
 
-        ClockHand = ImageNodeFromPart(0, 12).SetOrigin(15, 10);
+        ClockHand = ImageNodeFromPart(0, 12).SetOrigin(15, 10).DefineTimeline(new(0){ Rotation = -1.5707963267949f },new(1){ Rotation = 0 });
 
         ClockHand.Node->Priority = 1;
 
@@ -84,11 +83,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         NumTextNode = new();
         NumTextNode.Node->SetPriority(1);
 
-        Contents = new CustomNode(CreateResNode(),
-                              Backplate,
-                              Bar,
-                              ClockHandContainer
-                              ).SetSize(128, 124).SetOrigin(8, 8);
+        Contents = new CustomNode(CreateResNode(), Backplate, Bar, ClockHandContainer).SetSize(128, 124).SetOrigin(8, 8);
 
         return new(CreateResNode(), NumTextNode,Contents );
     }
@@ -97,43 +92,51 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     #region Animations
 
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 } };
+
     private void ShowBar()
     {
         var scaleX = Config.Direction == 1 ? -1 : 1;
-        Tweens.Add(new(Contents,
-                       new(0) { ScaleX = scaleX * 1.2f, ScaleY = 1.2f, Alpha = 0 },
-                       new(150) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 }));
+        Animator += new Tween(Contents,
+                              new(0) { ScaleX = scaleX * 1.2f, ScaleY = 1.2f, Alpha = 0 },
+                              new(150) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 });
     }
 
     private void HideBar()
     {
         var scaleX = Config.Direction == 1 ? -1 : 1;
-        Tweens.Add(new(Contents,
-                       new(0) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 },
-                       new(150) { ScaleX = scaleX * 0.8f, ScaleY = 0.8f, Alpha = 0 }));
+        Animator += new Tween(Contents,
+                              new(0) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 },
+                              new(150) { ScaleX = scaleX * 0.8f, ScaleY = 0.8f, Alpha = 0 });
     }
+
+    private void ActivateNode(CustomNode node) =>
+        Animator += new Tween(node,
+                              new(0) { AddRGB = -20, MultRGB = new(53) },
+                              new(150) { AddRGB = 0, MultRGB = new(100) },
+                              new(250) { AddRGB = 70, MultRGB = new(100) },
+                              new(360) { AddRGB = 0, MultRGB = new(100) })
+                              { Label = "Activate" };
 
     #endregion
 
     #region UpdateFuncs
 
-    public override DrainGainType DGType => Rotation;
-    public override float CalcBarProperty(float prog)
+    public override float AdjustProg(float prog)
     {
-        if (!Config.Smooth) prog = (float)Math.Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
-        return (1.5707963267949f * prog) - 1.5707963267949f;
+         if (!Config.Smooth) prog = (float)Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
+         return prog;
     }
-
-    public override void PreUpdate(float prog, float prevProg) => Config.AnimationLength = Config.Smooth || prevProg > prog ? 250 : prog > prevProg ? 0 : Config.AnimationLength;
+    public override void PreUpdate(float prog, float prevProg) => Config.AnimationLength = Config.Smooth || (prog > prevProg) != Config.Invert ? 250 : 0;
 
     public override void PlaceTickMark(float prog)
     {
-        ClockHand.SetRotation(Math.Max(Main.Rotation, Drain.Rotation));
-        ClockHand.SetAlpha(Config.HideHand && ClockHand.Rotation <= CalcBarProperty(0) ? 0 : 255);
+        ClockHand.SetProgress(Max(Main.Progress,Drain.Progress));
+        ClockHand.SetAlpha(!Config.HideHand || prog > 0);
         if (prog > 0 && !Activated) { UnDimBar(); }
     }
 
-    public override void OnIncreaseFromMin(float prog, float prevProg)
+    public override void OnIncreaseFromMin()
     {
         if (Config.DimEmpty) UnDimBar();
         if (Config.HideEmpty) ShowBar();
@@ -149,17 +152,9 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Activated = true;
     }
 
-    private void ActivateNode(CustomNode node) =>
-        Tweens.Add(new(node,
-                       new(0) { AddRGB = -20, MultRGB = new(53) },
-                       new(150) { AddRGB = 0, MultRGB = new(100) },
-                       new(250) { AddRGB = 70, MultRGB = new(100) },
-                       new(360) { AddRGB = 0, MultRGB = new(100) }) 
-                       { Label = "Activate" });
-
-    public override void OnDecreaseToMin(float prog, float prevProg)
+    public override void OnDecreaseToMin()
     {
-        ClearLabelTweens(ref Tweens, "Activate");
+        Animator -= "Activate";
         if (Config.DimEmpty) DimBar();
         if (Config.HideEmpty) HideBar();
     }
@@ -175,9 +170,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override void OnFirstRun(float prog)
     {
-        Main.SetRotation(CalcBarProperty(prog));
-        Gain.SetRotation(-91, true);
-        Drain.SetRotation(-91, true);
+        base.OnFirstRun(prog);
+
         if (prog > 0) UnDimBar();
         if (Config.HideEmpty && prog == 0) Contents.SetAlpha(0);
     }
@@ -190,7 +184,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     {
         public enum Quadrants { BR = 0, BL = 1, TL = 2, TR = 3 }
 
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
         public Quadrants Quadrant;
         public int Direction;
@@ -216,37 +210,30 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                                                               align:     Center,
                                                               invert:    false);
 
-        public EnochianBarConfig(WidgetConfig widgetConfig)
+        public EnochianBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.EnochianBarCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.EnochianBarCfg;
 
-            if (config != null)
-            {
-                Position = config.Position;
-                Scale = config.Scale;
-                Quadrant = config.Quadrant;
-                Direction = config.Direction;
+            if (config == null) return;
 
-                PlateColor = config.PlateColor;
-                MainColor = config.MainColor;
-                GainColor = config.GainColor;
-                DrainColor = config.DrainColor;
+            Position = config.Position;
+            Scale = config.Scale;
+            Quadrant = config.Quadrant;
+            Direction = config.Direction;
 
-                Smooth = config.Smooth;
-                HideEmpty = config.HideEmpty;
-                HideHand = config.HideHand;
-                DimEmpty = config.DimEmpty;
-                SplitCharges = config.SplitCharges;
+            PlateColor = config.PlateColor;
+            MainColor = config.MainColor;
+            GainColor = config.GainColor;
+            DrainColor = config.DrainColor;
 
-                AnimationLength = config.Smooth ? 250 : 0;
-                Invert = config.Invert;
-                NumTextProps = config.NumTextProps;
-                LabelText = config.LabelText;
-            }
+            Smooth = config.Smooth;
+            HideHand = config.HideHand;
+            DimEmpty = config.DimEmpty;
+
+            LabelText = config.LabelText;
         }
 
-        public EnochianBarConfig() => NumTextProps = NumTextDefault;
+        public EnochianBarConfig() { }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -264,6 +251,11 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public override void ApplyConfigs()
     {
         var colorOffset = new AddRGB(-25, 52, -90);
+
+        Main.SetAddRGB(Config.MainColor + colorOffset, true).SetProgress(CalcProg());
+        Gain.SetAddRGB(Config.GainColor + colorOffset, true).SetProgress(0);
+        Drain.SetAddRGB(Config.DrainColor + colorOffset, true).SetProgress(0);
+
         WidgetRoot.SetPos(Config.Position + new Vector2(86, 68))
                   .SetScale(Config.Scale);
 
@@ -271,12 +263,9 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
         QuadrantAdjust(Config.Quadrant, Config.Direction);
 
-        Main.SetAddRGB(Config.MainColor + colorOffset, true);
-        Gain.SetAddRGB(Config.GainColor + colorOffset, true);
-        Drain.SetAddRGB(Config.DrainColor + colorOffset, true);
     }
 
-    private void QuadrantAdjust(Quadrants quad, int direction)
+    private void QuadrantAdjust(EnochianBarConfig.Quadrants quad, int direction)
     {
         var flip = direction == 1;
         var flipFactor = flip ? -1 : 1;
@@ -315,7 +304,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         MainContainer.SetPos(containerPos);
 
         NumTextNode.ApplyProps(NumTextProps,new Vector2(8, 5));
-        NumTextNode.Show().SetAlpha(NumTextProps.Enabled?255:0);
+        NumTextNode.Show().SetAlpha(NumTextProps.Enabled);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -358,7 +347,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     private void DimCheck(bool dimEmpty)
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
+        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
             if (dimEmpty) DimBar();
             else UnDimBar();
@@ -367,7 +356,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     private void HideCheck(bool hideEmpty)
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
+        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
             if (hideEmpty) HideBar();
             else ShowBar();

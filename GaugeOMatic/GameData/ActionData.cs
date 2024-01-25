@@ -1,38 +1,72 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
+using System;
+using static GaugeOMatic.GameData.ActionData.ActionRef.ReadyTypes;
 using static GaugeOMatic.GameData.JobData;
-using static GaugeOMatic.GameData.JobData.Role;
+using static GaugeOMatic.GameData.StatusData;
 
 namespace GaugeOMatic.GameData;
 
 public unsafe partial class ActionData
 {
+    internal static ActionManager* ActionManager => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance();
+
     public class ActionRef : ItemRef
     {
+        [Flags]
+        public enum ReadyTypes
+        {
+            Ants = 0x01,
+            StatusEffect = 0x02
+        }
+
         public int MaxCharges;
         public float CooldownLength;
+        public ReadyTypes ReadyType;
+        public StatusRef? ReadyStatus;
+        public bool HasUpgrades;
+        public uint GetID => HasUpgrades ? ActionManager->GetAdjustedActionId(ID): ID;
 
-        public ActionRef(uint id, Job job, string name, float cooldownLength, int maxCharges = 1, Role role = None)
+        public ActionRef(uint id, Job job, string name, float cooldownLength, int maxCharges = 1 )
         {
             Job = job;
-            Role = role;
             ID = id;
             Name = name;
             MaxCharges = maxCharges;
             CooldownLength = cooldownLength;
         }
 
-        public ActionRef() { }
+        private ActionRef()
+        {
+        }
 
         public static implicit operator ActionRef(uint i) => Actions.TryGetValue(i, out var result) ? result : new();
-    }
 
-    internal static ActionManager* ActionManager => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance();
+        public float GetCooldownTotal()
+        {
+            var cooldownLength = ActionManager->GetRecastTime(ActionType.Action, GetID);
+            if (cooldownLength > 0) CooldownLength = cooldownLength;
+            return CooldownLength;
+        }
 
-    public static int GetCharges(uint id) => (int)ActionManager->GetCurrentCharges(id);
+        public float GetCooldownElapsed() => ActionManager->GetRecastTimeElapsed(ActionType.Action, GetID);
+        public float GetCooldownRemaining(float? cdOverride = null)
+        {
+            var elapsed = GetCooldownElapsed();
+            return elapsed == 0 ? 0 : (cdOverride ?? CooldownLength) - elapsed;
+        }
 
-    public static float GetCooldownTime(uint id, float maxValue)
-    {
-        var elapsed = ActionManager->GetRecastTimeElapsed(ActionType.Action, id);
-        return elapsed == 0 ? 0 : maxValue - elapsed;
+        public bool IsReady() => 
+            GetCurrentCharges() != 0 && 
+            (!ReadyType.HasFlag(Ants) || ActionManager->IsActionHighlighted(ActionType.Action, GetID)) && 
+            (!ReadyType.HasFlag(StatusEffect) || (ReadyStatus?.TryGetStatus() ?? false));
+
+        public int GetMaxCharges()
+        {
+            var maxAtLevel = GetMaxChargesAtLevel?.Invoke(GetID, 0);
+            if (maxAtLevel > 0) MaxCharges = (int)maxAtLevel;
+            return MaxCharges;
+        }
+
+        public int GetCurrentCharges() => (int)ActionManager->GetCurrentCharges(GetID);
     }
 }

@@ -1,17 +1,18 @@
-using FFXIVClientStructs.FFXIV.Component.GUI;
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ReaperFlame;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -54,37 +55,40 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override CustomNode BuildRoot()
     {
-        var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
-        Stacks = BuildStacks(count);
+        Max = GetMax();
+        Stacks = BuildStacks(Max);
         return new(CreateResNode(), Stacks.ToArray());
     }
 
-    private List<CustomNode> BuildStacks(int count)
-    {
+    private List<CustomNode> BuildStacks(int count) {
+
         var stacks = new List<CustomNode>();
-        for (var i = 0; i < count; i++) stacks.Add(BuildFlameStack(i));
+
+        Flames = new();
+        FlameTwins = new();
+        Orbs = new();
+        Halos = new();
+        Pulsars = new();
+
+        for (var i = 0; i < count; i++)
+        {
+            Flames.Add(ImageNodeFromPart(0, 0).SetPos(-2, -18).SetOrigin(18, 44).SetAlpha(0));
+            FlameTwins.Add(ImageNodeFromPart(0, 0).SetPos(-2, -18).SetOrigin(18, 44).SetAlpha(0).SetImageFlag(32));
+            Orbs.Add(ImageNodeFromPart(0, 6).SetOrigin(16, 16).SetAlpha(0));
+            Halos.Add(ImageNodeFromPart(0, 8).SetPos(-1, 0).SetOrigin(16, 16).SetScale(1.428571f).SetAlpha(0).SetImageFlag(32));
+            Pulsars.Add(ImageNodeFromPart(0,9).SetPos(-13,0).SetOrigin(30,17).SetScale(0.5f,0.55f).SetAlpha(0).SetRotation(-1.2f).SetImageFlag(32));
+
+            var tMod = 1 % 10 * (i % 2 == 0 ? -4 : 4); 
+            
+            Animator += new Tween[]
+            {
+                new(Flames[i], new(0) { PartId = 0 },new(475 + tMod){PartId = 5}) { Repeat = true },
+                new(FlameTwins[i], new(0) { PartId = 0 },new(475 + tMod){PartId = 5}) { Repeat = true }
+            };
+
+            stacks.Add(new CustomNode(CreateResNode(), Flames[i], Orbs[i], Halos[i], Pulsars[i], FlameTwins[i]).SetSize(36, 44));
+        }
         return stacks;
-    }
-
-    public CustomNode BuildFlameStack(int i)
-    {
-        var flame = ImageNodeFromPart(0, 0).SetPos(-2, -18).SetOrigin(18, 44).SetAlpha(0);
-        var flameTwin = ImageNodeFromPart(0, 0).SetPos(-2, -18).SetOrigin(18, 44).SetAlpha(0).SetImageFlag(32);
-        var orb = ImageNodeFromPart(0, 6).SetOrigin(16, 16).SetAlpha(0);
-        var halo = ImageNodeFromPart(0, 8).SetPos(-1, 0).SetOrigin(16, 16).SetScale(1.428571f).SetAlpha(0).SetImageFlag(32);
-        var pulsar = ImageNodeFromPart(0,9).SetPos(-13,0).SetOrigin(30,17).SetScale(0.5f,0.55f).SetAlpha(0).SetRotation(-1.2f).SetImageFlag(32);
-
-        Flames.Add(flame);
-        FlameTwins.Add(flameTwin);
-        Orbs.Add(orb);
-        Halos.Add(halo);
-        Pulsars.Add(pulsar);
-
-        var tMod = 1 % 10 * (i % 2 == 0 ? -4 : 4);
-        Tweens.Add(new(flame, new(0) { PartId = 0 },new(475 + tMod){PartId = 5}) { Repeat = true });
-        Tweens.Add(new(flameTwin, new(0) { PartId = 0 },new(475 + tMod){PartId = 5}) { Repeat = true });
-
-        return new CustomNode(CreateResNode(), flame, orb, halo, pulsar, flameTwin).SetSize(36, 44);
     }
 
     #endregion
@@ -93,10 +97,13 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override void ShowStack(int i)
     {
-        ClearLabelTweens(ref Tweens, $"HideAnim{i}");
+        Animator -= $"HideAnim{i}";
 
-        Tweens.Add(new(Flames[i], new(0) { Alpha = 0, X = -2, Y = -18 }, new(200) { Alpha = 255, X = -2, Y = -18 }));
-        Tweens.Add(new(Orbs[i], new(0) { Alpha = 0 }, new(20) { Alpha = 170 }));
+        Animator += new Tween[]
+        {
+            new(Flames[i], new(0) { Alpha = 0, X = -2, Y = -18 }, new(200) { Alpha = 255, X = -2, Y = -18 }),
+            new(Orbs[i], Hidden[0], new(20) { Alpha = 170 })
+        };
 
         FlameTwins[i].SetAlpha(0);
     }
@@ -104,26 +111,34 @@ public sealed unsafe class ReaperFlame : CounterWidget
     public override void HideStack(int i)
     {
         if (Config.SpendAnim == 1)
-        {
-            Tweens.Add(new(Flames[i], new(0) { X = -2, Y = -18, Alpha = 255 }, new(500) { X = -5, Y = -38, Alpha = 0 }){Label= $"HideAnim{i}" });
-            Tweens.Add(new(FlameTwins[i], new(0) { X = -2, Y = -18, Alpha = 255 }, new(500) { X = 1, Y = -2, Alpha = 0 }) { Label = $"HideAnim{i}" });
-        }
-        else
-        {
-            Tweens.Add(new(Flames[i], new(0) { Alpha = 255 }, new(500) { Alpha = 0 }) { Label = $"HideAnim{i}" });
-        }
+            Animator += new Tween[]
+            {
+                new(Flames[i], 
+                    new(0) { X = -2, Y = -18, Alpha = 255 }, 
+                    new(500) { X = -5, Y = -38, Alpha = 0 })
+                    { Label = $"HideAnim{i}" },
+                new(FlameTwins[i], 
+                    new(0) { X = -2, Y = -18, Alpha = 255 }, 
+                    new(500) { X = 1, Y = -2, Alpha = 0 })
+                    { Label = $"HideAnim{i}" }
+            };
+        else Animator += new Tween(Flames[i], Visible[0], Hidden[500]) { Label = $"HideAnim{i}" };
 
-        Tweens.Add(new(Orbs[i], new(0) { Alpha = 170 }, new(20) { Alpha = 0 }) { Label = $"HideAnim{i}" });
-        Tweens.Add(HaloFadeTween(Halos[i]));
-        Tweens.Add(PulsarWinkTween(Pulsars[i]));
+        Animator += new Tween[]
+        {
+            new(Orbs[i], 
+                new(0) { Alpha = 170 }, Hidden[20]) 
+                { Label = $"HideAnim{i}" },
+            new(Halos[i], 
+                new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 }, 
+                new(250) { Alpha = 0, ScaleX = 1.5f, ScaleY = 1.5f })
+                { Label = $"HideAnim{i}" },
+            new(Pulsars[i], 
+                new(0) { Alpha = 0, ScaleX = 0.5f, ScaleY = 0.55f },
+                new(150) { Alpha = 255, ScaleX = 1.5f, ScaleY = 0f })
+                { Label = $"HideAnim{i}" }
+        };
     }
-
-    public static Tween HaloFadeTween(CustomNode node) =>
-        new(node, new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
-            new(250) { Alpha = 0, ScaleX = 1.5f, ScaleY = 1.5f });
-    public static Tween PulsarWinkTween(AtkResNode* node) =>
-        new(node, new(0) { Alpha = 0, ScaleX = 0.5f, ScaleY = 0.55f },
-            new(150) { Alpha = 255, ScaleX = 1.5f, ScaleY = 0f });
 
     #endregion
 
@@ -131,16 +146,10 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override void OnFirstRun(int count, int max)
     {
-        for (var i = 0; i < count; i++)
+        for (var i = 0; i < max; i++)
         {
-            Flames[i].SetAlpha(255);
-            Orbs[i].SetAlpha(170);
-        }
-
-        for (var i = count; i < max; i++)
-        {
-            Flames[i].SetAlpha(0);
-            Orbs[i].SetAlpha(0);
+            Flames[i].SetAlpha(i < count);
+            Orbs[i].SetAlpha((byte)(i < count ? 170:0));
         }
     }
 
@@ -150,7 +159,7 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public class ReaperFlameConfig : CounterWidgetConfig
     {
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public float Spacing = 20;
         public float Angle;
@@ -204,8 +213,8 @@ public sealed unsafe class ReaperFlame : CounterWidget
         for (var i = 0; i < Stacks.Count; i++)
         {
             Stacks[i].SetPos((float)x, (float)y).SetAddRGB(Config.BaseColor);
-            x += Math.Cos(angle * (Math.PI / 180)) * Config.Spacing;
-            y += Math.Sin(angle * (Math.PI / 180)) * Config.Spacing;
+            x += Cos(angle * (PI / 180)) * Config.Spacing;
+            y += Sin(angle * (PI / 180)) * Config.Spacing;
             angle += Config.Curve;
 
             Orbs[i].SetAddRGB(Config.OrbColor);
@@ -233,12 +242,7 @@ public sealed unsafe class ReaperFlame : CounterWidget
         Heading("Behavior");
         RadioControls("Animation", ref Config.SpendAnim, new() { 0, 1 }, new() { "Default", "Divide" }, ref update);
 
-        if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
-        if (Config.AsTimer)
-        {
-            if (ToggleControls($"Invert {Tracker.TermGauge}", ref Config.InvertTimer, ref update)) update |= Reset;
-            if (IntControls($"{Tracker.TermGauge} Size", ref Config.TimerSize, 1, 20, 1, ref update)) update |= Reset;
-        }
+        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ReaperFlameCfg = Config;

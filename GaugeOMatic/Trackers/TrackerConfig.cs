@@ -5,11 +5,13 @@ using System;
 using System.Linq;
 using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.JobData;
+using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
+using static Newtonsoft.Json.JsonConvert;
 
 namespace GaugeOMatic.Trackers;
 
-public enum RefType { None, Status, Action }
+public enum RefType { None, Status, Action, JobGauge, Parameter }
 
 public class TrackerConfig
 {
@@ -48,7 +50,7 @@ public class TrackerConfig
         DefaultName = displayName ?? trackerType;
     }
 
-    public TrackerConfig? Clone() => JsonConvert.DeserializeObject<TrackerConfig>(JsonConvert.SerializeObject(this));
+    public TrackerConfig? Clone() => DeserializeObject<TrackerConfig>(SerializeObject(this));
 
 
     public TrackerDisplayAttribute DisplayAttributes()
@@ -73,7 +75,7 @@ public class TrackerConfig
     public bool JobRoleMatch(JobModule module)
     {
         var attr = DisplayAttributes();
-        return (attr.Role != Role.None && attr.Role.HasFlag(module.Role)) || attr.Job == module.Job || (attr.Job == module.Class && module.Class != Job.None);
+        return (attr.Role != None && attr.Role.HasFlag(module.Role)) || attr.Job == module.Job || (attr.Job == module.Class && module.Class != Job.None);
     }
 
     public bool JobMatch(JobModule module)

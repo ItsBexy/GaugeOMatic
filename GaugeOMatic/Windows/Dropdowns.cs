@@ -8,6 +8,8 @@ using System.Linq;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.ActionData;
+using static GaugeOMatic.GameData.ActionData.ActionRef.ReadyTypes;
+using static GaugeOMatic.GameData.ParamRef.ParamTypes;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -66,9 +68,9 @@ public class AddonDropdown : Dropdown<string>
         Values.Clear();
         DisplayNames.Clear();
 
-        if (Tracker.WidgetType != null)
+        if (Tracker.WidgetType != null && WidgetList.TryGetValue(Tracker.WidgetType, out var wType))
         {
-            var whiteList = WidgetList[Tracker.WidgetType].AllowedAddons;
+            var whiteList = wType.AllowedAddons;
             foreach (var option in addonOptions)
             {
                 if (whiteList is { Count: > 0 } && !whiteList.Contains(option.Name)) continue;
@@ -94,7 +96,7 @@ public abstract class BranchingDropdown
     {
         var i = 0;
 
-        if (IsOpen) ImGui.PushStyleColor(ImGuiCol.Button, ImGuiHelpers.GetStyleColorUsableVec4(ImGuiCol.ButtonHovered));
+        if (IsOpen) ImGui.PushStyleColor(ImGuiCol.Button, ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.ButtonHovered));
 
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
@@ -145,6 +147,7 @@ public class ItemRefMenu : BranchingDropdown
 
     public List<MenuOption> StatusOptions { get; init; }
     public List<MenuOption> ActionOptions { get; init; }
+    public List<MenuOption> ParamOptions { get; init; }
 
     public sealed override List<(string label, List<MenuOption> options)> SubMenus { get; }
 
@@ -159,13 +162,22 @@ public class ItemRefMenu : BranchingDropdown
                                    .Select(static a => (MenuOption)a.Value)
                                    .OrderBy(static a => a.Name));
 
+        ParamOptions = new()
+        {
+            new("HP", nameof(ParameterTracker), (uint)HP),
+            new("MP", nameof(ParameterTracker), (uint)MP),
+            new("Castbar", nameof(ParameterTracker), (uint)Castbar),
+            new("Target Castbar", nameof(ParameterTracker), (uint)Castbar)
+        };
+
         SubMenus = new()
         {
             ("Status Effects",StatusOptions),
-            ("Actions",ActionOptions)
+            ("Actions",ActionOptions),
+            ("Other",ParamOptions)
         };
 
-        if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Add(("Job Gauge", Tracker.JobModule.JobGaugeMenu));
+        if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Insert(2,("Job Gauge", Tracker.JobModule.JobGaugeMenu));
     }
 
     public override void DrawSubMenu(int i, ref UpdateFlags update)
@@ -175,11 +187,37 @@ public class ItemRefMenu : BranchingDropdown
 
         foreach (var o in options)
         {
-            if (!ImGui.MenuItem($"{o.Name}##{Hash}Status{o.ItemId}")) continue;
+            if (ImGui.MenuItem($"{o.Name}##{Hash}Status{o.ItemId}"))
+            {
+                Tracker.TrackerConfig.ItemId = o.ItemId;
+                Tracker.TrackerConfig.TrackerType = o.TrackerType;
+                update |= UpdateFlags.Reset | UpdateFlags.Save | UpdateFlags.Rebuild;
+            }
 
-            Tracker.TrackerConfig.ItemId = o.ItemId;
-            Tracker.TrackerConfig.TrackerType = o.TrackerType;
-            update |= UpdateFlags.Reset | UpdateFlags.Save | UpdateFlags.Rebuild;
+            if (ImGui.IsItemHovered())
+            {
+                if (o.TrackerType == nameof(ActionTracker))
+                {
+                    var action = (ActionRef)o.ItemId;
+                    var oneCharge = action.MaxCharges == 1;
+
+
+                    var counterDesc = $"Shows charges ({action.MaxCharges})";
+                    var gaugeDesc = $"Shows cooldown time ({action.CooldownLength}s)";
+                    var stateDesc = $"Shows {(action.ReadyType.HasFlag(Ants) ? "if highlighted" : "if ready")}";
+
+                    var toolText = oneCharge ? $"Gauge: {gaugeDesc}\nCounter/State: {stateDesc}" : 
+                                               $"Counter: {counterDesc}\nGauge: {gaugeDesc}\nState: {stateDesc}" ;
+
+                    ImGui.SetTooltip(toolText);
+                } else if (o.TrackerType == nameof(StatusTracker))
+                {
+                    var status = (StatusRef)o.ItemId;
+                    ImGui.SetTooltip($"Counter: Shows stacks ({status.MaxStacks})\n" +
+                                     $"Gauge: Shows time remaining ({status.MaxTime}s)\n" +
+                                     "State: Shows if active");
+                }
+            }
         }
 
         ImGui.EndMenu();
@@ -257,8 +295,7 @@ public class WidgetMenu : BranchingDropdown
                 {
                     foreach (var w in mcWidgets.Where(w => w.Value.MultiCompData?.Key == key)
                                                .OrderBy(static w => w.Value.MultiCompData?.Index)
-                                               .Where(static w => ImGui.MenuItem(
-                                                          w.Value.DisplayName)))
+                                               .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
                     {
                         Tracker.WidgetType = w.Key;
                         update |= UpdateFlags.Reset | UpdateFlags.Save;
@@ -266,6 +303,7 @@ public class WidgetMenu : BranchingDropdown
 
                     ImGui.EndMenu();
                 }
+
                 ImGui.PopStyleColor();
             }
 
@@ -273,5 +311,8 @@ public class WidgetMenu : BranchingDropdown
         }
     }
 
-    public override string DropdownText(string fallback) => Tracker.WidgetType != null ? WidgetList[Tracker.WidgetType].DisplayName : fallback;
+    public override string DropdownText(string fallback) =>
+        Tracker.WidgetType != null && WidgetList.TryGetValue(Tracker.WidgetType, out var wType)
+            ? wType.DisplayName
+            : fallback;
 }

@@ -1,3 +1,4 @@
+global using static GaugeOMatic.GaugeOMatic.Service;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Plugin;
@@ -6,7 +7,6 @@ using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
-using static GaugeOMatic.GaugeOMatic.Service;
 
 namespace GaugeOMatic;
 

@@ -1,18 +1,21 @@
+using CustomNodes;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.UmbralHearts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -43,10 +46,8 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     public override CustomNode BuildRoot()
     {
-        var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
-
-        BuildStacks(count);
-
+        Max = GetMax();
+        BuildStacks(Max);
         return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(12,34);
     }
 
@@ -61,12 +62,12 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
             Glows.Add(ImageNodeFromPart(0,20).SetScale(1.3f,1.2f).SetOrigin(12,34).SetImageWrap(1));
 
-            Tweens.Add(new(Glows[i],
-                           new(0) { ScaleX = 1, ScaleY = 1, Alpha = 4 },
-                           new(300) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 152 },
-                           new(630) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
-                           new(960) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 }) 
-                           { Repeat=true, Ease=Eases.SinInOut });
+            Animator += new Tween(Glows[i],
+                                  new(0) { ScaleX = 1, ScaleY = 1, Alpha = 4 },
+                                  new(300) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 152 },
+                                  new(630) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
+                                  new(960) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 }) 
+                                  { Repeat=true, Ease=SinInOut };
 
             Glows[i].UnsetNodeFlags(NodeFlags.UseDepthBasedPriority);
             GlowWrappers.Add(new CustomNode(CreateResNode(), Glows[i]).SetAlpha(0));
@@ -79,26 +80,31 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     #region Animations
 
-    public override void ShowStack(int i)
-    {
-        Tweens.Add(new(Hearts[i],
-                       new(0) {Y=-20,Alpha=0}, 
-                       new(200) {Y=0,Alpha=200},
-                       new(300){Y=0,Alpha=255}
-                       ));
+    public override void ShowStack(int i) =>
+        Animator += new Tween[]
+        {
+            new(Hearts[i],
+                new(0) {Y=-20,Alpha=0},
+                new(200) {Y=0,Alpha=200},
+                new(300){Y=0,Alpha=255}),
+            new(GlowWrappers[i],
+                Hidden[0],
+                Visible[300])
+        };
 
-        Tweens.Add(new(GlowWrappers[i],new(0){Alpha=0},new(300){Alpha=255}));
-    }
-
-    public override void HideStack(int i)
-    {
-        Tweens.Add(new(Hearts[i],
-                       new(0) { Y = 0, Alpha = 255 },
-                       new(200) { Y = -20, Alpha = 255 },
-                       new(300) { Y = -20, Alpha = 0 }
-                   ));
-        Tweens.Add(new(GlowWrappers[i], new(0) { Alpha = 255 }, new(300) { Alpha =0 }));
-    }
+    public override void HideStack(int i) =>
+        Animator += new Tween[]
+        {
+            new(Hearts[i],
+                new(0) { Y = 0, Alpha = 255 },
+                new(200) { Y = -20, Alpha = 255 },
+                new(300) { Y = -20, Alpha = 0 }
+            ),
+            new(GlowWrappers[i], 
+                Visible[0],
+                Hidden[300])
+        };
+    
 
     #endregion
 
@@ -106,12 +112,11 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     public override void OnFirstRun(int count, int max)
     {
-        for (var i = 0; i < count; i++)
+        for (var i = 0; i < max; i++)
         {
-            Hearts[i].SetAlpha(255).SetY(0);
-            GlowWrappers[i].SetAlpha(255);
+            Hearts[i].SetAlpha(i < count).SetY(0);
+            GlowWrappers[i].SetAlpha(i < count);
         }
-        FirstRun = false;
     }
 
     #endregion
@@ -120,7 +125,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     public class UmbralHeartConfig : CounterWidgetConfig
     {
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public AddRGB StackColor = new(0);
         public AddRGB GlowColor = new(0);
@@ -179,8 +184,8 @@ public sealed unsafe class UmbralHearts : CounterWidget
             Stacks[i].SetPos((float)x, (float)y)
                      .SetRotation(gemAngle, true);
             
-            x += Math.Cos(posAngle * (Math.PI / 180)) * Config.Spacing;
-            y += Math.Sin(posAngle * (Math.PI / 180)) * Config.Spacing;
+            x += Cos(posAngle * (PI / 180)) * Config.Spacing;
+            y += Sin(posAngle * (PI / 180)) * Config.Spacing;
             posAngle += Config.Curve;
         }
     }
@@ -200,12 +205,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
         Heading("Behavior");
 
-        if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
-        if (Config.AsTimer)
-        {
-            if (ToggleControls($"Invert {Tracker.TermGauge}", ref Config.InvertTimer, ref update)) update |= Reset;
-            if (IntControls($"{Tracker.TermGauge} Size", ref Config.TimerSize, 1, 30, 1, ref update)) update |= Reset;
-        }
+        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.UmbralHeartCfg = Config;

@@ -1,3 +1,5 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
@@ -10,52 +12,52 @@ using static GaugeOMatic.Widgets.BalancePlate;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class BalancePlate : StateWidget
 {
-    public BalancePlate(Tracker tracker) : base(tracker)
-    {
-        SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(ref Tweens, WidgetRoot, Config!.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y));
-    }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
     public static WidgetInfo GetWidgetInfo => new()
     {
         DisplayName = "Balance Gauge Backplate",
         Author = "ItsBexy",
-        Description = "A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.",
+        Description =
+            "A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.",
         WidgetTags = MultiComponent | Replica | State,
         MultiCompData = new("BL", "Balance Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/JobHudRDM0.tex", 
-            new(0,0,116,208), 
-            new(186,3,26,124),
-            new(212,3,26,124),
-            new(116,0,34,144),
-            new(0,208,40,56),
-            new(40,208,40,56),
-            new(116,144,40,60),
-            new(184,132,84,188),
-            new(125,212,24,22),
-            new(123,234,28,20),
-            new(148,222,14,15),
-            new(242,3,26,124),
-            new(116,332,72,32),
-            new(0,264,40,48),
-            new(81,239,30,40),
-            new(81,279,30,40),
-            new(0,319,117,61),
-            new(114,258,60,60),
-            new(118,321,89,59),
-            new(207,321,39,59),
-            new(150,0,34,144))
+    public override CustomPartsList[] PartsLists { get; } =
+    {
+        new("ui/uld/JobHudRDM0.tex",
+            new(0, 0, 116, 208),
+            new(186, 3, 26, 124),
+            new(212, 3, 26, 124),
+            new(116, 0, 34, 144),
+            new(0, 208, 40, 56),
+            new(40, 208, 40, 56),
+            new(116, 144, 40, 60),
+            new(184, 132, 84, 188),
+            new(125, 212, 24, 22),
+            new(123, 234, 28, 20),
+            new(148, 222, 14, 15),
+            new(242, 3, 26, 124),
+            new(116, 332, 72, 32),
+            new(0, 264, 40, 48),
+            new(81, 239, 30, 40),
+            new(81, 279, 30, 40),
+            new(0, 319, 117, 61),
+            new(114, 258, 60, 60),
+            new(118, 321, 89, 59),
+            new(207, 321, 39, 59),
+            new(150, 0, 34, 144))
     };
+
+    public override WidgetInfo WidgetInfo => GetWidgetInfo;
+
+    public BalancePlate(Tracker tracker) : base(tracker) => SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(WidgetRoot, Config!.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y, ref Animator));
 
     #region Nodes
 
@@ -69,15 +71,29 @@ public sealed unsafe class BalancePlate : StateWidget
     public override CustomNode BuildRoot()
     {
         Backdrop = ImageNodeFromPart(0, 7).SetPos(16, 23);
+
         BackdropContainer = new CustomNode(CreateResNode(), Backdrop).SetSize(100, 211);
+
         Plate = ImageNodeFromPart(0, 0).SetImageWrap(2);
-        Crystal = ImageNodeFromPart(0, 4).SetPos(39, 5).SetAddRGB(-30, -30, -30).SetImageWrap(1);
-        CrystalGlow = ImageNodeFromPart(0, 5).SetPos(39, 5).SetOrigin(20, 28).SetAlpha(0);
-        Star = ImageNodeFromPart(0, 6).SetPos(38, -2).SetImageFlag(32).SetImageWrap(2).SetOrigin(20, 33).SetAlpha(0).SetScale(5).SetAddRGB(-100);
+
+        Crystal = ImageNodeFromPart(0, 4).SetPos(39, 5)
+                                         .SetAddRGB(-30, -30, -30)
+                                         .SetImageWrap(1);
+
+        CrystalGlow = ImageNodeFromPart(0, 5).SetPos(39, 5)
+                                             .SetOrigin(20, 28)
+                                             .SetAlpha(0);
+
+        Star = ImageNodeFromPart(0, 6).SetPos(38, -2)
+                                      .SetImageFlag(32)
+                                      .SetImageWrap(2)
+                                      .SetOrigin(20, 33)
+                                      .SetAlpha(0)
+                                      .SetScale(5)
+                                      .SetAddRGB(-100);
 
         return new(CreateResNode(), BackdropContainer, Plate, Crystal, CrystalGlow, Star);
     }
-
 
     #endregion
 
@@ -86,40 +102,39 @@ public sealed unsafe class BalancePlate : StateWidget
     private void StarFlash(int state)
     {
         var starColor = Config.GetFXColor(state);
-        Tweens.Add(new(Star,
-                       new(0) { Scale = 1, Alpha = (byte)(starColor.A * 0.75f), AddRGB = starColor },
-                       new(120) { Scale = 3, Alpha = starColor.A, AddRGB = starColor },
-                       new(250) { Scale = 5, Alpha = 0, AddRGB = new(-100) }));
+        Animator += new Tween(Star,
+                              new(0) { Scale = 1, Alpha = (byte)(starColor.A * 0.75f), AddRGB = starColor },
+                              new(120) { Scale = 3, Alpha = starColor.A, AddRGB = starColor },
+                              new(250) { Scale = 5, Alpha = 0, AddRGB = new(-100) });
     }
 
     private void UpdateBorderGlow(int state)
     {
         var fx = Config.GetFXColor(state);
         var offset = new AddRGB(-128, 128, 128);
-        Tweens.Add(new(CrystalGlow,
-                       new(0) { Alpha = (byte)(fx.A * 0.5f), Scale = 2f, AddRGB = offset + fx },
-                       new(10) { Alpha = fx.A, Scale = 1f, AddRGB = offset + fx },
-                       new(20) { Alpha = (byte)(fx.A * 0.8f), Scale = 1f, AddRGB = offset + fx }));
+        Animator += new Tween(CrystalGlow,
+                              new(0) { Alpha = (byte)(fx.A * 0.5f), Scale = 2f, AddRGB = offset + fx },
+                              new(10) { Alpha = fx.A, Scale = 1f, AddRGB = offset + fx },
+                              new(20) { Alpha = (byte)(fx.A * 0.8f), Scale = 1f, AddRGB = offset + fx });
     }
 
     private void ChangeCrystalColor(int state, int prevState)
     {
         var crystal = Config.GetCrystalColor(state);
         var prevCrystal = Config.GetCrystalColor(prevState);
-        Tweens.Add(new(Crystal,
-                       new(0) { AddRGB = prevCrystal },
-                       new(20) { AddRGB = crystal + new AddRGB(30) },
-                       new(39) { AddRGB = crystal + new AddRGB(30) },
-                       new(40) { AddRGB = crystal }));
+        Animator += new Tween(Crystal, new(0) { AddRGB = prevCrystal },
+                              new(20) { AddRGB = crystal + new AddRGB(30) },
+                              new(39) { AddRGB = crystal + new AddRGB(30) },
+                              new(40) { AddRGB = crystal });
     }
 
     private void ChangeBGColor(int state, int prevState)
     {
         var bg = Config.GetBGColor(state);
         var prevBg = Config.GetBGColor(prevState);
-        Tweens.Add(new(Backdrop,
-                       new(0) { Alpha = prevBg.A, AddRGB = prevBg },
-                       new(200) { Alpha = bg.A, AddRGB = bg }));
+        Animator += new Tween(Backdrop,
+                              new(0) { Alpha = prevBg.A, AddRGB = prevBg },
+                              new(200) { Alpha = bg.A, AddRGB = bg });
     }
 
     #endregion
@@ -131,6 +146,7 @@ public sealed unsafe class BalancePlate : StateWidget
     public override void OnFirstRun(int current) => ApplyConfigs();
     public override void Activate(int current) => StateChange(Tracker.CurrentData.State, Tracker.PreviousData.State);
     public override void Deactivate(int previous) => StateChange(Tracker.CurrentData.State, Tracker.PreviousData.State);
+
     public override void StateChange(int current, int previous)
     {
         ChangeBGColor(current, previous);
@@ -145,11 +161,11 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public class BalancePlateConfig
     {
-        public Vector2 Position = new(0);
         public float Scale = 1;
         public List<AddRGB> BGColors = new();
         public List<AddRGB> CrystalColors = new();
         public List<AddRGB> FXColors = new();
+        public Vector2 Position;
 
         public BalancePlateConfig(WidgetConfig widgetConfig)
         {
@@ -194,7 +210,7 @@ public sealed unsafe class BalancePlate : StateWidget
 
         var state = Tracker.CurrentData.State;
 
-        Backdrop.SetAddRGB(Config.GetBGColor(state),true);
+        Backdrop.SetAddRGB(Config.GetBGColor(state), true);
         Crystal.SetAddRGB(Config.GetCrystalColor(state));
         CrystalGlow.SetAddRGB(Config.GetFXColor(state));
     }
@@ -228,5 +244,6 @@ public sealed unsafe class BalancePlate : StateWidget
 
 public partial class WidgetConfig
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public BalancePlateConfig? BalancePlateCfg { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public BalancePlateConfig? BalancePlateCfg { get; set; }
 }

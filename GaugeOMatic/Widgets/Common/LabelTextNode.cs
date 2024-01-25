@@ -1,16 +1,18 @@
-using System;
+using CustomNodes;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Windows;
 using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Utility.ImGuiHelpers;
+using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
 using FontType = FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 
@@ -27,6 +29,7 @@ public class LabelTextNode : CustomNode
         Fallback = fallback;
         Node = (AtkResNode*)CreateTextNode(label.Length > 0 ? label : fallback, 20, 52);
         SetTextColor(0xffffffff, 0x000000ff);
+        RemoveFlags(SetVisByAlpha);
 
         Children = Array.Empty<CustomNode>();
     }

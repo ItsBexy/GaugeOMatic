@@ -6,7 +6,10 @@ using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static GaugeOMatic.GameData.ActionData;
+using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.GaugeOMatic;
+using static System.Activator;
 
 namespace GaugeOMatic.Trackers;
 
@@ -25,7 +28,7 @@ public abstract partial class Tracker : IDisposable
     public WidgetMenu WidgetMenuWindow = null!;
     public AddonDropdown AddonDropdown = null!;
     public ItemRefMenu ItemRefMenu = null!;
-    public ItemRef? ItemRef = null;
+    public ItemRef? ItemRef;
 
     public string AddonName
     {
@@ -99,5 +102,39 @@ public abstract partial class Tracker : IDisposable
     {
         UpdateValues();
         Widget?.Update();
+    }
+
+    public static Tracker? Create(JobModule jobModule, TrackerConfig trackerConfig)
+    {
+        var qualifiedTypeStr = $"{typeof(Tracker).Namespace}.{trackerConfig.TrackerType}";
+        var type = Type.GetType(qualifiedTypeStr);
+
+        var tracker = (Tracker?)CreateInstance(type ?? typeof(EmptyTracker));
+
+        if (tracker == null) return null;
+
+        tracker.JobModule = jobModule;
+
+        if (trackerConfig.ItemId != 0)
+        {
+            tracker.ItemRef = trackerConfig.TrackerType switch
+            {
+                nameof(ActionTracker)    => (ActionRef)trackerConfig.ItemId,
+                nameof(StatusTracker)    => (StatusRef)trackerConfig.ItemId,
+                nameof(ParameterTracker) => (ParamRef)trackerConfig.ItemId,
+                _ => null
+            };
+        }
+
+        tracker.TrackerConfig = trackerConfig;
+
+        tracker.AddonDropdown = new(tracker);
+        tracker.WidgetMenuTable = new(tracker);
+        tracker.WidgetMenuWindow = new(tracker);
+        tracker.ItemRefMenu = new(tracker);
+
+        trackerConfig.DefaultName = tracker.DisplayName;
+
+        return tracker;
     }
 }

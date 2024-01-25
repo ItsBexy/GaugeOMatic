@@ -1,24 +1,28 @@
+using CustomNodes;
 using Dalamud.Interface;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SoulBar;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -90,23 +94,23 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         TickLine = ImageNodeFromPart(0, 13).SetPos(-6, 0).SetOrigin(5, 6).SetImageWrap(2).SetImageFlag(32);
         TickDot = ImageNodeFromPart(0, 10).SetPos(-7, -2).SetOrigin(7, 8).SetAlpha(0xCC).SetImageWrap(2).SetImageFlag(32);
 
-        Tweens.Add(new(TickGradient,
-                       new(0) { X = -18, Alpha = 42 },
-                       new(390) { X = -17, Alpha = 50 },
-                       new(790) { X = -15, Alpha = 0 }) 
-                       { Repeat = true });
+        Animator += new Tween(TickGradient,
+                              new(0) { X = -18, Alpha = 42 },
+                              new(390) { X = -17, Alpha = 50 },
+                              new(790) { X = -15, Alpha = 0 })
+                              { Repeat = true };
 
-        Tweens.Add(new(TickLine,
-                       new(0) { Scale = 1f },
-                       new(450) { Scale = 1.2f },
-                       new(800) { Scale = 1f }) 
-                       { Repeat = true, Ease = Eases.SinInOut });
+        Animator += new Tween(TickLine,
+                              new(0) { Scale = 1f },
+                              new(450) { Scale = 1.2f },
+                              new(800) { Scale = 1f }) 
+                              { Repeat = true, Ease = SinInOut };
 
-        Tweens.Add(new(TickDot,
-                       new(0) { Scale = 0.5f },
-                       new(350) { Scale = 0.7f },
-                       new(800) { Scale = 0.5f }) 
-                       { Repeat = true, Ease = Eases.SinInOut });
+        Animator += new Tween(TickDot,
+                              new(0) { Scale = 0.5f },
+                              new(350) { Scale = 0.7f },
+                              new(800) { Scale = 0.5f }) 
+                              { Repeat = true, Ease = SinInOut };
 
         return new CustomNode(CreateResNode(), TickGradient, TickLine, TickDot).SetOrigin(0, 6);
     }
@@ -115,94 +119,92 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     #region Animations
 
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+
     public void CollapseBar(int kf1, int kf2, int kf3)
     {
-        ClearLabelTweens(ref Tweens, "Expand");
+        Animator -= "Expand";
         var bgWidth = Config.Width + 2;
         var frameWidth = Config.Width + 10;
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        Tweens.Add(new(Frame,
-                       new(0) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 },
-                       new(kf1) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                       new(kf2) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                       new(kf3) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 }) 
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
-
-        Tweens.Add(new(Corners,
-                       new(0) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 },
-                       new(kf1) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                       new(kf2) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                       new(kf3 + (kf3 > 0 ? 150 : 0)) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 }) 
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
-
-        Tweens.Add(new(Bar,
-                       new(0) { ScaleX = flipFactor, Alpha = 255 },
-                       new(kf1) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                       new(kf2) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 }) 
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
-
-        Tweens.Add(new(MidMarkers,
-                       new(0) { Alpha = 255, X = MidMarkerX() },
-                       new(kf1) { Alpha = 0, X = -4 }) 
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
-        
-        Tweens.Add(new(LabelTextNode,
-                       new(0){Alpha=255},
-                       new(kf2){Alpha=0})
-                       {Ease=Eases.SinInOut, Label = "Collapse" });
-
-        Tweens.Add(new(NumTextNode,
-                       new(0) { Alpha = 255 },
-                       new(kf2) { Alpha = 0 })
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
+        Animator += new Tween[]
+        {
+            new(Frame,
+                new(0) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 },
+                new(kf1) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf2) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf3) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
+                { Ease = SinInOut, Label = "Collapse" },
+            new(Corners,
+                new(0) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 },
+                new(kf1) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf2) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf3 + (kf3 > 0 ? 150 : 0)) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
+                { Ease = SinInOut, Label = "Collapse" },
+            new(Bar,
+                new(0) { ScaleX = flipFactor, Alpha = 255 },
+                new(kf1) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf2) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 })
+                { Ease = SinInOut, Label = "Collapse" },
+            new(MidMarkers,
+                new(0) { Alpha = 255, X = MidMarkerX() },
+                new(kf1) { Alpha = 0, X = -4 })
+                { Ease = SinInOut, Label = "Collapse" },
+            new(LabelTextNode,
+                Visible[0],
+                Hidden[kf2])
+                {Ease=SinInOut, Label = "Collapse" },
+            new(NumTextNode,
+                Visible[0],
+                Hidden[kf2])
+                { Ease = SinInOut, Label = "Collapse" }
+        };
     }
 
     public void ExpandBar(int kf1, int kf2, int kf3)
     {
-        ClearLabelTweens(ref Tweens, "Collapse");
+        Animator -= "Collapse";
         var frameWidth = Config.Width + 10;
         var bgWidth = Config.Width + 2;
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        Tweens.Add(new(Frame,
-                       new(0) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
-                       new(kf1) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                       new(kf2) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                       new(kf3) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 }) 
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-
-        Tweens.Add(new(Corners,
-                         new(0) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
-                         new(kf1) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                         new(kf2) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                         new(kf3) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 }) 
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-
-        Tweens.Add(new(Bar,
-                       new(0) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                       new(kf1) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                       new(kf2) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                       new(kf3) { ScaleX = flipFactor, Alpha = 255 }) 
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-
-        Tweens.Add(new(MidMarkers,
-                       new(0) { Alpha = 0, X = -4 },
-                       new(kf2) { Alpha = 0, X = -4 },
-                       new(kf3) { Alpha = 255, X = MidMarkerX() }) 
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-        
-        Tweens.Add(new(LabelTextNode,
-                       new(0) { Alpha = 0 },
-                       new(kf2) { Alpha = 255 })
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-
-        Tweens.Add(new(NumTextNode,
-                       new(0) { Alpha = 0 },
-                       new(kf2) { Alpha = 255 })
-                       { Ease = Eases.SinInOut, Label = "Expand" });
+        Animator += new Tween[]
+        {
+            new(Frame,
+                new(0) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
+                new(kf1) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf2) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf3) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 })
+                { Ease = SinInOut, Label = "Expand" },
+            new(Corners,
+                new(0) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
+                new(kf1) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf2) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf3) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 })
+                { Ease = SinInOut, Label = "Expand" },
+            new(Bar,
+                new(0) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf1) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf2) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf3) { ScaleX = flipFactor, Alpha = 255 })
+                { Ease = SinInOut, Label = "Expand" },
+            new(MidMarkers,
+                new(0) { Alpha = 0, X = -4 },
+                new(kf2) { Alpha = 0, X = -4 },
+                new(kf3) { Alpha = 255, X = MidMarkerX() })
+                { Ease = SinInOut, Label = "Expand" },
+            new(LabelTextNode,
+                Hidden[0],
+                Visible[kf2])
+                { Ease = SinInOut, Label = "Expand" },
+            new(NumTextNode,
+                Hidden[0],
+                Visible[kf2])
+                { Ease = SinInOut, Label = "Expand" }
+        };
 
     }
 
@@ -210,55 +212,55 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin(float prog, float prevProg)
+    public override void OnDecreaseToMin()
     {
         TickMark.SetAlpha(0);
-        if (Config.Collapse) CollapseBar(250, 350, 450);
+        if (Config.HideEmpty) CollapseBar(250, 350, 450);
     }
 
-    public override void OnIncreaseFromMin(float prog, float prevProg)
+    public override void OnIncreaseFromMin()
     {
         TickMark.SetAlpha(255);
-        if (Config.Collapse) ExpandBar(100, 170, 400);
+        if (Config.HideEmpty) ExpandBar(100, 170, 400);
     }
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarProperty(prog);
-        Main.SetWidth(curWid);
-        Gain.SetWidth(curWid);
-        Drain.SetWidth(curWid);
-        TickMark.SetAlpha(prog > 0 ? 255 : 0);
-
-        if (prog <= 0 && Config.Collapse) CollapseBar(0, 0, 0);
+        base.OnFirstRun(prog);
+        TickMark.SetAlpha(prog > 0);
+        if (prog <= 0 && Config.HideEmpty) CollapseBar(0, 0, 0);
     }
 
     protected override void StartMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens, "BarPulse");
-        Tweens.Add(new(GlowFrame,
-                       new(0) { Alpha = 76 },
-                       new(500) { Alpha = 255 },
-                       new(1000) { Alpha = 76 }) 
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
+        Animator -= "BarPulse";
 
         var red = Config.BaseColor == 0;
         var pulse1 = red ? Config.Pulse1Red + new AddRGB(-57, 115, 96) : Config.Pulse1Teal + new AddRGB(128, -74, -71);
         var pulse2 = red ? Config.Pulse2Red + new AddRGB(-57, 115, 96) : Config.Pulse2Teal + new AddRGB(128, -74, -71);
-        Tweens.Add(new(Main,
-                       new(0) { AddRGB = pulse1 },
-                       new(500) { AddRGB = pulse2 },
-                       new(1000) { AddRGB = pulse1 })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
+       
+        Animator += new Tween[]
+        {
+            new(GlowFrame,
+                new(0) { Alpha = 76 },
+                Visible[500],
+                new(1000) { Alpha = 76 })
+                { Ease = SinInOut, Repeat = true, Label = "BarPulse" },
+            new(Main,
+                new(0) { AddRGB = pulse1 },
+                new(500) { AddRGB = pulse2 },
+                new(1000) { AddRGB = pulse1 })
+                { Ease = SinInOut, Repeat = true, Label = "BarPulse" }
+        };
     }
 
     protected override void StopMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens, "BarPulse");
-        Tweens.Add(new(GlowFrame,
-                       new(0, GlowFrame),
-                       new(500) { Alpha = 0 }) 
-                       { Ease = Eases.SinInOut, Label = "BarPulse" });
+        Animator -= "BarPulse";
+        Animator += new Tween(GlowFrame,
+                                  new(0, GlowFrame),
+                                  Hidden[500]) 
+                                  { Ease = SinInOut, Label = "BarPulse" };
 
         var red = Config.BaseColor == 0;
         Main.SetAddRGB(red ? Config.MainColorRed + new AddRGB(-57, 115, 96) : Config.MainColorTeal + new AddRGB(128, -74, -71));
@@ -266,16 +268,13 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public override void PlaceTickMark(float prog) => TickMark.SetX(Main.Width + prog + 1);
 
-    public override DrainGainType DGType => Width;
-    public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
-
     #endregion
 
     #region Configs
 
     public sealed class SoulBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
         public float Width = 180;
         public float Angle;
@@ -301,10 +300,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         public AddRGB Pulse1Teal = new(-128, 74, 71);
         public AddRGB Pulse2Teal = new(-128, 74, 71);
 
-
-
         public bool Mirror;
-        public bool Collapse;
 
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 0), new(255), new(0), Jupiter, 18, Left);
         protected override NumTextProps NumTextDefault => new(enabled: true,
@@ -318,11 +314,8 @@ public sealed unsafe class SoulBar : GaugeBarWidget
                                                               align: Left,
                                                               invert: false);
 
-        public SoulBarConfig(WidgetConfig widgetConfig)
+        public SoulBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.SoulBarCfg)
         {
-            NumTextProps = NumTextDefault;
-            MilestoneType = MilestoneType.Above;
-
             var config = widgetConfig.SoulBarCfg;
             if (config == null) return;
 
@@ -350,24 +343,12 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             Pulse1Red = config.Pulse1Red;
             Pulse2Red = config.Pulse2Red;
 
-            MilestoneType = config.MilestoneType;
-            Milestone = config.Milestone;
-
-            AnimationLength = config.AnimationLength;
-            Invert = config.Invert;
             Mirror = config.Mirror;
-            Collapse = config.Collapse;
-            SplitCharges = config.SplitCharges;
-
-            NumTextProps = config.NumTextProps;
+            
             LabelTextProps = config.LabelTextProps;
         }
 
-        public SoulBarConfig()
-        {
-            NumTextProps = NumTextDefault;
-            MilestoneType = MilestoneType.Above;
-        }
+        public SoulBarConfig() => MilestoneType = Above;
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -377,7 +358,14 @@ public sealed unsafe class SoulBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.SoulBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.SoulBarCfg == null)
+        {
+            Config.MilestoneType = Above;
+            if (Tracker.RefType == RefType.Action)
+            {
+                Config.Invert = true;
+            }
+        }
     }
 
     public override void ResetConfigs() => Config = new();
@@ -402,16 +390,19 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
         MidMarkers.SetX(MidMarkerX())
                   .SetVis(Config.MilestoneType != MilestoneType.None && Config.Milestone is >= 0.05f and <= 0.95f)
-                  .SetAlpha(Config.Collapse == false || Tracker.CurrentData.GaugeValue > 0 ? 255 : 0);
+                  .SetAlpha(Config.HideEmpty == false || Tracker.CurrentData.GaugeValue > 0);
 
         var red = Config.BaseColor == 0;
         GlowFrame.SetWidth(frameWidth).SetAddRGB(red ? Config.GlowRed : Config.GlowTeal);
 
-        Drain.SetAddRGB(red ? Config.DrainColorRed : Config.DrainColorTeal).SetWidth(0);
-        Gain.SetAddRGB(red ? Config.GainColorRed : Config.GainColorTeal).SetWidth(0);
+        Drain.SetAddRGB(red ? Config.DrainColorRed : Config.DrainColorTeal).SetWidth(0)
+             .DefineTimeline(BarTimeline);
+        Gain.SetAddRGB(red ? Config.GainColorRed : Config.GainColorTeal).SetWidth(0)
+            .DefineTimeline(BarTimeline);
         Main.SetAddRGB(red ? Config.MainColorRed + new AddRGB(-57, 115, 96) : Config.MainColorTeal + new AddRGB(128, -74, -71))
             .SetPartId((ushort)(red ? 8 : 9))
-            .SetWidth(CalcBarProperty(CalcProg()));
+            .DefineTimeline(BarTimeline)
+            .SetProgress(CalcProg());
 
         TickGradient.SetAddRGB(red ? Config.TickRed : Config.TickTeal);
         TickLine.SetAddRGB(red ? Config.TickRed : Config.TickTeal);
@@ -420,10 +411,10 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         LabelTextNode.SetWidth(Config.Width);
         LabelTextNode.ApplyProps(Config.LabelTextProps, new(-Config.Width / 2,-7f));
 
-        PartsLists[0].AtkPartsList->Parts[8].Width = (ushort)Math.Clamp(Config.Width, 1, 180);
-        PartsLists[0].AtkPartsList->Parts[8].U = (ushort)Math.Clamp(182 - Config.Width, 2, 181);
-        PartsLists[0].AtkPartsList->Parts[9].Width = (ushort)Math.Clamp(Config.Width, 1, 180);
-        PartsLists[0].AtkPartsList->Parts[9].U = (ushort)Math.Clamp(182 - Config.Width, 2, 181);
+        PartsLists[0].AtkPartsList->Parts[8].Width = (ushort)Clamp(Config.Width, 1, 180);
+        PartsLists[0].AtkPartsList->Parts[8].U = (ushort)Clamp(182 - Config.Width, 2, 181);
+        PartsLists[0].AtkPartsList->Parts[9].Width = (ushort)Clamp(Config.Width, 1, 180);
+        PartsLists[0].AtkPartsList->Parts[9].U = (ushort)Clamp(182 - Config.Width, 2, 181);
 
         NumTextNode.ApplyProps(Config.NumTextProps, new Vector2((Config.Width / 2) + 59, 10.5f));
 
@@ -478,7 +469,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck(Config.Collapse);
+        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck(Config.HideEmpty);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -490,14 +481,14 @@ public sealed unsafe class SoulBar : GaugeBarWidget
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
-        Math.Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
+        Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
         new() { ArrowRight, ArrowLeft };
 
     private void CollapseCheck(bool collapse)
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
+        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
             if (collapse) CollapseBar(250, 350, 450);
             else ExpandBar(100, 170, 400);

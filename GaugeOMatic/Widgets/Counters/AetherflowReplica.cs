@@ -1,15 +1,17 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AetherflowReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -51,10 +53,10 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override CustomNode BuildRoot()
     {
-        var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
+        Max = GetMax();
 
-        SocketPlate = BuildSocketPlate(count, out var size);
-        Gems = BuildGems(count);
+        SocketPlate = BuildSocketPlate(Max, out var size);
+        Gems = BuildGems(Max);
 
         return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((size/2f)-1,37);
     }
@@ -88,13 +90,22 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         for (var i = 0; i < count; i++)
         {
             var gem = ImageNodeFromPart(0, 0);
-            var pulse = ImageNodeFromPart(0, 1).SetPos(2, -6).SetScale(1.2f, 0.9f).SetOrigin(20, 40).SetImageFlag(32);
+            var pulse = ImageNodeFromPart(0, 1).SetPos(2, -6)
+                                               .SetScale(1.2f, 0.9f)
+                                               .SetOrigin(20, 40)
+                                               .SetImageFlag(32);
+
+
             var pulsar = ImageNodeFromPart(0, 2).SetPos(0, 6).SetOrigin(22, 16).SetImageFlag(32);
             var spendGlow = ImageNodeFromPart(0, 1).SetPos(2, -8).SetScale(1.2f, 0.9f).SetOrigin(20, 40).SetImageFlag(32).SetAlpha(0);
 
             gemList[i] = new CustomNode(CreateResNode(), gem, pulse, pulsar, spendGlow).SetPos(15 + (38 * i), 15).SetOrigin(22, 22).SetAlpha(0);
 
-            Tweens.Add(new(pulse, new(0) { ScaleX = 1.2f, Alpha = 0 }, new(360) { ScaleX = 1, Alpha = 201 }, new(770) { ScaleX = 0.9f, Alpha = 0 }) { Repeat = true, Ease = Eases.SinInOut });
+            Animator += new Tween(pulse, 
+                                  new(0) { ScaleX = 1.2f, Alpha = 0 }, 
+                                  new(360) { ScaleX = 1, Alpha = 201 }, 
+                                  new(770) { ScaleX = 0.9f, Alpha = 0 }) 
+                                  { Repeat = true, Ease = SinInOut };
         }
 
         return new(CreateResNode(), gemList);
@@ -106,46 +117,65 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override void ShowStack(int i)
     {
-        var flipFactor = Math.Abs(Config.Angle) >= 90 ? -1 : 1;
-        Tweens.Add(Gems[i].CreateTween(new(0) { ScaleX = flipFactor, ScaleY = 1, Alpha = 0, AddRGB = -19 }, new(120) { ScaleX = flipFactor, ScaleY = 1, Alpha = 255, AddRGB = new(0) }));
-
+        var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         var green = Config.BaseColor == 0;
 
-        AddRGB addStep1 = green ? new(-20, 19, -20) : new(-20, -10, 19);
-        AddRGB addStep2 = green ? new(-189, 200, -200) : new(-200, -100, 200);
+        AddRGB addStep1 = green ? new(-20, 20, -20) : new(-20, -10, 20);
+        AddRGB addStep2 = green ? new(-190, 200, -200) : new(-200, -100, 200);
         AddRGB addStep3 = green ? new(100, 200, -200) : new(-200, -100, 200);
 
-        Tweens.Add(Gems[i][2].CreateTween(new(0) { ScaleX = 3.2f, ScaleY = 0.6f, Alpha = 255, AddRGB = addStep1 },
-                                          new(90) { ScaleX = 4.9f, ScaleY = 0.6f, Alpha = 255, AddRGB = addStep2 },
-                                          new(300) { ScaleX = 3, ScaleY = 0.2f, Alpha = 0, AddRGB = addStep3 }));
+        if (Gems.Children.Length <= i) return;
 
+        Animator += new Tween[]
+        {
+            new(Gems[i],
+                new(0) { ScaleX = flipFactor, ScaleY = 1, Alpha = 0, AddRGB = -19 },
+                new(120) { ScaleX = flipFactor, ScaleY = 1, Alpha = 255, AddRGB = new(0) }),
+
+            new(Gems[i][2],
+                new(0) { ScaleX = 3.2f, ScaleY = 0.6f, Alpha = 255, AddRGB = addStep1 },
+                new(90) { ScaleX = 4.9f, ScaleY = 0.6f, Alpha = 255, AddRGB = addStep2 },
+                new(300) { ScaleX = 3, ScaleY = 0.2f, Alpha = 0, AddRGB = addStep3 })
+        };
     }
 
     public override void HideStack(int i)
     {
-        var flipFactor = Math.Abs(Config.Angle) >= 90 ? -1 : 1;
-        Tweens.Add(Gems[i].CreateTween(new(0) { ScaleX = 1 * flipFactor, ScaleY = 1, Alpha = 255 }, new(300) { ScaleX = 1.5f * flipFactor, ScaleY = 1.5f, Alpha = 0 }));
-        Tweens.Add(Gems[i][3].CreateTween(new(0) { Scale = 1.1f, Alpha = 135 }, new(50) { Scale = 1.1f, Alpha = 176 }, new(250) { ScaleX = 2.3f, ScaleY = 2f, Alpha = 0 }));
+        if (Gems.Children.Length <= i) return;
+
+        var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
+
+        Animator += new Tween[]
+        {
+            new(Gems[i],
+                new(0) { ScaleX = 1 * flipFactor, ScaleY = 1, Alpha = 255 },
+                new(300) { ScaleX = 1.5f * flipFactor, ScaleY = 1.5f, Alpha = 0 }),
+
+            new(Gems[i][3],
+                new(0) { Scale = 1.1f, Alpha = 135 },
+                new(50) { Scale = 1.1f, Alpha = 176 },
+                new(250) { ScaleX = 2.3f, ScaleY = 2f, Alpha = 0 })
+        };
     }
 
     private void PlateVanish()
     {
-        var flipFactor = Math.Abs(Config.Angle) >= 90 ? -1 : 1;
+        var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         var downScale = Config.Scale * 0.65f;
-        Tweens.Add(new(WidgetRoot,
-                       new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 },
-                       new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 })
-                       { Ease = Eases.SinInOut });
+        Animator += new Tween(WidgetRoot, 
+                              new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 }, 
+                              new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 }) 
+                                  { Ease = SinInOut };
     }
 
     private void PlateAppear()
     {
-        var flipFactor = Math.Abs(Config.Angle) >= 90 ? -1 : 1;
-        var downScale = Config.Scale * 1.65f;
-        Tweens.Add(new(WidgetRoot,
-                       new(0) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 },
-                       new(200) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 })
-                       { Ease = Eases.SinInOut });
+        var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
+        var upScale = Config.Scale * 1.65f;
+        Animator += new Tween(WidgetRoot,
+                                 new(0) { ScaleX = upScale, ScaleY = upScale * flipFactor, Alpha = 0 },
+                                 new(200) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 })
+                                 { Ease = SinInOut };
     }
 
     #endregion
@@ -154,8 +184,9 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override void OnFirstRun(int count, int max)
     {
-        for (var i = 0; i < count; i++) Gems[i].SetAlpha(255);
-        FirstRun = false;
+        var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
+        for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count).SetScale(flipFactor,1);
+        if (Config.HideEmpty && count == 0) WidgetRoot.Hide();
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
@@ -168,7 +199,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public class AetherflowReplicaConfig : CounterWidgetConfig
     {
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public int BaseColor = 1;
         public AddRGB ColorModifier = new(0);
@@ -208,11 +239,11 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override void ApplyConfigs()
     {
-        var flipFactor = Math.Abs(Config.Angle) >= 90?-1:1;
+        var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale,Config.Scale * flipFactor)
                   .SetRotation(Config.Angle,true)
-                  .SetAlpha(Tracker.CurrentData.Count == 0 && Config.HideEmpty? 0 : 255);
+                  .SetAlpha(Tracker.CurrentData.Count != 0 || !Config.HideEmpty);
 
         SocketPlate.SetScaleX(flipFactor)
                    .SetMultiply(Config.FrameColor);
@@ -221,8 +252,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         foreach (var gem in Gems.Children)
         {
             gem.SetScaleX(flipFactor);
-            for (var i = 0; i < 4; i++)
-                gem[i].Node->GetAsAtkImageNode()->PartsList = PartsLists[Config.BaseColor].AtkPartsList;
+            for (var i = 0; i < 4; i++) gem[i].SetPartsList(PartsLists[Config.BaseColor]);
         }
     }
 
@@ -241,16 +271,11 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         Heading("Behavior");
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
-            if (Config.HideEmpty && Tracker.CurrentData.Count == 0) PlateVanish();
+            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
             if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
         }
 
-        if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
-        if (Config.AsTimer)
-        {
-            if (ToggleControls($"Invert {Tracker.TermGauge}", ref Config.InvertTimer, ref update)) update |= Reset;
-            if (IntControls($"{Tracker.TermGauge} Size", ref Config.TimerSize, 1, 20, 1, ref update)) update |= Reset;
-        }
+        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.AetherflowReplicaCfg = Config;

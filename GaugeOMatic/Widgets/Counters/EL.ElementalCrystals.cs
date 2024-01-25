@@ -1,11 +1,13 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.ElementalCrystals;
@@ -13,6 +15,7 @@ using static GaugeOMatic.Widgets.ElementalCrystals.ElementalCrystal.BaseColors;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -44,9 +47,8 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     public override CustomNode BuildRoot()
     {
-        var count = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
-
-        BuildStacks(count);
+        Max = GetMax();
+        BuildStacks(Max);
 
         return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(16,16);
     }
@@ -69,12 +71,12 @@ public sealed unsafe class ElementalCrystals : CounterWidget
                                              Glows1[i], 
                                              new (CreateResNode(),Glows2[i])).SetAlpha(0));
 
-            Tweens.Add(new(Glows2[i],
-                           new(0) {ScaleX=1,ScaleY=1,Alpha=0},
-                           new(450) {ScaleX=1.2f,ScaleY=1.1f,Alpha=101},
-                           new(950) {ScaleX=1.3f,ScaleY=1.2f,Alpha=0},
-                           new(1600) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
-                           {Repeat=true,Ease=Eases.SinInOut,Label="Pulse"});
+            Animator += new Tween(Glows2[i],
+                                  new(0) {ScaleX=1,ScaleY=1,Alpha=0},
+                                  new(450) {ScaleX=1.2f,ScaleY=1.1f,Alpha=101},
+                                  new(950) {ScaleX=1.3f,ScaleY=1.2f,Alpha=0},
+                                  new(1600) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
+                                  { Repeat = true, Ease = SinInOut, Label = "Pulse" };
             Stacks.Add(new CustomNode(CreateResNode(), StackContents[i]).SetOrigin(10, 24));
         }
     }
@@ -85,28 +87,29 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     public override void ShowStack(int i)
     {
-        Tweens.Add(new(StackContents[i],
-                       new(0){Y=-20,Alpha=0},
-                       new(225){Y=0,Alpha=200},
-                       new(300){Y=0,Alpha=255}));
+        Animator += new Tween(StackContents[i],
+                              new(0){Y=-20,Alpha=0},
+                              new(225){Y=0,Alpha=200},
+                              new(300){Y=0,Alpha=255});
 
         Glows2[i].Show();
     }
 
     public override void HideStack(int i)
     {
-        Tweens.Add(new(StackContents[i],
-                       new(0) { Alpha = 255 },
-                       new(325) { Alpha = 0 }));
-
         Glows2[i].Hide();
 
-        Tweens.Add(new(Glows1[i],
-                       new(0) { Alpha = 0, ScaleX = 1.3f, ScaleY = 1.2f },
-                       new(50) { Alpha = 73, ScaleX = 1.2f, ScaleY = 1.1f },
-                       new(200) { Alpha = 0, ScaleX = 1, ScaleY = 1 }));
+        Animator += new Tween[]
+        {
+            new(StackContents[i],
+                Visible[0],
+                Hidden[325]),
+            new(Glows1[i],
+                new(0) { Alpha = 0, ScaleX = 1.3f, ScaleY = 1.2f },
+                new(50) { Alpha = 73, ScaleX = 1.2f, ScaleY = 1.1f },
+                new(200) { Alpha = 0, ScaleX = 1, ScaleY = 1 })
+        };
     }
-    
 
     #endregion
 
@@ -114,12 +117,11 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     public override void OnFirstRun(int count, int max)
     {
-        for (var i = 0; i < count; i++)
+        for (var i = 0; i < max; i++)
         {
-            StackContents[i].SetAlpha(255);
-            Glows2[i].Show();
+            StackContents[i].SetAlpha(i < count);
+            Glows2[i].SetVis(i < count);
         }
-        FirstRun = false;
     }
 
     #endregion
@@ -128,10 +130,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     public class ElementalCrystal : CounterWidgetConfig
     {
-        public enum BaseColors
-        {
-            Ice=3,Fire=4
-        }
+        public enum BaseColors { Ice = 3, Fire = 4 }
 
         public Vector2 Position = new(19, 22);
         public float Scale = 1;
@@ -199,8 +198,8 @@ public sealed unsafe class ElementalCrystals : CounterWidget
             Crystals[i].SetAddRGB(Config.CrystalColor);
             Glows1[i].SetAddRGB(Config.GlowColor);
             Glows2[i].SetAddRGB(Config.GlowColor);
-            x += Math.Cos(posAngle * (Math.PI / 180)) * Config.Spacing;
-            y += Math.Sin(posAngle * (Math.PI / 180)) * Config.Spacing;
+            x += Cos(posAngle * (PI / 180)) * Config.Spacing;
+            y += Sin(posAngle * (PI / 180)) * Config.Spacing;
             posAngle += Config.Curve;
         }
     }
@@ -221,12 +220,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
         Heading("Behavior");
 
-        if (ToggleControls($"Use as {Tracker.TermGauge}", ref Config.AsTimer, ref update)) update |= Reset;
-        if (Config.AsTimer)
-        {
-            if (ToggleControls($"Invert {Tracker.TermGauge}", ref Config.InvertTimer, ref update)) update |= Reset;
-            if (IntControls($"{Tracker.TermGauge} Size", ref Config.TimerSize, 1, 30, 1, ref update)) update |= Reset;
-        }
+        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ElementalCrystalCfg = Config;

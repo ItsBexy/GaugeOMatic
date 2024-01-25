@@ -1,3 +1,5 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
@@ -5,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.OathSigil;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -33,10 +35,10 @@ public sealed unsafe class OathSigil : StateWidget
     public override CustomPartsList[] PartsLists { get; } =
     {
         new("ui/uld/JobHudPLD.tex", 
-            new (0,120,180,180), // 0 sigil
-            new(316,306,78,52)   // 1 wing
-            )
+            new (0,120,180,180),  // 0 sigil
+            new(316,306,78,52))   // 1 wing
     };
+
     #region Nodes
 
     public CustomNode SigilWrapper;
@@ -51,11 +53,12 @@ public sealed unsafe class OathSigil : StateWidget
 
         WingR = ImageNodeFromPart(0, 1).SetPos(107,42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1);
         WingL = ImageNodeFromPart(0, 1).SetPos(-6,42).SetOrigin(70, 52).SetScale(0).SetAlpha(0);
-        Tweens.Add(new(Sigil,
-                       new(0){AddRGB=new(-127,-112,-36) },
-                       new(500){AddRGB = new(-107, -92, -16) },
-                       new(960){AddRGB = new(-127, -112, -36) })
-                       {Repeat=true,Ease=Eases.SinInOut});
+
+        Animator += new Tween(Sigil,
+                              new(0){AddRGB=new(-127,-112,-36) },
+                              new(500){AddRGB = new(-107, -92, -16) },
+                              new(960){AddRGB = new(-127, -112, -36) })
+                              {Repeat=true,Ease=SinInOut};
 
         return new(CreateResNode(), SigilWrapper,WingR,WingL);
     }
@@ -88,47 +91,49 @@ public sealed unsafe class OathSigil : StateWidget
         SigilWrapper.SetAddRGB(sigilColor);
         WingL.SetMultiply(wingColor);
         WingR.SetMultiply(wingColor);
-        Tweens.Add(new(Sigil,
-                       new(0) { Y = 50, Scale = 0, Alpha = 0 },
-                       new(160) { Y = 0, Scale = 1, Alpha = 255 }));
 
-        Tweens.Add(new(WingL,
-                       new(0){Scale=0,Alpha=0},
-                       new(80){ScaleX=1,ScaleY=0.2f,Alpha=100},
-                       new(160){Scale=1,Alpha=255}));
-
-        Tweens.Add(new(WingR,
-                       new(0) { Scale = 0, Alpha = 0 },
-                       new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
-                       new(160) { Scale = 1, Alpha = 255 }));
+        Animator += new Tween[]
+        {
+            new(Sigil,
+                new(0) { Y = 50, Scale = 0, Alpha = 0 },
+                new(160) { Y = 0, Scale = 1, Alpha = 255 }),
+            new(WingL,
+                new(0) { Scale = 0, Alpha = 0 },
+                new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
+                new(160) { Scale = 1, Alpha = 255 }),
+            new(WingR,
+                new(0) { Scale = 0, Alpha = 0 },
+                new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
+                new(160) { Scale = 1, Alpha = 255 })
+        };
 
     }
 
-    public override void Deactivate(int previous)
-    {
-        Tweens.Add(new(Sigil,
-                       new(0) { Y = 0, Scale = 1, Alpha = 255 },
-                       new(160) { Y = 50, Scale = 0, Alpha = 0 }));
-
-        Tweens.Add(new(WingL,
-                       new(0) { Scale = 1, Alpha = 255 },
-                       new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
-                       new(160) { Scale = 0, Alpha = 0 }));
-
-        Tweens.Add(new(WingR,
-                       new(0) { Scale = 1, Alpha = 255 },
-                       new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
-                       new(160) { Scale = 0, Alpha = 0 }));
-    }
+    public override void Deactivate(int previous) =>
+        Animator += new Tween[]
+        {
+            new(Sigil,
+                new(0) { Y = 0, Scale = 1, Alpha = 255 },
+                new(160) { Y = 50, Scale = 0, Alpha = 0 }),
+            new(WingL,
+                new(0) { Scale = 1, Alpha = 255 },
+                new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
+                new(160) { Scale = 0, Alpha = 0 }),
+            new(WingR,
+                new(0) { Scale = 1, Alpha = 255 },
+                new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
+                new(160) { Scale = 0, Alpha = 0 })
+        };
 
     public override void StateChange(int current, int previous)
     {
-        Tweens.Add(new(SigilWrapper, 
-                       new(0,SigilWrapper), 
-                       new(160){ AddRGB = Config.SigilColors.ElementAtOrDefault(current) }));
         var wingColor = Config.WingColors.ElementAtOrDefault(current);
-        Tweens.Add(new(WingL, new(0, WingL), new(160) { MultRGB = wingColor}));
-        Tweens.Add(new(WingR, new(0, WingR), new(160) { MultRGB = wingColor }));
+        Animator += new Tween[]
+        {
+            new(SigilWrapper, new(0,SigilWrapper), new(160){ AddRGB = Config.SigilColors.ElementAtOrDefault(current) }),
+            new(WingL, new(0, WingL), new(160) { MultRGB = wingColor}),
+            new(WingR, new(0, WingR), new(160) { MultRGB = wingColor })
+        };
     }
 
     #endregion

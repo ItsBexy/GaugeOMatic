@@ -1,6 +1,8 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
 using GaugeOMatic.Trackers;
+using GaugeOMatic.Windows;
+using System.Diagnostics.CodeAnalysis;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
@@ -35,6 +37,21 @@ public abstract class CounterWidget : Widget
 
     public bool FirstRun = true;
 
+    public int Max;
+    public int GetMax() => GetConfig.AsTimer ? GetConfig.TimerSize : Tracker.GetCurrentData().MaxCount;
+    public void SizeChange()
+    {
+        Detach();
+        WidgetRoot.Dispose();
+
+        WidgetRoot = BuildRoot();
+        WidgetRoot.AssembleNodeTree();
+        ApplyConfigs();
+        FirstRun = true;
+
+        Tracker.JobModule.SoftReset();
+    }
+
     public override void Update()
     {
         int max;
@@ -44,8 +61,8 @@ public abstract class CounterWidget : Widget
         if (GetConfig.AsTimer)
         {
             max = GetConfig.TimerSize;
-            current = (int)Math.Ceiling(Math.Clamp(Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge,0,1) * max);
-            previous = (int)Math.Ceiling(Math.Clamp(Tracker.PreviousData.GaugeValue / Tracker.CurrentData.MaxGauge,0,1) * max);
+            current = (int)Ceiling(Clamp(Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge,0,1) * max);
+            previous = (int)Ceiling(Clamp(Tracker.PreviousData.GaugeValue / Tracker.CurrentData.MaxGauge,0,1) * max);
 
             if (GetConfig.InvertTimer)
             {
@@ -56,8 +73,15 @@ public abstract class CounterWidget : Widget
         else
         {
             max = Tracker.CurrentData.MaxCount;
-            current = Math.Clamp(Tracker.CurrentData.Count, 0, max);
-            previous = Math.Clamp(Tracker.PreviousData.Count, 0, max);
+            current = Clamp(Tracker.CurrentData.Count, 0, max);
+            previous = Clamp(Tracker.PreviousData.Count, 0, max);
+        }
+
+        if (max != Max)
+        {
+            SizeChange();
+            Max = max;
+            return;
         }
 
         PreUpdate(current);
@@ -83,9 +107,18 @@ public abstract class CounterWidget : Widget
             }
         }
 
-        RunTweens();
+        Animator.RunTweens();
         PostUpdate(current);
     }
 
     protected CounterWidget(Tracker tracker) : base(tracker) { }
+
+    public void CounterAsTimerControls(ref bool useAsTimer, ref bool invertTimer, ref int timerSize, string term, ref UpdateFlags update)
+    {
+        if (ToggleControls($"Use as {term}", ref useAsTimer, ref update)) SizeChange();
+        if (!useAsTimer) return;
+
+        if (ToggleControls($"Invert {term}", ref invertTimer, ref update)) FirstRun = true;
+        if (IntControls($"{term} Size", ref timerSize, 1, 30, 1, ref update)) SizeChange();
+    }
 }

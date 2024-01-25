@@ -1,12 +1,12 @@
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using GaugeOMatic.GameData;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.StatusData;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.Trackers.RefType;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.IconColor;
@@ -83,7 +83,7 @@ public sealed class ActionTracker : Tracker
 [TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge")]
 public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged
 {
-    public override RefType RefType => RefType.None;
+    public override RefType RefType => JobGauge;
 
     public override string TermCount => "Count";
     public override string TermGauge => "Gauge";
@@ -93,6 +93,15 @@ public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged
 
     public AddonJobHud* GaugeAddon => (AddonJobHud*)GameGui.GetAddonByName(GaugeAddonName);
     public T* GaugeData => (T*)GaugeAddon->DataCurrent;
+}
+
+[TrackerDisplay(BarsProgress, NoneColor, "Other")]
+public class ParameterTracker : Tracker
+{
+    public override RefType RefType => Parameter;
+    public override string DisplayName => ItemRef?.Name ?? string.Empty;
+    public override TrackerData GetCurrentData(float? preview = null) => new((ParamRef)ItemRef!, preview);
+
 }
 
 [TrackerDisplay(Question, NoneColor, "No Tracker Assigned")]

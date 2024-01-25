@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,13 +41,10 @@ public class DRKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var drkHide0 = TweakConfigs.DRKHide0;
-        var drkHide1 = TweakConfigs.DRKHide1;
-
-        if (Bool1("Hide Blood Gauge", ref drkHide0, ref update)) TweakConfigs.DRKHide0 = drkHide0;
-        HideWarning(drkHide0);
-        if (Bool1("Hide Darkside Gauge", ref drkHide1, ref update)) TweakConfigs.DRKHide1 = drkHide1;
-        HideWarning(drkHide1);
+        ToggleControls("Hide Blood Gauge",ref TweakConfigs.DRKHide0, ref update);
+        HideWarning(TweakConfigs.DRKHide0);
+        ToggleControls("Hide Darkside Gauge",ref TweakConfigs.DRKHide1, ref update);
+        HideWarning(TweakConfigs.DRKHide1);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -76,6 +73,6 @@ public class DRKModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool DRKHide0 { get; set; }
-    public bool DRKHide1 { get; set; }
+    public bool DRKHide0;
+    public bool DRKHide1;
 }

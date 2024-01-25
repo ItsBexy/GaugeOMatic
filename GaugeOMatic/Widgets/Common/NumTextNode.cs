@@ -1,11 +1,13 @@
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
+using CustomNodes;
 using Dalamud.Interface;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Windows;
 using ImGuiNET;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -26,10 +28,12 @@ public class NumTextNode : CustomNode
         BgNode = new CustomNode(CreateNineGridNode(BgPart, 0)).SetNineGridOffset(0, 21, 0, 21)
                                                               .SetSize(65, 40)
                                                               .SetPos(-17, -21)
-                                                              .SetOrigin(16, 20);
+                                                              .SetOrigin(16, 20)
+                                                              .Hide();
 
-        Node = (AtkResNode*)CreateTextNode("0", 18, 20);
+        Node = (AtkResNode*)CreateTextNode(" ", 18, 20);
         Children = new[] { BgNode };
+        RemoveFlags(SetVisByAlpha);
     }
 
     public void ApplyProps(NumTextProps props, Vector2? posAdjust = null)
@@ -95,6 +99,8 @@ public class NumTextNode : CustomNode
                     break;
             }
 
+             
+
             BgNode.SetHeight(Props.Font == Jupiter ? 44 : 40);
             BgNode.SetY(Props.Font == Miedinger ? -22f : -21);
         }
@@ -156,7 +162,7 @@ public struct NumTextProps
     public static void NumTextControls(string label, ref NumTextProps configVal, ref UpdateFlags update)
     {
         var numTextProps = configVal;
-        ImGuiHelpers.TableSeparator(2);
+        ImGuiHelpy.TableSeparator(2);
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();

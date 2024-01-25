@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,10 +38,8 @@ public class GNBModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var gnbHide0 = TweakConfigs.GNBHide0;
-
-        if (Bool1("Hide Powder Gauge", ref gnbHide0, ref update)) TweakConfigs.GNBHide0 = gnbHide0;
-        HideWarning(gnbHide0);
+        ToggleControls("Hide Powder Gauge", ref TweakConfigs.GNBHide0, ref update);
+        HideWarning(TweakConfigs.GNBHide0);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -61,5 +59,5 @@ public class GNBModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool GNBHide0 { get; set; }
+    public bool GNBHide0;
 }

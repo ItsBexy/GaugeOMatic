@@ -14,3 +14,22 @@ public abstract class ItemRef
     public bool CheckJob(Job job, Job jobClass, Role role) => job == Job || (jobClass!= None && jobClass == Job) || Role.HasFlag(role);
     public bool CheckJob(JobModule module) => CheckJob(module.Job, module.Class, module.Role);
 }
+
+public class ParamRef : ItemRef
+{
+    public ParamTypes ParamType;
+
+    public ParamRef(ParamTypes type)
+    {
+        Job = None;
+        Role = Role.Combat;
+        ParamType = type;
+        ID = (uint)type;
+        Name = type.ToString();
+    }
+
+    public static implicit operator ParamRef(uint i) => new((ParamTypes)i);
+    public static implicit operator ParamRef(ParamTypes p) => new(p);
+
+    public enum ParamTypes { HP=1, MP=2, Castbar=3 }
+}

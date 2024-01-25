@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -36,10 +36,8 @@ public class PLDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var pldHide0 = TweakConfigs.PLDHide0;
-
-        if (Bool1("Hide Oath Gauge", ref pldHide0, ref update)) TweakConfigs.PLDHide0 = pldHide0;
-        HideWarning(pldHide0);
+        ToggleControls("Hide Oath Gauge",ref TweakConfigs.PLDHide0, ref update);
+        HideWarning(TweakConfigs.PLDHide0);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -59,5 +57,5 @@ public class PLDModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool PLDHide0 { get; set; }
+    public bool PLDHide0;
 }

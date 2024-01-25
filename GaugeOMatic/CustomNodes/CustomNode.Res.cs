@@ -1,5 +1,5 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using GaugeOMatic.Utility;
+using static GaugeOMatic.Utility.MemoryHelper;
 
 namespace CustomNodes;
 
@@ -7,7 +7,7 @@ public unsafe partial class CustomNodeManager
 {
     public static AtkResNode* CreateResNode()
     {
-        var node = MemoryHelper.CleanAlloc<AtkResNode>();
+        var node = CleanAlloc<AtkResNode>();
         node->Ctor();
         node->NodeID = GetFreeId();
 

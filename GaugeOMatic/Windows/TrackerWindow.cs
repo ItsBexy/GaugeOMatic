@@ -53,13 +53,13 @@ public class TrackerWindow : Window, IDisposable
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiHelpers.TextRightAligned("Widget");
+        ImGuiHelpy.TextRightAligned("Widget");
         ImGui.TableNextColumn();
         Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f, ref update);
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiHelpers.TextRightAligned("Pinned to:");
+        ImGuiHelpy.TextRightAligned("Pinned to:");
         ImGui.TableNextColumn();
         if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
         {
@@ -76,7 +76,7 @@ public class TrackerWindow : Window, IDisposable
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiHelpers.TextRightAligned("Preview");
+        ImGuiHelpy.TextRightAligned("Preview");
         var preview = Tracker.TrackerConfig.Preview;
         var previewValue = Tracker.TrackerConfig.PreviewValue;
         ImGui.TableNextColumn();
@@ -97,7 +97,7 @@ public class TrackerWindow : Window, IDisposable
         {
             ImGui.TableSetupColumn("Labels");
 
-            ImGuiHelpers.TableSeparator(2);
+            ImGuiHelpy.TableSeparator(2);
 
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
@@ -105,7 +105,7 @@ public class TrackerWindow : Window, IDisposable
             ImGui.TableNextColumn();
 
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetColumnWidth() - (80 * GlobalScale));
-            if (ImGuiHelpers.IconButtonWithText("Default", FontAwesomeIcon.UndoAlt, $"##{Hash}Default", 80f))
+            if (ImGuiHelpy.IconButtonWithText("Default", FontAwesomeIcon.UndoAlt, $"##{Hash}Default", 80f))
             {
                 Widget?.ResetConfigs();
                 Widget?.ApplyConfigs();

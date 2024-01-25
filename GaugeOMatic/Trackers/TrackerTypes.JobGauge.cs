@@ -1,3 +1,4 @@
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -631,6 +632,32 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
         return new(combo, 1, combo, 1, crystalState, 3, preview);
     }
 }
+
+[TrackerDisplay(Gauge, JobGaugeColor, "Special Tracker", RDM)]
+public sealed unsafe class WeaveMetronome : Tracker
+{
+    public override string DisplayName => "Weave Metronome";
+    public override RefType RefType => RefType.Action;
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        var actionManager = ActionManager.Instance();
+        var adjustedId = actionManager->GetAdjustedActionId(7524);
+        var timeElapsed = actionManager->GetRecastTimeElapsed(ActionType.Action, adjustedId);
+        var timeTotal = actionManager->GetRecastTime(ActionType.Action, adjustedId);
+
+        var gcd = timeElapsed;
+        if (timeTotal == 0)
+        {
+            gcd = 0;
+            timeTotal = 1;
+        }
+
+        var casting = ClientState.LocalPlayer?.IsCasting ?? false;
+
+        return new(0, 1, gcd, timeTotal, casting ? 1 : 0, 1, preview);
+    }
+}
+
 
 #endregion
 

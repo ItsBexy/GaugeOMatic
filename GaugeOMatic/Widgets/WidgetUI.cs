@@ -9,7 +9,7 @@ using System.Numerics;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Utility.ImGuiHelpers;
+using static GaugeOMatic.Utility.ImGuiHelpy;
 using static ImGuiNET.ImGuiCol;
 
 namespace GaugeOMatic.Widgets;
@@ -17,7 +17,7 @@ namespace GaugeOMatic.Widgets;
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
 internal static class WidgetUI
 {
-    private static void LabelColumn(string label)
+    public static void LabelColumn(string label)
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
@@ -261,14 +261,19 @@ internal static class WidgetUI
     {
         ImGui.SetNextItemWidth(90f * GlobalScale);
         var input1 = ImGui.DragInt($"##{label}Drag", ref val, step, min, max);
+        if (input1) val = Math.Clamp(val, min, max);
+
 
         ImGui.PushButtonRepeat(true);
+
         SameLineSquished();
         var input2 = IconButton($"##{label}ButtonDown", icon1);
         if (input2) val = Math.Clamp(val - step, min, max);
+
         SameLineSquished();
         var input3 = IconButton($"##{label}ButtonUp", icon2);
         if (input3) val = Math.Clamp(val + step, min, max);
+
         ImGui.PopButtonRepeat();
 
         return input1 || input2 || input3;

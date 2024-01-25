@@ -1,7 +1,8 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
@@ -13,6 +14,8 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -67,10 +70,21 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32);
-        Main = new CustomNode(CreateResNode(), Plate).SetNodeFlags(Clip).SetSize(116, 208);
-        CrystalGlow = ImageNodeFromPart(0, 5).SetPos(39, 5).SetOrigin(20, 28).SetAlpha(0);
-        Tick = ImageNodeFromPart(1, 0).SetRotation(1.5707963267949f).SetImageFlag(33).SetOrigin(20,44).SetPos(37.5f,-30);
+        Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32).DefineTimeline(PlateTimeline);
+
+        Main = new CustomNode(CreateResNode(), Plate).SetNodeFlags(Clip)
+                                                     .SetSize(116, 0)
+                                                     .DefineTimeline(BarTimeline)
+                                                     .SetAlpha(0);
+
+        CrystalGlow = ImageNodeFromPart(0, 17).SetPos(28, 3).SetOrigin(30, 30).SetAlpha(0).SetImageFlag(32);
+
+        Tick = ImageNodeFromPart(1, 0).SetRotation(1.5707963267949f)
+                                      .SetImageFlag(33)
+                                      .SetOrigin(20,44)
+                                      .SetPos(37.5f,-30)
+                                      .DefineTimeline(TickTimeline)
+                                      .SetAlpha(0);
         NumTextNode = new();
 
         return new(CreateResNode(), Main, CrystalGlow,Tick,NumTextNode);
@@ -80,32 +94,63 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     #region Animations
 
+    public static KeyFrame[] BarTimeline => new KeyFrame[]
+    {
+        new(0) { Height = 10,Y = 198, Alpha = 0 },
+        new(20) { Height = 30,Y=178,Alpha = 255 },
+        new(192) { Height = 202,Y=6, Alpha = 255 }
+    };
+
+    public static KeyFrame[] PlateTimeline => new KeyFrame[]
+    {
+        new(0) { Y=-198 },
+        new(20) { Y=-178 },
+        new(192) { Y=-6 }
+    };
+
+    public KeyFrame[] TickTimeline => new KeyFrame[]
+    {
+        new(0) { Y = 173, Alpha = 0 },
+        new(20) { Y=153, Alpha = Config.TickColor.A },
+        new(182) { Y=-9, Alpha = Config.TickColor.A },
+        new(192) { Y=-19, Alpha = 0 }
+    };
+
     #endregion
 
     #region UpdateFuncs
 
-    public override DrainGainType DGType => DrainGainType.Height;
-    public override float CalcBarProperty(float prog) => 10 + (prog * 192);
-
-    public override void PostUpdate(float prog, float prevProg)
+    public override void OnFirstRun(float prog)
     {
-        Main.SetY(208 - Main.Height);
-        Plate.SetY(-(208 - Main.Height));
+        Main.SetProgress(prog);
+        Tick.SetProgress(prog);
+        Plate.SetProgress(prog);
     }
 
     public override void PlaceTickMark(float prog)
     {
-        var containerY = Main.Node->Y;
+        Plate.SetProgress(Main);
+        Tick.SetProgress(Main)
+            .SetScaleY(Clamp(Main.Node->Y switch
+            {
+                <= 80 => PolyCalc(Main.Node->Y, -0.369408145220107d, 0.0761410396507537d, -0.00102457794640973d, 0.0000049971702224042d),
+                <= 163.5f => PolyCalc(Main.Node->Y, 2.9911068686918d, -0.00223868498009971d, -0.000303975874680723d, 0.00000164245988203053d),
+                _ => PolyCalc(Main.Node->Y, -88.9665931925754d, 1.53310683483466d, -0.00854319135223209d, 0.0000156241038226192d)
+            }, 0, 2f));
+    }
 
-        var alpha = (byte)Math.Clamp((double)(containerY <= 163.5f ? 255 : PolyCalc(containerY, -6155.37357130828d, 79.3597925187652, -0.245581741361458)), 0, 255);
-        var scaleY = containerY switch
-        {
-            <= 80 => PolyCalc(containerY, -0.369408145220107d, 0.0761410396507537d, -0.00102457794640973d, 0.0000049971702224042d),
-            <= 163.5f => PolyCalc(containerY, 2.9911068686918d, -0.00223868498009971d, -0.000303975874680723d, 0.00000164245988203053d),
-            _ => PolyCalc(containerY, -88.9665931925754d, 1.53310683483466d, -0.00854319135223209d, 0.0000156241038226192d)
+    public override void OnIncrease(float prog,float prevProg)
+    {
+        Animator += new Tween[]{
+            new(CrystalGlow,
+                              new(0){Rotation = 0},
+                              new(400){Rotation = (float)PI*1}),
+            new(CrystalGlow,
+                new(0) {Alpha=0,Scale=0.8f},
+                new(150) {Alpha=255,Scale=1.5f},
+                new(400) {Alpha=0,Scale=3})
         };
-        
-        Tick.SetY(containerY-25).SetAlpha(alpha).SetScaleY(Math.Clamp(scaleY, 0, 2f));
+
     }
 
     public override string SharedEventGroup => "BalanceGauge";
@@ -116,14 +161,13 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public sealed class BalanceOverlayConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
-        public AddRGB Color = "0xCAA0A08F";
-        public AddRGB TickColor = "0xB04A4AFF";
+        public AddRGB Color = "0xAF4A5A6B";
+        public AddRGB TickColor = "0xD9462BD3";
 
-        public BalanceOverlayConfig(WidgetConfig widgetConfig)
+        public BalanceOverlayConfig(WidgetConfig widgetConfig) : base(widgetConfig.BalanceOverlayCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.BalanceOverlayCfg;
 
             if (config == null) return;
@@ -132,16 +176,9 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             Scale = config.Scale;
             Color=config.Color;
             TickColor= config.TickColor;
-            NumTextProps = config.NumTextProps;
-            AnimationLength = config.AnimationLength;
-            Invert = config.Invert;
-            SplitCharges = config.SplitCharges;
         }
 
-        public BalanceOverlayConfig()
-        {
-            NumTextProps = NumTextDefault;
-        }
+        public BalanceOverlayConfig() { }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -155,7 +192,9 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     {
         WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
         Plate.SetAddRGB(Config.Color,true);
-        Tick.SetAddRGB(Config.TickColor, true);
+        Tick.SetAddRGB(Config.TickColor)
+            .DefineTimeline(TickTimeline);
+        CrystalGlow.SetAddRGB(Config.Color + new AddRGB(-95,106,74));
 
         NumTextNode.ApplyProps(Config.NumTextProps);
     }

@@ -1,26 +1,50 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using GaugeOMatic.Windows;
-using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
+using Newtonsoft.Json;
+using System;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.WidgetUI;
+// ReSharper disable UnusedParameter.Global
+// ReSharper disable VirtualMemberCallInConstructor
 
 namespace GaugeOMatic.Widgets;
 
-public abstract class GaugeBarWidgetConfig
+public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
 {
+    protected GaugeBarWidgetConfig() => NumTextProps = NumTextDefault;
+
+    protected GaugeBarWidgetConfig(GaugeBarWidgetConfig? config)
+    {
+        NumTextProps = NumTextDefault;
+
+        if (config == null) return;
+        HideEmpty = config.HideEmpty;
+        Invert = config.Invert;
+        AnimationLength = config.AnimationLength;
+        NumTextProps = config.NumTextProps;
+        SplitCharges = config.SplitCharges;
+        MilestoneType = config.MilestoneType;
+        Milestone = config.Milestone;
+    }
+
     protected virtual NumTextProps NumTextDefault => new();
     public bool HideEmpty;
     public bool Invert;
     public int AnimationLength = 250;
     public NumTextProps NumTextProps;
-    public bool SplitCharges = false;
-    public MilestoneType MilestoneType; //todo: implement on more bars
+    public bool SplitCharges;
+    public MilestoneType MilestoneType;
     public float Milestone = 0.5f;
+
+    // ReSharper disable once UnusedMember.Global
+    [JsonIgnore]
+    public bool Collapse
+    {
+        get => HideEmpty;
+        set => HideEmpty = value;
+    }
 
     public static void MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone, ref UpdateFlags update)
     {
@@ -37,14 +61,10 @@ public abstract class GaugeBarWidgetConfig
 
 public enum MilestoneType {None,Above,Below}
 
-[SuppressMessage("ReSharper", "UnusedParameter.Global")]
 public abstract class GaugeBarWidget : Widget
 {
-    public enum DrainGainType { Width, Height, Rotation, X }
-
     protected GaugeBarWidget(Tracker tracker) : base(tracker) { }
 
-    public abstract DrainGainType DGType { get; }
     public abstract GaugeBarWidgetConfig GetConfig { get; }
     public NumTextProps NumTextProps => GetConfig.NumTextProps;
     public bool Invert => GetConfig.Invert;
@@ -61,15 +81,20 @@ public abstract class GaugeBarWidget : Widget
     public CustomNode Main { get; set; } = new();
     public NumTextNode NumTextNode = null!;
 
-    public virtual void OnFirstRun(float prog) { } // used to instantly jump to the correct current state on first setup
+    public virtual void OnFirstRun(float prog) // used to instantly jump to the correct current state on first setup
+    {
+        Main.SetProgress(prog);
+        Gain.SetProgress(0);
+        Drain.SetProgress(0);
+    }
 
     // handlers that can be used to trigger animations/behaviours at certain progress points
 
     public virtual void OnIncrease(float prog, float prevProg) { }
-    public virtual void OnIncreaseFromMin(float prog, float prevProg) { }
+    public virtual void OnIncreaseFromMin() { }
 
     public virtual void OnDecrease(float prog, float prevProg) { }
-    public virtual void OnDecreaseToMin(float prog, float prevProg) { }
+    public virtual void OnDecreaseToMin() { }
 
     public virtual void PlaceTickMark(float prog) { }
 
@@ -100,6 +125,8 @@ public abstract class GaugeBarWidget : Widget
         return Invert ? 1 - prog : prog;
     }
 
+    public virtual float AdjustProg(float prog) => prog;
+    
     private float PreviousGauge => Tracker.PreviousData.GaugeValue;
     public float CurrentGauge => Tracker.CurrentData.GaugeValue;
     private float MaxGauge => Tracker.CurrentData.MaxGauge;
@@ -117,21 +144,21 @@ public abstract class GaugeBarWidget : Widget
         PreUpdate(prog, prevProg);
 
         if (FirstRun) OnFirstRun(prog);
-        else AnimateDrainGain(DGType, ref Tweens, Main, Gain, Drain, CalcBarProperty(prog), CalcBarProperty(prevProg), CalcBarProperty(0f), AnimDelay);
+        else AnimateDrainGain(AdjustProg(prog), AdjustProg(prevProg), AnimDelay);
 
         if (prog > prevProg)
         {
             if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
-            if (prog > 0 && prevProg <= 0) OnIncreaseFromMin(prog, prevProg);
+            if (prog > 0 && prevProg <= 0) OnIncreaseFromMin();
         }
 
         if (prevProg > prog)
         {
             if (prevProg - prog >= DrainTolerance) OnDecrease(prog, prevProg);
-            if (prevProg > 0 && prog <= 0) OnDecreaseToMin(prog, prevProg);
+            if (prevProg > 0 && prog <= 0) OnDecreaseToMin();
         }
 
-        RunTweens();
+        Animator.RunTweens();
         HandleMilestone(prog);
 
         PostUpdate(prog, prevProg);
@@ -158,93 +185,22 @@ public abstract class GaugeBarWidget : Widget
         }
     }
 
-    public abstract float CalcBarProperty(float prog);
-    
-    public static void AnimateDrainGain(DrainGainType type, ref List<Tween> tweens, CustomNode main, CustomNode gain, CustomNode drain, float current, float previous, float min = 0f, int time = 250)
+    public void AnimateDrainGain(float current, float previous, int time = 250) => AnimateDrainGain(Main, Gain, Drain, current, previous, time);
+
+    public unsafe void AnimateDrainGain(CustomNode main, CustomNode gain, CustomNode drain, float current, float previous, int time = 250)
     {
-        var (getProp, setProp, createKeyFrame) = GetDrainGainFuncs(type);
-        CreateDrainGainTweens(ref tweens, main, gain, drain, current, previous, time, getProp, setProp, createKeyFrame, min);
-    }
+        var increasing = current > previous;
+        gain.SetProgress(main.Progress >= current ? 0 : current);
+        drain.SetProgress(increasing ? 0 : previous);
+        main.SetProgress(increasing || drain.Node == null ? previous : current);
 
-    public static void AnimateDrainGain(DrainGainType type, ref List<Tween> tweens, CustomNode main, float current, float previous, float min = 0f, int time = 250)
-    {
-        var (getProp, setProp, createKeyFrame) = GetDrainGainFuncs(type);
-        CreateDrainGainTweens(ref tweens, main, new(), new(), current, previous, time, getProp, setProp, createKeyFrame, min);
-    }
+        if (Math.Abs(current - previous) < 0.001f) return;
 
-    private static unsafe (Func<CustomNode, float> getProp, Func<CustomNode, float, CustomNode> setProp, Func<int, float, KeyFrame> createKeyFrame) GetDrainGainFuncs(DrainGainType type)
-    {
-        Func<CustomNode, float> getProp = static _ => 0;
-        Func<CustomNode, float, CustomNode> setProp = static (node, _) => node;
-        Func<int, float, KeyFrame> createKeyFrame = static (kfTime, _) => new(kfTime);
-
-        switch (type)
-        {
-            case Width:
-                getProp = static node => node.Node->Width;
-                setProp = static (node, val) => node.SetWidth(val);
-                createKeyFrame = static (kfTime, val) => new(kfTime) { Width = val };
-                break;
-            case Height:
-                getProp = static node => node.Node->Height;
-                setProp = static (node, val) => node.SetHeight(val);
-                createKeyFrame = static (kfTime, val) => new(kfTime) { Height = val };
-                break;
-            case X:
-                getProp = static node => node.Node->X;
-                setProp = static (node, val) => node.SetX(val);
-                createKeyFrame = static (kfTime, val) => new(kfTime) { X = val };
-                break;
-            case Rotation:
-                getProp = static node => node.Node->Rotation;
-                setProp = static (node, val) => node.SetRotation(val);
-                createKeyFrame = static (kfTime, val) => new(kfTime) { Rotation = val };
-                break;
-        }
-
-        return (getProp, setProp, createKeyFrame);
-    }
-
-    private static unsafe void CreateDrainGainTweens(ref List<Tween> tweens, CustomNode main, CustomNode gain, CustomNode drain, float current, float previous, int time, Func<CustomNode, float> getProp, Func<CustomNode, float, CustomNode> setProp, Func<int, float, KeyFrame> createKeyFrame, float min = 0f)
-    {
-        var mainProp = getProp.Invoke(main);
-
-        var mainTween = tweens.Find(t => t.Target == main.Node && t.Label == "Main");
-        if (mainProp >= current)
-        {
-            if (mainTween != null) UpdateKeyFrame(ref tweens, mainTween);
-            else setProp.Invoke(main, current);
-        }
-        else if (current > previous)
-        {
-            if (mainTween != null) UpdateKeyFrame(ref tweens, mainTween);
-            else tweens.Add(new(main,
-                                createKeyFrame.Invoke(0, mainProp),
-                                createKeyFrame.Invoke(time, current))
-                                { Label = "Main" });
-        }
-
-        void UpdateKeyFrame(ref List<Tween> tweens, Tween tween)
-        {
-            tweens.Remove(tween);
-            var frames = tween.KeyFrames;
-            frames[1] = createKeyFrame.Invoke(time, current);
-            tween.KeyFrames = frames;
-            tweens.Add(tween);
-        }
-
-        if (current < previous && drain.Node != null)
-        {
-            var drainTween = tweens.Find(t => t.Target == drain.Node && t.Label == "Drain");
-
-            if (drainTween == null)
-                tweens.Add(new(drain, 
-                               createKeyFrame.Invoke(0, Math.Max(getProp.Invoke(drain), previous)),
-                               createKeyFrame.Invoke(time, current)) 
-                               { Label = "Drain" });
-            else UpdateKeyFrame(ref tweens, drainTween);
-        }
-
-        if (gain.Node != null) setProp.Invoke(gain, mainProp >= current ? min : current);
+        Animator = Animator.Remove("DrainGain", main, drain)  
+                   + new Tween(increasing || drain.Node == null ? main : drain,
+                                               new(0) { TimelineProg = previous },
+                                               new(time) { TimelineProg = current }) 
+                                               { Label = "DrainGain" };
+        
     }
 }

@@ -1,5 +1,5 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using GaugeOMatic.Utility;
+using static GaugeOMatic.Utility.MemoryHelper;
 
 namespace CustomNodes;
 
@@ -7,7 +7,7 @@ public unsafe partial class CustomNodeManager
 {
     public static AtkTextNode* CreateTextNode(string text, int fontSize, int alignFontType)
     {
-        var node = MemoryHelper.CleanAlloc<AtkTextNode>();
+        var node = CleanAlloc<AtkTextNode>();
         node->Ctor();
 
         node->SetText(text);

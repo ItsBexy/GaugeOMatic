@@ -1,11 +1,13 @@
+using CustomNodes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
@@ -13,6 +15,8 @@ using static GaugeOMatic.Widgets.SimpleCircle;
 using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -54,17 +58,26 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        LeftHalf = ImageNodeFromPart(0, 0).SetOrigin(80, 80).SetDrawFlags(0xD).SetDrawFlags(0x800000).SetImageFlag(32);
-        LeftContainer = new CustomNode(CreateResNode(), LeftHalf).SetDrawFlags(0x800000).SetX(-40).SetSize(81, 160).SetNodeFlags(NodeFlags.Clip).SetDrawFlags(0xD);
+        LeftHalf = ImageNodeFromPart(0, 0).SetOrigin(80, 80)
+                                          .SetDrawFlags(0xD)
+                                          .SetDrawFlags(0x800000)
+                                          .SetImageFlag(32);
+
+        LeftContainer = new CustomNode(CreateResNode(), LeftHalf).SetDrawFlags(0x800000)
+                                                                 .SetX(-40)
+                                                                 .SetSize(81, 160)
+                                                                 .SetNodeFlags(NodeFlags.Clip)
+                                                                 .SetDrawFlags(0xD);
 
         RightHalf = ImageNodeFromPart(0, 0).SetX(0).SetOrigin(1,80).SetDrawFlags(0xD).SetImageFlag(33);
-        RightContainer = new CustomNode(CreateResNode(), RightHalf).SetX(39).SetSize(81, 160).SetNodeFlags(NodeFlags.Clip).SetDrawFlags(0xD);
+        RightContainer = new CustomNode(CreateResNode(), RightHalf).SetX(39)
+                                                                   .SetSize(81, 160)
+                                                                   .SetNodeFlags(NodeFlags.Clip)
+                                                                   .SetDrawFlags(0xD);
        
         Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetDrawFlags(0xD);
-        NumTextNode = new();
-
         Halo = ImageNodeFromPart(1, 0).SetOrigin(64, 64).SetPos(-24,16).SetImageFlag(32).SetAlpha(0);
-
+        NumTextNode = new();
 
         return new CustomNode(CreateResNode(), Circle, Halo, NumTextNode).SetDrawFlags(0xD).SetOrigin(40,80);
     }
@@ -74,11 +87,10 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     #region Animations
 
     private void HaloPulse() =>
-        Tweens.Add(new(Halo,
-                       new(0) { Scale = 0.1f, Alpha = 0 },
-                       new(100) { Scale = 1.2f, Alpha = Config.Color.A * 0.75f },
-                       new(400) { Scale = 1.6f, Alpha = 0 }
-                   ));
+        Animator += new Tween(Halo,
+                                  new(0) { Scale = 0.1f, Alpha = 0 },
+                                  new(100) { Scale = 1.2f, Alpha = Config.Color.A * 0.75f },
+                                  new(400) { Scale = 1.6f, Alpha = 0 });
 
     #endregion
 
@@ -99,51 +111,45 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         if (prog > prevProg)
         {
             if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
-            if (prog > 0 && prevProg <= 0) OnIncreaseFromMin(prog, prevProg);
+            if (prog > 0 && prevProg <= 0) OnIncreaseFromMin();
         }
 
         if (prevProg > prog)
         {
             if (prevProg - prog >= DrainTolerance) OnDecrease(prog, prevProg);
-            if (prevProg > 0 && prog <= 0) OnDecreaseToMin(prog, prevProg);
+            if (prevProg > 0 && prog <= 0) OnDecreaseToMin();
         }
 
-        prog = Math.Clamp(prog, 0, 0.996f);
+        prog = Clamp(prog, 0, 0.996f);
 
         if (Config.Direction == Erode)
         {
-            LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f,true).SetAlpha(prog > 0.01f ? 255 : 0);
-            RightHalf.SetRotation((1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f ? 255 : 0);
+            LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f,true).SetAlpha(prog > 0.01f);
+            RightHalf.SetRotation((1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
         }
         else if (Config.Direction == CW)
         {
-            var lProg = Math.Clamp((prog - 0.5f) / 0.5f, 0, 1f);
-            var rProg = Math.Clamp(prog / 0.5f, 0, 1f);
-            LeftHalf.SetRotation(-(1 - lProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f ? 255 : 0);
-            RightHalf.SetRotation(-(1 - rProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f ? 255 : 0);
+            var lProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
+            var rProg = Clamp(prog / 0.5f, 0, 1f);
+            LeftHalf.SetRotation(-(1 - lProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
+            RightHalf.SetRotation(-(1 - rProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
         }
         else
         {
-            var rProg = Math.Clamp((prog - 0.5f) / 0.5f, 0, 1f);
-            var lProg = Math.Clamp(prog / 0.5f, 0, 1f);
-            LeftHalf.SetRotation((1 - lProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f ? 255 : 0);
-            RightHalf.SetRotation((1 - rProg) * 180 * 0.998f,true).SetAlpha(prog >= 0.5f ? 255 : 0);
+            var rProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
+            var lProg = Clamp(prog / 0.5f, 0, 1f);
+            LeftHalf.SetRotation((1 - lProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
+            RightHalf.SetRotation((1 - rProg) * 180 * 0.998f,true).SetAlpha(prog >= 0.5f);
         }
 
-        RunTweens();
+        Animator.RunTweens();
     }
-
-    public override DrainGainType DGType => DrainGainType.Rotation;
-    public override float CalcBarProperty(float prog) { return 0; }
 
     public override void OnIncrease(float prog, float prevProg) => HaloPulse();
 
-    public override void OnDecreaseToMin(float prog, float prevProg) => HaloPulse();
+    public override void OnDecreaseToMin() => HaloPulse();
 
-    public override void OnIncreaseFromMin(float prog, float prevProg)
-    {
-        Tweens.Add(new(Circle,new(0){Alpha=0},new(150){Alpha=Config.Color.A}));
-    }
+    public override void OnIncreaseFromMin() => Animator += new Tween(Circle,Hidden[0],new(150){Alpha=Config.Color.A});
 
     #endregion
 
@@ -153,15 +159,14 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     {
         public enum CircleStyles { CW,CCW,Erode }
 
-        public Vector2 Position = new(0);
+        public Vector2 Position;
         public float Scale = 1;
         public AddRGB Color = new(200);
         public CircleStyles Direction = CCW;
         protected override NumTextProps NumTextDefault => new() { Position = new(0, 0), FontSize = 50 };
 
-        public SimpleCircleConfig(WidgetConfig widgetConfig)
+        public SimpleCircleConfig(WidgetConfig widgetConfig) : base(widgetConfig.SimpleCircleCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.SimpleCircleCfg;
 
             if (config == null) return;
@@ -170,15 +175,9 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
             Scale = config.Scale;
             Color = config.Color;
             Direction = config.Direction;
-            NumTextProps = config.NumTextProps;
-            SplitCharges = config.SplitCharges;
-            Invert = config.Invert;
         }
 
-        public SimpleCircleConfig()
-        {
-            NumTextProps = NumTextDefault;
-        }
+        public SimpleCircleConfig() { }
     }
     public override GaugeBarWidgetConfig GetConfig => Config;
 

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -26,7 +26,8 @@ public class RDMModule : JobModule
         new("Black Mana",nameof(BlackManaTracker)),
         new("White Mana",nameof(WhiteManaTracker)),
         new("Mana Stacks",nameof(ManaStackTracker)),
-        new("Balance Crystal",nameof(BalanceCrystalTracker))
+        new("Balance Crystal",nameof(BalanceCrystalTracker)),
+        new("Weave Metronome",nameof(WeaveMetronome))
     };
 
     public RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -39,10 +40,8 @@ public class RDMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAll = TweakConfigs.RDMHideAll;
-
-        if (Bool1("Hide Balance Gauge", ref hideAll, ref update)) TweakConfigs.RDMHideAll = hideAll;
-        HideWarning(hideAll);
+        ToggleControls("Hide Balance Gauge",ref TweakConfigs.RDMHideAll, ref update);
+        HideWarning(TweakConfigs.RDMHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -62,5 +61,5 @@ public class RDMModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool RDMHideAll { get; set; }
+    public bool RDMHideAll;
 }

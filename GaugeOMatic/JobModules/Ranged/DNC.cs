@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,10 +41,8 @@ public class DNCModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideFeathers = TweakConfigs.DNCHideFeathers;
-
-        if (Bool1("Hide Fourfold Feathers", ref hideFeathers, ref update)) TweakConfigs.DNCHideFeathers = hideFeathers;
-        HideWarning(hideFeathers);
+        ToggleControls("Hide Fourfold Feathers",ref TweakConfigs.DNCHideFeathers, ref update);
+        HideWarning(TweakConfigs.DNCHideFeathers);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -64,5 +62,5 @@ public class DNCModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool DNCHideFeathers { get; set; }
+    public bool DNCHideFeathers;
 }

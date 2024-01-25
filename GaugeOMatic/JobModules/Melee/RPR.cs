@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,13 +41,10 @@ public class RPRModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideSoul = TweakConfigs.RPRHideSoul;
-        var hideDeath = TweakConfigs.RPRHideDeath;
-
-        if (Bool1("Hide Soul Gauge", ref hideSoul, ref update)) TweakConfigs.RPRHideSoul = hideSoul;
-        HideWarning(hideSoul);
-        if (Bool1("Hide Death Gauge", ref hideDeath, ref update)) TweakConfigs.RPRHideDeath = hideDeath;
-        HideWarning(hideDeath);
+        ToggleControls("Hide Soul Gauge",ref TweakConfigs.RPRHideSoul,ref update);
+        HideWarning(TweakConfigs.RPRHideSoul);
+        ToggleControls("Hide Death Gauge",ref TweakConfigs.RPRHideDeath,ref update);
+        HideWarning(TweakConfigs.RPRHideDeath);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -76,6 +73,6 @@ public class RPRModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool RPRHideSoul { get; set; }
-    public bool RPRHideDeath { get; set; }
+    public bool RPRHideSoul;
+    public bool RPRHideDeath;
 }

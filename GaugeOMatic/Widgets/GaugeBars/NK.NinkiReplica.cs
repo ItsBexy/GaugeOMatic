@@ -1,19 +1,20 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.NinkiReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -65,6 +66,14 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     public CustomNode BottomBorder;
     public CustomNode CalligraphyFlash2;
 
+    public CustomNode DrainV;
+    public CustomNode GainV;
+    public CustomNode MainV;
+
+    public CustomNode DrainH;
+    public CustomNode GainH;
+    public CustomNode MainH;
+
     public override CustomNode BuildRoot()
     {
         Scroll = BuildScroll();
@@ -78,8 +87,20 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     private CustomNode BuildScroll()
     {
-        GaugeBarV = BuildVGauge();
-        GaugeBarH = BuildHGauge();
+        var vTimeline = VTimeline;
+        MainV = NineGridFromPart(0, 4).SetAddRGB(Config.BarColorHigh2).SetWidth(0).DefineTimeline(vTimeline);
+        GainV = NineGridFromPart(0, 4).SetAddRGB(Config.GainColorV).SetWidth(0).DefineTimeline(vTimeline);
+        DrainV = NineGridFromPart(0, 4).SetAddRGB(Config.DrainColorV).SetWidth(0).DefineTimeline(vTimeline);
+
+        GaugeBarV = new CustomNode(CreateResNode(), ImageNodeFromPart(0, 5), DrainV, GainV, MainV).SetPos(210, 75).SetSize(57, 36).SetRotation(-1.5707964f);
+
+        var hTimeline = HTimeline;
+        MainH = NineGridFromPart(0, 1).SetAddRGB(Config.BarColorLow).SetWidth(0).DefineTimeline(hTimeline);
+        GainH = NineGridFromPart(0, 10).SetAddRGB(Config.GainColorH).SetWidth(0).DefineTimeline(hTimeline);
+        DrainH = NineGridFromPart(0, 10).SetAddRGB(Config.BarColorHigh).SetWidth(0).DefineTimeline(hTimeline);
+
+        GaugeBarH = new CustomNode(CreateResNode(), ImageNodeFromPart(0, 2).SetRGBA((ColorRGB)0xFFFFFFB2), DrainH, GainH, MainH).SetPos(32, 33).SetSize(174, 46).SetAddRGB(0);
+
         ScrollImage = ImageNodeFromPart(0, 0);
         VSigil = ImageNodeFromPart(0, 6).SetPos(199, 4).SetOrigin(32, 40).SetScale(2, 1.8f).SetAlpha(0);
         Shine = ImageNodeFromPart(0, 9).SetPos(193, 10).SetOrigin(20, 44).SetAddRGB(Config.FlashH2).SetAlpha(0);
@@ -87,77 +108,83 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         BottomBorder = ImageNodeFromPart(0, 8).SetPos(11, 77).SetOrigin(0, 16).SetAddRGB(Config.BorderGlow);
         CalligraphyFlash2 = ImageNodeFromPart(0, 3).SetPos(24, 29).SetOrigin(98, 28).SetScale(1.5f).SetAddRGB(Config.FlashH).SetAlpha(0);
 
-        Tweens.Add(BorderTween(TopBorder));
-        Tweens.Add(BorderTween(BottomBorder));
+        Animator +=BorderTween(TopBorder);
+        Animator +=BorderTween(BottomBorder);
 
         return new CustomNode(CreateResNode(), GaugeBarV, GaugeBarH, ScrollImage, VSigil, Shine, TopBorder, BottomBorder, CalligraphyFlash2).SetSize(256, 100);
     }
 
-    private CustomNode BuildVGauge() =>
-        new CustomNode(CreateResNode(), ImageNodeFromPart(0, 5), NineGridFromPart(0, 4).SetAddRGB(Config.DrainColorV).SetWidth(0), NineGridFromPart(0, 4).SetAddRGB(Config.GainColorV).SetWidth(0), NineGridFromPart(0, 4).SetAddRGB(Config.BarColorHigh2).SetWidth(0)).SetPos(210, 75).SetSize(57, 36).SetRotation(-1.5707964f);
-
-    private CustomNode BuildHGauge()
-    {
-        return new CustomNode(CreateResNode(), ImageNodeFromPart(0, 2).SetRGBA((ColorRGB)0xFFFFFFB2), NineGridFromPart(0, 10).SetAddRGB(Config.BarColorHigh).SetWidth(0), NineGridFromPart(0, 10).SetAddRGB(Config.GainColorH).SetWidth(0), NineGridFromPart(0, 1).SetAddRGB(Config.BarColorLow).SetWidth(0)).SetPos(32, 33).SetSize(174, 46).SetAddRGB(0);
-    }
 
     #endregion
 
     #region Animations
 
+    private KeyFrame[] HTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Max(0.001f, Config.Midpoint)) { Width = 175 }, new(1) { Width = 175 } };
+    private KeyFrame[] VTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Min(0.999f, Config.Midpoint)) { Width = 0 }, new(1) { Width = 57 } };
+
     public static Tween BorderTween(CustomNode target) => new(target, new(0) { ScaleY = 1.2f, Alpha = 127 }, new(166) { ScaleY = 1f, Alpha = 51 }, new(666) { ScaleY = 1.2f, Alpha = 127 }) { Repeat = true };
 
-    private void GaugeFullAnim()
-    {
-        Tweens.Add(new(GaugeBarV, new(0) { AddRGB = 29, MultRGB = 100 }, new(50) { AddRGB = 0, MultRGB = 85 }, new(633) { AddRGB = 29, MultRGB = 100 }) { Repeat = true });
+    private void GaugeFullAnim() =>
+        Animator += new Tween[]
+        {
+            new(GaugeBarV,
+                new(0) { AddRGB = 29, MultRGB = 100 },
+                new(50) { AddRGB = 0, MultRGB = 85 },
+                new(633) { AddRGB = 29, MultRGB = 100 }) { Repeat = true },
+            new(VSigil,
+                new(0) { Scale = 1, Rotation = 0, Alpha = 134 },
+                new(450) { ScaleX = 2, ScaleY = 1.8f, Rotation = 0.147453292f, Alpha = 0 })
+        };
 
-        Tweens.Add(VSigil.CreateTween(new(0) { Scale = 1, Rotation = 0, Alpha = 134 },
-                                      new(450) { ScaleX = 2, ScaleY = 1.8f, Rotation = 0.147453292f, Alpha = 0 }));
-    }
+    private void GainAnim() =>
+        Animator += new Tween[]
+        {
+            new(CalligraphyFlash1,
+                new(0) { Scale = 1, Alpha = 255 },
+                new(150) { Scale = 1.03f, Alpha = 153 },
+                new(500) { Scale = 1, Alpha = 0 }),
+            new(CalligraphyFlash1,
+                new(0) { AddRGB = new(81, 24, 129) },
+                new(75) { AddRGB = new(96, 44, 105) },
+                new(200) { AddRGB = new(49, -20, 176) },
+                new(500) { AddRGB = 0 })
+        };
 
-    private void GainAnim()
-    {
-        Tweens.Add(CalligraphyFlash1.CreateTween(new(0) { Scale = 1, Alpha = 255 },
-                                                 new(150) { Scale = 1.03f, Alpha = 153 },
-                                                 new(500) { Scale = 1, Alpha = 0 }));
+    private void MidpointAnim() =>
+        Animator += new Tween[]
+        {
+            new(CalligraphyFlash2,
+                new(0) { Scale = 1, Alpha = 110 },
+                new(100) { Scale = 1, Alpha = 255 },
+                new(300) { Scale = 1.5f, Alpha = 0 }),
+            new(Shine,
+                new(0) { X = 11, Y = 14, Alpha = 76 },
+                new(200) { X = 190, Y = 10, Alpha = 76 },
+                new(300) { X = 193, Y = 10, Alpha = 0 }),
+            new(Shine,
+                new(0) { ScaleX = 1.15f, ScaleY = 0.9f, Rotation = 0 },
+                new(100) { ScaleX = 3f, ScaleY = 1f, Rotation = -0.065f },
+                new(300) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 })
+        };
 
-        Tweens.Add(CalligraphyFlash1.CreateTween(new(0) { AddRGB = new(81, 24, 129) },
-                                                 new(75) { AddRGB = new(96, 44, 105) },
-                                                 new(200) { AddRGB = new(49, -20, 176) },
-                                                 new(500) { AddRGB = 0 }));
-    }
-
-    private void MidpointAnim()
-    {
-        Tweens.Add(CalligraphyFlash2.CreateTween(new(0) { Scale = 1, Alpha = 110 },
-                                                 new(100) { Scale = 1, Alpha = 255 },
-                                                 new(300) { Scale = 1.5f, Alpha = 0 }));
-
-        Tweens.Add(Shine.CreateTween(new(0) { X = 11, Y = 14, Alpha = 76 },
-                                     new(200) { X = 190, Y = 10, Alpha = 76 },
-                                     new(300) { X = 193, Y = 10, Alpha = 0 }));
-
-        Tweens.Add(Shine.CreateTween(new(0) { ScaleX = 1.15f, ScaleY = 0.9f, Rotation = 0 },
-                                     new(100) { ScaleX = 3f, ScaleY = 1f, Rotation = -0.065f },
-                                     new(300) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 }));
-    }
-
-    private void SpendAnim()
-    {
-        Tweens.Add(Cloud1.CreateTween(new(0) { ScaleX = 2.65f, ScaleY = 2.15f, Alpha = 204 },
-                                      new(70) { ScaleX = 2.95f, ScaleY = 2.4f, Alpha = 204 },
-                                      new(650) { ScaleX = 5.5f, ScaleY = 4.5f, Alpha = 0 }));
-
-        Tweens.Add(Cloud2.CreateTween(new(0) { ScaleX = 3.1f, ScaleY = 2.1f, Alpha = 206 },
-                                      new(100) { ScaleX = 4f, ScaleY = 3f, Alpha = 222 },
-                                      new(650) { ScaleX = 4.5f, ScaleY = 3.5f, Alpha = 0 }));
-
-        Tweens.Add(Scroll.CreateTween(new(0) { X = 0, Y = 0 },
-                                      new(50) { X = 0, Y = 1.95f },
-                                      new(150) { X = -0.85f, Y = -0.95f },
-                                      new(200) { X = 0.95f, Y = 0 },
-                                      new(250) { X = 0, Y = 0 }));
-    }
+    private void SpendAnim() =>
+        Animator += new Tween[]
+        {
+            new(Cloud1, 
+                new(0) { ScaleX = 2.65f, ScaleY = 2.15f, Alpha = 204 }, 
+                new(70) { ScaleX = 2.95f, ScaleY = 2.4f, Alpha = 204 }, 
+                new(650) { ScaleX = 5.5f, ScaleY = 4.5f, Alpha = 0 }),
+            new(Cloud2, 
+                new(0) { ScaleX = 3.1f, ScaleY = 2.1f, Alpha = 206 }, 
+                new(100) { ScaleX = 4f, ScaleY = 3f, Alpha = 222 }, 
+                new(650) { ScaleX = 4.5f, ScaleY = 3.5f, Alpha = 0 }),
+            new(Scroll, 
+                new(0) { X = 0, Y = 0 }, 
+                new(50) { X = 0, Y = 1.95f },
+                new(150) { X = -0.85f, Y = -0.95f }, 
+                new(200) { X = 0.95f, Y = 0 }, 
+                new(250) { X = 0, Y = 0 })
+        };
 
     #endregion
 
@@ -177,53 +204,43 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
             previous = max - previous;
         }
 
-        const float midpoint = 0.5f;
         var prog = current / max;
         var prevProg = previous / max;
-
-        var sizeH = (ushort)(Math.Clamp(prog, 0, midpoint) / midpoint * 175F);
-        var prevSizeH = (ushort)(Math.Clamp(prevProg, 0, midpoint) / midpoint * 175F);
-
-        var sizeV = (ushort)(Math.Clamp((prog - midpoint) / (1 - midpoint), 0, 1) * 57f);
-        var prevSizeV = (ushort)(Math.Clamp((prevProg - midpoint) / (1 - midpoint), 0, 1) * 57f);
 
         var spend = prevProg - prog >= 0.1f;
 
         if (FirstRun)
         {
-            GaugeBarH[3].SetWidth(sizeH);
-            GaugeBarV[3].SetWidth(sizeV);
+            MainH.SetProgress(prog);
+            MainV.SetProgress(prog);
             FirstRun = false;
         }
         else
         {
-            AnimateDrainGain(Width, ref Tweens, GaugeBarH[3], GaugeBarH[2], GaugeBarH[1], sizeH, prevSizeH, 0, spend ? 250 : 300);
-            AnimateDrainGain(Width, ref Tweens, GaugeBarV[3], GaugeBarV[2], GaugeBarV[1], sizeV, prevSizeV, 0, 300);
+            AnimateDrainGain(MainH, GainH, DrainH, prog, prevProg);
+            AnimateDrainGain(MainV, GainV, DrainV, prog, prevProg);
         }
 
-        var pastMid = prog >= midpoint;
+        var pastMid = prog >= Config.Midpoint;
         TopBorder.SetVis(pastMid);
         BottomBorder.SetVis(pastMid);
         GaugeBarH.SetAddRGB(pastMid ? Config.BarColorHigh - Config.BarColorLow : new(0, 0, 0));
 
-        if (pastMid && prevProg < midpoint) MidpointAnim();
-        if (spend || (prog < midpoint && prevProg >= midpoint)) OnSpend();
+        if (pastMid && prevProg < Config.Midpoint) MidpointAnim();
+        if (spend || (prog < Config.Midpoint && prevProg >= Config.Midpoint)) OnSpend();
         if (prog - prevProg >= 0.049f) OnGain();
         if (prog >= 1f && prevProg < 1f) OnReachMax();
         else if (prog < 1f) OnDropFromMax();
 
-        RunTweens();
+        Animator.RunTweens();
     }
-
-    public override DrainGainType DGType => Width;
-    public override float CalcBarProperty(float prog) => 0;
 
     public void OnGain() => GainAnim();
     public void OnSpend() => SpendAnim();
     public void OnReachMax() => GaugeFullAnim();
     public void OnDropFromMax()
     {
-        ClearNodeTweens(ref Tweens, GaugeBarV);
+        Animator -= GaugeBarV;
         GaugeBarV.SetAddRGB(0).SetMultiply(new ColorRGB(100, 100, 100));
     }
 
@@ -233,8 +250,9 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     public sealed class NinkiReplicaConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
+        public float Midpoint = 0.5f;
         public AddRGB BarColorLow = new(0, -70, 100);
         public AddRGB BarColorHigh = new(200, -90, -150);
         public AddRGB BarColorHigh2 = new(150, 20, -100);
@@ -257,18 +275,15 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
                                                               precision: 0, 
                                                               showZero:  true);
 
-        public NinkiReplicaConfig(WidgetConfig widgetConfig)
+        public NinkiReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.NinkiReplicaCfg)
         {
-            NumTextProps = NumTextDefault;
-            SplitCharges = true;
             var config = widgetConfig.NinkiReplicaCfg;
 
             if (config == null) return;
-
-            NumTextProps = config.NumTextProps;
-            Invert = config.Invert;
+            
             Position = config.Position;
             Scale = config.Scale;
+            Midpoint = config.Midpoint;
             BarColorLow = config.BarColorLow;
             BarColorHigh = config.BarColorHigh;
             BarColorHigh2 = config.BarColorHigh2;
@@ -278,15 +293,9 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
             FlashH = config.FlashH;
             FlashH2 = config.FlashH2;
             BorderGlow = config.BorderGlow;
-            AnimationLength = config.AnimationLength;
-            SplitCharges = config.SplitCharges;
         }
 
-        public NinkiReplicaConfig()
-        {
-            NumTextProps = NumTextDefault;
-            SplitCharges = true;
-        }
+        public NinkiReplicaConfig() { }
     }
 
     public NinkiReplicaConfig Config;
@@ -304,20 +313,23 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     {
         WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
 
-        GaugeBarH[1].SetAddRGB(Config.BarColorHigh);
-        GaugeBarH[2].SetAddRGB(Config.GainColorH);
-        GaugeBarH[3].SetAddRGB(Config.BarColorLow);
+        var hTimeline = HTimeline;
+        var vTimeline = VTimeline;
 
-        GaugeBarV[1].SetAddRGB(Config.DrainColorV);
-        GaugeBarV[2].SetAddRGB(Config.GainColorV);
-        GaugeBarV[3].SetAddRGB(Config.BarColorHigh2);
+        MainH.SetAddRGB(Config.BarColorLow).DefineTimeline(hTimeline);
+        GainH.SetAddRGB(Config.GainColorH).DefineTimeline(hTimeline);
+        DrainH.SetAddRGB(Config.BarColorLow).DefineTimeline(hTimeline);
+
+        MainV.SetAddRGB(Config.BarColorHigh2).DefineTimeline(vTimeline);
+        DrainV.SetAddRGB(Config.DrainColorV).DefineTimeline(vTimeline);
+        GainV.SetAddRGB(Config.GainColorV).DefineTimeline(vTimeline);
 
         CalligraphyFlash2.SetAddRGB(Config.FlashH);
         Shine.SetAddRGB(Config.FlashH2);
         TopBorder.SetAddRGB(Config.BorderGlow);
         BottomBorder.SetAddRGB(Config.BorderGlow);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(173,83));
+        NumTextNode.ApplyProps(Config.NumTextProps,new(229,83));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -343,6 +355,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         Heading("Behavior");
         
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
+        PercentControls("Midpoint", ref Config.Midpoint, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 

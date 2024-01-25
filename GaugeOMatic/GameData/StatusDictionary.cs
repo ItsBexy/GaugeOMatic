@@ -15,7 +15,7 @@ public abstract partial class StatusData
         { 2,    new(2,    Job.None, "Stun",                    Target, 1, 1,  Ranged                          ) },
         { 13,   new(13,   Job.None, "Bind",                    Target, 1, 7,  Ranged                          ) },
         { 14,   new(14,   Job.None, "Heavy",                   Target, 1, 10, Ranged                          ) },
-        { 49,   new(49,   Job.None, "Medicated",               Self,   1, 30                                       ) },
+        { 49,   new(49,   Job.None, "Medicated",               Self,   1, 30, All                             ) },
         { 50,   new(50,   Job.None, "Sprint",                  Self,   1, 10, All                             ) },
         { 84,   new(84,   Job.None, "Bloodbath",               Self,   1, 20, Melee                           ) },
         { 1191, new(1191, Job.None, "Rampart",                 Self,   1, 20, Tank                            ) },
@@ -94,7 +94,7 @@ public abstract partial class StatusData
         { 2593, new(2593, RPR, "Enshrouded",               Self,   1, 30 ) },
         { 2594, new(2594, RPR, "Soulsow",                  Self,   1, 0  ) },
         { 2595, new(2595, RPR, "Threshold",                Self,   1, 10 ) },
-        { 2597, new(2597, RPR, "Crest of Time Borrowed",   Self,   1, 5  ,Role.None,new(2596)) },
+        { 2597, new(2597, RPR, "Crest of Time Borrowed",   Self,   1, 5, Role.None,new(2596)) },
         { 2598, new(2598, RPR, "Crest of Time Returned",   Self,   1, 15  ) },
         { 2599, new(2599, RPR, "Arcane Circle",            Self,   1, 20 ) },
         { 2600, new(2600, RPR, "Circle of Sacrifice",      Self,   1, 5  ) },
@@ -124,6 +124,7 @@ public abstract partial class StatusData
         { 3002, new(3002, BRD, "Shadowbite Ready",         Self,   1, 30 ) },
 
         { 851,  new(851,  MCH, "Reassembled",              Self,   1, 5  ) },
+        { 860,  new(860,  MCH, "Dismantled",              Target,   1, 5 ) },
         { 1205, new(1205, MCH, "Flamethrower",             Self,   1, 10 ) },
         { 1866, new(1866, MCH, "Bioblaster",               Target, 1, 15 ) },
         { 1946, new(1946, MCH, "Wildfire",                 Self,   1, 10, seeAlso: new() {861} ) },
@@ -257,10 +258,8 @@ public abstract partial class StatusData
         { 1218, new(1218, WHM, "Divine Benison",           Self,   1, 15 ) },
         { 1219, new(1219, WHM, "Confession",               Self,   1, 10 ) },
         { 1871, new(1871, WHM, "Dia",                      Target, 1, 30, seeAlso: new() {143,144,798}) },
-        { 1872, new(1872, WHM, "Temperance",               Self,   1, 20 ) },
-        { 1873, new(1873, WHM, "Temperance",               Self,   1, 5  ) },
-        { 1911, new(1911, WHM, "Asylum",                   Self,   1, 24 ) },
-        { 1912, new(1912, WHM, "Asylum",                   Self,   1, 5  ) },
+        { 1872, new(1872, WHM, "Temperance",               Self,   1, 20, seeAlso: new() {1873} ) },
+        { 1911, new(1911, WHM, "Asylum",                   Self,   1, 24, seeAlso: new() {1912} ) },
         { 2708, new(2708, WHM, "Aquaveil",                 Self,   1, 8  ) },
         { 2709, new(2709, WHM, "Liturgy of the Bell",      Self,   5, 20 ) },
 
@@ -362,4 +361,5 @@ public abstract partial class StatusData
             }
         }
     }*/
+
 }

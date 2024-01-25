@@ -1,3 +1,5 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
@@ -5,13 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BatteryOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -54,22 +58,28 @@ public sealed unsafe class BatteryOverlay : StateWidget
     {
         Ring = ImageNodeFromPart(0, 6).SetPos(3, -2).SetOrigin(32, 32).SetAlpha(0);
         Glow = ImageNodeFromPart(0, 8).SetPos(11, 6).SetScale(1.8f).SetOrigin(24, 24).SetImageFlag(32).SetAlpha(0);
-        Elec1 = ImageNodeFromPart(0, 20).SetPos(-18, -26).SetScale(0.4f).SetRotation(-16, true).SetOrigin(31, 62).SetAddRGB(-100, -100, 50).SetImageFlag(32).SetAlpha(0);
-        Elec2 = ImageNodeFromPart(0, 19).SetPos(26, -26).SetScale(0.4f).SetRotation(20, true).SetOrigin(31, 62).SetAddRGB(-100, -71, 78).SetImageFlag(32).SetAlpha(0);
-        Elec3 = ImageNodeFromPart(0, 20).SetPos(26, -26).SetScale(0.4f).SetRotation(20, true).SetOrigin(31, 62).SetAddRGB(-100, -75, 75).SetImageFlag(32).SetAlpha(0);
+        Elec1 = ImageNodeFromPart(0, 20).SetPos(-18, -26).SetScale(0.4f).SetRotation(-16, true).SetOrigin(31, 62)
+                                        .SetAddRGB(-100, -100, 50).SetImageFlag(32).SetAlpha(0);
+        Elec2 = ImageNodeFromPart(0, 19).SetPos(26, -26).SetScale(0.4f).SetRotation(20, true).SetOrigin(31, 62)
+                                        .SetAddRGB(-100, -71, 78).SetImageFlag(32).SetAlpha(0);
+        Elec3 = ImageNodeFromPart(0, 20).SetPos(26, -26).SetScale(0.4f).SetRotation(20, true).SetOrigin(31, 62)
+                                        .SetAddRGB(-100, -75, 75).SetImageFlag(32).SetAlpha(0);
 
         ElecWrapper1 = new(CreateResNode(), Elec1, Elec2, Elec3);
-        ClockOverlay = new CustomNode(CreateResNode(),Ring,Glow, ElecWrapper1).SetPos(-1,6).SetSize(96,70);
+        ClockOverlay = new CustomNode(CreateResNode(), Ring, Glow, ElecWrapper1).SetPos(-1, 6).SetSize(96, 70);
 
-        Elec4 = ImageNodeFromPart(0, 20).SetPos(140, -10).SetScale(0.6f,1).SetRotation(90, true).SetOrigin(31, 62).SetAddRGB(-100, -90, 60).SetImageFlag(32).SetAlpha(0);
-        Elec5 = ImageNodeFromPart(0, 20).SetPos(80, -40).SetScale(-0.6f, 1).SetRotation(90, true).SetOrigin(31, 62).SetAddRGB(-100, -80, 70).SetImageFlag(32).SetAlpha(0);
-        Elec6 = ImageNodeFromPart(0, 19).SetPos(80, -40).SetScale(0.6f, 1).SetRotation(90, true).SetOrigin(31, 62).SetAddRGB(-100, -64, 85).SetImageFlag(32).SetAlpha(0);
+        Elec4 = ImageNodeFromPart(0, 20).SetPos(140, -10).SetScale(0.6f, 1).SetRotation(90, true).SetOrigin(31, 62)
+                                        .SetAddRGB(-100, -90, 60).SetImageFlag(32).SetAlpha(0);
+        Elec5 = ImageNodeFromPart(0, 20).SetPos(80, -40).SetScale(-0.6f, 1).SetRotation(90, true).SetOrigin(31, 62)
+                                        .SetAddRGB(-100, -80, 70).SetImageFlag(32).SetAlpha(0);
+        Elec6 = ImageNodeFromPart(0, 19).SetPos(80, -40).SetScale(0.6f, 1).SetRotation(90, true).SetOrigin(31, 62)
+                                        .SetAddRGB(-100, -64, 85).SetImageFlag(32).SetAlpha(0);
 
         ElecWrapper2 = new(CreateResNode(), Elec4, Elec5, Elec6);
 
-        Contents = new CustomNode(CreateResNode(),ClockOverlay, ElecWrapper2).SetOrigin(33.5f, 36.5f);
+        Contents = new CustomNode(CreateResNode(), ClockOverlay, ElecWrapper2).SetOrigin(33.5f, 36.5f);
 
-        return new CustomNode(CreateResNode(), Contents);
+        return new(CreateResNode(), Contents);
     }
 
     #endregion
@@ -82,28 +92,27 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public override string SharedEventGroup => "HeatGauge";
 
-    public override void OnFirstRun(int current)
-    {
-
-
-    }
+    public override void OnFirstRun(int current) { }
 
     public override void Activate(int current)
     {
         var color = Config.PulseColors.ElementAtOrDefault(current);
-        InvokeSharedEvent("HeatGauge", "StartBatteryGlow",new(){AddRGB = color});
-        ClearLabelTweens(ref Tweens, "Pulse");
-        Tweens.Add(new(Ring,
-                       new(0) { Alpha = 0 },
-                       new(225) { Alpha = 255 })
-                       { Ease = Eases.SinInOut });
+        InvokeSharedEvent("HeatGauge", "StartBatteryGlow", new() { AddRGB = color });
+        Animator -= "Pulse";
 
-        Tweens.Add(new(Glow,
-                       new(0) { Alpha = 0 },
-                       new(126) { Alpha = 125 },
-                       new(300) { Alpha = 0 },
-                       new(1430) { Alpha = 0 })
-                       { Ease = Eases.SinInOut,Repeat=true,Label="Pulse" });
+        Animator += new Tween[]
+        {
+            new(Ring,
+                Hidden[0],
+                Visible[225])
+                { Ease = SinInOut },
+            new(Glow,
+                Hidden[0],
+                new(126) { Alpha = 125 },
+                Hidden[300],
+                Hidden[1430])
+                { Ease = SinInOut, Repeat = true, Label = "Pulse" }
+        };
 
         ElecTweens(Elec1, Elec2, Elec3);
         ElecTweens(Elec4, Elec5, Elec6);
@@ -111,67 +120,50 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     private void ElecTweens(CustomNode node1, CustomNode node2, CustomNode node3)
     {
-        Tweens.Add(new(node1,
-                       new(0) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(90) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(359) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(360) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(560) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(769) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(770) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(930) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(1430) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "Elec" });
+        var on = new KeyFrame { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) };
+        var off = new KeyFrame { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) };
 
-        Tweens.Add(new(node2,
-                       new(0) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(100) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(529) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(530) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(730) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(1029) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(1030) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(1258) { Alpha = 4, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(1430) { Alpha = 4, AddRGB = new(-100, -50, 100), MultRGB = new(50) })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "Elec" });
-
-        Tweens.Add(new(node3,
-                       new(0) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(130) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(329) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(330) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(500) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(829) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(830) { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) },
-                       new(1000) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) },
-                       new(1430) { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "Elec" });
+        Animator += new Tween[]
+        {
+            new(node1,
+                on[0], off[90], off[359],
+                on[360], off[560], off[769],
+                on[770], off[930], off[1430])
+                { Ease = SinInOut, Repeat = true, Label = "Elec" },
+            new(node2,
+                on[0], off[100], off[529],
+                on[530], off[730], off[1029],
+                on[1030], off[1258], off[1430])
+                { Ease = SinInOut, Repeat = true, Label = "Elec" },
+            new(node3,
+                on[0], off[130], off[329],
+                on[330], off[500], off[829],
+                on[830], off[1000], off[1430])
+                { Ease = SinInOut, Repeat = true, Label = "Elec" }
+        };
     }
 
     public override void Deactivate(int previous)
     {
         InvokeSharedEvent("HeatGauge", "StopBatteryGlow");
-        ClearLabelTweens(ref Tweens,"Pulse"); 
-        ClearLabelTweens(ref Tweens, "Elec");
-        Tweens.Add(new(Ring,
-                       new(0) { Alpha = 255 },
-                       new(320) { Alpha = 0 })
-                       { Ease = Eases.SinInOut });
+        Animator -= "Pulse";
+        Animator -= "Elec";
 
-        FadeOut(Glow);
-        FadeOut(Elec1);
-        FadeOut(Elec2);
-        FadeOut(Elec3);
-        FadeOut(Elec4);
-        FadeOut(Elec5);
-        FadeOut(Elec6);
+        Animator += new[]
+        {
+            new(Ring, Visible[0], Hidden[320]) { Ease = SinInOut },
+            FadeOut(Glow),
+            FadeOut(Elec1),
+            FadeOut(Elec2),
+            FadeOut(Elec3),
+            FadeOut(Elec4),
+            FadeOut(Elec5),
+            FadeOut(Elec6)
+        };
     }
 
-    private void FadeOut(CustomNode node) =>
-        Tweens.Add(new(node,
-                       new(0, node),
-                       new(150) { Alpha = 0 })
-                       { Ease = Eases.SinInOut, Label = "Pulse" });
+    private static Tween FadeOut(CustomNode node) => new(node, new(0, node), Hidden[150])
+        { Ease = SinInOut, Label = "Pulse" };
 
     public override void StateChange(int current, int previous)
     {
@@ -181,19 +173,21 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
         InvokeSharedEvent("HeatGauge", "StartBatteryGlow", new() { AddRGB = pulseColor });
 
-        Tweens.Add(new(Ring,
-                       new(0, Ring),
-                       new(250) { AddRGB = ringColor })
-                       { Ease = Eases.SinInOut });
-
-        Tweens.Add(new(ElecWrapper1,
-                       new(0, ElecWrapper1),
-                       new(250) { AddRGB = elecColor })
-                       { Ease = Eases.SinInOut });
-        Tweens.Add(new(ElecWrapper2,
-                       new(0, ElecWrapper2),
-                       new(250) { AddRGB = elecColor })
-                       { Ease = Eases.SinInOut });
+        Animator += new Tween[]
+        {
+            new(Ring,
+                new(0, Ring),
+                new(250) { AddRGB = ringColor })
+                { Ease = SinInOut },
+            new(ElecWrapper1,
+                new(0, ElecWrapper1),
+                new(250) { AddRGB = elecColor })
+                { Ease = SinInOut },
+            new(ElecWrapper2,
+                new(0, ElecWrapper2),
+                new(250) { AddRGB = elecColor })
+                { Ease = SinInOut }
+        };
     }
 
     #endregion
@@ -202,7 +196,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public class BatteryOverlayConfig
     {
-        public Vector2 Position = new(0,0);
+        public Vector2 Position;
         public float Scale = 1;
         public List<AddRGB> PulseColors = new();
         public List<AddRGB> RingColors = new();
@@ -227,9 +221,9 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
         public void FillColorLists(int max)
         {
-            while (PulseColors.Count <= max) PulseColors.Add(new(0,70,100));
+            while (PulseColors.Count <= max) PulseColors.Add(new(0, 70, 100));
             while (RingColors.Count <= max) RingColors.Add(new(-112, 74, 119));
-            while (ElecColors.Count <= max) ElecColors.Add(new(-100,-75,75));
+            while (ElecColors.Count <= max) ElecColors.Add(new(-100, -75, 75));
         }
     }
 
@@ -251,8 +245,8 @@ public sealed unsafe class BatteryOverlay : StateWidget
     {
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale);
-        Contents.SetRotation(Config.Angle,true);
-        
+        Contents.SetRotation(Config.Angle, true);
+
         var state = Tracker.CurrentData.State;
         var prev = Tracker.PreviousData.State;
 
@@ -297,5 +291,6 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
 public partial class WidgetConfig
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public BatteryOverlayConfig? BatteryOverlayCfg { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public BatteryOverlayConfig? BatteryOverlayCfg { get; set; }
 }

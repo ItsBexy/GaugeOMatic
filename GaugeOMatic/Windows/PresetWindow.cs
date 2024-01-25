@@ -1,5 +1,6 @@
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
+using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Trackers.Presets;
@@ -8,7 +9,6 @@ using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GaugeOMatic.Config;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Widgets.WidgetInfo;
@@ -114,7 +114,7 @@ public class PresetWindow : Window, IDisposable
 
             var builtIn = selectedPreset.BuiltIn;
 
-            if (builtIn) ImGuiHelpers.IconButtonDisabled(Edit);
+            if (builtIn) ImGuiHelpy.IconButtonDisabled(Edit);
             else
             {
                 SetUpRenamePopup(ref selectedPreset);
@@ -123,7 +123,7 @@ public class PresetWindow : Window, IDisposable
 
             ImGui.SameLine();
 
-            if (builtIn) ImGuiHelpers.IconButtonDisabled(TrashAlt);
+            if (builtIn) ImGuiHelpy.IconButtonDisabled(TrashAlt);
             else if (ImGuiComponents.IconButton(TrashAlt))
             {
                 Configuration.SavedPresets.Remove(selectedPreset);
@@ -170,7 +170,7 @@ public class PresetWindow : Window, IDisposable
                 AddTrackerButton(trackerConfig);
                 ImGui.SameLine();
 
-                ImGuiHelpers.WriteIcon(attr.Icon,attr.TypeDesc,attr.Color);
+                ImGuiHelpy.WriteIcon(attr.Icon,attr.TypeDesc,attr.Color);
 
                 ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayName ?? "");
                 ImGui.TableNextColumn();
@@ -301,7 +301,7 @@ public class PresetWindow : Window, IDisposable
         catch (Exception ex)
         {
             UIData.ImportHintText = "Whoops, invalid input!";
-            GaugeOMatic.Service.Log.Error(ex.Message);
+            Log.Error(ex.Message);
         }
 
         UIData.ImportString = "";

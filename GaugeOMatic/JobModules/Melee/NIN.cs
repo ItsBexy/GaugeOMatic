@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,14 +38,11 @@ public class NINModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideNinki = TweakConfigs.NINHideNinki;
-        var hideHuton = TweakConfigs.NINHideHuton;
-
-        if (Bool1("Hide Ninki Gauge", ref hideNinki, ref update)) TweakConfigs.NINHideNinki = hideNinki;
-        HideWarning(hideNinki);
-
-        if (Bool1("Hide Huton Gauge", ref hideHuton, ref update)) TweakConfigs.NINHideHuton = hideHuton;
-        HideWarning(hideHuton);
+        ToggleControls("Hide Ninki Gauge",ref TweakConfigs.NINHideNinki, ref update);
+        HideWarning(TweakConfigs.NINHideNinki);
+        
+        ToggleControls("Hide Huton Gauge",ref TweakConfigs.NINHideHuton, ref update);
+        HideWarning(TweakConfigs.NINHideHuton);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -74,6 +71,6 @@ public class NINModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool NINHideNinki { get; set; }
-    public bool NINHideHuton { get; set; }
+    public bool NINHideNinki;
+    public bool NINHideHuton;
 }

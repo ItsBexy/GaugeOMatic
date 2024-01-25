@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -36,10 +36,8 @@ public class WARModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var warHide0 = TweakConfigs.WARHide0;
-
-        if (Bool1("Hide Beast Gauge", ref warHide0, ref update)) TweakConfigs.WARHide0 = warHide0;
-        HideWarning(warHide0);
+        ToggleControls("Hide Beast Gauge",ref TweakConfigs.WARHide0, ref update);
+        HideWarning(TweakConfigs.WARHide0);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -59,5 +57,5 @@ public class WARModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool WARHide0 { get; set; }
+    public bool WARHide0;
 }

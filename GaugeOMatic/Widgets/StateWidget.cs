@@ -26,7 +26,7 @@ public abstract class StateWidget : Widget
             }
         }
         PostUpdate();
-        RunTweens();
+        Animator.RunTweens();
     }
 
     protected StateWidget(Tracker tracker) : base(tracker) { }

@@ -1,10 +1,9 @@
+using Lumina.Excel;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Lumina.Excel;
-using static GaugeOMatic.GaugeOMatic.Service;
-using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.JobData;
+using static GaugeOMatic.GameData.JobData.Role;
 using Action = Lumina.Excel.GeneratedSheets.Action;
 // ReSharper disable UnusedMember.Global
 
@@ -51,11 +50,9 @@ public partial class ActionData
             var role = ParseRole(a);
             var job = role == None ? ParseJob(a) : Job.None;
 
-            Actions.TryAdd(a.RowId, new(a.RowId, job, a.Name, a.Recast100ms * 100, GetMaxChargesAtLevel?.Invoke(a.RowId, 90u) ?? 1, role));
+            Actions.TryAdd(a.RowId, new(a.RowId, job, a.Name, a.Recast100ms * 100, GetMaxChargesAtLevel?.Invoke(a.RowId, 90u) ?? 1));
         }
     }
-
-    public static int GetMaxCharges(uint id) => GetMaxChargesAtLevel?.Invoke(id, 0) ?? 1;
 
     // useful hook because the MaxCharges in the table don't account for increases via traits
     public delegate ushort GetMaxChargesAtLevelDelegate(uint id, uint level);

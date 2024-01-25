@@ -1,22 +1,25 @@
+using CustomNodes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EspritBar;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -95,7 +98,10 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     private CustomNode BuildFillNodes()
     {
-        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetOrigin(84, 82).SetRotation(-151,true).SetDrawFlags(0xC);
+        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetOrigin(84, 82)
+                                                        .SetRotation(-151,true)
+                                                        .SetDrawFlags(0xC)
+                                                        .DefineTimeline(BarTimeline);
 
         static CustomNode FillContainer(CustomNode node) =>
             new CustomNode(CreateResNode(), node)
@@ -119,65 +125,66 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     #region Animations
 
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -2.6542183675969f + 0.01f}, new(1) { Rotation = -0.05f } };
+
     protected override void StartMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens,"BarPulse");
-        Tweens.Add(new(MainContainer,
-                       new(0) {AddRGB = Config.PulseColor2 - Config.MainColor },
-                       new(800) {AddRGB = Config.PulseColor - Config.MainColor},
-                       new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor }) 
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
+        Animator -= "BarPulse";
+        Animator += new Tween(MainContainer,
+                                  new(0) {AddRGB = Config.PulseColor2 - Config.MainColor },
+                                  new(800) {AddRGB = Config.PulseColor - Config.MainColor},
+                                  new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor }) 
+                                  { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
 
     protected override void StopMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens, "BarPulse");
+        Animator -= "BarPulse";
         MainContainer.SetAddRGB(0);
     }
 
     private void ShowBar()
     {
-        ClearLabelTweens(ref Tweens, "Hide");
-        Tweens.Add(new(Fan,
-                       new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
-                       new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
-                       { Ease = Eases.SinInOut, Label = "Show" });
-
-        Tweens.Add(new(NumTextNode, 
-                       new(0) { Alpha = 0 }, 
-                       new(180) { Alpha = 255 }) 
-                       { Ease = Eases.SinInOut, Label = "Show" });
+        Animator -= "Hide";
+        Animator += new Tween[]
+        {
+            new(Fan,
+                new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
+                new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
+                { Ease = SinInOut, Label = "Show" },
+            new(NumTextNode,
+                Hidden[0],
+                Visible[180])
+                { Ease = SinInOut, Label = "Show" }
+        };
     }
 
     private void HideBar()
     {
-        ClearLabelTweens(ref Tweens, "Show");
-        Tweens.Add(new(Fan,
-                       new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
-                       new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
-                       { Ease = Eases.SinInOut,Label="Hide" });
-
-        Tweens.Add(new(NumTextNode, 
-                       new(0) { Alpha = 255 }, 
-                       new(120) { Alpha = 0 }) 
-                       { Ease = Eases.SinInOut, Label = "Hide" });
+        Animator -= "Show";
+        Animator += new Tween[]
+        {
+            new(Fan,
+                new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
+                new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
+                { Ease = SinInOut,Label="Hide" },
+            new(NumTextNode,
+                Visible[0],
+                Hidden[120])
+                { Ease = SinInOut, Label = "Hide" }
+        };
     }
 
     #endregion
 
     #region UpdateFuncs
 
-    public override DrainGainType DGType => Rotation;
-    public override float CalcBarProperty(float prog) => (2.5639436751938f * prog) - 2.6542183675969f;
-
-    public override void OnIncreaseFromMin(float prog, float prevProg) { if (Config.HideEmpty) ShowBar(); }
-    public override void OnDecreaseToMin(float prog, float prevProg) { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ShowBar(); }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
 
     public override void OnFirstRun(float prog)
     {
-        Main.SetRotation(CalcBarProperty(prog));
-        Gain.SetRotation(-151,true);
-        Drain.SetRotation(-151, true);
+        base.OnFirstRun(prog);
 
         if (Config.HideEmpty && prog == 0)
         {
@@ -198,7 +205,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public sealed class EspritBarConfig : GaugeBarWidgetConfig
     {
 
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
         public bool ShowPlate = true;
 
@@ -227,44 +234,30 @@ public sealed unsafe class EspritBar : GaugeBarWidget
                                                               precision: 0,
                                                               showZero: true);
 
-        public EspritBarConfig(WidgetConfig widgetConfig)
+        public EspritBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.EspritBarCfg)
         {
-            MilestoneType = Above;
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.EspritBarCfg;
 
-            if (config != null)
-            {
-                Position = config.Position;
-                Scale = config.Scale;
-                ShowPlate = config.ShowPlate;
-                Clockwise = config.Clockwise;
-                Angle = config.Angle;
+            if (config == null) return;
 
-                Backdrop = config.Backdrop;
-                FrameColor = config.FrameColor;
-                MainColor = config.MainColor;
-                GainColor = config.GainColor;
-                DrainColor = config.DrainColor;
-                PulseColor = config.PulseColor;
-                PulseColor2 = config.PulseColor2;
+            Position = config.Position;
+            Scale = config.Scale;
+            ShowPlate = config.ShowPlate;
+            Clockwise = config.Clockwise;
+            Angle = config.Angle;
 
-                MilestoneType = config.MilestoneType;
-                Milestone = config.Milestone;
-                Invert = config.Invert;
-                HideEmpty =config.HideEmpty;
-                SplitCharges = config.SplitCharges;
-
-                NumTextProps = config.NumTextProps;
-                LabelText = config.LabelText;
-            }
+            Backdrop = config.Backdrop;
+            FrameColor = config.FrameColor;
+            MainColor = config.MainColor;
+            GainColor = config.GainColor;
+            DrainColor = config.DrainColor;
+            PulseColor = config.PulseColor;
+            PulseColor2 = config.PulseColor2;
+                
+            LabelText = config.LabelText;
         }
 
-        public EspritBarConfig()
-        {
-            MilestoneType = Above;
-            NumTextProps = NumTextDefault;
-        }
+        public EspritBarConfig() => MilestoneType = Above;
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -274,7 +267,14 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.EspritBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.EspritBarCfg == null)
+        {
+            Config.MilestoneType = Above;
+            if (Tracker.RefType == RefType.Action)
+            {
+                Config.Invert = true;
+            }
+        }
     }
 
     public override void ResetConfigs() => Config = new();
@@ -364,7 +364,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public void HideCheck(bool hideEmpty)
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
+        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
             if (hideEmpty) HideBar();
             else ShowBar();

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,10 +38,8 @@ public class WHMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAll = TweakConfigs.WHMHideAll;
-
-        if (Bool1("Hide Healing Gauge", ref hideAll, ref update)) TweakConfigs.WHMHideAll = hideAll;
-        HideWarning(hideAll);
+        ToggleControls("Hide Healing Gauge",ref TweakConfigs.WHMHideAll, ref update);
+        HideWarning(TweakConfigs.WHMHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -61,5 +59,5 @@ public class WHMModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool WHMHideAll { get; set; }
+    public bool WHMHideAll;
 }

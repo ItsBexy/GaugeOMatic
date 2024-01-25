@@ -10,7 +10,7 @@ using static ImGuiNET.ImGuiCol;
 
 namespace GaugeOMatic.Utility;
 
-public static class ImGuiHelpers
+public static class ImGuiHelpy
 {
     public struct PushableStyleColor
     {

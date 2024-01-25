@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -39,10 +39,8 @@ public class SMNModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAetherflow = TweakConfigs.SMNHideAetherflow;
-
-        if (Bool1("Hide Aetherflow Gauge", ref hideAetherflow, ref update)) TweakConfigs.SMNHideAetherflow = hideAetherflow;
-        HideWarning(hideAetherflow);
+        ToggleControls("Hide Aetherflow Gauge",ref TweakConfigs.SMNHideAetherflow, ref update);
+        HideWarning(TweakConfigs.SMNHideAetherflow);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -62,5 +60,5 @@ public class SMNModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool SMNHideAetherflow { get; set; }
+    public bool SMNHideAetherflow;
 }

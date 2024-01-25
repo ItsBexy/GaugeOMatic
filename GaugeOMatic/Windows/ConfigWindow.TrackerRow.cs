@@ -6,7 +6,7 @@ using System;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Utility.ImGuiHelpers;
+using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Windows.UpdateFlags;
 
 namespace GaugeOMatic.Windows;

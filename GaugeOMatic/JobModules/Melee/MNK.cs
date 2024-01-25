@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,10 +38,8 @@ public class MNKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideChakra = TweakConfigs.MNKHideChakra;
-
-        if (Bool1("Hide Chakra Gauge", ref hideChakra, ref update)) TweakConfigs.MNKHideChakra = hideChakra;
-        HideWarning(hideChakra);
+        ToggleControls("Hide Chakra Gauge",ref TweakConfigs.MNKHideChakra, ref update);
+        HideWarning(TweakConfigs.MNKHideChakra);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -61,5 +59,5 @@ public class MNKModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool MNKHideChakra { get; set; }
+    public bool MNKHideChakra;
 }

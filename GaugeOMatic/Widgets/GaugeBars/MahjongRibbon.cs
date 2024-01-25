@@ -1,20 +1,23 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.MahjongRibbon;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -62,11 +65,11 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         Tick = ImageNodeFromPart(2, 0).SetAlpha(0).SetOrigin(20, 44).SetPos(0, -27.5f).SetScale(0.8f, 0.55f).SetImageFlag(32);
         TickWrapper = new CustomNode(CreateResNode(),Tick).SetX(Config.Width/-2);
 
-        Tweens.Add(new(Tick,
-                       new(0){ScaleY=0.54f,ScaleX=0.81f},
-                       new(300){ScaleY=0.56f, ScaleX = 0.79f },
-                       new(600){ ScaleY = 0.54f, ScaleX = 0.81f })
-                       {Repeat = true,Ease = Eases.SinInOut});
+        Animator += new Tween(Tick,
+                              new(0){ScaleY=0.54f,ScaleX=0.81f},
+                              new(300){ScaleY=0.56f, ScaleX = 0.79f },
+                              new(600){ ScaleY = 0.54f, ScaleX = 0.81f })
+                              {Repeat = true,Ease = SinInOut};
 
         Contents = new(CreateResNode(), Bar, Frame, TickWrapper);
 
@@ -87,139 +90,136 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     #region Animations
 
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+
     public void CollapseBar(int kf1, int kf2)
     {
         var halfWidth = Config.Width / 2;
 
-        Tweens.Add(new(Frame,
-                       new(0) { X = -halfWidth, Width = Config.Width, Height = 32, AddRGB = 0, Alpha = 255, Y = 0 },
-                       new(kf1) { X = 0, Width = 0, Height = 32, AddRGB = 50, Alpha = 255, Y = 0 },
-                       new(kf2) { X = 0, Width = 0, Height = 32, AddRGB = 255, Alpha = 0, Y = 16 })
-                      { Ease = Eases.SinInOut });
-
-        Tweens.Add(new(Bar,
-                       new(0) { X = -halfWidth, Alpha = 255, Y = 0, ScaleX=1, Height = 32 },
-                       new((int)(kf1*0.9f)) { X = 0 , Alpha = 128, Y = 0, ScaleX = 0, Height = 32 },
-                       new(kf2) { X = 0 , Alpha = 0, Y = 16, ScaleX = 0, Height = 0 })
-                      { Ease = Eases.SinInOut });
-
-        Tweens.Add(new(TickWrapper,
-                       new(0) { Alpha = 255, X = -halfWidth, ScaleX = 1 },
-                       new(kf1) { Alpha = 128, X = 0, ScaleX = 0 },
-                       new(kf2) { Alpha = 0, X = 0, ScaleX = 0 }));
-
-        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }));
-        Tweens.Add(new(NumTextNode, new(0) { Alpha = 255 }, new(kf2) { Alpha = 0 }));
+        Animator += new Tween[]
+        {
+            new(Frame,
+                new(0) { X = -halfWidth, Width = Config.Width, Height = 32, AddRGB = 0, Alpha = 255, Y = 0 },
+                new(kf1) { X = 0, Width = 0, Height = 32, AddRGB = 50, Alpha = 255, Y = 0 },
+                new(kf2) { X = 0, Width = 0, Height = 32, AddRGB = 255, Alpha = 0, Y = 16 })
+                { Ease = SinInOut },
+            new(Bar,
+                new(0) { X = -halfWidth, Alpha = 255, Y = 0, ScaleX=1, Height = 32 },
+                new((int)(kf1*0.9f)) { X = 0 , Alpha = 128, Y = 0, ScaleX = 0, Height = 32 },
+                new(kf2) { X = 0 , Alpha = 0, Y = 16, ScaleX = 0, Height = 0 })
+                { Ease = SinInOut },
+            new(TickWrapper,
+                new(0) { Alpha = 255, X = -halfWidth, ScaleX = 1 },
+                new(kf1) { Alpha = 128, X = 0, ScaleX = 0 },
+                new(kf2) { Alpha = 0, X = 0, ScaleX = 0 }),
+            new(LabelTextNode, Visible[0], Hidden[kf1]),
+            new(NumTextNode, Visible[0], Hidden[kf2])
+        };
     }
 
     public void ExpandBar(int kf1, int kf2)
     {
         var halfWidth = Config.Width / 2;
+        Animator += new Tween[]
+        {
+            new(Frame,
+                new(0) { Alpha = 0, Y = 16, X = -16, Width = 32, Height=0, AddRGB = new(200) },
+                new(kf1) { Alpha = 255, Y = 0, X = -16, Width = 32, Height=32, AddRGB = new(255) },
+                new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, Height = 32, Width = Config.Width, AddRGB = 0 })
+                { Ease = SinInOut },
 
-        Tweens.Add(new(Frame,
-                       new(0) { Alpha = 0, Y = 16, X = -16, Width = 32, Height=0, AddRGB = new(200) },
-                       new(kf1) { Alpha = 255, Y = 0, X = -16, Width = 32, Height=32, AddRGB = new(255) },
-                       new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, Height = 32, Width = Config.Width, AddRGB = 0 }) 
-                       { Ease = Eases.SinInOut });
+            new(Bar,
+                new(0) { Alpha = 0, Y = 16, X = -16,ScaleY=0, ScaleX = 32f/Config.Width, Height=0 },
+                new(kf1) { Alpha = 255, Y = 0, X = -16 ,ScaleY=1, ScaleX = 32f / Config.Width, Height=32 },
+                new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, ScaleX = 1, Height = 32 })
+                { Ease = SinInOut },
 
-        Tweens.Add(new(Bar,
-                       new(0) { Alpha = 0, Y = 16, X = -16,ScaleY=0, ScaleX = 32f/Config.Width, Height=0 },
-                       new(kf1) { Alpha = 255, Y = 0, X = -16 ,ScaleY=1, ScaleX = 32f / Config.Width, Height=32 },
-                       new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, ScaleX = 1, Height = 32 }) 
-                       { Ease = Eases.SinInOut });
+            new(Backdrop,
+                new(0) { X=0,Height=0,Alpha = 255 },
+                new(kf1) { X = 0,Height=32,Alpha = Config.Background.A },
+                new(kf2) { X = 0, Alpha = Config.Background.A })
+                { Ease = SinInOut },
 
-        Tweens.Add(new(Backdrop,
-                       new(0) { X=0,Height=0,Alpha = 255 },
-                       new(kf1) { X = 0,Height=32,Alpha = Config.Background.A },
-                       new(kf2) { X = 0, Alpha = Config.Background.A })
-                       { Ease = Eases.SinInOut });
+            new(TickWrapper,
+                new(0) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
+                new(kf1) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
+                new(kf2) { Alpha = 255, X = -halfWidth, ScaleX = 1 }),
 
-        Tweens.Add(new(TickWrapper,
-                       new(0) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
-                       new(kf1) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
-                       new(kf2) { Alpha = 255, X = -halfWidth, ScaleX = 1 }));
+            new(LabelTextNode, Hidden[0], Hidden[kf1], Visible[kf2]),
 
-        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
-        Tweens.Add(new(NumTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }));
+            new(NumTextNode, Hidden[0], Hidden[kf1], Visible[kf2])
+        };
     }
 
     #endregion
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin(float prog, float prevProg)
+    public override void OnDecreaseToMin()
     {
-        if(Config.Collapse) CollapseBar(300, 450);
+        if(Config.HideEmpty) CollapseBar(300, 450);
 
-        Tweens.Add(new(Tick, new(0) { Alpha = 255 }, new(200) { Alpha = 0 }));
+        Animator += new Tween(Tick, Visible[0], Hidden[200]);
         StopBackdropTween();
     }
 
-    public override void OnIncreaseFromMin(float prog, float prevProg)
+    public override void OnIncreaseFromMin()
     {
-        if (Config.Collapse) ExpandBar(150, 350);
+        if (Config.HideEmpty) ExpandBar(150, 350);
 
-        Tweens.Add(new(Tick, new(0) { Alpha = 0 }, new(200) { Alpha = 255 }));
+        Animator += new Tween(Tick, Hidden[0], Visible[200]);
         StartBackdropTween();
     }
 
     public override void PlaceTickMark(float prog)
     {
-        Tick.SetPos(Main.Node->Width - 20, -27.5f)
+        var wid = Max(Drain.Width,Main.Width);
+        Tick.SetPos(wid - 20, -27.5f)
             .SetAlpha(prog switch {
-            < 0.025f => (byte)(prog * 10200F),
-            > 0.975f => (byte)((1 - prog) * 10200F),
-            _ => 255
-        });
-        
-    }
-
-    public override void PostUpdate(float prog, float prevProg)
-    {
-
-
+                < 0.025f => (byte)(prog * 10200F),
+                > 0.975f => (byte)((1 - prog) * 10200F),
+                _ => 255
+            });
     }
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarProperty(prog);
-        Main.SetWidth(curWid);
-        Gain.SetWidth(curWid);
-        Drain.SetWidth(curWid);
-        if (prog <= 0 && Config.Collapse) CollapseBar(0, 0);
-        Tick.SetAlpha(prog > 0 ? 255 : 0);
+        base.OnFirstRun(prog);
+        if (prog <= 0 && Config.HideEmpty) CollapseBar(0, 0);
+        Tick.SetAlpha(prog > 0);
         if (prog > 0) { StartBackdropTween(); }
     }
 
-    public override DrainGainType DGType => Width;
-    public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
-
     private void StopBackdropTween()
     {
-        ClearLabelTweens(ref Tweens,"ScrollAni");
-        Tweens.Add(new(Main,
-                       new(0,Main),
-                       new(200) { PartCoords = new(720, 17, 720, 32) })
-                       { Ease = Eases.SinInOut, Label = "ScrollAni" });
-
-        Tweens.Add(new(Backdrop,
-                       new(0,Backdrop),
-                       new(200) { PartCoords = new(0, 17, 720, 32) })
-                       { Ease = Eases.SinInOut, Label = "ScrollAni" });
+        Animator -= "ScrollAni";
+        Animator += new Tween[]
+        {
+            new(Main,
+                new(0,Main),
+                new(200) { PartCoords = new(720, 17, 720, 32) })
+                { Ease = SinInOut, Label = "ScrollAni" },
+            new(Backdrop,
+                new(0,Backdrop),
+                new(200) { PartCoords = new(0, 17, 720, 32) })
+                { Ease = SinInOut, Label = "ScrollAni" }
+        };
     }
 
     private void StartBackdropTween()
     {
-        ClearLabelTweens(ref Tweens, "ScrollAni");
-        Tweens.Add(new(Main,
-                       new(0) { PartCoords = new(0, 17, 720, 32) },
-                       new(5000) { PartCoords = new(720, 17, 720, 32) })
-                       { Repeat = true, Label = "ScrollAni" });
-
-        Tweens.Add(new(Backdrop,
-                       new(0) { PartCoords = new(720, 17, 720, 32) },
-                       new(10000) { PartCoords = new(0, 17, 720, 32) })
-                       { Repeat = true, Label = "ScrollAni" });
+        Animator -= "ScrollAni";
+        Animator += new Tween[]
+        {
+            new(Main,
+                new(0) { PartCoords = new(0, 17, 720, 32) },
+                new(5000) { PartCoords = new(720, 17, 720, 32) })
+                { Repeat = true, Label = "ScrollAni" },
+            new(Backdrop,
+                new(0) { PartCoords = new(720, 17, 720, 32) },
+                new(10000) { PartCoords = new(0, 17, 720, 32) })
+                { Repeat = true, Label = "ScrollAni" }
+        };
     }
 
     #endregion
@@ -238,7 +238,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         public AddRGB GainColor = "0xDE56B2A0";
         public AddRGB DrainColor = "0x8069B2A0";
         public AddRGB TickColor = "0xD36E27FF"; 
-        public bool Collapse;
+
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 0), new(255), 0x8E6A0CFF, Jupiter, 20, Left);
         protected override NumTextProps NumTextDefault => new(enabled:   true, 
                                                               position:  new(0), 
@@ -251,9 +251,8 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                                                               align:     Center,
                                                               invert:    false);
 
-        public MahjongRibbonConfig(WidgetConfig widgetConfig)
+        public MahjongRibbonConfig(WidgetConfig widgetConfig) : base(widgetConfig.MahjongRibbonCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.MahjongRibbonCfg;
 
             if (config == null) return;
@@ -262,20 +261,15 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
-
-            Invert = config.Invert;
+            
             Background = config.Background;
             MainColor = config.MainColor;
             GainColor = config.GainColor;
             DrainColor = config.DrainColor;
-            AnimationLength = config.AnimationLength;
-            NumTextProps = config.NumTextProps;
             LabelText = config.LabelText;
-            Collapse = config.Collapse;
-            SplitCharges = config.SplitCharges;
         }
 
-        public MahjongRibbonConfig() => NumTextProps = NumTextDefault;
+        public MahjongRibbonConfig() { }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -303,10 +297,22 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         Bar.SetPos(Config.Width / -2, 0).SetWidth(Config.Width);
         Backdrop.SetWidth(Config.Width);
 
-        Main.SetAddRGB(Config.MainColor, true).SetOrigin(Config.Width / 2f, 16).SetWidth(CalcBarProperty(CalcProg()));
+        Main.SetAddRGB(Config.MainColor, true)
+            .SetOrigin(Config.Width / 2f, 16)
+            .DefineTimeline(BarTimeline)
+            .SetProgress(CalcProg());
+
         Backdrop.SetAddRGB(Config.Background,true);
-        Drain.SetAddRGB(Config.DrainColor, true).SetWidth(0).SetOrigin(Config.Width/2f, 16);
-        Gain.SetAddRGB(Config.GainColor, true).SetWidth(0).SetOrigin(Config.Width / 2f, 16);
+
+        Drain.SetAddRGB(Config.DrainColor, true)
+             .SetOrigin(Config.Width/2f, 16)
+             .DefineTimeline(BarTimeline)
+             .SetWidth(0);
+
+        Gain.SetAddRGB(Config.GainColor, true)
+            .SetOrigin(Config.Width / 2f, 16)
+            .DefineTimeline(BarTimeline)
+            .SetWidth(0);
 
         TickWrapper.SetX(Config.Width / -2);
         Tick.SetAddRGB(Config.TickColor);
@@ -337,7 +343,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck();
+        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck();
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
         LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
@@ -348,9 +354,9 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     private void CollapseCheck()
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
+        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
-            if (Config.Collapse) CollapseBar(350, 450);
+            if (Config.HideEmpty) CollapseBar(350, 450);
             else ExpandBar(100, 350);
         }
     }

@@ -1,19 +1,22 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.HutonReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -54,9 +57,10 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2).SetScale(0.9f).SetOrigin(71, 74);
+        EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2).SetScale(0.9f).SetOrigin(71, 74).SetAlpha(255);
         ActiveClock = BuildClock();
-        NumTextNode = new();
+        NumTextNode = new NumTextNode();
+        NumTextNode.Hide();
         Puff = ImageNodeFromPart(0, 4).SetPos(-2, -2).SetScale(0.6666667f).SetSize(144, 144).SetOrigin(72, 72).SetAlpha(0);
 
         return new CustomNode(CreateResNode(), EmptyPinwheel, ActiveClock, NumTextNode, Puff).SetSize(150, 150).SetOrigin(75, 75);
@@ -65,9 +69,9 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     public CustomNode BuildClock()
     {
         Blades = BuildBlades();
-        Shuriken = ImageNodeFromPart(0, 2).SetPos(50, 50).SetSize(60, 60).SetOrigin(30, 30);
+        Shuriken = ImageNodeFromPart(0, 2).SetPos(50, 50).SetSize(60, 60).SetOrigin(30, 30).Hide();
         Whirl = ImageNodeFromPart(0, 1).SetPos(23, 25).SetScale(0.5f).SetSize(112, 112).SetOrigin(56, 56)
-                                                       .SetRotation((float)Math.PI).SetAlpha(0).SetImageFlag(32);
+                                                       .SetRotation((float)PI).SetAlpha(0).SetImageFlag(32);
 
         return new CustomNode(CreateResNode(), Blades, Shuriken, Whirl).SetPos(-10, -10).SetScale(0.9f).SetSize(160, 160).SetOrigin(80, 80);
     }
@@ -76,7 +80,8 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     {
         ClockHand = ImageNodeFromPart(0, 3).SetPos(44, 12)
                                            .SetSize(72, 80)
-                                           .SetOrigin(36, 73);
+                                           .SetOrigin(36, 73)
+                                           .Hide();
 
         return new CustomNode(CreateResNode(), BuildBlade(0), BuildBlade(1), BuildBlade(2), BuildBlade(3), BuildBlade(4), BuildBlade(5), ClockHand).SetPos(0, -6).SetSize(160, 160).SetOrigin(79, 87);
     }
@@ -87,57 +92,54 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     #region Animations
 
-    private void AppearAnim()
-    {
-        Tweens.Add(Puff.CreateTween(new(0) { Scale = 0.2f, Alpha = 0 },
-                                    new(100) { Scale = 0.9f, Alpha = 255 },
-                                    new(200) { Scale = 1.5f, Alpha = 0 }));
+    private void AppearAnim() =>
+        Animator += new Tween[]
+        {
+            new(Puff,
+                new(0) { Scale = 0.2f, Alpha = 0 },
+                new(100) { Scale = 0.9f, Alpha = 255 },
+                new(200) { Scale = 1.5f, Alpha = 0 }),
+            new(EmptyPinwheel,
+                new(0) { Scale = 0.9f, Rotation = 0, AddRGB = new(0, 0, 0), Alpha = 255 },
+                new(125) { Scale = 1, Rotation = 1.5256047f, AddRGB = new(0, 48, 77), Alpha = 255 },
+                new(250) { Scale = 1.4f, Rotation = 2.0694206f, Alpha = 0, AddRGB = new(0, 97, 99) })
+        };
 
-        Tweens.Add(EmptyPinwheel.CreateTween(new(0) { Scale = 0.9f, Rotation = 0, AddRGB = new(0, 0, 0), Alpha = 255 },
-                                             new(125) { Scale = 1, Rotation = 1.5256047f, AddRGB = new(0, 48, 77), Alpha = 255 },
-                                             new(250) { Scale = 1.4f, Rotation = 2.0694206f, Alpha = 0, AddRGB = new(0, 97, 99) }));
-    }
+    private void DepleteAnim() =>
+        Animator += new Tween(EmptyPinwheel, 
+                              new(0) { Scale = 1.2f, Rotation = 3.141593f, Alpha = 0, AddRGB = new(0, 0, 0) }, 
+                              new(250) { Scale = 0.9f, Rotation = 6.283185f, Alpha = 255, AddRGB = new(0, 0, 0) });
 
-    private void DepleteAnim()
-    {
-        Tweens.Add(EmptyPinwheel.CreateTween(new(0) { Scale = 1.2f, Rotation = 3.141593f, Alpha = 0, AddRGB = new(0, 0, 0) },
-                                             new(250) { Scale = 0.9f, Rotation = 6.283185f, Alpha = 255, AddRGB = new(0, 0, 0) }));
+    private void GainAnim() =>
+        Animator += new Tween[]
+        {
+            new(Puff,
+                new(0) { Scale = 0.2f, Alpha = 0 },
+                new(100) { Scale = 0.9f, Alpha = 255 },
+                new(200) { Scale = 2f, Alpha = 0 }),
+            new(Whirl,
+                new(0) { Scale = 0.7f, Rotation = 0, Alpha = 0 },
+                new(287) { Scale = 1.3f, Rotation = 1f, Alpha = 255 },
+                new(450) { Scale = 0.5f, Rotation = (float)PI, Alpha = 0 }),
+            new(Blades,
+                new(0) { Rotation = 0, AddRGB = new(0, 0, 0) },
+                new(275) { Rotation = 5.654867f, AddRGB = new(0, 38, 58) },
+                new(385) { Rotation = 6.283185f, AddRGB = new(0, 0, 0) })
+        };
 
-    }
+    private void ShowBlade(int i, AddRGB add, ColorRGB mult) =>
+        Animator += new Tween(Blades[i % 6],
+                              new(0) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0, AddRGB = new(-80, -100, -80), MultRGB = Config.FadeColor },
+                              new(200) { Scale = 1, Alpha = 127, AddRGB = add, MultRGB = mult });
 
-    private void GainAnim()
-    {
-        Tweens.Add(Puff.CreateTween(new(0) { Scale = 0.2f, Alpha = 0 },
-                                    new(100) { Scale = 0.9f, Alpha = 255 },
-                                    new(200) { Scale = 2f, Alpha = 0 }));
-
-        Tweens.Add(Whirl.CreateTween(new(0) { Scale = 0.7f, Rotation = 0, Alpha = 0 },
-                                     new(287) { Scale = 1.3f, Rotation = 1f, Alpha = 255 },
-                                     new(450) { Scale = 0.5f, Rotation = 3.14159265358979f, Alpha = 0 }));
-
-        Tweens.Add(Blades.CreateTween(new(0) { Rotation = 0, AddRGB = new(0, 0, 0) },
-                                      new(275) { Rotation = 5.654867f, AddRGB = new(0, 38, 58) },
-                                      new(385) { Rotation = 6.283185f, AddRGB = new(0, 0, 0) }));
-    }
-
-    private void ShowBlade(int i, AddRGB add, ColorRGB mult)
-    {
-        Tweens.Add(Blades[i % 6].CreateTween(new(200) { Scale = 1, Alpha = 127, AddRGB = add, MultRGB = mult },
-                                             new(0) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0, AddRGB = new(-80, -100, -80), MultRGB = Config.FadeColor }));
-    }
-
-    private void HideBlade(int i)
-    {
-        var blade = Blades[i % 6];
-        Tweens.Add(blade.CreateTween(new(0) { Scale = 1, Alpha = 127, AddRGB = new(-51, -81, -51), MultRGB = Config.FadeColor },
-                                     new(200) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0, AddRGB = new(-80, -100, -80), MultRGB = Config.FadeColor }));
-    }
+    private void HideBlade(int i) =>
+        Animator += new Tween(Blades[i % 6], 
+                              new(0) { Scale = 1, Alpha = 127, AddRGB = new(-51, -81, -51), MultRGB = Config.FadeColor }, 
+                              new(200) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0, AddRGB = new(-80, -100, -80), MultRGB = Config.FadeColor });
 
     #endregion
 
     #region UpdateFuncs
-    
-    public override DrainGainType DGType => Rotation;
 
     public override void Update()
     {
@@ -157,20 +159,20 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
         if (FirstRun)
         {
-            EmptyPinwheel.SetAlpha(active ? 0 : 1f);
+            EmptyPinwheel.SetAlpha(!active);
             FirstRun = false;
         }
-        else if (active && EmptyPinwheel.Node->Color.A == 255 && Tweens.All(t => t.Target != EmptyPinwheel.Node)) AppearAnim();
+        else if (active && EmptyPinwheel.Node->Color.A == 255 && Animator.All(t => t.Target.Node != EmptyPinwheel.Node)) AppearAnim();
         if (current - previous >= 5f) GainAnim();
         if (current == 0 && previous > 0) DepleteAnim();
 
-        ClockHand.SetRotation(CalcBarProperty(current/max));
+        ClockHand.SetRotation(AdjustProg(current/max));
 
         ClockHand.SetVis(active);
         Shuriken.SetVis(active);
 
-        var bladeId = (int)Math.Floor((max - current) / max * 6);
-        var prevBladeId = (int)Math.Floor((max - previous) / max * 6);
+        var bladeId = (int)Floor((max - current) / max * 6);
+        var prevBladeId = (int)Floor((max - previous) / max * 6);
 
         var bladeSpan = max / 6;
         var subProg = (max - current) % bladeSpan / bladeSpan;
@@ -180,33 +182,35 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         UpdateCurrentBlade(bladeId, subProg);
         for (var i = 5; i > bladeId; i--) UpdateOtherBlade(i);
 
-        RunTweens();
+        Animator.RunTweens();
     }
 
-    public override float CalcBarProperty(float prog)
+    public override float AdjustProg(float prog)
     {
-        if (!Config.Smooth) prog = (float)Math.Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
+        if (!Config.Smooth) prog = (float)Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
         return prog * -6.28318530717959f;
     }
 
     private void UpdateOtherBlade(int i)
     {
-        if (Tweens.All(t => t.Target != Blades[i])) Blades[i].SetAddRGB(0).SetMultiply(Config.ActiveColor).SetAlpha(255).SetScale(1);
+        if (Animator.Tweens.All(t => t.Target != Blades[i])) 
+            Blades[i].SetAddRGB(0)
+                     .SetMultiply(Config.ActiveColor)
+                     .SetAlpha(255)
+                     .SetScale(1);
     }
 
     private void UpdateCurrentBlade(int i, float prog)
     {
         if (i == 6) return;
 
-        var add = CalcCurAdd(prog);
-        var mult = CalcCurMult(prog);
-        var alpha = (byte)Tween.Interpolate(255f, 127f, prog)!;
-
-        Blades[i].SetAddRGB(add).SetMultiply(mult).SetAlpha(alpha);
+        Blades[i].SetAddRGB(CalcCurAdd(prog))
+                 .SetMultiply(CalcCurMult(prog))
+                 .SetAlpha((byte)Interpolate(255f, 127f, prog)!);
     }
 
-    private ColorRGB CalcCurMult(float prog) => (ColorRGB)Tween.Interpolate(Config.ActiveColor, Config.FadeColor, prog)!;
-    private static AddRGB CalcCurAdd(float prog) => (AddRGB)Tween.Interpolate(new AddRGB(0, 0, 0), new AddRGB(-50, -80, -50), prog)!;
+    private ColorRGB CalcCurMult(float prog) => (ColorRGB)Interpolate(Config.ActiveColor, Config.FadeColor, prog)!;
+    private static AddRGB CalcCurAdd(float prog) => (AddRGB)Interpolate(new AddRGB(0, 0, 0), new AddRGB(-50, -80, -50), prog)!;
 
     #endregion
 
@@ -214,7 +218,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public sealed class HutonReplicaConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
         public bool Smooth;
         public ColorRGB ActiveColor = new(100);
@@ -232,25 +236,21 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                                                               align:     Center, 
                                                               invert:    false);
 
-        public HutonReplicaConfig(WidgetConfig widgetConfig)
+        public HutonReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.HutonReplicaCfg)
         {
-            NumTextProps = NumTextDefault;
             var config = widgetConfig.HutonReplicaCfg;
 
             if (config == null) return;
-
-            NumTextProps = config.NumTextProps;
-            Invert = config.Invert;
+            
             Position = config.Position;
             Scale = config.Scale;
             Smooth = config.Smooth;
             ActiveColor = config.ActiveColor;
             FadeColor = config.FadeColor;
             HandColor = config.HandColor;
-            SplitCharges = config.SplitCharges;
         }
 
-        public HutonReplicaConfig() => NumTextProps = NumTextDefault;
+        public HutonReplicaConfig() { }
     }
 
     public HutonReplicaConfig Config;

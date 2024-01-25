@@ -30,7 +30,7 @@ public partial class ConfigWindow : Window, IDisposable
 
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new(1030f, 420f),
+            MinimumSize = new(1050f, 330f),
             MaximumSize = new(3200f)
         };
     }
@@ -39,7 +39,8 @@ public partial class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        if (JobChanged && TryParse(JobAbbr, out Job newJob)) TrackerManager.Configuration.JobTab = newJob;
+        //todo: fix this to not be localization reliant
+        if (JobChanged && TryParse(JobAbbr, out Job newJob) && newJob <= (Job)21) TrackerManager.Configuration.JobTab = newJob;
 
         ConfigWindowPos = ImGui.GetWindowPos();
         ConfigWindowSize = ImGui.GetWindowSize();
@@ -85,7 +86,7 @@ public partial class ConfigWindow : Window, IDisposable
         {
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
 
-            ImGuiHelpers.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
+            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
             if (ImGui.Button($"{job}       "))
             {
                 Configuration.JobTab = job;
@@ -98,8 +99,8 @@ public partial class ConfigWindow : Window, IDisposable
         void GeneralButton(string label, FontAwesomeIcon icon, GeneralTab genTab, string toolTip)
         {
             var active = Configuration.GeneralTab == genTab;
-            ImGuiHelpers.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
-            if (ImGuiHelpers.IconButton(label, icon, 32f))
+            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
+            if (ImGuiHelpy.IconButton(label, icon, 32f))
             {
                 Configuration.GeneralTab = genTab;
                 Configuration.Save();
@@ -152,11 +153,10 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(RDM);
     }
 
-    internal static Vector4 TabActive = ImGuiHelpers.GetStyleColorUsableVec4(ImGuiCol.TabActive);
-    internal static Vector4 Tab = ImGuiHelpers.GetStyleColorUsableVec4(ImGuiCol.Tab);
-    internal static Vector4 TabHovered = ImGuiHelpers.GetStyleColorUsableVec4(ImGuiCol.TabHovered);
+    internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.TabActive);
+    internal static Vector4 Tab = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.Tab);
+    internal static Vector4 TabHovered = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.TabHovered);
 
     internal static Vector2 ConfigWindowSize;
     internal static Vector2 ConfigWindowPos;
-
 }

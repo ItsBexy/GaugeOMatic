@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,10 +38,8 @@ public class DRGModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideAll = TweakConfigs.DRGHideAll;
-
-        if (Bool1("Hide Dragon Gauge", ref hideAll, ref update)) TweakConfigs.DRGHideAll = hideAll;
-        HideWarning(hideAll);
+        ToggleControls("Hide Dragon Gauge",ref TweakConfigs.DRGHideAll, ref update);
+        HideWarning(TweakConfigs.DRGHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -61,5 +59,5 @@ public class DRGModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool DRGHideAll { get; set; }
+    public bool DRGHideAll;
 }

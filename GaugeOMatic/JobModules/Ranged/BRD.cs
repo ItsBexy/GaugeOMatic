@@ -6,8 +6,8 @@ using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GaugeOMatic.Service;
 using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,13 +38,13 @@ public class BRDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var hideSoulVoice = TweakConfigs.BRDHideSoulVoice;
-        var soulVoicePos = TweakConfigs.BRDSoulVoicePos;
+        ToggleControls("Hide Soul Voice Gauge",ref TweakConfigs.BRDHideSoulVoice, ref update);
+        HideWarning(TweakConfigs.BRDHideSoulVoice);
 
-        if (Bool1("Hide Soul Voice Gauge", ref hideSoulVoice, ref update)) TweakConfigs.BRDHideSoulVoice = hideSoulVoice;
-        HideWarning(hideSoulVoice);
-
-        if (!hideSoulVoice && PositionControls("Move Soul Voice Gauge", ref soulVoicePos, ref update)) TweakConfigs.BRDSoulVoicePos = soulVoicePos;
+        if (!TweakConfigs.BRDHideSoulVoice)
+        {
+            PositionControls("Move Soul Voice Gauge", ref TweakConfigs.BRDSoulVoicePos, ref update);
+        }
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -69,6 +69,6 @@ public class BRDModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool BRDHideSoulVoice { get; set; }
-    public Vector2 BRDSoulVoicePos { get; set; }
+    public bool BRDHideSoulVoice;
+    public Vector2 BRDSoulVoicePos;
 }

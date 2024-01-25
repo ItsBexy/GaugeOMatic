@@ -1,11 +1,11 @@
 using Dalamud.Interface;
 using GaugeOMatic.JobModules;
+using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System;
-using System.Numerics;
-using static Dalamud.Interface.Utility.ImGuiHelpers;
-using static GaugeOMatic.Utility.ImGuiHelpers;
+using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Windows.UpdateFlags;
+using static ImGuiNET.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -14,26 +14,12 @@ public partial class ConfigWindow
     public static void DrawJobModuleTab(JobModule jobModule)
     {
         UpdateFlags update = 0;
-
-        DrawTrackerTable(jobModule, ref update);
-
-        ImGui.Separator();
-        ImGui.Spacing();
-
-        if (ImGui.BeginTable($"{jobModule.Abbr}AddTrackers", 1,ImGuiTableFlags.SizingFixedFit))
+        if (ImGui.BeginTabBar(jobModule.Abbr+"Tabs"))
         {
-            ImGui.TableSetupColumn("GAUGE TWEAKS",ImGuiTableColumnFlags.WidthFixed,500f * GlobalScale);
-            ImGui.TableSetupColumn("QUICK ADD");
+            TrackerTab(jobModule, ref update);
+            TweakTab(jobModule, ref update);
 
-            ImGui.TableNextRow();
-            TableHeadersRowNoHover(new(1, 1, 1, 0.6f));
-
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-
-            jobModule.TweakUI(ref update);
-
-            ImGui.EndTable();
+            ImGui.EndTabBar();
         }
 
         if (update.HasFlag(Rebuild)) jobModule.RebuildTrackerList();
@@ -43,9 +29,28 @@ public partial class ConfigWindow
         if (update.HasFlag(Save)) jobModule.Save();
     }
 
-    private static void DrawTrackerTable(JobModule jobModule, ref UpdateFlags update)
+    private static void TweakTab(JobModule jobModule, ref UpdateFlags update)
     {
-        if (ImGui.BeginTable($"{jobModule.Abbr}TrackerTable", 9, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.ScrollY, new Vector2(1000f, 250f) * GlobalScale))
+        if (!ImGui.BeginTabItem($"Tweaks##{jobModule.Abbr}TweaksTab")) return;
+
+        if (ImGui.BeginTable($"{jobModule.Abbr}TweaksTable", 2, SizingFixedFit))
+        {
+            ImGui.TableSetupColumn("Labels",default,150f);
+            ImGui.TableSetupColumn("Options");
+
+            WidgetUI.Heading("Job Gauge Tweaks");
+
+            jobModule.TweakUI(ref update);
+
+            ImGui.EndTable();
+        }
+    }
+
+    private static void TrackerTab(JobModule jobModule, ref UpdateFlags update)
+    {
+        if (!ImGui.BeginTabItem("Trackers")) return;
+
+        if (ImGui.BeginTable($"{jobModule.Abbr}TrackerTable", 9, SizingFixedFit))
         {
             ImGui.TableSetupColumn("");
             ImGui.TableSetupColumn("Tracker");
@@ -66,9 +71,10 @@ public partial class ConfigWindow
             ImGui.TableNextColumn();
             if (IconButtonWithText("Presets",FontAwesomeIcon.ObjectGroup,"PresetButton")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
 
-
             ImGui.EndTable();
         }
+
+        ImGui.EndTabItem();
     }
 
     internal static string WidgetClipboard = "";

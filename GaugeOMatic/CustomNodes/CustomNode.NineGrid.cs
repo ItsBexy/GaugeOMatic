@@ -1,6 +1,8 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using GaugeOMatic.Utility;
 using System;
+using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
+using static FFXIVClientStructs.FFXIV.Component.GUI.NodeType;
+using static GaugeOMatic.Utility.MemoryHelper;
 
 namespace CustomNodes;
 
@@ -11,7 +13,7 @@ public unsafe partial class CustomNodeManager
         try
         {
             var partsList = customPartsList.AtkPartsList;
-            var node = MemoryHelper.CleanAlloc<AtkNineGridNode>();
+            var node = CleanAlloc<AtkNineGridNode>();
 
             node->Ctor();
             node->PartID = partId;
@@ -21,9 +23,8 @@ public unsafe partial class CustomNodeManager
 
             RegisteredNodes.Add(node->AtkResNode.NodeID, (AtkResNode*)node);
 
-            node->AtkResNode.Type = NodeType.NineGrid;
-            node->AtkResNode.NodeFlags =
-                NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
+            node->AtkResNode.Type = NineGrid;
+            node->AtkResNode.NodeFlags = Visible | AnchorLeft | AnchorTop | Enabled;
             node->AtkResNode.Width = partsList->Parts[partId].Width;
             node->AtkResNode.Height = partsList->Parts[partId].Height;
 
@@ -33,7 +34,7 @@ public unsafe partial class CustomNodeManager
         }
         catch (Exception ex)
         {
-            GaugeOMatic.GaugeOMatic.Service.Log.Error(ex + "");
+            Log.Error(ex + "");
             return null;
         }
     }

@@ -1,23 +1,27 @@
+using CustomNodes;
 using Dalamud.Interface;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
-using static CustomNodes.CustomNodeManager.Tween;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
-using static GaugeOMatic.Widgets.GaugeBarWidget.DrainGainType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static System.Math;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -28,13 +32,13 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
+    public static WidgetInfo GetWidgetInfo => new()
     {
         DisplayName = "Addersgall Bar",
         Author = "ItsBexy",
         Description = "A recreation of Sage's Addersgall Gauge Bar",
         WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("AG","Addersgall Gauge Replica",1)
+        MultiCompData = new("AG", "Addersgall Gauge Replica", 1)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -70,15 +74,15 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public override CustomNode BuildRoot()
     {
         Bar = BuildBar();
-        Plate = ImageNodeFromPart(0, 1).SetPos(-100, -24).SetOrigin(100,24);
+        Plate = ImageNodeFromPart(0, 1).SetPos(-100, -24).SetOrigin(100, 24).RemoveFlags(SetVisByAlpha);
         Frame = NineGridFromPart(0, 0, 0, 32, 0, 32);
         LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
         LabelTextNode.SetWidth(144);
 
         NumTextNode = new();
-        BarFrame = new CustomNode(CreateResNode(), Plate, Bar, Frame).SetOrigin(0,11);
+        BarFrame = new CustomNode(CreateResNode(), Plate, Bar, Frame).SetOrigin(0, 11);
 
-        return new CustomNode(CreateResNode(), BarFrame, LabelTextNode, NumTextNode).SetOrigin(28, 12);
+        return new CustomNode(CreateResNode(), BarFrame, LabelTextNode, NumTextNode).SetOrigin(0, 16f);
     }
 
     private CustomNode BuildBar()
@@ -115,145 +119,134 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region Animations
 
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+
     public void CollapseBar(int kf1, int kf2)
     {
         var frameWidth = Config.Width + 56;
 
-        ClearLabelTweens(ref Tweens, "Expand");
-        Tweens.Add(new(BarFrame,
-                       new(0) { Y = 0 },
-                       new(kf1) { Y = 1 },
-                       new(kf2) { Y = 10 })
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
+        Animator -= "Expand";
+        Animator += new Tween[] {
+            new(BarFrame,
+                new(0) { Y = 0 },
+                new(kf1) { Y = 1 },
+                new(kf2) { Y = 10 })
+                { Ease = SinInOut, Label = "Collapse" },
 
-        Tweens.Add(new(Frame,
-                       new(0) { X = frameWidth / -2f, Width = frameWidth, AddRGB = 0, Alpha = 255 },
-                       new(kf1) { X = -28, Width = 56, AddRGB = 50, Alpha = 255 },
-                       new(kf2) { X = -28, Width = 56, AddRGB = 255, Alpha = 0 })
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
+            new(Frame,
+                new(0) { X = frameWidth / -2f, Width = frameWidth, AddRGB = 0, Alpha = 255 },
+                new(kf1) { X = -28, Width = 56, AddRGB = 50, Alpha = 255 },
+                new(kf2) { X = -28, Width = 56, AddRGB = 255, Alpha = 0 })
+                { Ease = SinInOut, Label = "Collapse" },
 
-        Tweens.Add(new(Plate,
-                       new(0) { Alpha=255, AddRGB = 0, ScaleY =1, ScaleX = 1,Y=-24 },
-                       new(kf1) { Alpha=255, AddRGB = 255, ScaleY = 0, ScaleX = 0.1f, Y = -20 },
-                       new(kf2) { Alpha=0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 })
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
+            new(Plate,
+                new(0) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 },
+                new(kf1) { Alpha = 255, AddRGB = 255, ScaleY = 0, ScaleX = 0.1f, Y = -20 },
+                new(kf2) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 })
+                { Ease = SinInOut, Label = "Collapse" },
 
-        Tweens.Add(new(Bar,
-                       new(0) { ScaleX = Config.Mirror?-1:1, Alpha = 255 },
-                       new(kf1) { ScaleX = 0, Alpha = 128 },
-                       new(kf2) { ScaleX = 0, Alpha = 128 }) 
-                       { Ease = Eases.SinInOut, Label = "Collapse" });
+            new(Bar,
+                new(0) { ScaleX = Config.Mirror ? -1 : 1, Alpha = 255 },
+                new(kf1) { ScaleX = 0, Alpha = 128 },
+                new(kf2) { ScaleX = 0, Alpha = 128 })
+                { Ease = SinInOut, Label = "Collapse" },
 
-        Tweens.Add(new(Sparkles,
-                       new(0) { Alpha = 255 },
-                       new((int)(kf1 * 0.6f)) { Alpha = 0 }){ Label = "Collapse" });
-
-        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 255 }, new(kf1) { Alpha = 0 }) { Label = "Collapse" });
-        Tweens.Add(new(NumTextNode, new(0) { Alpha = 255 }, new(kf2) { Alpha = 0 }) { Label = "Collapse" });
+            new(Sparkles, Visible[0], new((int)(kf1 * 0.6f)) { Alpha = 0 }) { Label = "Collapse" },
+            new(LabelTextNode, Visible[0], Hidden[kf1]) { Label = "Collapse" },
+            new(NumTextNode, Visible[0], Hidden[kf2]) { Label = "Collapse" }
+        };
     }
 
     public void ExpandBar(int kf1, int kf2)
     {
         var frameWidth = Config.Width + 56;
 
-        ClearLabelTweens(ref Tweens, "Collapse");
+        Animator -= "Collapse";
         BarFrame.SetY(0);
 
-        Tweens.Add(new(Frame,
-                       new(0) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
-                       new(kf1) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
-                       new(kf2) { Alpha = 255, X = frameWidth / -2f, Width = frameWidth, AddRGB = 0 })
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-
-        Tweens.Add(new(Plate,
-                       new(0) { Alpha = 0, AddRGB = 200, ScaleY = 0, ScaleX = 0, Y = -20 },
-                       new(kf1) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 },
-                       new(kf2) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 })
-                       { Ease = Eases.SinInOut, Label = "Expand" });
-
-        Tweens.Add(new(Bar,
-                       new(0) { Alpha = 0, ScaleX = 0 },
-                       new(kf1) { Alpha = 128, ScaleX = 0 },
-                       new(kf2) { Alpha = 255, ScaleX = Config.Mirror?-1:1 }) 
-                       { Ease = Eases.SinInOut,Label="Expand" });
-
-        Tweens.Add(new(Sparkles,
-                       new(0) { Alpha = 0 },
-                       new(200) { Alpha = 0 },
-                       new(kf2) { Alpha = 255 })
-                       { Label = "Expand" });
-
-        Tweens.Add(new(LabelTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }) { Label = "Expand" });
-        Tweens.Add(new(NumTextNode, new(0) { Alpha = 0 }, new(kf1) { Alpha = 0 }, new(kf2) { Alpha = 255 }) { Label = "Expand" });
+        Animator += new Tween[]
+        {
+            new(Frame,
+                new(0) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
+                new(kf1) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
+                new(kf2) { Alpha = 255, X = frameWidth / -2f, Width = frameWidth, AddRGB = 0 })
+                { Ease = SinInOut, Label = "Expand" },
+            new(Plate,
+                new(0) { Alpha = 0, AddRGB = 200, ScaleY = 0, ScaleX = 0, Y = -20 },
+                new(kf1) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 },
+                new(kf2) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 })
+                { Ease = SinInOut, Label = "Expand" },
+            new(Bar,
+                new(0) { Alpha = 0, ScaleX = 0 },
+                new(kf1) { Alpha = 128, ScaleX = 0 },
+                new(kf2) { Alpha = 255, ScaleX = Config.Mirror ? -1 : 1 })
+                { Ease = SinInOut, Label = "Expand" },
+            new(Sparkles, Hidden[0], Hidden[200], Visible[kf2]) { Label = "Expand" },
+            new(LabelTextNode, Hidden[0], Hidden[kf1], Visible[kf2]) { Label = "Expand" },
+            new(NumTextNode, Hidden[0], Hidden[kf1], Visible[kf2]) { Label = "Expand" }
+        };
     }
 
     private void AnimateSparkles(IReadOnlyList<CustomNode> sparkleNodes)
     {
-        Tweens.Add(new(sparkleNodes[0], 
-                       new(0) { Alpha = 255 }, 
-                       new(300) { Alpha = 204 }, 
-                       new(600) { Alpha = 255 }) 
-                       { Repeat = true });
+        Animator += new Tween(sparkleNodes[0],
+                                 Visible[0],
+                                 new(300) { Alpha = 204 },
+                                 Visible[600]) { Repeat = true };
 
         for (var i = 1; i <= 5; i++) sparkleNodes[i].SetImageFlag(32).SetImageWrap(2);
 
-        Tweens.Add(new(sparkleNodes[1],
-                       new(0) { X = 6, Scale = 1, Alpha = 0 },
-                       new(199) { X = 6, Scale = 1, Alpha = 0 },
-                       new(200) { X = 6, Scale = 1, Alpha = 255 },
-                       new(600) { X = -10, Scale = 0.4f, Alpha = 0 }) 
-                       { Repeat = true });
+        Animator += new Tween[]
+        {
+            new(sparkleNodes[1],
+                new(0) { X = 6, Scale = 1, Alpha = 0 },
+                new(199) { X = 6, Scale = 1, Alpha = 0 },
+                new(200) { X = 6, Scale = 1, Alpha = 255 },
+                new(600) { X = -10, Scale = 0.4f, Alpha = 0 }) { Repeat = true },
 
-        Tweens.Add(new(sparkleNodes[2],
-                       new(0) { X = 4, Scale = 1, Alpha = 0 },
-                       new(269) { X = 4, Scale = 1, Alpha = 0 },
-                       new(270) { X = 4, Scale = 1, Alpha = 255 },
-                       new(630) { X = -4, Scale = 0.4f, Alpha = 0 }) 
-                       { Repeat = true });
+            new(sparkleNodes[2],
+                new(0) { X = 4, Scale = 1, Alpha = 0 },
+                new(269) { X = 4, Scale = 1, Alpha = 0 },
+                new(270) { X = 4, Scale = 1, Alpha = 255 },
+                new(630) { X = -4, Scale = 0.4f, Alpha = 0 }) { Repeat = true },
 
-        Tweens.Add(new(sparkleNodes[3],
-                       new(0) { X = 6, Y = 7, Scale = 0.88f, Alpha = 255 },
-                       new(307) { X = 1, Y = 7, Scale = 0.88f, Alpha = 0 },
-                       new(308) { X = 4, Y = 8, Scale = 1, Alpha = 255 },
-                       new(615) { X = -12, Y = 8, Scale = 0.4f, Alpha = 0 }) 
-                       { Repeat = true });
+            new(sparkleNodes[3],
+                new(0) { X = 6, Y = 7, Scale = 0.88f, Alpha = 255 },
+                new(307) { X = 1, Y = 7, Scale = 0.88f, Alpha = 0 },
+                new(308) { X = 4, Y = 8, Scale = 1, Alpha = 255 },
+                new(615) { X = -12, Y = 8, Scale = 0.4f, Alpha = 0 }) { Repeat = true },
 
-        Tweens.Add(new(sparkleNodes[4],
-                       new(0) { X = 3.75f, Y = 2, Scale = 0.4f, Alpha = 255 },
-                       new(244) { X = -10, Y = 2, Scale = 0.4f, Alpha = 0 },
-                       new(245) { X = 3.75f, Y = 4, Scale = 1, Alpha = 255 },
-                       new(590) { X = -6, Y = 4, Scale = 0.4f, Alpha = 0 }) 
-                       { Repeat = true });
+            new(sparkleNodes[4],
+                new(0) { X = 3.75f, Y = 2, Scale = 0.4f, Alpha = 255 },
+                new(244) { X = -10, Y = 2, Scale = 0.4f, Alpha = 0 },
+                new(245) { X = 3.75f, Y = 4, Scale = 1, Alpha = 255 },
+                new(590) { X = -6, Y = 4, Scale = 0.4f, Alpha = 0 }) { Repeat = true },
 
-        Tweens.Add(new(sparkleNodes[5],
-                       new(0) { X = 3.75f, Y = 0, Scale = 1f, Alpha = 255 },
-                       new(360) { X = -10, Y = 0, Scale = 0.4f, Alpha = 0 },
-                       new(361) { X = 3.5f, Y = 0, Scale = 1, Alpha = 255 },
-                       new(605) { X = -7.5f, Y = 0, Scale = 0.4f, Alpha = 0 }) 
-                       { Repeat = true });
+            new(sparkleNodes[5],
+                new(0) { X = 3.75f, Y = 0, Scale = 1f, Alpha = 255 },
+                new(360) { X = -10, Y = 0, Scale = 0.4f, Alpha = 0 },
+                new(361) { X = 3.5f, Y = 0, Scale = 1, Alpha = 255 },
+                new(605) { X = -7.5f, Y = 0, Scale = 0.4f, Alpha = 0 }) { Repeat = true },
 
-        Tweens.Add(new(sparkleNodes[6],
-                       new(0) { PartId = 5 },
-                       new(350) { PartId = 7 })
-                       { Repeat = true });
+            new(sparkleNodes[6],
+                new(0) { PartId = 5 },
+                new(350) { PartId = 7 }) { Repeat = true }
+        };
+
     }
 
     #endregion
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin(float prog, float prevProg) { if (Config.Collapse) CollapseBar(250, 350); }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) CollapseBar(250, 350); }
 
-    public override void OnIncreaseFromMin(float prog, float prevProg) { if (Config.Collapse) ExpandBar(100, 350); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ExpandBar(100, 350); }
 
     public override void OnFirstRun(float prog)
     {
-        var curWid = CalcBarProperty(prog);
-        Main.SetWidth(curWid);
-        Gain.SetWidth(curWid);
-        Drain.SetWidth(curWid);
-
-        if (prog <= 0 && Config.Collapse) CollapseBar(0, 0);
+        base.OnFirstRun(prog);
+        if (prog <= 0 && Config.HideEmpty) CollapseBar(0, 0);
     }
 
     public override void PostUpdate(float prog, float prevProg)
@@ -269,28 +262,24 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     protected override void StartMilestoneAnim()
     {
-        ClearLabelTweens(ref Tweens, "BarPulse");
+        Animator -= "BarPulse";
         var colorAdjust = new AddRGB(116, -3, -30);
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.PulseSparkles);
-        Tweens.Add(new(Main,
-                       new(0) { AddRGB = Config.PulseColor2 + colorAdjust },
-                       new(800) { AddRGB = Config.PulseColor + colorAdjust },
-                       new(1600) { AddRGB = Config.PulseColor2 + colorAdjust })
-                       { Ease = Eases.SinInOut, Repeat = true, Label = "BarPulse" });
+        Animator += new Tween(Main, 
+                                  new(0) { AddRGB = Config.PulseColor2 + colorAdjust }, 
+                                  new(800) { AddRGB = Config.PulseColor + colorAdjust }, 
+                                  new(1600) { AddRGB = Config.PulseColor2 + colorAdjust }) 
+                                  { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
 
     protected override void StopMilestoneAnim()
     {
-        var colorAdjust = new AddRGB(116, -3, -30);
-        ClearLabelTweens(ref Tweens, "BarPulse");
-        Main.SetAddRGB(Config.MainColor + colorAdjust);
+        Animator -= "BarPulse";
+        Main.SetAddRGB(Config.MainColor + new AddRGB(116, -3, -30));
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.SparkleColor);
     }
 
     public override void PlaceTickMark(float prog) => Sparkles.SetPos(Main.Node->Width - 13f, -0.5f).SetVis(prog > 0);
-
-    public override DrainGainType DGType => Width;
-    public override float CalcBarProperty(float prog) => Math.Clamp(prog, 0f, 1f) * Config.Width;
 
     #endregion
 
@@ -298,7 +287,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public sealed class AddersBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0, 0);
+        public Vector2 Position;
         public float Scale = 1;
         public float Width = 144;
         public float Angle;
@@ -316,25 +305,23 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         public AddRGB PulseSparkles = "0xB35F2FFF";
 
         public bool Mirror;
-        public bool Collapse;
-        
+
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 20), new(255), new(0), TrumpGothic, 22, Center);
-        protected override NumTextProps NumTextDefault => new(enabled:   true, 
-                                                              position:  new(0, 0), 
-                                                              color:     new(255), 
-                                                              edgeColor: new(0), 
-                                                              showBg:    true, 
-                                                              bgColor:   new(0), 
-                                                              font:      MiedingerMed, 
-                                                              fontSize:  18, 
-                                                              align:     Left, 
-                                                              invert:    false);
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: new(255),
+                                                              edgeColor: new(0),
+                                                              showBg: true,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Left,
+                                                              invert: false);
 
-        public AddersBarConfig(WidgetConfig widgetConfig)
+        public AddersBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.AddersBarCfg)
         {
-            NumTextProps = NumTextDefault;
-
             var config = widgetConfig.AddersBarCfg;
+
             if (config == null) return;
 
             Position = config.Position;
@@ -353,24 +340,13 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             PulseColor = config.PulseColor;
             PulseColor2 = config.PulseColor2;
             PulseSparkles = config.PulseSparkles;
-
-            MilestoneType = config.MilestoneType;
-            Milestone = config.Milestone;
-            SplitCharges = config.SplitCharges;
-
-            AnimationLength = config.AnimationLength;
-            Invert = config.Invert;
+            
             Mirror = config.Mirror;
-            Collapse = config.Collapse;
-
-            NumTextProps = config.NumTextProps;
+            
             LabelTextProps = config.LabelTextProps;
         }
 
-        public AddersBarConfig()
-        {
-            NumTextProps = NumTextDefault;
-        }
+        public AddersBarConfig() { }
     }
 
     public override GaugeBarWidgetConfig GetConfig => Config;
@@ -388,16 +364,14 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public override void ApplyConfigs()
     {
         var frameWidth = Config.Width + 56;
-        var halfFrame = frameWidth / 2f;
-        var halfWidth = Config.Width / 2;
 
-        WidgetRoot.SetPos(Config.Position+new Vector2(100,38.5f))
-                  .SetOrigin(0, 16f)
+        WidgetRoot.SetPos(Config.Position + new Vector2(100, 38.5f))
                   .SetScale(Config.Scale);
 
+
         Frame.SetWidth(frameWidth)
-             .SetX(-halfFrame)
-             .SetOrigin(halfFrame, 16)
+             .SetX(frameWidth / -2f)
+             .SetOrigin(frameWidth / 2f, 16)
              .SetMultiply(Config.FrameColor);
 
         Plate.SetVis(Config.ShowPlate)
@@ -405,30 +379,33 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
         BarFrame.SetRotation(Config.Angle * 0.01745329f);
 
-        Bar.SetX(-halfWidth)
-           .SetOrigin(halfWidth, 0)
+        Bar.SetX(Config.Width / -2)
+           .SetOrigin(Config.Width / 2, 0)
            .SetWidth(Config.Width)
-           .SetScaleX(Math.Abs(Bar.ScaleX) * (Config.Mirror ? -1 : 1));
+           .SetScaleX(Config.Mirror ? -1 : 1);
 
         Backdrop.SetWidth(Config.Width)
                 .SetAddRGB(Config.BGColor, true);
 
         var colorAdjust = new AddRGB(116, -3, -30);
         var barSize = Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge * Config.Width;
-        Drain.SetAddRGB(Config.DrainColor + colorAdjust).SetWidth(0);
-        Gain.SetAddRGB(Config.GainColor + colorAdjust).SetWidth(0);
-        Main.SetWidth(CalcBarProperty(CalcProg()));
-        
+        Drain.SetAddRGB(Config.DrainColor + colorAdjust)
+             .SetWidth(0)
+             .DefineTimeline(BarTimeline);
+
+        Gain.SetAddRGB(Config.GainColor + colorAdjust).SetWidth(0).DefineTimeline(BarTimeline);
+        Main.DefineTimeline(BarTimeline).SetProgress(CalcProg());
+
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.SparkleColor);
 
-        HandleMilestone(CalcProg(),true);
+        HandleMilestone(CalcProg(), true);
 
         Sparkles.SetX(barSize - 13);
-        
-        LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width/-2,0));
+
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width / -2, 0));
         LabelTextNode.SetWidth(Config.Width);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new((Config.Width / 2) + 88,11.5f));
+        NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width / 2) + 88, 11.5f));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -437,11 +414,11 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144:30, 2000, 1, ref update);
+        FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1, ref update);
         FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
         RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
         ToggleControls("Backplate", ref Config.ShowPlate, ref update);
-        if (Config.ShowPlate) Config.Width = Math.Max(Config.Width, 144);
+        if (Config.ShowPlate) Config.Width = Max(Config.Width, 144);
 
         Heading("Colors");
 
@@ -451,7 +428,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
         ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
         ColorPickerRGB("Sparkles", ref Config.SparkleColor, ref update);
-        
+
         if (Config.MilestoneType > 0)
         {
             ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
@@ -464,7 +441,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.Collapse, ref update)) CollapseCheck(Config.Collapse);
+        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck(Config.HideEmpty);
 
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
@@ -476,15 +453,15 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         widgetConfig.AddersBarCfg = Config;
     }
 
-    private List<FontAwesomeIcon> ArrowIcons => 
-        Math.Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } : 
-        Config.Angle > 45            ? new() { ArrowDown, ArrowUp } :
-        Config.Angle < -45           ? new() { ArrowUp, ArrowDown } :
+    private List<FontAwesomeIcon> ArrowIcons =>
+        Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
+        Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
+        Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
 
     private void CollapseCheck(bool collapse)
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
+        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
             if (collapse) CollapseBar(250, 350);
             else ExpandBar(100, 350);

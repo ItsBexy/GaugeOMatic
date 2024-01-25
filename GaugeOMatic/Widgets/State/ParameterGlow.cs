@@ -1,13 +1,17 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -42,11 +46,11 @@ public sealed unsafe class ParameterGlow : StateWidget
         BarGlow = NineGridFromPart(0, 0,9,9,9,9).SetNineGridBlend(2);
         BarGlow2 = NineGridFromPart(0, 0, 9, 9, 9, 9).SetNineGridBlend(2).SetOrigin(80,10);
 
-        Tweens.Add(new(BarGlow2,
-                       new(0) {Alpha=0,ScaleX=1,ScaleY=1},
-                       new(600) {Alpha=255,ScaleX=1.02f,ScaleY=1.2f},
-                       new(1200) { Alpha = 0,ScaleX=1.05f,ScaleY=1.6f})
-                       {Repeat=true });
+        Animator += new Tween(BarGlow2,
+                              new(0) {Alpha=0,ScaleX=1,ScaleY=1},
+                              new(600) {Alpha=255,ScaleX=1.02f,ScaleY=1.2f},
+                              new(1200) { Alpha = 0,ScaleX=1.05f,ScaleY=1.6f})
+                              {Repeat=true };
 
         return new CustomNode(CreateResNode(), BarGlow, BarGlow2).SetAlpha(0);
     }
@@ -65,8 +69,8 @@ public sealed unsafe class ParameterGlow : StateWidget
     {
         if (Tracker.CurrentData.State > 0) WidgetRoot.SetAlpha(255);
     }
-    public override void Activate(int current) => Tweens.Add(new(WidgetRoot,new(0){Alpha=0},new(250){Alpha=255}));
-    public override void Deactivate(int previous) => Tweens.Add(new(WidgetRoot, new(0) { Alpha = 255 }, new(250) { Alpha = 0 }));
+    public override void Activate(int current) => Animator += new Tween(WidgetRoot,Hidden[0],Visible[250]);
+    public override void Deactivate(int previous) => Animator += new Tween(WidgetRoot, Visible[0], Hidden[250]);
     public override void StateChange(int current, int previous) { }
 
     #endregion

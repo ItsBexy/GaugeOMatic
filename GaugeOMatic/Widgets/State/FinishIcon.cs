@@ -10,7 +10,7 @@ using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.ShimmerHalo;
+using static GaugeOMatic.Widgets.FinishIcon;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
@@ -20,40 +20,40 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class ShimmerHalo : StateWidget
+public sealed unsafe class FinishIcon : StateWidget
 {
-    public ShimmerHalo(Tracker tracker) : base(tracker) { }
+    public FinishIcon(Tracker tracker) : base(tracker) { }
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
     public static WidgetInfo GetWidgetInfo => new()
     {
-        DisplayName = "Shimmering Halo",
+        DisplayName = "Finish Icon",
         Author = "ItsBexy",
-        Description = "A revolving circular aura that appears while the tracker's condition is met.",
+        Description = "A widget recreating DNC's Standard Finish timer",
         WidgetTags = State
     };
 
-    public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/gachaeffect03.tex", new Vector4(0, 0, 256, 256))
+    public override CustomPartsList[] PartsLists { get; } =
+    {
+        new("ui/uld/JobHudDNC0.tex",
+            new(168,136,56,56),
+            new(224,136,56,56))
     };
 
     #region Nodes
 
-    public CustomNode Halo;
+    public CustomNode Symbol;
 
     public override CustomNode BuildRoot()
     {
-        Halo = ImageNodeFromPart(0,0)
-               .RemoveFlags(SetVisByAlpha)
-               .SetAlpha(0)
-               .SetImageFlag(32)
-               .SetOrigin(128, 128)
-               .SetPos(-128, -128);
+        Symbol = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
+                                        .SetAlpha(0)
+                                        .SetOrigin(28,28);
 
         BeginRotation();
 
-        return new(CreateResNode(), Halo);
+        return new CustomNode(CreateResNode(), Symbol).SetOrigin(28,28);
     }
 
     private void BeginRotation()
@@ -62,12 +62,12 @@ public sealed unsafe class ShimmerHalo : StateWidget
         var rpm = Abs(Config.Speed);
         if (rpm > 0.005f)
         {
-            var startAngle = Halo.Node->Rotation % 6.283185f;
+            var startAngle = Symbol.Node->Rotation % 6.283185f;
             var endAngle = startAngle + (Config.Speed >= 0 ? 6.283185f : -6.283185f);
-            Animator += new Tween(Halo, 
-                                  new(0) { Rotation = startAngle }, 
+            Animator += new Tween(Symbol,
+                                  new(0) { Rotation = startAngle },
                                   new((int)(60000f / rpm)) { Rotation = endAngle }) 
-                                  { Repeat = true, Label="RotationTween" };
+                                  { Repeat = true, Label = "RotationTween" };
         }
     }
 
@@ -81,23 +81,23 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     #region UpdateFuncs
 
-    public override void PostUpdate() { if (!Halo.Visible) StopRotation(); }
+    public override void PostUpdate() { if (!Symbol.Visible) StopRotation(); }
 
     public override void OnFirstRun(int current)
     {
-        Halo.SetMultiply(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
-        Halo.SetAlpha(current > 0).SetVis(current > 0);
+        Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State));
+        Symbol.SetAlpha(current > 0).SetVis(current > 0);
     }
 
     public override void Activate(int current)
     {
-        var color = Config.ColorList.ElementAtOrDefault(current);
+        var color = Config.Colors.ElementAtOrDefault(current);
 
-        Halo.Show();
+        Symbol.Show();
         Animator -= "ShimmerAlpha";
-        Animator += new Tween(Halo, 
-                              new(0) { Alpha = 0, MultRGB = color }, 
-                              new(200) { Alpha = 255, MultRGB = color })
+        Animator += new Tween(Symbol,
+                              new(0) { Alpha = 0, AddRGB = color },
+                              new(200) { Alpha = 255, AddRGB = color }) 
                               { Label = "ShimmerAlpha" };
 
         BeginRotation();
@@ -106,48 +106,52 @@ public sealed unsafe class ShimmerHalo : StateWidget
     public override void Deactivate(int previous)
     {
         Animator -= "ShimmerAlpha";
-        Animator += new Tween(Halo, Visible[0], Hidden[200]) { Complete = () => Halo.Hide(), Label = "ShimmerAlpha" };
+        Animator += new Tween(Symbol, Visible[0], Hidden[200]) { Complete = () => Symbol.Hide(), Label = "ShimmerAlpha" };
     }
 
-    public override void StateChange(int current, int previous) =>
-        Animator += new Tween(Halo, 
-                              new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) }, 
-                              new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) });
+    public override void StateChange(int current, int previous)
+    {
+        Animator += new Tween(Symbol,
+                              new(0) { AddRGB = Config.Colors.ElementAtOrDefault(previous) },
+                              new(200) { AddRGB = Config.Colors.ElementAtOrDefault(current) });
+    }
 
     #endregion
 
     #region Configs
 
-    public class ShimmerHaloConfig
+    public class FinishIconConfig
     {
-        public Vector2 Position = new(83, 89);
-        public Vector2 Scale = new(1);
+        public Vector2 Position = new(0);
+        public float Scale = 1;
         public float Angle;
-        public List<ColorRGB> ColorList = new();
-        public float Speed = 20f;
+        public List<AddRGB> Colors = new();
+        public float Speed = 11.5f;
+        public bool Tech;
 
-        public ShimmerHaloConfig(WidgetConfig widgetConfig)
+        public FinishIconConfig(WidgetConfig widgetConfig)
         {
-            var config = widgetConfig.ShimmerHaloCfg;
+            var config = widgetConfig.FinishIconCfg;
 
             if (config == null) return;
 
             Position = config.Position;
             Scale = config.Scale;
             Angle = config.Angle;
-            ColorList = config.ColorList;
+            Colors = config.Colors;
             Speed = config.Speed;
+            Tech = config.Tech;
         }
 
-        public ShimmerHaloConfig() { }
+        public FinishIconConfig() { }
 
         public void FillColorList(int maxState)
         {
-            while (ColorList.Count <= maxState) ColorList.Add(new(255,255,255));
+            while (Colors.Count <= maxState) Colors.Add(new(0));
         }
     }
 
-    public ShimmerHaloConfig Config;
+    public FinishIconConfig Config;
 
     public override void InitConfigs()
     {
@@ -166,10 +170,11 @@ public sealed unsafe class ShimmerHalo : StateWidget
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale)
                   .SetRotation(Config.Angle * 0.0174532925199433f);
+        
+        Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State))
+              .SetPartId((ushort)(Config.Tech?1:0));
 
-        Halo.SetMultiply(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
-
-        if (Halo.Visible) { BeginRotation(); }
+        if (Symbol.Visible) { BeginRotation(); }
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -180,20 +185,21 @@ public sealed unsafe class ShimmerHalo : StateWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
         FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
+        RadioControls("Icon", ref Config.Tech, new() { false, true }, new() { "Standard", "Technical" }, ref update);
 
-        Heading("Colors");
+        Heading("Color Modifier");
 
         var maxState = Tracker.CurrentData.MaxState;
 
         for (var i = 1; i <= maxState; i++)
         {
-            var color = Config.ColorList[i];
+            var color = Config.Colors[i];
             var label = $"{Tracker.StateNames[i]}";
-            if (ColorPickerRGB(label, ref color, ref update)) Config.ColorList[i] = color;
+            if (ColorPickerRGB(label, ref color, ref update)) Config.Colors[i] = color;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ShimmerHaloCfg = Config;
+        widgetConfig.FinishIconCfg = Config;
     }
 
     #endregion
@@ -202,5 +208,5 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
 public partial class WidgetConfig
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public ShimmerHaloConfig? ShimmerHaloCfg { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public FinishIconConfig? FinishIconCfg { get; set; }
 }
