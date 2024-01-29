@@ -7,6 +7,7 @@ using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -20,16 +21,15 @@ public class NumTextNode : CustomNode
 {
     public NumTextProps Props { get; set; } = new();
     public CustomNode BgNode;
-    public static CustomPartsList BgPart { get; } = new("ui/uld/JobHudNumBg.tex", new Vector4(0, 0, 60, 40));
     public static unsafe implicit operator AtkResNode*(NumTextNode n) => n.Node;
 
     public unsafe NumTextNode()
     {
-        BgNode = new CustomNode(CreateNineGridNode(BgPart, 0)).SetNineGridOffset(0, 21, 0, 21)
-                                                              .SetSize(65, 40)
-                                                              .SetPos(-17, -21)
-                                                              .SetOrigin(16, 20)
-                                                              .Hide();
+        BgNode = new CustomNode(CreateNineGridNode(CommonParts.BgPart, 0)).SetNineGridOffset(0, 21, 0, 21)
+                                                                 .SetSize(65, 40)
+                                                                 .SetPos(-17, -21)
+                                                                 .SetOrigin(16, 20)
+                                                                 .Hide();
 
         Node = (AtkResNode*)CreateTextNode(" ", 18, 20);
         Children = new[] { BgNode };

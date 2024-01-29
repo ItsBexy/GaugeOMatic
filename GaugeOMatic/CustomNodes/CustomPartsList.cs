@@ -12,14 +12,18 @@ public unsafe partial class CustomNodeManager
     public struct CustomPartsList : IDisposable
     {
         public AtkUldPartsList* AtkPartsList;
-        private static AtkUldAsset* Asset;
+        public AtkUldAsset* Asset;
+        public string TexturePath;
+        public int Count;
 
         public static implicit operator AtkUldPartsList*(CustomPartsList c) => c.AtkPartsList;
 
         public CustomPartsList(string texturePath, params Vector4[] customParts)
         {
-            Asset = CreateAsset(texturePath, 1);
-            AtkPartsList = CreateAtkPartsList(customParts);
+            Count = customParts.Length;
+            TexturePath = texturePath;
+            Asset = CreateAsset(TexturePath, 1);
+            AtkPartsList = CreateAtkPartsList(customParts,Asset);
         }
 
         private static AtkUldAsset* CreateAsset(string texturePath, uint assetID)
@@ -31,7 +35,7 @@ public unsafe partial class CustomNodeManager
             return atkAsset;
         }
 
-        private static AtkUldPartsList* CreateAtkPartsList(IReadOnlyList<Vector4> customParts)
+        private static AtkUldPartsList* CreateAtkPartsList(IReadOnlyList<Vector4> customParts, AtkUldAsset* asset)
         {
             var count = customParts.Count;
 
@@ -40,11 +44,12 @@ public unsafe partial class CustomNodeManager
 
             for (var i = 0; i < count; i++)
             {
-                atkParts[i].U = (ushort)customParts[i].X;
-                atkParts[i].V = (ushort)customParts[i].Y;
-                atkParts[i].Width = (ushort)customParts[i].Z;
-                atkParts[i].Height = (ushort)customParts[i].W;
-                atkParts[i].UldAsset = Asset;
+                var part = customParts[i];
+                atkParts[i].U = (ushort)part.X;
+                atkParts[i].V = (ushort)part.Y;
+                atkParts[i].Width = (ushort)part.Z;
+                atkParts[i].Height = (ushort)part.W;
+                atkParts[i].UldAsset = asset;
             }
 
             atkPartsList->Id = 1;
@@ -56,8 +61,20 @@ public unsafe partial class CustomNodeManager
 
         public readonly void Dispose()
         {
-            IMemorySpace.Free(AtkPartsList->Parts, (ulong)sizeof(AtkUldPart) * AtkPartsList->PartCount);
-            IMemorySpace.Free(AtkPartsList, (ulong)sizeof(AtkUldPartsList));
+            try
+            {
+                IMemorySpace.Free(AtkPartsList->Parts, (ulong)sizeof(AtkUldPart) * AtkPartsList->PartCount);
+                IMemorySpace.Free(AtkPartsList, (ulong)sizeof(AtkUldPartsList));
+                Asset->AtkTexture.ReleaseTexture();
+                IMemorySpace.Free(Asset,(ulong)sizeof(AtkUldAsset));
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error Disposing parts list!\n" +
+                          $"Texture path: {TexturePath}\n" +
+                          $"Parts: {Count}\n" +
+                          $"{ex.StackTrace}");
+            }
         }
     }
 }

@@ -80,6 +80,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         LabelTextNode.SetWidth(144);
 
         NumTextNode = new();
+        
         BarFrame = new CustomNode(CreateResNode(), Plate, Bar, Frame).SetOrigin(0, 11);
 
         return new CustomNode(CreateResNode(), BarFrame, LabelTextNode, NumTextNode).SetOrigin(0, 16f);

@@ -7,6 +7,7 @@ using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 
 namespace GaugeOMatic;
 
@@ -58,6 +59,8 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
         ConfigWindow.Dispose();
 
         CommandManager.RemoveHandler(CommandName);
+
+        DisposeSharedParts();
     }
 
     public static void OnCommand(string command, string args) => ConfigWindow.IsOpen = !ConfigWindow.IsOpen;

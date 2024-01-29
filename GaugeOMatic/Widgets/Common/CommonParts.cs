@@ -1,8 +1,20 @@
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 
 namespace GaugeOMatic.Widgets.Common;
 internal static class CommonParts
 {
+    /* Shared (dispose with plugin) */
+
+    public static CustomPartsList BgPart { get; } = new("ui/uld/JobHudNumBg.tex", new Vector4(0, 0, 60, 40));
+
+    public static void DisposeSharedParts()
+    {
+        BgPart.Dispose();
+    }
+
+    /* Instanced (dispose with Widget) */
+
     public static CustomPartsList BLM0Parts =>
         new ("ui/uld/JobHudBLM0.tex",
              new(0,0,162,144),    // 0  moon

@@ -3,3 +3,4 @@ obj/
 bin/
 *.user
 /GaugeOMatic/ideas.txt
+/GaugeOMatic/Widgets/GaugeBars/CrystalConfBar.cs
