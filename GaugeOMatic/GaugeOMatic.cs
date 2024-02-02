@@ -36,9 +36,9 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
 
         WidgetInfo.BuildWidgetList();
         ActionData.SetupHooks();
-        
+
         TrackerManager = new(Configuration);
-        
+
         ConfigWindow = new(TrackerManager);
         PresetWindow = new(TrackerManager);
 
@@ -52,7 +52,7 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     {
         PluginInterface.UiBuilder.Draw -= DrawWindows;
         PluginInterface.UiBuilder.OpenConfigUi -= OpenConfigWindow;
-        
+
         TrackerManager.Dispose();
 
         WindowSystem.RemoveAllWindows();

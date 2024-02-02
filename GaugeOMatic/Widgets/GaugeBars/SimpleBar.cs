@@ -28,7 +28,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
+    public static WidgetInfo GetWidgetInfo => new()
     {
         DisplayName = "Simple Bar",
         Author = "ItsBexy",
@@ -104,10 +104,10 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         Animator -= "BarPulse";
         var colorFrame1 = new KeyFrame { AddRGB = Config.PulseColor  };
         var colorFrame2 = new KeyFrame { AddRGB = Config.PulseColor2 };
-        Animator += new Tween(Main, 
+        Animator += new Tween(Main,
                               colorFrame1[0],
                               colorFrame2[800],
-                              colorFrame1[1600]) 
+                              colorFrame1[1600])
                               { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
 
     }
@@ -137,17 +137,17 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
         public AddRGB PulseColor = "0xE39A63ff";
         public AddRGB PulseColor2 = "0xD16347FF";
-        
+
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 0), new(255), new(0), MiedingerMed, 18, Center);
-        protected override NumTextProps NumTextDefault => new(enabled:   true, 
-                                                              position:  new(0, 0), 
-                                                              color:     new(255), 
-                                                              edgeColor: "0x9f835bff", 
-                                                              showBg:    true, 
-                                                              bgColor:   new(0), 
-                                                              font:      MiedingerMed, 
-                                                              fontSize:  18, 
-                                                              align:     Right, 
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
+                                                              position:  new(0, 0),
+                                                              color:     new(255),
+                                                              edgeColor: "0x9f835bff",
+                                                              showBg:    true,
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed,
+                                                              fontSize:  18,
+                                                              align:     Right,
                                                               showZero:  true,
                                                               invert:    false);
 
@@ -226,7 +226,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 50, 2000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
 

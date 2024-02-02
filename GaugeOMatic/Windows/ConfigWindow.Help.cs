@@ -37,10 +37,10 @@ public partial class ConfigWindow
     {
         if (ImGui.BeginTabItem("About the Plugin"))
         {
-            
+
             ImGui.TextWrapped(AboutText);
-            
-            
+
+
 
 
             ImGui.EndTabItem();

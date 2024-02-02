@@ -40,7 +40,7 @@ public class NINModule : JobModule
     {
         ToggleControls("Hide Ninki Gauge", ref TweakConfigs.NINHideNinki, ref update);
         HideWarning(TweakConfigs.NINHideNinki);
-        
+
         ToggleControls("Hide Huton Gauge", ref TweakConfigs.NINHideHuton, ref update);
         HideWarning(TweakConfigs.NINHideHuton);
 

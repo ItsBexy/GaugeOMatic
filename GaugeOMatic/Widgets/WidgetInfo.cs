@@ -66,7 +66,7 @@ public enum WidgetTags
     // ReSharper disable once UnusedMember.Global
     HasJobRestrictions   = 0x10,
     HasAddonRestrictions = 0x20, // is only designed to appear on certain HUD elements
-    
+
     Replica              = 0x40,  // Designed to recreate (in full or in part) the appearance of an existing job gauge
     MultiComponent       = 0x80,
 

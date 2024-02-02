@@ -85,7 +85,7 @@ public class PresetWindow : Window, IDisposable
         ImGui.BeginGroup();
 
         var filter = Configuration.PresetFiltering;
-        
+
         ImGui.SameLine();
         if (ImGui.RadioButton("All", ref filter, 0)) { Configuration.PresetFiltering = 0; Configuration.Save(); }
         ImGui.SameLine();
@@ -143,7 +143,7 @@ public class PresetWindow : Window, IDisposable
             if (ImGuiComponents.IconButtonWithText(Plus, $"Add all to {module.Abbr}")) ApplyPreset(module, selectedPreset.Clone());
             ImGui.SameLine();
             if (ImGuiComponents.IconButtonWithText(PaintRoller, "Overwrite Current")) ApplyPreset(module, selectedPreset.Clone(), true);
-            
+
             ImGui.EndGroup();
         }
 
@@ -160,7 +160,7 @@ public class PresetWindow : Window, IDisposable
 
             ImGui.TableNextColumn();
             ImGui.TextColored(new(1, 1, 1, 0.6f), "WIDGET");
-            
+
             foreach (var trackerConfig in selectedPreset.Trackers)
             {
                 var attr = trackerConfig.DisplayAttributes();

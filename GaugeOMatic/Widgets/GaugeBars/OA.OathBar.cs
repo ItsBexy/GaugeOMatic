@@ -137,7 +137,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
                               new(0) { ScaleX = 0.2f, Alpha = 0 },
                               new(130) { ScaleX = 1, Alpha = 127 },
                               new(260) { ScaleX = 1.2f, Alpha = 127 },
-                              new(460) { ScaleX = 0.2f, Alpha = 0 }) 
+                              new(460) { ScaleX = 0.2f, Alpha = 0 })
                               { Repeat = true, Ease = SinInOut };
 
         return new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main, TickMark).SetY(51);
@@ -285,7 +285,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
         Animator -= "BarPulse";
         Animator += new Tween(Glow,
                               new(0, Glow),
-                              new(200) { ScaleX = endX, ScaleY = 1.2f, Alpha = 0 }) 
+                              new(200) { ScaleX = endX, ScaleY = 1.2f, Alpha = 0 })
                               { Label = "BarPulse" };
 
         var colorAdjust = new AddRGB(86, 47, -21);
@@ -361,7 +361,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
             PulseColor3 = config.PulseColor3;
 
             Mirror = config.Mirror;
-            
+
             LabelTextProps = config.LabelTextProps;
         }
 
@@ -455,7 +455,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, Config.ShowFiligree ? 100 : 32, 2000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
         ToggleControls("Filigree", ref Config.ShowFiligree, ref update);
         if (Config.ShowFiligree) Config.Width = Max(Config.Width, 100);

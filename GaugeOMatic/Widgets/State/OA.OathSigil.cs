@@ -34,7 +34,7 @@ public sealed unsafe class OathSigil : StateWidget
 
     public override CustomPartsList[] PartsLists { get; } =
     {
-        new("ui/uld/JobHudPLD.tex", 
+        new("ui/uld/JobHudPLD.tex",
             new (0, 120, 180, 180),  // 0 sigil
             new(316, 306, 78, 52))   // 1 wing
     };

@@ -274,7 +274,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         Glow.SetAddRGB(Config.PulseColor3 + new AddRGB(-127, -46, 21));
 
         NumTextNode.ApplyProps(Config.NumTextProps, new Vector2(121, 111));
-        
+
         LabelTextNode.ApplyProps(Config.LabelTextProps, new Vector2(36, 66))
                      .SetWidth(172);
     }
@@ -285,7 +285,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
 
         Heading("Colors");

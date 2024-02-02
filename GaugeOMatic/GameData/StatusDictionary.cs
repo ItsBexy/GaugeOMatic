@@ -8,10 +8,10 @@ namespace GaugeOMatic.GameData;
 
 public abstract partial class StatusData
 {
-    public static readonly Dictionary<uint, StatusRef> Statuses = new() 
+    public static readonly Dictionary<uint, StatusRef> Statuses = new()
     {
          #region Role/General
-         
+
         { 2,    new(2,    Job.None, "Stun",                    Target, 1, 1,  Ranged                          ) },
         { 13,   new(13,   Job.None, "Bind",                    Target, 1, 7,  Ranged                          ) },
         { 14,   new(14,   Job.None, "Heavy",                   Target, 1, 10, Ranged                          ) },
@@ -31,7 +31,7 @@ public abstract partial class StatusData
          #endregion
 
          #region Melee
-         
+
         { 102,  new(102,  MNK, "Mantra",                   Self,   1, 15 ) },
         { 107,  new(107,  MNK, "Opo-opo Form",             Self,   1, 30 ) },
         { 108,  new(108,  MNK, "Raptor Form",              Self,   1, 30 ) },
@@ -104,7 +104,7 @@ public abstract partial class StatusData
          #endregion
 
          #region Ranged
-         
+
         { 122,  new(122,  BRD, "Straight Shot Ready",      Self,   1, 30 ) },
         { 125,  new(125,  BRD, "Raging Strikes",           Self,   1, 20 ) },
         { 128,  new(128,  BRD, "Barrage",                  Self,   1, 10 ) },
@@ -152,7 +152,7 @@ public abstract partial class StatusData
          #endregion
 
          #region Caster
-         
+
         { 163,  new(163,  BLM, "Thunder",                  Target, 1, 30 , seeAlso: new() { 161 } ) },
         { 164,  new(164,  BLM, "Thundercloud",             Self,   1, 40 ) },
         { 165,  new(165,  BLM, "Firestarter",              Self,   1, 30 ) },
@@ -186,7 +186,7 @@ public abstract partial class StatusData
          #endregion
 
          #region Tank
-         
+
         { 74,   new(74,   PLD, "Sentinel",                 Self,   1, 15 ) },
         { 76,   new(76,   PLD, "Fight or Flight",          Self,   1, 20 ) },
         { 77,   new(77,   PLD, "Bulwark",                  Self,   1, 10 ) },
@@ -248,7 +248,7 @@ public abstract partial class StatusData
          #endregion
 
          #region Healer
-         
+
         { 3,    new(3,    WHM, "Sleep",                    Target, 1, 30 ) },
         { 150,  new(150,  WHM, "Medica II",                Self,   1, 15 ) },
         { 155,  new(155,  WHM, "Freecure",                 Self,   1, 15 ) },
@@ -334,7 +334,7 @@ public abstract partial class StatusData
 
         #endregion
     };
-    
+
    /* public static void StatusHarvest(Configuration configuration)
     {
         if (PlayerStatus != null)

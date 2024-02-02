@@ -34,7 +34,7 @@ public abstract class JobModule : IDisposable
     public IEnumerable<Widget?> WidgetList => TrackerList.Select(static t => t.Widget);
     public IEnumerable<Tracker> DrawOrder => TrackerList.ToArray().OrderBy(static t => t.TrackerConfig.Index);
     public IEnumerable<Tracker> BuildOrder => DrawOrder.Where(static t => t.TrackerConfig.Enabled).Reverse();
-  
+
     public TrackerConfig[] TrackerConfigList;
     public TrackerConfig[] SaveOrder => TrackerConfigList.OrderBy(static t => t.Index).ToArray();
 
@@ -73,7 +73,7 @@ public abstract class JobModule : IDisposable
             var newtracker = Tracker.Create(this, trackerConfig);
             if (newtracker != null) trackerList.Add(newtracker);
         }
-        
+
         return trackerList;
     }
 
@@ -125,7 +125,7 @@ public abstract class JobModule : IDisposable
         AddonLifecycle.UnregisterListener(PreFinalize, WatchedAddon, FinalizeHandler);
         AddonLifecycle.UnregisterListener(PostUpdate, WatchedAddon, ReqUpdateHandler);
     }
-    
+
     public void SetupHandler(AddonEvent type, AddonArgs args)
     {
         foreach (var module in TrackerManager.JobModules) module.DisposeTrackers();

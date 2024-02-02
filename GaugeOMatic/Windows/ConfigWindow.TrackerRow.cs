@@ -21,13 +21,13 @@ public partial class ConfigWindow
         ImGui.TableNextRow();
 
         ImGui.TableNextColumn();
-        
+
         DeleteButton(tracker, hash);
         SameLineSquished();
         EnabledCheckbox(tracker, hash, ref update);
 
         ImGui.TableNextColumn();
-        
+
         var displayProps = tracker.TrackerConfig.DisplayAttributes();
         WriteIcon(displayProps.Icon, displayProps.TypeDesc, displayProps.Color);
 
@@ -35,7 +35,7 @@ public partial class ConfigWindow
 
         ImGui.TableNextColumn();
         LayerControls(tracker, hash, index, ref update);
-        
+
         ImGui.TableNextColumn();
         tracker.WidgetMenuTable.Draw("[Select Widget]", 200f, ref update);
 

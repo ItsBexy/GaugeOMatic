@@ -80,7 +80,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         LabelTextNode.SetWidth(144);
 
         NumTextNode = new();
-        
+
         BarFrame = new CustomNode(CreateResNode(), Plate, Bar, Frame).SetOrigin(0, 11);
 
         return new CustomNode(CreateResNode(), BarFrame, LabelTextNode, NumTextNode).SetOrigin(0, 16f);
@@ -266,10 +266,10 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Animator -= "BarPulse";
         var colorAdjust = new AddRGB(116, -3, -30);
         for (var i = 0; i <= 6; i++) Sparkles[i].SetAddRGB(Config.PulseSparkles);
-        Animator += new Tween(Main, 
-                                  new(0) { AddRGB = Config.PulseColor2 + colorAdjust }, 
-                                  new(800) { AddRGB = Config.PulseColor + colorAdjust }, 
-                                  new(1600) { AddRGB = Config.PulseColor2 + colorAdjust }) 
+        Animator += new Tween(Main,
+                                  new(0) { AddRGB = Config.PulseColor2 + colorAdjust },
+                                  new(800) { AddRGB = Config.PulseColor + colorAdjust },
+                                  new(1600) { AddRGB = Config.PulseColor2 + colorAdjust })
                                   { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
 
@@ -341,9 +341,9 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             PulseColor = config.PulseColor;
             PulseColor2 = config.PulseColor2;
             PulseSparkles = config.PulseSparkles;
-            
+
             Mirror = config.Mirror;
-            
+
             LabelTextProps = config.LabelTextProps;
         }
 
@@ -416,7 +416,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
         ToggleControls("Backplate", ref Config.ShowPlate, ref update);
         if (Config.ShowPlate) Config.Width = Max(Config.Width, 144);

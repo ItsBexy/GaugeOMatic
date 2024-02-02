@@ -34,7 +34,7 @@ public class Animator : IDisposable, IEnumerable<Tween>
         Tweens = Tweens.Concat(t).ToList();
         return this;
     }
-    
+
     public static Animator operator +(Animator a, Tween t) => a.Add(t);
     public static Animator operator +(Animator a, IEnumerable<Tween> t) => a.Add(t);
 

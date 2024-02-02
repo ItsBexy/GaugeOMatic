@@ -170,19 +170,19 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     private void SpendAnim() =>
         Animator += new Tween[]
         {
-            new(Cloud1, 
-                new(0) { ScaleX = 2.65f, ScaleY = 2.15f, Alpha = 204 }, 
-                new(70) { ScaleX = 2.95f, ScaleY = 2.4f, Alpha = 204 }, 
+            new(Cloud1,
+                new(0) { ScaleX = 2.65f, ScaleY = 2.15f, Alpha = 204 },
+                new(70) { ScaleX = 2.95f, ScaleY = 2.4f, Alpha = 204 },
                 new(650) { ScaleX = 5.5f, ScaleY = 4.5f, Alpha = 0 }),
-            new(Cloud2, 
-                new(0) { ScaleX = 3.1f, ScaleY = 2.1f, Alpha = 206 }, 
-                new(100) { ScaleX = 4f, ScaleY = 3f, Alpha = 222 }, 
+            new(Cloud2,
+                new(0) { ScaleX = 3.1f, ScaleY = 2.1f, Alpha = 206 },
+                new(100) { ScaleX = 4f, ScaleY = 3f, Alpha = 222 },
                 new(650) { ScaleX = 4.5f, ScaleY = 3.5f, Alpha = 0 }),
-            new(Scroll, 
-                new(0) { X = 0, Y = 0 }, 
+            new(Scroll,
+                new(0) { X = 0, Y = 0 },
                 new(50) { X = 0, Y = 1.95f },
-                new(150) { X = -0.85f, Y = -0.95f }, 
-                new(200) { X = 0.95f, Y = 0 }, 
+                new(150) { X = -0.85f, Y = -0.95f },
+                new(200) { X = 0.95f, Y = 0 },
                 new(250) { X = 0, Y = 0 })
         };
 
@@ -262,17 +262,17 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         public AddRGB FlashH = new(200, 100, 100);
         public AddRGB FlashH2 = new(100, -100, -50);
         public AddRGB BorderGlow = new(100, -50, -120);
-        protected override NumTextProps NumTextDefault => new(enabled:   true, 
-                                                              position:  new(0, 0), 
-                                                              color:     0xCCCCCCFFu, 
-                                                              edgeColor: 0x5534C2FFu, 
-                                                              showBg:    false, 
-                                                              bgColor:   new(0), 
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
+                                                              position:  new(0, 0),
+                                                              color:     0xCCCCCCFFu,
+                                                              edgeColor: 0x5534C2FFu,
+                                                              showBg:    false,
+                                                              bgColor:   new(0),
                                                               font:      MiedingerMed,
                                                               fontSize:  18,
-                                                              align:     Center, 
-                                                              invert:    false, 
-                                                              precision: 0, 
+                                                              align:     Center,
+                                                              invert:    false,
+                                                              precision: 0,
                                                               showZero:  true);
 
         public NinkiReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.NinkiReplicaCfg)
@@ -280,7 +280,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
             var config = widgetConfig.NinkiReplicaCfg;
 
             if (config == null) return;
-            
+
             Position = config.Position;
             Scale = config.Scale;
             Midpoint = config.Midpoint;
@@ -353,7 +353,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         ColorPickerRGB("Drain Color", ref Config.DrainColorV, ref update);
 
         Heading("Behavior");
-        
+
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         PercentControls("Midpoint", ref Config.Midpoint, ref update);
 

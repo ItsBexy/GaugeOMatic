@@ -134,4 +134,21 @@ internal static class CommonParts
             new(316, 138, 68, 68),   // 20 Gem Inactive
             new(348, 70, 68, 68)     // 21 Gem Glow
         );
+
+    public static CustomPartsList SAM0Parts =>
+        new("ui/uld/JobHudSAM0.tex",
+            new(0, 0, 116, 50),     // 0 hilt
+            new(116, 0, 278, 50),   // 1 red blade
+            new(116, 50, 278, 50),  // 2 blade
+            new(116, 100, 278, 50), // 3 glow
+            new(116, 150, 190, 26), // 4 gem pulsar
+            new(32, 50, 34, 60),    // 5 tickmark
+            new(0, 50, 32, 66),     // 6 tassel
+            new(66, 50, 28, 28),    // 7 orb?
+            new(0, 116, 60, 60),    // 8 sparkle
+            new(102, 176, 62, 34),  // 9 numBg
+            new(0, 176, 102, 62),   // 10 gem plate
+            new(66, 78, 24, 20),    // 11 gem
+            new(66, 98, 46, 46)     // 12 gem glow
+        );
 }

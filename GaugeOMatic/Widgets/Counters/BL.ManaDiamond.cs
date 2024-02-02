@@ -117,7 +117,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     {
         Pulses[i].Show();
 
-        Animator += new Tween[] { 
+        Animator += new Tween[] {
             new(Halos[i],
                 new(0) { Scale = 1, Alpha = 0 },
                 new(150) { Scale = 1.2f, Alpha = 200 },
@@ -159,7 +159,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     private void PlateAppear() =>
         Animator += new Tween(WidgetRoot,
                                  new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
-                                 new(200) { Scale = Config.Scale, Alpha = 255 }) 
+                                 new(200) { Scale = Config.Scale, Alpha = 255 })
                                  { Ease = SinInOut };
 
     private void PlateVanish() =>
@@ -193,7 +193,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
                 new(stack[1],
                     new(0) { AddRGB = new(0) },
                     new(870) { AddRGB = new(150) },
-                    new(1290) { AddRGB = new(0) }) 
+                    new(1290) { AddRGB = new(0) })
                     { Repeat = true, Ease = SinInOut, Label = "Pulse" }
             };
         }

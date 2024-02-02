@@ -66,7 +66,7 @@ public sealed unsafe class FinishIcon : StateWidget
             var endAngle = startAngle + (Config.Speed >= 0 ? 6.283185f : -6.283185f);
             Animator += new Tween(Symbol,
                                   new(0) { Rotation = startAngle },
-                                  new((int)(60000f / rpm)) { Rotation = endAngle }) 
+                                  new((int)(60000f / rpm)) { Rotation = endAngle })
                                   { Repeat = true, Label = "RotationTween" };
         }
     }
@@ -97,7 +97,7 @@ public sealed unsafe class FinishIcon : StateWidget
         Animator -= "ShimmerAlpha";
         Animator += new Tween(Symbol,
                               new(0) { Alpha = 0, AddRGB = color },
-                              new(200) { Alpha = 255, AddRGB = color }) 
+                              new(200) { Alpha = 255, AddRGB = color })
                               { Label = "ShimmerAlpha" };
 
         BeginRotation();
@@ -124,7 +124,6 @@ public sealed unsafe class FinishIcon : StateWidget
     {
         public Vector2 Position = new(0);
         public float Scale = 1;
-        public float Angle;
         public List<AddRGB> Colors = new();
         public float Speed = 11.5f;
         public bool Tech;
@@ -137,7 +136,6 @@ public sealed unsafe class FinishIcon : StateWidget
 
             Position = config.Position;
             Scale = config.Scale;
-            Angle = config.Angle;
             Colors = config.Colors;
             Speed = config.Speed;
             Tech = config.Tech;
@@ -168,9 +166,8 @@ public sealed unsafe class FinishIcon : StateWidget
     public override void ApplyConfigs()
     {
         WidgetRoot.SetPos(Config.Position)
-                  .SetScale(Config.Scale)
-                  .SetRotation(Config.Angle * 0.0174532925199433f);
-        
+                  .SetScale(Config.Scale);
+
         Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State))
               .SetPartId(Config.Tech?1:0);
 
@@ -183,7 +180,6 @@ public sealed unsafe class FinishIcon : StateWidget
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
         FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
         RadioControls("Icon", ref Config.Tech, new() { false, true }, new() { "Standard", "Technical" }, ref update);
 

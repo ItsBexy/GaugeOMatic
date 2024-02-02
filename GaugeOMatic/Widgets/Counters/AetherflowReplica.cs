@@ -22,26 +22,26 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
-        DisplayName = "Aetherflow Gems", 
-        Author = "ItsBexy", 
-        Description = "A recreation of Arcanist/Summoner/Scholar's Aetherflow Gauge.", 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
+        DisplayName = "Aetherflow Gems",
+        Author = "ItsBexy",
+        Description = "A recreation of Arcanist/Summoner/Scholar's Aetherflow Gauge.",
         WidgetTags = Counter | Replica
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/JobHudSCH0.tex", 
+        new("ui/uld/JobHudSCH0.tex",
             new(0, 76, 44, 44),
-            new(44, 76, 40, 52), 
-            new(84, 76, 44, 32), 
-            new(0, 0, 57, 76), 
+            new(44, 76, 40, 52),
+            new(84, 76, 44, 32),
+            new(0, 0, 57, 76),
             new(57, 0, 38, 76),
             new(95, 0, 57, 76),
-            new(0, 0, 37, 76), 
+            new(0, 0, 37, 76),
             new(113, 0, 39, 76)),
-        new("ui/uld/JobHudSMN0.tex", 
-            new(0, 76, 44, 44), 
+        new("ui/uld/JobHudSMN0.tex",
+            new(0, 76, 44, 44),
             new(44, 76, 40, 52),
             new(0, 120, 44, 32))
     };
@@ -66,8 +66,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         if (count == 1)
         {
             size = 76;
-            return new(CreateResNode(), 
-                       ImageNodeFromPart(0, 6).SetPos(0, 0), 
+            return new(CreateResNode(),
+                       ImageNodeFromPart(0, 6).SetPos(0, 0),
                        ImageNodeFromPart(0, 7).SetPos(37, 0));
         }
 
@@ -101,10 +101,10 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
             gemList[i] = new CustomNode(CreateResNode(), gem, pulse, pulsar, spendGlow).SetPos(15 + (38 * i), 15).SetOrigin(22, 22).SetAlpha(0);
 
-            Animator += new Tween(pulse, 
-                                  new(0) { ScaleX = 1.2f, Alpha = 0 }, 
-                                  new(360) { ScaleX = 1, Alpha = 201 }, 
-                                  new(770) { ScaleX = 0.9f, Alpha = 0 }) 
+            Animator += new Tween(pulse,
+                                  new(0) { ScaleX = 1.2f, Alpha = 0 },
+                                  new(360) { ScaleX = 1, Alpha = 201 },
+                                  new(770) { ScaleX = 0.9f, Alpha = 0 })
                                   { Repeat = true, Ease = SinInOut };
         }
 
@@ -162,9 +162,9 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         var downScale = Config.Scale * 0.65f;
-        Animator += new Tween(WidgetRoot, 
-                              new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 }, 
-                              new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 }) 
+        Animator += new Tween(WidgetRoot,
+                              new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 },
+                              new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 })
                                   { Ease = SinInOut };
     }
 
@@ -261,7 +261,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
         RadioControls("Base Color", ref Config.BaseColor, new() { 1, 0 }, new() { "Pink", "Green" }, ref update);

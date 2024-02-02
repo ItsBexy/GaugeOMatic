@@ -26,7 +26,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
+    public static WidgetInfo GetWidgetInfo => new()
     {
         DisplayName = "Faerie-Less Gauge",
         Author = "ItsBexy",
@@ -81,13 +81,13 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         public bool Mirror;
 
         protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0), 
-                                                              color:     0xffffffff, 
-                                                              edgeColor: 0x288246ff, 
-                                                              showBg:    false, 
+                                                              position:  new(0, 0),
+                                                              color:     0xffffffff,
+                                                              edgeColor: 0x288246ff,
+                                                              showBg:    false,
                                                               bgColor:   new(0),
                                                               font:      MiedingerMed,
-                                                              fontSize:  18, 
+                                                              fontSize:  18,
                                                               align:     Right,
                                                               invert:    false);
 
@@ -142,7 +142,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         ToggleControls("Mirror", ref Config.Mirror, ref update);
 
         Heading("Colors");

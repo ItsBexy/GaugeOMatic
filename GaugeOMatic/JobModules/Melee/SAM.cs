@@ -32,7 +32,7 @@ public class SAMModule : JobModule
         new("Sen Gauge - Getsu Seal", nameof(SenGaugeGetsuTracker)),
         new("Sen Gauge - Ka Seal", nameof(SenGaugeKaTracker))
     };
-        
+
     public SAMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
 
     public override void Save()
@@ -74,7 +74,7 @@ public class SAMModule : JobModule
 
             kenkiGauge->GaugeStandard.KenkiContainer->Color.A = (byte)(hideKenki || simple0 ? 0 : 255);
             kenkiGauge->GaugeStandard.MeditationContainer->Color.A = (byte)(hideMeditation || simple0 ? 0 : 255);
-                
+
             kenkiGauge->GaugeSimple.KenkiContainer->Color.A = (byte)(hideKenki || !simple0 ? 0 : 255);
             kenkiGauge->GaugeSimple.MeditationContainer->Color.A = (byte)(hideMeditation || !simple0 ? 0 : 255);
         }

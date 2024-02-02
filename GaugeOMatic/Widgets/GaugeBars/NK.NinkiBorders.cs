@@ -74,7 +74,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
                                             .SetOrigin(22, 43.5f)
                                             .SetScale(0.5f, 0.15f)
                                             .DefineTimeline(TickTimeline);
-       
+
         Shine = ImageNodeFromPart(0, 2).SetAlpha(0)
                                        .SetOrigin(22, 43.5f)
                                        .SetImageFlag(32);
@@ -100,7 +100,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         new(180) { Width = 190, Alpha = Config.BorderColor.A },
         new(190) { Width = 200, Alpha = Config.BorderColor.A * 0.7f }
     };
-    
+
     public KeyFrame[] TickTimeline => new KeyFrame[]
     {
         new(0) { X = 2, Alpha = 0 },
@@ -110,7 +110,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
     };
 
     private void AppearAnim() =>
-        Animator += new Tween[] { 
+        Animator += new Tween[] {
             new(Calligraphy,
                 new(0) { Scale = 1, Alpha = 70 },
                 new(100) { Scale = 1, Alpha = 160 },
@@ -142,7 +142,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         NumTextNode.UpdateValue(current, max);
 
         if (prog > 0 && prevProg == 0) AppearAnim();
-        
+
         AnimateDrainGain(prog, prevProg);
         Animator.RunTweens();
 
@@ -167,13 +167,13 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         public bool Top = true;
         public bool Bottom = true;
         protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(227, 30), 
-                                                              color:     new(255, 241, 197), 
+                                                              position:  new(227, 30),
+                                                              color:     new(255, 241, 197),
                                                               edgeColor: new(110, 25, 0),
-                                                              showBg:    false, 
-                                                              bgColor:   new(0), 
-                                                              font:      MiedingerMed, 
-                                                              fontSize:  20, 
+                                                              showBg:    false,
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed,
+                                                              fontSize:  20,
                                                               align:     Center,
                                                               invert:    false);
 
@@ -243,7 +243,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
-        
+
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 
       //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);

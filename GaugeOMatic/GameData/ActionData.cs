@@ -55,9 +55,9 @@ public unsafe partial class ActionData
             return elapsed == 0 ? 0 : (cdOverride ?? CooldownLength) - elapsed;
         }
 
-        public bool IsReady() => 
-            GetCurrentCharges() != 0 && 
-            (!ReadyType.HasFlag(Ants) || ActionManager->IsActionHighlighted(ActionType.Action, GetID)) && 
+        public bool IsReady() =>
+            GetCurrentCharges() != 0 &&
+            (!ReadyType.HasFlag(Ants) || ActionManager->IsActionHighlighted(ActionType.Action, GetID)) &&
             (!ReadyType.HasFlag(StatusEffect) || (ReadyStatus?.TryGetStatus() ?? false));
 
         public int GetMaxCharges()

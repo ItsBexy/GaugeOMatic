@@ -26,8 +26,8 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
         DisplayName = "Umbral Hearts",
         Author = "ItsBexy",
         Description = "A counter based on BLM's Umbral Heart counter",
@@ -68,7 +68,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
                                   new(0) { ScaleX = 1, ScaleY = 1, Alpha = 4 },
                                   new(300) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 152 },
                                   new(630) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
-                                  new(960) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 }) 
+                                  new(960) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
                                   { Repeat = true, Ease = SinInOut };
 
             Glows[i].UnsetNodeFlags(NodeFlags.UseDepthBasedPriority);
@@ -85,7 +85,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
     public override void ShowStack(int i) =>
         Animator += new Tween[]
         {
-            new(Hearts[i], 
+            new(Hearts[i],
                 new(0) { Y = -20, Alpha = 0 },
                 new(200) { Y = 0, Alpha = 200 },
                 new(300) { Y = 0, Alpha = 255 }),
@@ -102,11 +102,11 @@ public sealed unsafe class UmbralHearts : CounterWidget
                 new(200) { Y = -20, Alpha = 255 },
                 new(300) { Y = -20, Alpha = 0 }
             ),
-            new(GlowWrappers[i], 
+            new(GlowWrappers[i],
                 Visible[0],
                 Hidden[300])
         };
-    
+
     #endregion
 
     #region UpdateFuncs
@@ -143,7 +143,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
             Position = config.Position;
             Scale = config.Scale;
             StackColor = config.StackColor;
-            
+
             GlowColor = config.GlowColor;
             Spacing = config.Spacing;
             Angle = config.Angle;
@@ -184,7 +184,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
             Stacks[i].SetPos((float)x, (float)y)
                      .SetRotation(gemAngle, true);
-            
+
             x += Cos(posAngle * (PI / 180)) * Config.Spacing;
             y += Sin(posAngle * (PI / 180)) * Config.Spacing;
             posAngle += Config.Curve;
@@ -197,8 +197,8 @@ public sealed unsafe class UmbralHearts : CounterWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
-        FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
+        AngleControls("Curve", ref Config.Curve, ref update);
 
         Heading("Colors");
         ColorPickerRGB("Color Modifier", ref Config.StackColor, ref update);

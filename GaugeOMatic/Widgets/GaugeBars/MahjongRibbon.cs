@@ -37,7 +37,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new ("ui/uld/emjintroparts08.tex", 
+        new ("ui/uld/emjintroparts08.tex",
              new Vector4(0, 17, 720, 32),
              new Vector4(0, 17, 720, 32) ),
         new ("ui/uld/emjintroparts03.tex", new Vector4(0, 0, 64, 64)),
@@ -237,17 +237,17 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         public AddRGB MainColor = "0x987B7BFF";
         public AddRGB GainColor = "0xDE56B2A0";
         public AddRGB DrainColor = "0x8069B2A0";
-        public AddRGB TickColor = "0xD36E27FF"; 
+        public AddRGB TickColor = "0xD36E27FF";
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 0), new(255), 0x8E6A0CFF, Jupiter, 20, Left);
-        protected override NumTextProps NumTextDefault => new(enabled:   true, 
-                                                              position:  new(0), 
-                                                              color:     new(255), 
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
+                                                              position:  new(0),
+                                                              color:     new(255),
                                                               edgeColor: new(0),
                                                               showBg:    false,
                                                               bgColor:   new(0),
                                                               font:      MiedingerMed,
-                                                              fontSize:  18, 
+                                                              fontSize:  18,
                                                               align:     Center,
                                                               invert:    false);
 
@@ -261,7 +261,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
-            
+
             Background = config.Background;
             MainColor = config.MainColor;
             GainColor = config.GainColor;
@@ -316,7 +316,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
         TickWrapper.SetX(Config.Width / -2);
         Tick.SetAddRGB(Config.TickColor);
-        
+
         LabelTextNode.ApplyProps(Config.LabelText, new Vector2(Config.Width / -2, -15));
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(-1, 17));
@@ -330,7 +330,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 64, 1440, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
         ColorPickerRGBA("Backdrop", ref Config.Background, ref update);

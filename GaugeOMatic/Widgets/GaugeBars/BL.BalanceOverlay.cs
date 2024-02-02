@@ -59,12 +59,12 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             new(207, 321, 39, 59),
             new(150, 0, 34, 144)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4[] {
-            new(256, 152, 20, 88) // flashing edge 
+            new(256, 152, 20, 88) // flashing edge
         })
     };
 
     #region Nodes
-    
+
     public CustomNode Plate;
     public CustomNode CrystalGlow;
     public CustomNode Tick;

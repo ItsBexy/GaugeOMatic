@@ -32,7 +32,7 @@ public class TrackerConfig
         set => WidgetConfig.WidgetType = value;
     }
 
-    [JsonIgnore] public string? GetDisplayName => TrackerType switch { 
+    [JsonIgnore] public string? GetDisplayName => TrackerType switch {
         nameof(StatusTracker) => Statuses.TryGetValue(ItemId, out var statusRef) ? statusRef.Name : null,
         nameof(ActionTracker) => Actions.TryGetValue(ItemId, out var actionRef) ? actionRef.Name : null,
         _ => DefaultName

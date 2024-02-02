@@ -41,7 +41,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
     };
 
     #region Nodes
-    
+
     public CustomNode Tick;
     public CustomNode Shine;
     public CustomNode Calligraphy;
@@ -72,7 +72,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
     {
         new(0) { X = -1, Alpha = 0 },
         new(10) { X = 9, Alpha = 255 },
-        new(219) { X = 218, Alpha = 255 }, 
+        new(219) { X = 218, Alpha = 255 },
         new(229) { X = 228, Alpha = 0 }
     };
 
@@ -137,14 +137,14 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
         public float Scale = 1;
         public AddRGB ScrollColor = new(80, 30, -70, 90);
         public ColorRGB TickColor = new(255, 164, 93);
-        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
                                                               position:  new(227, 58),
                                                               color:     new(255, 241, 197),
                                                               edgeColor: new(110, 25, 0),
                                                               showBg:    false,
-                                                              bgColor:   new(0), 
-                                                              font:      MiedingerMed, 
-                                                              fontSize:  20, 
+                                                              bgColor:   new(0),
+                                                              font:      MiedingerMed,
+                                                              fontSize:  20,
                                                               align:     Center,
                                                               invert:    false);
 
@@ -197,7 +197,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
         ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
 
         Heading("Behavior");
-        
+
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 

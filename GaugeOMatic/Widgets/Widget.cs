@@ -38,9 +38,9 @@ public abstract unsafe class Widget : IDisposable
 
         var type = Type.GetType($"{typeof(Widget).Namespace}.{tracker.WidgetType}");
 
-        return type == null ? null : 
-                   string.IsNullOrEmpty(tracker.AddonName) ? null : 
-                       (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null : 
+        return type == null ? null :
+                   string.IsNullOrEmpty(tracker.AddonName) ? null :
+                       (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
                        (Widget?)CreateInstance(type, tracker);
     }
 

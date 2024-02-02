@@ -243,7 +243,7 @@ public sealed unsafe class ElementOrb : StateWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Crescent Angle", ref Config.CrescentAngle, -180, 180, 1, ref update);
+        AngleControls("Crescent Angle", ref Config.CrescentAngle, ref update);
 
         Config.FillColorLists(Tracker.CurrentData.MaxState);
 

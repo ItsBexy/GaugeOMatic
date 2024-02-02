@@ -85,27 +85,27 @@ public unsafe struct KeyFrame
             TimelineProg = Interpolate(start.TimelineProg, end.TimelineProg, subProg)
         };
 
-    private static Vector4? Interpolate(Vector4? start, Vector4? end, float progress) => 
-        !start.HasValue || !end.HasValue ? null : 
+    private static Vector4? Interpolate(Vector4? start, Vector4? end, float progress) =>
+        !start.HasValue || !end.HasValue ? null :
             Vector4.Lerp(start.Value, end.Value, progress);
 
-    public static float? Interpolate(float? start, float? end, float progress) => 
-        start == null || end == null ? null : 
+    public static float? Interpolate(float? start, float? end, float progress) =>
+        start == null || end == null ? null :
             (progress * (end - start)) + start;
 
     public static ushort? Interpolate(ushort? start, ushort? end, float progress) =>
-        start == null || end == null ? null : 
-            end.Value == start.Value ? start.Value : 
-                end.Value > start.Value ? 
-                    Clamp((ushort)Floor(start.Value + (progress * (end.Value - start.Value + 1))), start.Value, end.Value) : 
+        start == null || end == null ? null :
+            end.Value == start.Value ? start.Value :
+                end.Value > start.Value ?
+                    Clamp((ushort)Floor(start.Value + (progress * (end.Value - start.Value + 1))), start.Value, end.Value) :
                     Clamp((ushort)Ceiling(start.Value + (progress * (end.Value - start.Value - 1))), end.Value, start.Value);
 
-    public static ColorRGB? Interpolate(ColorRGB? start, ColorRGB? end, float progress) => 
-        !start.HasValue || !end.HasValue ? null : 
+    public static ColorRGB? Interpolate(ColorRGB? start, ColorRGB? end, float progress) =>
+        !start.HasValue || !end.HasValue ? null :
             Vector4.Lerp((Vector4)start, (Vector4)end, progress);
 
-    public static AddRGB? Interpolate(AddRGB? start, AddRGB? end, float progress) => 
-        !start.HasValue || !end.HasValue ? null : 
+    public static AddRGB? Interpolate(AddRGB? start, AddRGB? end, float progress) =>
+        !start.HasValue || !end.HasValue ? null :
             Vector4.Lerp((Vector4)start, (Vector4)end, progress);
 
     public readonly void ApplyToNode(CustomNode target)

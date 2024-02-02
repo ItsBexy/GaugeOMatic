@@ -88,7 +88,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(450) { Alpha = 101, ScaleY = 1.04f },
                 new(950) { Alpha = 0, ScaleY = 1.08f })
                 { Repeat = true, Label = "Pulse" },
-           
+
             new(Smoke1,
                 new(0) { Scale = 0.9f, Alpha = 0 },
                 new(160) { Scale = 1, Alpha = 125 },
@@ -99,7 +99,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(660) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
                 new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
                 { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke1, 0, 0.2f) },
-           
+
             new(Smoke2,
                 new(0) { Scale = 0.9f, Alpha = 0 },
                 new(100) { Scale = 0.9f, Alpha = 0 },
@@ -111,7 +111,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(760) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
                 new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
                 { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke2, 0.4f, 0.6f) },
-           
+
             new(Smoke3,
                 new(0) { Scale = 0.9f, Alpha = 0 },
                 new(200) { Scale = 0.9f, Alpha = 0 },
@@ -238,7 +238,7 @@ public sealed unsafe class HeatOverlay : StateWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
 

@@ -64,9 +64,9 @@ public sealed unsafe class ShimmerHalo : StateWidget
         {
             var startAngle = Halo.Node->Rotation % 6.283185f;
             var endAngle = startAngle + (Config.Speed >= 0 ? 6.283185f : -6.283185f);
-            Animator += new Tween(Halo, 
-                                  new(0) { Rotation = startAngle }, 
-                                  new((int)(60000f / rpm)) { Rotation = endAngle }) 
+            Animator += new Tween(Halo,
+                                  new(0) { Rotation = startAngle },
+                                  new((int)(60000f / rpm)) { Rotation = endAngle })
                                   { Repeat = true, Label ="RotationTween" };
         }
     }
@@ -95,8 +95,8 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
         Halo.Show();
         Animator -= "ShimmerAlpha";
-        Animator += new Tween(Halo, 
-                              new(0) { Alpha = 0, MultRGB = color }, 
+        Animator += new Tween(Halo,
+                              new(0) { Alpha = 0, MultRGB = color },
                               new(200) { Alpha = 255, MultRGB = color })
                               { Label = "ShimmerAlpha" };
 
@@ -110,8 +110,8 @@ public sealed unsafe class ShimmerHalo : StateWidget
     }
 
     public override void StateChange(int current, int previous) =>
-        Animator += new Tween(Halo, 
-                              new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) }, 
+        Animator += new Tween(Halo,
+                              new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
                               new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) });
 
     #endregion
@@ -178,7 +178,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
 
         Heading("Colors");

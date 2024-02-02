@@ -78,8 +78,8 @@ public sealed unsafe class ReaperFlame : CounterWidget
             Halos.Add(ImageNodeFromPart(0, 8).SetPos(-1, 0).SetOrigin(16, 16).SetScale(1.428571f).SetAlpha(0).SetImageFlag(32));
             Pulsars.Add(ImageNodeFromPart(0, 9).SetPos(-13, 0).SetOrigin(30, 17).SetScale(0.5f, 0.55f).SetAlpha(0).SetRotation(-1.2f).SetImageFlag(32));
 
-            var tMod = 1 % 10 * (i % 2 == 0 ? -4 : 4); 
-            
+            var tMod = 1 % 10 * (i % 2 == 0 ? -4 : 4);
+
             Animator += new Tween[]
             {
                 new(Flames[i], new(0) { PartId = 0 }, new(475 + tMod) { PartId = 5 }) { Repeat = true },
@@ -113,12 +113,12 @@ public sealed unsafe class ReaperFlame : CounterWidget
         if (Config.SpendAnim == 1)
             Animator += new Tween[]
             {
-                new(Flames[i], 
-                    new(0) { X = -2, Y = -18, Alpha = 255 }, 
+                new(Flames[i],
+                    new(0) { X = -2, Y = -18, Alpha = 255 },
                     new(500) { X = -5, Y = -38, Alpha = 0 })
                     { Label = $"HideAnim{i}"},
-                new(FlameTwins[i], 
-                    new(0) { X = -2, Y = -18, Alpha = 255 }, 
+                new(FlameTwins[i],
+                    new(0) { X = -2, Y = -18, Alpha = 255 },
                     new(500) { X = 1, Y = -2, Alpha = 0 })
                     { Label = $"HideAnim{i}"}
             };
@@ -126,14 +126,14 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
         Animator += new Tween[]
         {
-            new(Orbs[i], 
-                new(0) { Alpha = 170 }, Hidden[20]) 
+            new(Orbs[i],
+                new(0) { Alpha = 170 }, Hidden[20])
                 { Label = $"HideAnim{i}"},
-            new(Halos[i], 
-                new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 }, 
+            new(Halos[i],
+                new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
                 new(250) { Alpha = 0, ScaleX = 1.5f, ScaleY = 1.5f })
                 { Label = $"HideAnim{i}"},
-            new(Pulsars[i], 
+            new(Pulsars[i],
                 new(0) { Alpha = 0, ScaleX = 0.5f, ScaleY = 0.55f },
                 new(150) { Alpha = 255, ScaleX = 1.5f, ScaleY = 0f })
                 { Label = $"HideAnim{i}"}
@@ -231,8 +231,8 @@ public sealed unsafe class ReaperFlame : CounterWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
-        FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
+        AngleControls("Curve", ref Config.Curve, ref update);
 
         Heading("Colors");
         ColorPickerRGB("Base Color", ref Config.BaseColor, ref update);

@@ -25,8 +25,8 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
         DisplayName = "Addersgall Gems",
         Author = "ItsBexy",
         Description = "A set of gems recreating those on the Addersgall Gauge.",
@@ -35,7 +35,7 @@ public sealed unsafe class AddersCounter : CounterWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/JobHudGFF1.tex", 
+        new("ui/uld/JobHudGFF1.tex",
             new(88, 56, 36, 44), // 0 frame
             new(124, 56, 20, 24),   // 1 gem (active)
             new(144, 56, 20, 24),   // 2 gem (inactive)
@@ -53,7 +53,7 @@ public sealed unsafe class AddersCounter : CounterWidget
     };
 
     #region Nodes
-    
+
     public List<CustomNode> Stacks = new();
     public List<CustomNode> Effects = new();
     public List<CustomNode> Frames = new();
@@ -87,7 +87,7 @@ public sealed unsafe class AddersCounter : CounterWidget
                                               .SetImageWrap(2)
                                               .SetImageFlag(32)
                                               .SetAlpha(0);
-            
+
             var effectOverlay = ImageNodeFromPart(1, 3).SetPos(-7,-4)
                                                        .SetScale(0.5f, 0.6f)
                                                        .SetOrigin(25, 25)
@@ -201,9 +201,9 @@ public sealed unsafe class AddersCounter : CounterWidget
                 new(160) { Alpha = 255, AddRGB = Config.GemColor },
                 new(630) { Alpha = 0, AddRGB = 0 }),
 
-            new(Effects[i][8], 
-                new(0) { Alpha = 255, ScaleX = 1.5f, ScaleY = 1 }, 
-                new(160) { Alpha = 255, ScaleX = 3, ScaleY = 1 }, 
+            new(Effects[i][8],
+                new(0) { Alpha = 255, ScaleX = 1.5f, ScaleY = 1 },
+                new(160) { Alpha = 255, ScaleX = 3, ScaleY = 1 },
                 new(630) { Alpha = 0, ScaleX = 1.5f, ScaleY = 0.2f })
             };
     }
@@ -211,8 +211,8 @@ public sealed unsafe class AddersCounter : CounterWidget
     public override void HideStack(int i)
     {
         Animator += new Tween[] {
-            new(Stacks[i][0], 
-                new(0) { Alpha = 255, AddRGB = 100 }, 
+            new(Stacks[i][0],
+                new(0) { Alpha = 255, AddRGB = 100 },
                 new(420) { Alpha = 255, AddRGB = 0 }),
 
             new(Stacks[i][1],
@@ -272,12 +272,12 @@ public sealed unsafe class AddersCounter : CounterWidget
     }
 
     private void AllVanish() =>
-        Animator += new Tween(WidgetRoot, 
-                              new(0) { Alpha = 255, AddRGB = 0 }, 
+        Animator += new Tween(WidgetRoot,
+                              new(0) { Alpha = 255, AddRGB = 0 },
                               new(200) { Alpha = 0, AddRGB = 100 });
 
     private void AllAppear() =>
-        Animator += new Tween(WidgetRoot, 
+        Animator += new Tween(WidgetRoot,
                               new(0) { Alpha = 0, AddRGB = 100 },
                               new(200) { Alpha = 255, AddRGB = 0 });
 
@@ -355,7 +355,7 @@ public sealed unsafe class AddersCounter : CounterWidget
         for (var i = 0; i < Stacks.Count; i++)
         {
             Effects[i].SetAddRGB(Config.FXColor);
-            
+
             SetupGemPulse(Gems[i], i);
 
             Frames[i].SetMultiply(Config.FrameColor);
@@ -363,7 +363,7 @@ public sealed unsafe class AddersCounter : CounterWidget
             var gemAngle = Config.Curve * (i - 0.5f);
 
             Effects[i].SetRotation(-gemAngle -widgetAngle , true);
-            
+
             Stacks[i].SetPos((float)x, (float)y)
                      .SetRotation(gemAngle, true);
 
@@ -380,8 +380,8 @@ public sealed unsafe class AddersCounter : CounterWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
-        FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
+        AngleControls("Curve", ref Config.Curve, ref update);
 
         Heading("Colors");
         ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);

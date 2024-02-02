@@ -40,7 +40,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
     public override CustomPartsList[] PartsLists { get; } = { MCH0Parts };
 
     #region Nodes
-    
+
     public CustomNode Barrel;
     public CustomNode BatteryClock;
     public CustomNode ClockFace;
@@ -49,17 +49,17 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     public CustomNode Bar;
     public CustomNode Backdrop;
-    
+
     public override CustomNode BuildRoot()
     {
         TabTextNode = new();
         TabTextNode.SetAlpha(0);
-        
+
         Barrel = NineGridFromPart(0, 3, 0, 84, 0, 115).SetPos(31, 0);
 
         ClockFace = ImageNodeFromPart(0, 5);
         BatteryClock = new CustomNode(CreateResNode(), ClockFace).SetPos(-1, 6).SetOrigin(35, 30); //THERE'S MORE WE'LL DO IT LATER
-        
+
         Bar = BuildBar();
         NumTextNode = new();
 
@@ -133,8 +133,8 @@ public unsafe class BatteryReplica : GaugeBarWidget
     private void BeginOverlayPulse(AddRGB addRGB)
     {
         Animator -= "OverlayPulse";
-        Animator += new Tween(ClockFace, 
-                              new(0) { AddRGB = new(0) }, 
+        Animator += new Tween(ClockFace,
+                              new(0) { AddRGB = new(0) },
                               new(400) { AddRGB = addRGB },
                               new(780) { AddRGB = new(0) })
                               { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
@@ -199,17 +199,17 @@ public unsafe class BatteryReplica : GaugeBarWidget
         public AddRGB GainColorBlue = new(217, 355, 371);
         public AddRGB DrainColorBlue = new(-138, 0, 16);
 
-        protected override NumTextProps NumTextDefault => new(enabled: true, 
-                                                              position: new(0), 
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0),
                                                               color: new(255),
-                                                              edgeColor: "0x9d835bff", 
-                                                              showBg: true, 
+                                                              edgeColor: "0x9d835bff",
+                                                              showBg: true,
                                                               bgColor: new(0),
-                                                              fontSize: 18, 
-                                                              invert: false, 
-                                                              showZero: false, 
+                                                              fontSize: 18,
+                                                              invert: false,
+                                                              showZero: false,
                                                               precision: 0,
-                                                              font: MiedingerMed, 
+                                                              font: MiedingerMed,
                                                               align: Right);
 
         public BatteryReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.BatteryReplicaCfg)
@@ -260,7 +260,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         Backdrop.SetWidth(Config.Width);
 
         var orange = Config.BaseColor == 12;
-        AddRGB colorOffset = orange?new(-91,-52, 27):new(38,-100,-116);
+        AddRGB colorOffset = orange ? new(-91, -52, 27) : new(38, -100, -116);
 
         Main.SetPartId(Config.BaseColor)
             .SetAddRGB(colorOffset + (orange ? Config.MainColorOrange : Config.MainColorBlue), true)
@@ -287,7 +287,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 148, 1000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle,-180, 180, 1, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
         RadioControls("Base Color", ref Config.BaseColor, new() { 11, 12 }, new() {"Blue", "Orange" }, ref update, true);

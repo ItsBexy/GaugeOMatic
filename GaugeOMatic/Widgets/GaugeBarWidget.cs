@@ -126,7 +126,7 @@ public abstract class GaugeBarWidget : Widget
     }
 
     public virtual float AdjustProg(float prog) => prog;
-    
+
     private float PreviousGauge => Tracker.PreviousData.GaugeValue;
     public float CurrentGauge => Tracker.CurrentData.GaugeValue;
     private float MaxGauge => Tracker.CurrentData.MaxGauge;
@@ -190,17 +190,18 @@ public abstract class GaugeBarWidget : Widget
     public unsafe void AnimateDrainGain(CustomNode main, CustomNode gain, CustomNode drain, float current, float previous, int time = 250)
     {
         var increasing = current > previous;
+        var decreasing = previous > current;
         gain.SetProgress(main.Progress >= current ? 0 : current);
-        drain.SetProgress(increasing ? 0 : previous);
+        drain.SetProgress(decreasing ? previous : 0);
         main.SetProgress(increasing || drain.Node == null ? previous : current);
 
         if (Math.Abs(current - previous) < 0.001f) return;
 
-        Animator = Animator.Remove("DrainGain", main, drain)  
+        Animator = Animator.Remove("DrainGain", main, drain)
                    + new Tween(increasing || drain.Node == null ? main : drain,
                                                new(0) { TimelineProg = previous },
-                                               new(time) { TimelineProg = current }) 
+                                               new(time) { TimelineProg = current })
                                                { Label = "DrainGain" };
-        
+
     }
 }

@@ -37,17 +37,17 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         WidgetTags = GaugeBar
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { 
-        new ("ui/uld/Mobhunt5.tex", 
-             new(650, 0, 16, 192), 
+    public override CustomPartsList[] PartsLists { get; } = {
+        new ("ui/uld/Mobhunt5.tex",
+             new(650, 0, 16, 192),
              new(616, 192, 50, 140)), // smudge
-        new ("ui/uld/JobHudRDM0.tex", 
-             new(119, 322, 85, 56), 
-             new(0, 265, 42, 44), 
-             new(79, 207, 34, 34), 
-             new(125, 212, 24, 22), 
-             new(123, 234, 28, 20), 
-             new(148, 222, 14, 15), 
+        new ("ui/uld/JobHudRDM0.tex",
+             new(119, 322, 85, 56),
+             new(0, 265, 42, 44),
+             new(79, 207, 34, 34),
+             new(125, 212, 24, 22),
+             new(123, 234, 28, 20),
+             new(148, 222, 14, 15),
              new(207, 321, 39, 59))
     };
 
@@ -66,6 +66,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     public CustomNode Splatter3;
     public CustomNode Splatter4;
     public CustomNode Splatter5;
+
     public override CustomNode BuildRoot()
     {
         Bar = BuildBar().SetOrigin(-45, 25);
@@ -85,7 +86,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         Animator += new Tween(Tick,
                               new(0) { ScaleX = 0.5f, ScaleY = 1.55f },
                               new(600) { ScaleX = 0.5f, ScaleY = 1.6f },
-                              new(1000) { ScaleX = 0.5f, ScaleY = 1.55f }) 
+                              new(1000) { ScaleX = 0.5f, ScaleY = 1.55f })
                               { Repeat = true, Ease = SinInOut };
 
         Backdrop = ImageNodeFromPart(0, 1).SetRotation((float)(PI / 2f))
@@ -137,6 +138,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
             new(Tick, Hidden[0], Visible[200]),
             new(Backdrop, new(0) { AddRGB = Config.BackdropInactive, Alpha = Config.BackdropInactive.A }, new(200) { AddRGB = Config.BackdropColor, Alpha = Config.BackdropColor.A })
         };
+
     public override void PlaceTickMark(float prog) { Tick.SetPos(MainContainer.Node->X - 12 + Main.Node->Height, MainContainer.Node->Y + 10); }
 
     public override void OnFirstRun(float prog)
@@ -226,14 +228,14 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         public float Rotation;
         public AddRGB TickColor = new(255, -100, -162);
         protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0), 
-                                                              color:     0xFFFFFFFF, 
+                                                              position:  new(0, 0),
+                                                              color:     0xFFFFFFFF,
                                                               edgeColor: 0x9B0000FF,
-                                                              showBg:    false, 
-                                                              bgColor:   new(0), 
+                                                              showBg:    false,
+                                                              bgColor:   new(0),
                                                               font:      MiedingerMed,
                                                               fontSize:  20,
-                                                              align:     Center, 
+                                                              align:     Center,
                                                               invert:    false);
 
         public InkSlashConfig(WidgetConfig widgetConfig) : base(widgetConfig.InkSlashCfg)
@@ -286,7 +288,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         MainContainer.SetAddRGB(Config.MainColor + ColorOffset, true);
         GainContainer.SetAddRGB(Config.GainColor + ColorOffset, true);
         DrainContainer.SetAddRGB(Config.DrainColor + ColorOffset, true);
-        
+
         Main.DefineTimeline(BarTimeline);
         Gain.DefineTimeline(BarTimeline).SetHeight(0);
         Drain.DefineTimeline(BarTimeline).SetHeight(0);

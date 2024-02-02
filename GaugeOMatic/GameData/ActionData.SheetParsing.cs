@@ -39,7 +39,7 @@ public partial class ActionData
         };
 
     public static ExcelSheet<Action>? GetActionSheet() => DataManager.Excel.GetSheet<Action>("Action");
-    
+
     public static void PopulateActions()
     {
         var actionSheet = GetActionSheet();
@@ -57,7 +57,7 @@ public partial class ActionData
     // useful hook because the MaxCharges in the table don't account for increases via traits
     public delegate ushort GetMaxChargesAtLevelDelegate(uint id, uint level);
     internal static GetMaxChargesAtLevelDelegate? GetMaxChargesAtLevel;
-    
+
     public static void SetupHooks()
     {
         var getMaxChargesPtr = SigScanner.ScanText("E8 ?? ?? ?? ?? 33 DB 8B C8");

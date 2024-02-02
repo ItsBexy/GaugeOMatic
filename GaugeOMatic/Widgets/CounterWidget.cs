@@ -6,7 +6,7 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
-public abstract class CounterWidgetConfig
+public abstract class CounterWidgetConfig : WidgetTypeConfig
 {
     public enum CounterPulse { Never, Always, AtMax }
 

@@ -52,7 +52,7 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public CustomNode Bar;
     public CustomNode Backdrop;
-    
+
     public override CustomNode BuildRoot()
     {
         TabBg = ImageNodeFromPart(0, 0).SetPos(7, 12).SetImageWrap(1);
@@ -114,7 +114,7 @@ public unsafe class HeatReplica : GaugeBarWidget
     }
 
     private void StopPulse(CustomNode target) =>
-        Animator += new Tween(target, 
+        Animator += new Tween(target,
                               new(0, target),
                               new(400) { AddRGB = 0, MultRGB = new(100) })
                               { Ease = SinInOut, Label = "BarPulse" };
@@ -173,17 +173,17 @@ public unsafe class HeatReplica : GaugeBarWidget
         public AddRGB GainColorBlue = new(217, 355, 371);
         public AddRGB DrainColorBlue = new(-138, 0, 16);
 
-        protected override NumTextProps NumTextDefault => new(enabled: true, 
-                                                              position: new(0), 
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0),
                                                               color: new(255),
-                                                              edgeColor: "0x9d835bff", 
-                                                              showBg: true, 
+                                                              edgeColor: "0x9d835bff",
+                                                              showBg: true,
                                                               bgColor: new(0),
-                                                              fontSize: 18, 
-                                                              invert: false, 
-                                                              showZero: false, 
+                                                              fontSize: 18,
+                                                              invert: false,
+                                                              showZero: false,
                                                               precision: 0,
-                                                              font: MiedingerMed, 
+                                                              font: MiedingerMed,
                                                               align: Right);
 
         public HeatReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.HeatReplicaCfg)
@@ -260,7 +260,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
         RadioControls("Base Color", ref Config.BaseColor, new() { 12, 11 }, new() { "Orange", "Blue" }, ref update, true);

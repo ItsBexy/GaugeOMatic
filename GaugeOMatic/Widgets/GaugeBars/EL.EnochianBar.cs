@@ -200,13 +200,13 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), new(0), Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled:   false,
-                                                              position:  new(0, 0), 
+                                                              position:  new(0, 0),
                                                               color:     new(255),
                                                               edgeColor: new(0),
-                                                              showBg:    true, 
+                                                              showBg:    true,
                                                               bgColor:   new(0),
-                                                              font:      MiedingerMed, 
-                                                              fontSize:  20, 
+                                                              font:      MiedingerMed,
+                                                              fontSize:  20,
                                                               align:     Center,
                                                               invert:    false);
 

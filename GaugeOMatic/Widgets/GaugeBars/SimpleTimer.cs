@@ -29,7 +29,7 @@ public sealed class SimpleTimer : GaugeBarWidget
     };
 
     #region Nodes
-    
+
     public override CustomNode BuildRoot()
     {
         NumTextNode = new();
@@ -65,10 +65,10 @@ public sealed class SimpleTimer : GaugeBarWidget
 
     public sealed class SimpleTimerConfig : GaugeBarWidgetConfig
     {
-        protected override NumTextProps NumTextDefault => new(enabled: true, 
-                                                              position: new(0), 
-                                                              color: new(255, 255, 255), 
-                                                              edgeColor: new(0, 0, 0), showBg: false, bgColor: new(0), 
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0),
+                                                              color: new(255, 255, 255),
+                                                              edgeColor: new(0, 0, 0), showBg: false, bgColor: new(0),
                                                               font: MiedingerMed,
                                                               fontSize: 20,
                                                               align: Center,

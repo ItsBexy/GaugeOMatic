@@ -206,7 +206,7 @@ public class ItemRefMenu : BranchingDropdown
                     var gaugeDesc = $"Shows cooldown time ({action.CooldownLength}s)";
                     var stateDesc = $"Shows {(action.ReadyType.HasFlag(Ants) ? "if highlighted" : "if ready")}";
 
-                    var toolText = oneCharge ? $"Gauge: {gaugeDesc}\nCounter/State: {stateDesc}" : 
+                    var toolText = oneCharge ? $"Gauge: {gaugeDesc}\nCounter/State: {stateDesc}" :
                                                $"Counter: {counterDesc}\nGauge: {gaugeDesc}\nState: {stateDesc}" ;
 
                     ImGui.SetTooltip(toolText);

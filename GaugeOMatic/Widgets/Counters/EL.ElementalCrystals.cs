@@ -26,8 +26,8 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
         DisplayName = "Elemental Crystals",
         Author = "ItsBexy",
         Description = "A counter based on BLM's element stack display.",
@@ -55,7 +55,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     private void BuildStacks(int count)
     {
-        Stacks = new();   
+        Stacks = new();
         Crystals = new();
         Glows1 = new();
         Glows2 = new();
@@ -68,7 +68,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
             Glows2.Add(ImageNodeFromPart(0, 7).SetOrigin(10, 24).SetAlpha(0).SetScale(1.3f, 1.2f).SetAlpha(0).Hide());
             StackContents.Add(new CustomNode(CreateResNode(),
                                              Crystals[i],
-                                             Glows1[i], 
+                                             Glows1[i],
                                              new (CreateResNode(), Glows2[i])).SetAlpha(0));
 
             Animator += new Tween(Glows2[i],
@@ -210,8 +210,8 @@ public sealed unsafe class ElementalCrystals : CounterWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
-        FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
+        AngleControls("Curve", ref Config.Curve, ref update);
 
         Heading("Colors");
         RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, ref update, true);

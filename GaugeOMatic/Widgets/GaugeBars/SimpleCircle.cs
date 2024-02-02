@@ -74,7 +74,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
                                                                    .SetSize(81, 160)
                                                                    .SetNodeFlags(NodeFlags.Clip)
                                                                    .SetDrawFlags(0xD);
-       
+
         Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetDrawFlags(0xD);
         Halo = ImageNodeFromPart(1, 0).SetOrigin(64, 64).SetPos(-24, 16).SetImageFlag(32).SetAlpha(0);
         NumTextNode = new();
@@ -122,24 +122,28 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         prog = Clamp(prog, 0, 0.996f);
 
-        if (Config.Direction == Erode)
+        switch (Config.Direction)
         {
-            LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-            RightHalf.SetRotation((1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-        }
-        else if (Config.Direction == CW)
-        {
-            var lProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
-            var rProg = Clamp(prog / 0.5f, 0, 1f);
-            LeftHalf.SetRotation(-(1 - lProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
-            RightHalf.SetRotation(-(1 - rProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-        }
-        else
-        {
-            var rProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
-            var lProg = Clamp(prog / 0.5f, 0, 1f);
-            LeftHalf.SetRotation((1 - lProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-            RightHalf.SetRotation((1 - rProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
+            case Erode:
+                LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
+                RightHalf.SetRotation((1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
+                break;
+            case CW:
+            {
+                var lProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
+                var rProg = Clamp(prog / 0.5f, 0, 1f);
+                LeftHalf.SetRotation(-(1 - lProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
+                RightHalf.SetRotation(-(1 - rProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
+                break;
+            }
+            default:
+            {
+                var rProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
+                var lProg = Clamp(prog / 0.5f, 0, 1f);
+                LeftHalf.SetRotation((1 - lProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
+                RightHalf.SetRotation((1 - rProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
+                break;
+            }
         }
 
         Animator.RunTweens();
@@ -214,7 +218,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new () { Redo , Undo, CircleNotch }, ref update);
-       
+
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();

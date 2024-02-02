@@ -27,8 +27,8 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
         DisplayName = "Polyglot Gems",
         Author = "ItsBexy",
         Description = "A diamond-shaped counter based on BLM's polyglot counter.",
@@ -83,8 +83,8 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
             GemContainers.Add(new(CreateResNode(), Gems[i], Glows1[i]));
 
-            Stacks.Add(new CustomNode(CreateResNode(), 
-                                      Frames[i], 
+            Stacks.Add(new CustomNode(CreateResNode(),
+                                      Frames[i],
                                       GemContainers[i],
                                       Glows2[i]).SetSize(54, 83).SetOrigin(27.5f, 41.5f));
         }
@@ -101,15 +101,15 @@ public sealed unsafe class PolyglotGem : CounterWidget
         var colorOffset = Config.GemColor + new AddRGB(-27, 78, -50);
 
         Animator += new Tween[] {
-            new(Gems[i], 
-                new (0) { ScaleX = 2.5f * flipX, ScaleY = flipY * 2.5f, Alpha = 0, AddRGB = colorOffset + new AddRGB(0) }, 
+            new(Gems[i],
+                new (0) { ScaleX = 2.5f * flipX, ScaleY = flipY * 2.5f, Alpha = 0, AddRGB = colorOffset + new AddRGB(0) },
                 new(150) { ScaleX = flipX, ScaleY = flipY, Alpha = 255, AddRGB = colorOffset + new AddRGB(0) },
                 new(260) { ScaleX = flipX, ScaleY = flipY, Alpha = 255, AddRGB = colorOffset + new AddRGB(145) },
                 new(360) { ScaleX = flipX, ScaleY = flipY, Alpha = 255, AddRGB = colorOffset + new AddRGB(0) }),
 
             new(Glows1[i],
-                new (0) { Scale = 1.8f, Alpha = 0 }, 
-                new (150) { Scale = 1.8f, Alpha = 200 }, 
+                new (0) { Scale = 1.8f, Alpha = 0 },
+                new (150) { Scale = 1.8f, Alpha = 200 },
                 new (260) { Scale = 2.5f, Alpha = 0 })
         };
 
@@ -241,7 +241,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
             Scale = config.Scale;
             GemColor = config.GemColor;
             GlowColor = config.GlowColor;
-            
+
             Spacing = config.Spacing;
             Angle = config.Angle;
             Curve = config.Curve;
@@ -312,8 +312,8 @@ public sealed unsafe class PolyglotGem : CounterWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
-        FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
+        AngleControls("Curve", ref Config.Curve, ref update);
 
         Heading("Colors");
         ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);

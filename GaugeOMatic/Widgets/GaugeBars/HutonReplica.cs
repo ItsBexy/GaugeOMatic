@@ -106,8 +106,8 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         };
 
     private void DepleteAnim() =>
-        Animator += new Tween(EmptyPinwheel, 
-                              new(0) { Scale = 1.2f, Rotation = 3.141593f, Alpha = 0, AddRGB = new(0, 0, 0) }, 
+        Animator += new Tween(EmptyPinwheel,
+                              new(0) { Scale = 1.2f, Rotation = 3.141593f, Alpha = 0, AddRGB = new(0, 0, 0) },
                               new(250) { Scale = 0.9f, Rotation = 6.283185f, Alpha = 255, AddRGB = new(0, 0, 0) });
 
     private void GainAnim() =>
@@ -133,8 +133,8 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                               new(200) { Scale = 1, Alpha = 127, AddRGB = add, MultRGB = mult });
 
     private void HideBlade(int i) =>
-        Animator += new Tween(Blades[i % 6], 
-                              new(0) { Scale = 1, Alpha = 127, AddRGB = new(-51, -81, -51), MultRGB = Config.FadeColor }, 
+        Animator += new Tween(Blades[i % 6],
+                              new(0) { Scale = 1, Alpha = 127, AddRGB = new(-51, -81, -51), MultRGB = Config.FadeColor },
                               new(200) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0, AddRGB = new(-80, -100, -80), MultRGB = Config.FadeColor });
 
     #endregion
@@ -193,7 +193,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     private void UpdateOtherBlade(int i)
     {
-        if (Animator.Tweens.All(t => t.Target != Blades[i])) 
+        if (Animator.Tweens.All(t => t.Target != Blades[i]))
             Blades[i].SetAddRGB(0)
                      .SetMultiply(Config.ActiveColor)
                      .SetAlpha(255)
@@ -225,15 +225,15 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         public ColorRGB FadeColor = new(0x32, 0x32, 0x64);
         public ColorRGB HandColor = new(100);
 
-        protected override NumTextProps NumTextDefault => new(enabled:   true, 
+        protected override NumTextProps NumTextDefault => new(enabled:   true,
                                                               position:  new(0, 0),
-                                                              color:     0xffffffFFu, 
+                                                              color:     0xffffffFFu,
                                                               edgeColor: 0x000000FFu,
-                                                              showBg:    false, 
+                                                              showBg:    false,
                                                               bgColor:   new(0),
                                                               font:      MiedingerMed,
                                                               fontSize:  18,
-                                                              align:     Center, 
+                                                              align:     Center,
                                                               invert:    false);
 
         public HutonReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.HutonReplicaCfg)
@@ -241,7 +241,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
             var config = widgetConfig.HutonReplicaCfg;
 
             if (config == null) return;
-            
+
             Position = config.Position;
             Scale = config.Scale;
             Smooth = config.Smooth;
@@ -286,7 +286,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         ColorPickerRGB("Clock Hand", ref Config.HandColor, ref update);
 
         Heading("Behavior");
-        
+
         ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
 

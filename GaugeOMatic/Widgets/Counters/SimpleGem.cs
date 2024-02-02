@@ -25,8 +25,8 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
         DisplayName = "Simple Gems",
         Author = "ItsBexy",
         Description = "A counter based on Simple Mode job gauges.",
@@ -46,7 +46,7 @@ public sealed unsafe class SimpleGem : CounterWidget
     };
 
     #region Nodes
-    
+
     public List<CustomNode> Stacks = new();
     public List<CustomNode> Frames = new();
     public List<CustomNode> Gems = new();
@@ -86,7 +86,7 @@ public sealed unsafe class SimpleGem : CounterWidget
     public override void ShowStack(int i)
     {
         var colorOffset = GetColorOffset();
-        Animator += new Tween(Gems[i], 
+        Animator += new Tween(Gems[i],
                               new(0) { Scale = 2.4f, Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80) },
                               new(125) { Scale = 1, Alpha = 255, AddRGB = Config.GemColor + colorOffset });
     }
@@ -174,7 +174,7 @@ public sealed unsafe class SimpleGem : CounterWidget
             FrameColor = config.FrameColor;
             HideEmpty = config.HideEmpty;
             ChevDir = config.ChevDir;
-            
+
             AsTimer = config.AsTimer;
             TimerSize = config.TimerSize;
             InvertTimer = config.InvertTimer;
@@ -231,7 +231,7 @@ public sealed unsafe class SimpleGem : CounterWidget
     private (float gemAngle, Vector2 origin, Vector2 scale) CalcGemProps(int i, float widgetAngle)
     {
         var gemAngle = (Config.Curve * (i - 0.5f)) + Config.GemAngle;
-        
+
         if (Config.GemShape is DiamondFull or DiamondHollow)
         {
             while (gemAngle + widgetAngle >= 45) gemAngle -= 90;
@@ -285,9 +285,9 @@ public sealed unsafe class SimpleGem : CounterWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        FloatControls("Angle (Gem)", ref Config.GemAngle, -180, 180, 1f, ref update);
-        FloatControls("Angle (Group)", ref Config.Angle, -180, 180, 1f, ref update);
-        FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
+        AngleControls("Angle (Gem)", ref Config.GemAngle, ref update);
+        AngleControls("Angle (Group)", ref Config.Angle, ref update);
+        AngleControls("Curve", ref Config.Curve, ref update);
 
         Heading("Colors");
         ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);

@@ -24,8 +24,8 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
-    { 
+    public static WidgetInfo GetWidgetInfo => new()
+    {
         DisplayName = "Chakra Bar",
         Author = "ItsBexy",
         Description = "A stack counter made out of a combination of Monk gauge elements.",
@@ -74,8 +74,8 @@ public sealed unsafe class ChakraBar : CounterWidget
         if (count == 1)
         {
             size = 88;
-            return new(CreateResNode(), 
-                       ImageNodeFromPart(0, 3).SetPos(0, 0), 
+            return new(CreateResNode(),
+                       ImageNodeFromPart(0, 3).SetPos(0, 0),
                        ImageNodeFromPart(0, 4).SetPos(44, 0));
         }
 
@@ -190,7 +190,7 @@ public sealed unsafe class ChakraBar : CounterWidget
         };
 
     public override void HideStack(int i) =>
-        Animator += new Tween[] { 
+        Animator += new Tween[] {
 
             new(Pearls[i],
                 new(0) { Alpha = 255, Scale = 1, AddRGB = new AddRGB(0) },
@@ -206,11 +206,11 @@ public sealed unsafe class ChakraBar : CounterWidget
     private void PlateAppear() =>
         Animator += new Tween(WidgetRoot,
                               new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
-                              new(200) { Scale = Config.Scale, Alpha = 255 }) 
+                              new(200) { Scale = Config.Scale, Alpha = 255 })
                               { Ease = SinInOut };
 
     private void PlateVanish() =>
-        Animator += new Tween(WidgetRoot, 
+        Animator += new Tween(WidgetRoot,
                               new(0) { Scale = Config.Scale, Alpha = 255 },
                               new(150) { Scale = Config.Scale * 0.65f, Alpha = 0 })
                               { Ease = SinInOut };
@@ -321,7 +321,7 @@ public sealed unsafe class ChakraBar : CounterWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
         ColorPickerRGB("Pearl Color", ref Config.GemColor, ref update);

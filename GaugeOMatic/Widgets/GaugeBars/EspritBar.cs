@@ -30,7 +30,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new() 
+    public static WidgetInfo GetWidgetInfo => new()
     {
         DisplayName = "Esprit Bar",
         Author = "ItsBexy",
@@ -64,7 +64,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public CustomNode FanClip;
     public CustomNode FillNodes;
     public CustomNode Fan;
-    
+
     public CustomNode MainContainer;
     public CustomNode DrainContainer;
     public CustomNode GainContainer;
@@ -133,7 +133,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         Animator += new Tween(MainContainer,
                                   new(0) { AddRGB = Config.PulseColor2 - Config.MainColor },
                                   new(800) { AddRGB = Config.PulseColor - Config.MainColor },
-                                  new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor }) 
+                                  new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor })
                                   { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
 
@@ -222,11 +222,11 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), 0x8E6A0CFF, Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled: true,
-                                                              position: new(0, 0), 
+                                                              position: new(0, 0),
                                                               color: new(255),
-                                                              edgeColor: new(157, 131, 91), 
-                                                              showBg: true, 
-                                                              bgColor: new(0), 
+                                                              edgeColor: new(157, 131, 91),
+                                                              showBg: true,
+                                                              bgColor: new(0),
                                                               font: MiedingerMed,
                                                               fontSize: 18,
                                                               align: Center,
@@ -253,7 +253,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
             DrainColor = config.DrainColor;
             PulseColor = config.PulseColor;
             PulseColor2 = config.PulseColor2;
-                
+
             LabelText = config.LabelText;
         }
 
@@ -309,7 +309,6 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         Frame.SetMultiply(Config.FrameColor);
 
         Backdrop.SetAddRGB(Config.Backdrop, true);
-
 
         MainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
         DrainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);

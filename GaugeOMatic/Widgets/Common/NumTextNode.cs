@@ -99,8 +99,6 @@ public class NumTextNode : CustomNode
                     break;
             }
 
-             
-
             BgNode.SetHeight(Props.Font == Jupiter ? 44 : 40);
             BgNode.SetY(Props.Font == Miedinger ? -22f : -21);
         }

@@ -221,7 +221,7 @@ public sealed unsafe class TargetReticle : StateWidget
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
 
         Heading("Colors");

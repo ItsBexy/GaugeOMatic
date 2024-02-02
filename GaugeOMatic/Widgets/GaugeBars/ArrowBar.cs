@@ -148,7 +148,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     private void AnimateBarPulse()
     {
-        Animator += new Tween(Main, 
+        Animator += new Tween(Main,
                               new(0) { AddRGB = Config.MainColor + new AddRGB(-10) },
                               new(600) { AddRGB = Config.MainColor + new AddRGB(10) },
                               new(1200) { AddRGB = Config.MainColor + new AddRGB(-10) }) { Ease = SinInOut, Repeat = true };
@@ -197,7 +197,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         public AddRGB MainColor = new(-136, -17, 10);
         public AddRGB GainColor = new(5, 155, 93);
         public AddRGB DrainColor = new(-107, -159, -111);
-        
+
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), 0x8E6A0CFF, Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled: true,
                                                               position: new(0, 17.5f),
@@ -226,7 +226,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
             MainColor = config.MainColor;
             GainColor = config.GainColor;
             DrainColor = config.DrainColor;
-                
+
             LabelText = config.LabelText;
         }
 
@@ -288,7 +288,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 30, 2000, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
 
         Heading("Colors");
 

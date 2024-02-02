@@ -89,6 +89,17 @@ internal static class WidgetUI
         return false;
     }
 
+    public static void AngleControls(string label, ref float angle, ref UpdateFlags update)
+    {
+        LabelColumn(label);
+        if (FloatInputDrag(label, ref angle, -1000, 1000, 1f, format: "%.2f"))
+        {
+            while (angle < -180) angle += 360;
+            while (angle > 180) angle -= 360;
+            update |= UpdateFlags.Save;
+        }
+    }
+
     public static bool PercentControls(string label, ref float p, ref UpdateFlags update)
     {
         var ret = false;
@@ -242,7 +253,7 @@ internal static class WidgetUI
             var icon = icons[i];
 
             if (i > 0) SameLineSquished();
-            
+
             if (IconButton($"{label}{option}{i}", icon, 16f, val is not null && val.Equals(option) ? activeColor : buttonColor)) {
                 val = option;
                 update |= UpdateFlags.Save;
@@ -311,7 +322,7 @@ internal static class WidgetUI
 
         if (inputX || inputY)
         {
-            xy = new(x, y); 
+            xy = new(x, y);
             update |= UpdateFlags.Save;
             return true;
         }
@@ -327,5 +338,4 @@ internal static class WidgetUI
         ImGui.Text(headingText);
         ImGui.PopStyleColor();
     }
-
 }

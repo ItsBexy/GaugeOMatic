@@ -21,7 +21,7 @@ public class Configuration : IPluginConfiguration
 
     public List<Preset> SavedPresets { get; set; } = new();
     public int PresetFiltering { get; set; } = 2;
-    
+
     public TrackerConfigs TrackerConfigs { get; set; } = new();
     public TweakConfigs TweakConfigs { get; set; } = new();
 

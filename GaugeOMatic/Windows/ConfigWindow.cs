@@ -26,7 +26,7 @@ public partial class ConfigWindow : Window, IDisposable
     public ConfigWindow(TrackerManager trackerManager) : base("Gauge-O-Matic")
     {
         TrackerManager = trackerManager;
-        Configuration = TrackerManager.Configuration; 
+        Configuration = TrackerManager.Configuration;
 
         SizeConstraints = new WindowSizeConstraints
         {
@@ -49,7 +49,6 @@ public partial class ConfigWindow : Window, IDisposable
 
         if (ImGui.BeginTable("LayoutTable", 3, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.BordersInnerV))
         {
-
             ImGui.TableSetupColumn("VertTabBar", ImGuiTableColumnFlags.WidthFixed, 40f * GlobalScale);
             ImGui.TableSetupColumn("VertTabBar2", ImGuiTableColumnFlags.WidthFixed, 40f * GlobalScale);
             ImGui.TableSetupColumn("body", ImGuiTableColumnFlags.WidthFixed, 1200f * GlobalScale);
@@ -77,7 +76,6 @@ public partial class ConfigWindow : Window, IDisposable
 
             ImGui.EndTable();
         }
-
     }
 
     private void VerticalTabBar()
@@ -87,7 +85,7 @@ public partial class ConfigWindow : Window, IDisposable
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
 
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
-            if (ImGui.Button($"{job}"))
+            if (ImGui.Button($"{job}      "))
             {
                 Configuration.JobTab = job;
                 Configuration.GeneralTab = Jobs;

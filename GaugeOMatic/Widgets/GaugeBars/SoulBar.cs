@@ -67,7 +67,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Corners = NineGridFromPart(0, 3, 14, 14, 14, 14).SetHeight(30).SetY(-5).SetOrigin(15, 15);
         MidMarkers = NineGridFromPart(0, 2, 14, 0, 14, 0).SetHeight(30).SetY(-5).SetX(-4);
         NumTextNode = new();
-        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName); 
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
         LabelTextNode.SetWidth(180);
 
         BarFrame = new(CreateResNode(), Frame, Bar, Corners, MidMarkers, LabelTextNode, NumTextNode);
@@ -103,13 +103,13 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Animator += new Tween(TickLine,
                               new(0) { Scale = 1f },
                               new(450) { Scale = 1.2f },
-                              new(800) { Scale = 1f }) 
+                              new(800) { Scale = 1f })
                               { Repeat = true, Ease = SinInOut };
 
         Animator += new Tween(TickDot,
                               new(0) { Scale = 0.5f },
                               new(350) { Scale = 0.7f },
-                              new(800) { Scale = 0.5f }) 
+                              new(800) { Scale = 0.5f })
                               { Repeat = true, Ease = SinInOut };
 
         return new CustomNode(CreateResNode(), TickGradient, TickLine, TickDot).SetOrigin(0, 6);
@@ -238,7 +238,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var red = Config.BaseColor == 0;
         var pulse1 = red ? Config.Pulse1Red + new AddRGB(-57, 115, 96) : Config.Pulse1Teal + new AddRGB(128, -74, -71);
         var pulse2 = red ? Config.Pulse2Red + new AddRGB(-57, 115, 96) : Config.Pulse2Teal + new AddRGB(128, -74, -71);
-       
+
         Animator += new Tween[]
         {
             new(GlowFrame,
@@ -259,7 +259,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Animator -= "BarPulse";
         Animator += new Tween(GlowFrame,
                                   new(0, GlowFrame),
-                                  Hidden[500]) 
+                                  Hidden[500])
                                   { Ease = SinInOut, Label = "BarPulse" };
 
         var red = Config.BaseColor == 0;
@@ -344,7 +344,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             Pulse2Red = config.Pulse2Red;
 
             Mirror = config.Mirror;
-            
+
             LabelTextProps = config.LabelTextProps;
         }
 
@@ -430,7 +430,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         FloatControls("Width", ref Config.Width, 28, 180, 1, ref update);
-        FloatControls("Angle", ref Config.Angle, -180, 180, 1f, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
 
         Heading("Colors");
