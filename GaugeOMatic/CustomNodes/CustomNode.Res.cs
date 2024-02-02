@@ -11,7 +11,7 @@ public unsafe partial class CustomNodeManager
         node->Ctor();
         node->NodeID = GetFreeId();
 
-        RegisteredNodes.Add(node->NodeID,node);
+        RegisteredNodes.Add(node->NodeID, node);
 
         node->Type = NodeType.Res;
         node->NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;

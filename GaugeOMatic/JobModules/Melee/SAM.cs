@@ -24,13 +24,13 @@ public class SAMModule : JobModule
         new("_ParameterWidget", "Parameter Bar")
     };
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new(){
-        new("Kenki Gauge",nameof(KenkiGaugeTracker)),
-        new("Meditation Gauge",nameof(MeditationGaugeTracker)),
-        new("Sen Gauge - Seal Count",nameof(SenSealTracker)),
-        new("Sen Gauge - Setsu Seal",nameof(SenGaugeSetsuTracker)),
-        new("Sen Gauge - Getsu Seal",nameof(SenGaugeGetsuTracker)),
-        new("Sen Gauge - Ka Seal",nameof(SenGaugeKaTracker))
+    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+        new("Kenki Gauge", nameof(KenkiGaugeTracker)),
+        new("Meditation Gauge", nameof(MeditationGaugeTracker)),
+        new("Sen Gauge - Seal Count", nameof(SenSealTracker)),
+        new("Sen Gauge - Setsu Seal", nameof(SenGaugeSetsuTracker)),
+        new("Sen Gauge - Getsu Seal", nameof(SenGaugeGetsuTracker)),
+        new("Sen Gauge - Ka Seal", nameof(SenGaugeKaTracker))
     };
         
     public SAMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -43,13 +43,13 @@ public class SAMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Kenki Gauge",ref TweakConfigs.SAMHideKenki, ref update);
+        ToggleControls("Hide Kenki Gauge", ref TweakConfigs.SAMHideKenki, ref update);
         HideWarning(TweakConfigs.SAMHideKenki);
 
-        ToggleControls("Hide Meditation Gauge",ref TweakConfigs.SAMHideMeditation, ref update);
+        ToggleControls("Hide Meditation Gauge", ref TweakConfigs.SAMHideMeditation, ref update);
         HideWarning(TweakConfigs.SAMHideMeditation);
 
-        ToggleControls("Hide Sen Gauge",ref TweakConfigs.SAMHideSen, ref update);
+        ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHideSen, ref update);
         HideWarning(TweakConfigs.SAMHideSen);
 
         if (!TweakConfigs.SAMHideSen)

@@ -40,7 +40,7 @@ public class LabelTextNode : CustomNode
         return this;
     }
 
-    public void ApplyProps(LabelTextProps props, Vector2? posAdjust = null)
+    public LabelTextNode ApplyProps(LabelTextProps props, Vector2? posAdjust = null)
     {
         Props = props;
         this.SetLabelText(Props.Text)
@@ -50,6 +50,7 @@ public class LabelTextNode : CustomNode
             .SetTextSize(Props.FontSize)
             .SetPos(Props.Position + (posAdjust ?? new(0)))
             .SetVis(Props.Enabled);
+        return this;
     }
 }
 

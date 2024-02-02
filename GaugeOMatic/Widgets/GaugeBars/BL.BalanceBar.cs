@@ -45,27 +45,27 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudRDM0.tex",
-            new(0,0,116,208),    // 0  Plate
-            new(186,3,26,124),   // 1  WhiteBar
-            new(212,3,26,124),   // 2  BlackBar
-            new(116,0,34,144),   // 3  BarOverlay1
-            new(0,208,40,56),    // 4  Crystal
-            new(40,208,40,56),   // 5  CrystalBorder
-            new(116,144,40,60),  // 6  Star
-            new(184,132,84,188), // 7  Backdrop
-            new(125,212,24,22),  // 8  Petals3
-            new(123,234,28,20),  // 9  Petals2
-            new(148,222,14,15),  // 10 Petals1
-            new(242,3,26,124),   // 11 BarTexture
-            new(116,332,72,32),  // 12 MotionLinesObsolete
-            new(0,264,40,48),    // 13 Slash
-            new(81,239,30,40),   // 14 Diamond
-            new(81,279,30,40),   // 15 DiamondGlow
-            new(0,319,117,61),   // 16 DiamondSockets
-            new(114,258,60,60),  // 17 Halo
-            new(118,321,89,59),  // 18 MotionLines
-            new(207,321,39,59),  // 19 Freckles
-            new(150,0,34,144)    // 20 BarOverlay2
+            new(0, 0, 116, 208),    // 0  Plate
+            new(186, 3, 26, 124),   // 1  WhiteBar
+            new(212, 3, 26, 124),   // 2  BlackBar
+            new(116, 0, 34, 144),   // 3  BarOverlay1
+            new(0, 208, 40, 56),    // 4  Crystal
+            new(40, 208, 40, 56),   // 5  CrystalBorder
+            new(116, 144, 40, 60),  // 6  Star
+            new(184, 132, 84, 188), // 7  Backdrop
+            new(125, 212, 24, 22),  // 8  Petals3
+            new(123, 234, 28, 20),  // 9  Petals2
+            new(148, 222, 14, 15),  // 10 Petals1
+            new(242, 3, 26, 124),   // 11 BarTexture
+            new(116, 332, 72, 32),  // 12 MotionLinesObsolete
+            new(0, 264, 40, 48),    // 13 Slash
+            new(81, 239, 30, 40),   // 14 Diamond
+            new(81, 279, 30, 40),   // 15 DiamondGlow
+            new(0, 319, 117, 61),   // 16 DiamondSockets
+            new(114, 258, 60, 60),  // 17 Halo
+            new(118, 321, 89, 59),  // 18 MotionLines
+            new(207, 321, 39, 59),  // 19 Freckles
+            new(150, 0, 34, 144)    // 20 BarOverlay2
         )
     };
 
@@ -101,7 +101,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                                       .SetImageWrap(1)
                                       .DefineTimeline(BarTimeline);
 
-        Petal1 = ImageNodeFromPart(0, 10).SetPos(53,70)
+        Petal1 = ImageNodeFromPart(0, 10).SetPos(53, 70)
                                          .SetScale(1.277778f)
                                          .SetRotation(2.0556102f)
                                          .SetImageWrap(1)
@@ -111,12 +111,12 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         Petal2 = ImageNodeFromPart(0, 9).SetPos(38, 69)
                                         .SetScale(0.575f)
                                         .SetRotation(0.1308997f)
-                                        .SetOrigin(28,0)
+                                        .SetOrigin(28, 0)
                                         .SetImageWrap(1)
                                         .SetDrawFlags(0xE)
                                         .SetAlpha(0);
 
-        Petal3 = ImageNodeFromPart(0, 8).SetPos(27,82)
+        Petal3 = ImageNodeFromPart(0, 8).SetPos(27, 82)
                                         .SetScale(1.1f)
                                         .SetRotation(0.20943953f)
                                         .SetOrigin(24, 0)
@@ -125,29 +125,29 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                                         .SetAlpha(0);
 
 
-        PetalContainer = new CustomNode(CreateResNode(), Petal1, Petal2, Petal3).SetPos(-12,66.62929f).SetSize(116,125).SetDrawFlags(0xA);
+        PetalContainer = new CustomNode(CreateResNode(), Petal1, Petal2, Petal3).SetPos(-12, 66.62929f).SetSize(116, 125).SetDrawFlags(0xA);
 
         NumTextNode = new();
 
         NumTextNode.SetTextColor(0xffffffff, 0x440b00ff).SetPos(0, 0);
         NumTextNode.Node->GetAsAtkTextNode()->CharSpacing = 255;
 
-        BarContainer = new CustomNode(CreateResNode(), Drain, Gain, Main).SetPos(30,48).SetSize(26,124).SetOrigin(28,62);
+        BarContainer = new CustomNode(CreateResNode(), Drain, Gain, Main).SetPos(30, 48).SetSize(26, 124).SetOrigin(28, 62);
 
         BarOverlay = ImageNodeFromPart(0, 3).SetPos(25, 40)
                                             .SetSize(34, 144)
                                             .SetImageWrap(1)
-                                            .SetOrigin(33,62)
+                                            .SetOrigin(33, 62)
                                             .SetImageFlag(32);
 
-        return new CustomNode(CreateResNode(), BarContainer, BarOverlay, PetalContainer, NumTextNode).SetSize(116,208).SetOrigin(68,114);
+        return new CustomNode(CreateResNode(), BarContainer, BarOverlay, PetalContainer, NumTextNode).SetSize(116, 208).SetOrigin(68, 114);
     }
 
     #endregion
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 0 }, new(1) { Height = 124 } };
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 0 }, new(1) { Height = 124 }};
 
     #endregion
 
@@ -162,7 +162,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override void OnIncrease(float prog, float prevProg)
     {
-        if (Config.PetalInc) PetalAnim(Interpolate(prog,prevProg,0.05f)!.Value);
+        if (Config.PetalInc) PetalAnim(Interpolate(prog, prevProg, 0.05f)!.Value);
     }
 
     private void PetalAnim(float pos)
@@ -297,9 +297,9 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         BarContainer.SetScale(left?1:-1, 1);
 
         BarOverlay.SetPos(left?25:59, 40)
-                  .SetPartId((ushort)(left?3:20));
+                  .SetPartId(left?3:20);
         
-        Main.SetPartId((ushort)(light?1:2))
+        Main.SetPartId(light?1:2)
             .SetImageFlag((byte)(light ? 0 : 1))
             .SetAddRGB(Config.MainColor);
 

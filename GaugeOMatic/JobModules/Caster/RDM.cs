@@ -22,12 +22,12 @@ public class RDMModule : JobModule
         new("_ParameterWidget", "Parameter Bar")
     };
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()    {
-        new("Black Mana",nameof(BlackManaTracker)),
-        new("White Mana",nameof(WhiteManaTracker)),
-        new("Mana Stacks",nameof(ManaStackTracker)),
-        new("Balance Crystal",nameof(BalanceCrystalTracker)),
-        new("Weave Metronome",nameof(WeaveMetronome))
+    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+        new("Black Mana", nameof(BlackManaTracker)),
+        new("White Mana", nameof(WhiteManaTracker)),
+        new("Mana Stacks", nameof(ManaStackTracker)),
+        new("Balance Crystal", nameof(BalanceCrystalTracker)),
+        new("Weave Metronome", nameof(WeaveMetronome))
     };
 
     public RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -40,7 +40,7 @@ public class RDMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Balance Gauge",ref TweakConfigs.RDMHideAll, ref update);
+        ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHideAll, ref update);
         HideWarning(TweakConfigs.RDMHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

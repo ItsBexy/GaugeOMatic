@@ -8,7 +8,7 @@ public abstract class StateWidget : Widget
     public abstract void Activate(int current);
     public abstract void Deactivate(int previous);
     public abstract void OnFirstRun(int current);
-    public virtual void PostUpdate() {}
+    public virtual void PostUpdate() { }
     public abstract void StateChange(int current, int previous);
 
     public override void Update()

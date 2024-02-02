@@ -24,8 +24,8 @@ public class WHMModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu => new()
     {
-        new("Lilies",nameof(LilyTracker)),
-        new("Blood Lily",nameof(BloodLilyTracker))
+        new("Lilies", nameof(LilyTracker)),
+        new("Blood Lily", nameof(BloodLilyTracker))
     };
 
     public WHMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -38,7 +38,7 @@ public class WHMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Healing Gauge",ref TweakConfigs.WHMHideAll, ref update);
+        ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHideAll, ref update);
         HideWarning(TweakConfigs.WHMHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

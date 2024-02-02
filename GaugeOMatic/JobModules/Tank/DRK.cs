@@ -26,9 +26,9 @@ public class DRKModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Blood Gauge",nameof(BloodGaugeTracker)),
-        new("Darkside Gauge",nameof(DarksideGaugeTracker)),
-        new("Living Shadow",nameof(LivingShadowTracker))
+        new("Blood Gauge", nameof(BloodGaugeTracker)),
+        new("Darkside Gauge", nameof(DarksideGaugeTracker)),
+        new("Living Shadow", nameof(LivingShadowTracker))
     };
 
     public DRKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -41,9 +41,9 @@ public class DRKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Blood Gauge",ref TweakConfigs.DRKHide0, ref update);
+        ToggleControls("Hide Blood Gauge", ref TweakConfigs.DRKHide0, ref update);
         HideWarning(TweakConfigs.DRKHide0);
-        ToggleControls("Hide Darkside Gauge",ref TweakConfigs.DRKHide1, ref update);
+        ToggleControls("Hide Darkside Gauge", ref TweakConfigs.DRKHide1, ref update);
         HideWarning(TweakConfigs.DRKHide1);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

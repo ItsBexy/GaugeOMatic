@@ -36,32 +36,33 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/JobHudRDM0.tex", 
-            new(0,0,116,208), 
-            new(186,3,26,124),
-            new(212,3,26,124),
-            new(116,0,34,144),
-            new(0,208,40,56),
-            new(40,208,40,56),
-            new(116,144,40,60),
-            new(184,132,84,188),
-            new(125,212,24,22),
-            new(123,234,28,20),
-            new(148,222,14,15),
-            new(242,3,26,124),
-            new(116,332,72,32),
-            new(0,264,40,48),
-            new(81,239,30,40),
-            new(81,279,30,40),
-            new(0,319,117,61),
-            new(114,258,60,60),
-            new(118,321,89,59),
-            new(207,321,39,59),
-            new(150,0,34,144)),
-        new ("ui/uld/JobHudNIN0.tex", new Vector4[] { 
+        new("ui/uld/JobHudRDM0.tex",
+            new(0, 0, 116, 208),
+            new(186, 3, 26, 124),
+            new(212, 3, 26, 124),
+            new(116, 0, 34, 144),
+            new(0, 208, 40, 56),
+            new(40, 208, 40, 56),
+            new(116, 144, 40, 60),
+            new(184, 132, 84, 188),
+            new(125, 212, 24, 22),
+            new(123, 234, 28, 20),
+            new(148, 222, 14, 15),
+            new(242, 3, 26, 124),
+            new(116, 332, 72, 32),
+            new(0, 264, 40, 48),
+            new(81, 239, 30, 40),
+            new(81, 279, 30, 40),
+            new(0, 319, 117, 61),
+            new(114, 258, 60, 60),
+            new(118, 321, 89, 59),
+            new(207, 321, 39, 59),
+            new(150, 0, 34, 144)),
+        new ("ui/uld/JobHudNIN0.tex", new Vector4[] {
             new(256, 152, 20, 88) // flashing edge 
         })
     };
+
     #region Nodes
     
     public CustomNode Plate;
@@ -81,13 +82,13 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
         Tick = ImageNodeFromPart(1, 0).SetRotation(1.5707963267949f)
                                       .SetImageFlag(33)
-                                      .SetOrigin(20,44)
+                                      .SetOrigin(20, 44)
                                       .SetPos(37.5f,-30)
                                       .DefineTimeline(TickTimeline)
                                       .SetAlpha(0);
         NumTextNode = new();
 
-        return new(CreateResNode(), Main, CrystalGlow,Tick,NumTextNode);
+        return new(CreateResNode(), Main, CrystalGlow, Tick, NumTextNode);
     }
 
     #endregion
@@ -96,24 +97,24 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public static KeyFrame[] BarTimeline => new KeyFrame[]
     {
-        new(0) { Height = 10,Y = 198, Alpha = 0 },
-        new(20) { Height = 30,Y=178,Alpha = 255 },
-        new(192) { Height = 202,Y=6, Alpha = 255 }
+        new(0) { Height = 10, Y = 198, Alpha = 0 },
+        new(20) { Height = 30, Y = 178, Alpha = 255 },
+        new(192) { Height = 202, Y = 6, Alpha = 255 }
     };
 
     public static KeyFrame[] PlateTimeline => new KeyFrame[]
     {
-        new(0) { Y=-198 },
-        new(20) { Y=-178 },
-        new(192) { Y=-6 }
+        new(0) { Y = -198 },
+        new(20) { Y = -178 },
+        new(192) { Y = -6 }
     };
 
     public KeyFrame[] TickTimeline => new KeyFrame[]
     {
         new(0) { Y = 173, Alpha = 0 },
-        new(20) { Y=153, Alpha = Config.TickColor.A },
-        new(182) { Y=-9, Alpha = Config.TickColor.A },
-        new(192) { Y=-19, Alpha = 0 }
+        new(20) { Y = 153, Alpha = Config.TickColor.A },
+        new(182) { Y = -9, Alpha = Config.TickColor.A },
+        new(192) { Y = -19, Alpha = 0 }
     };
 
     #endregion
@@ -139,16 +140,16 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             }, 0, 2f));
     }
 
-    public override void OnIncrease(float prog,float prevProg)
+    public override void OnIncrease(float prog, float prevProg)
     {
         Animator += new Tween[]{
             new(CrystalGlow,
-                              new(0){Rotation = 0},
-                              new(400){Rotation = (float)PI*1}),
+                              new(0) { Rotation = 0 },
+                              new(400) { Rotation = (float)PI*1 }),
             new(CrystalGlow,
-                new(0) {Alpha=0,Scale=0.8f},
-                new(150) {Alpha=255,Scale=1.5f},
-                new(400) {Alpha=0,Scale=3})
+                new(0) { Alpha = 0, Scale = 0.8f },
+                new(150) { Alpha = 255, Scale = 1.5f },
+                new(400) { Alpha = 0, Scale = 3 })
         };
 
     }
@@ -174,8 +175,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
             Position = config.Position;
             Scale = config.Scale;
-            Color=config.Color;
-            TickColor= config.TickColor;
+            Color = config.Color;
+            TickColor = config.TickColor;
         }
 
         public BalanceOverlayConfig() { }
@@ -191,10 +192,10 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     public override void ApplyConfigs()
     {
         WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
-        Plate.SetAddRGB(Config.Color,true);
+        Plate.SetAddRGB(Config.Color, true);
         Tick.SetAddRGB(Config.TickColor)
             .DefineTimeline(TickTimeline);
-        CrystalGlow.SetAddRGB(Config.Color + new AddRGB(-95,106,74));
+        CrystalGlow.SetAddRGB(Config.Color + new AddRGB(-95, 106, 74));
 
         NumTextNode.ApplyProps(Config.NumTextProps);
     }

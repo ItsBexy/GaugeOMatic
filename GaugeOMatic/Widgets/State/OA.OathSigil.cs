@@ -35,8 +35,8 @@ public sealed unsafe class OathSigil : StateWidget
     public override CustomPartsList[] PartsLists { get; } =
     {
         new("ui/uld/JobHudPLD.tex", 
-            new (0,120,180,180),  // 0 sigil
-            new(316,306,78,52))   // 1 wing
+            new (0, 120, 180, 180),  // 0 sigil
+            new(316, 306, 78, 52))   // 1 wing
     };
 
     #region Nodes
@@ -51,16 +51,16 @@ public sealed unsafe class OathSigil : StateWidget
         Sigil = ImageNodeFromPart(0, 0).SetOrigin(90, 90).SetAlpha(0).SetScale(0).SetY(50).SetImageFlag(32);
         SigilWrapper = new(CreateResNode(), Sigil);
 
-        WingR = ImageNodeFromPart(0, 1).SetPos(107,42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1);
-        WingL = ImageNodeFromPart(0, 1).SetPos(-6,42).SetOrigin(70, 52).SetScale(0).SetAlpha(0);
+        WingR = ImageNodeFromPart(0, 1).SetPos(107, 42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1);
+        WingL = ImageNodeFromPart(0, 1).SetPos(-6, 42).SetOrigin(70, 52).SetScale(0).SetAlpha(0);
 
         Animator += new Tween(Sigil,
-                              new(0){AddRGB=new(-127,-112,-36) },
-                              new(500){AddRGB = new(-107, -92, -16) },
-                              new(960){AddRGB = new(-127, -112, -36) })
-                              {Repeat=true,Ease=SinInOut};
+                              new(0) { AddRGB = new(-127,-112,-36) },
+                              new(500) { AddRGB = new(-107, -92, -16) },
+                              new(960) { AddRGB = new(-127, -112, -36) })
+                              { Repeat = true, Ease = SinInOut };
 
-        return new(CreateResNode(), SigilWrapper,WingR,WingL);
+        return new(CreateResNode(), SigilWrapper, WingR, WingL);
     }
 
     #endregion
@@ -130,8 +130,8 @@ public sealed unsafe class OathSigil : StateWidget
         var wingColor = Config.WingColors.ElementAtOrDefault(current);
         Animator += new Tween[]
         {
-            new(SigilWrapper, new(0,SigilWrapper), new(160){ AddRGB = Config.SigilColors.ElementAtOrDefault(current) }),
-            new(WingL, new(0, WingL), new(160) { MultRGB = wingColor}),
+            new(SigilWrapper, new(0, SigilWrapper), new(160) { AddRGB = Config.SigilColors.ElementAtOrDefault(current) }),
+            new(WingL, new(0, WingL), new(160) { MultRGB = wingColor }),
             new(WingR, new(0, WingR), new(160) { MultRGB = wingColor })
         };
     }
@@ -142,7 +142,7 @@ public sealed unsafe class OathSigil : StateWidget
 
     public class OathSigilConfig
     {
-        public Vector2 Position = new(0,0);
+        public Vector2 Position = new(0, 0);
         public float Scale = 1;
         public List<AddRGB> SigilColors = new();
         public List<ColorRGB> WingColors = new();
@@ -188,7 +188,7 @@ public sealed unsafe class OathSigil : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position+new Vector2(30.5F,0))
+        WidgetRoot.SetPos(Config.Position+new Vector2(30.5F, 0))
                   .SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;
@@ -210,7 +210,7 @@ public sealed unsafe class OathSigil : StateWidget
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
         ToggleControls("Show Wings", ref Config.IncludeWings, ref update);
-        RadioControls("Blend Mode", ref Config.BlendMode, new() { 0, 32 }, new(){"Normal", "Dodge"}, ref update, true);
+        RadioControls("Blend Mode", ref Config.BlendMode, new() { 0, 32 }, new() {"Normal", "Dodge" }, ref update, true);
 
         Heading("Colors");
 

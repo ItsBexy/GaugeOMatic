@@ -88,7 +88,7 @@ public abstract class BranchingDropdown
     public bool IsOpen { get; set; }
     public abstract string DropdownText(string fallback);
 
-    /// <summary>An indexed collection, whose values can inform the behaviour of the <see cref="DrawSubMenu">DrawSubMenu()</see> method.</summary>
+    /// <summary>An indexed collection, whose values can inform the behaviour of the <see cref ="DrawSubMenu">DrawSubMenu()</see> method.</summary>
     public abstract ICollection SubMenus { get; }
     public abstract void DrawSubMenu(int i, ref UpdateFlags update);
 
@@ -134,7 +134,7 @@ public class ItemRefMenu : BranchingDropdown
         public string TrackerType;
         public uint ItemId;
 
-        public MenuOption(string name, string trackerType, uint itemId=0)
+        public MenuOption(string name, string trackerType, uint itemId = 0)
         {
             Name = name;
             TrackerType = trackerType;
@@ -172,9 +172,9 @@ public class ItemRefMenu : BranchingDropdown
 
         SubMenus = new()
         {
-            ("Status Effects",StatusOptions),
-            ("Actions",ActionOptions),
-            ("Other",ParamOptions)
+            ("Status Effects", StatusOptions),
+            ("Actions", ActionOptions),
+            ("Other", ParamOptions)
         };
 
         if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Insert(2,("Job Gauge", Tracker.JobModule.JobGaugeMenu));
@@ -253,10 +253,10 @@ public class WidgetMenu : BranchingDropdown
 
         SubMenus = new()
         {
-            ("Counters",Counter),
-            ("Bars & Timers",GaugeBar),
-            ("State Indicators",State),
-            ("Multi-Component",MultiComponent)
+            ("Counters", Counter),
+            ("Bars & Timers", GaugeBar),
+            ("State Indicators", State),
+            ("Multi-Component", MultiComponent)
         };
     }
 
@@ -290,7 +290,7 @@ public class WidgetMenu : BranchingDropdown
             var mcWidgets = AvailableWidgets.Where(w => w.Value.WidgetTags.HasFlag(tag)).ToArray();
             foreach (var (key, name) in MultiCompDict)
             {
-                ImGui.PushStyleColor(ImGuiCol.Border,new Vector4(0,0,0,0));
+                ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0, 0, 0, 0));
                 if (ImGui.BeginMenu($"{name}##{Hash}{label}{key}Menu"))
                 {
                     foreach (var w in mcWidgets.Where(w => w.Value.MultiCompData?.Key == key)

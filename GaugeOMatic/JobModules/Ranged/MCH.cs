@@ -26,9 +26,9 @@ public class MCHModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new ("Heat Gauge",nameof(HeatGaugeTracker)),
-        new ("Battery Gauge",nameof(BatteryGaugeTracker)),
-        new ("Automaton Timer",nameof(AutomatonTracker))
+        new ("Heat Gauge", nameof(HeatGaugeTracker)),
+        new ("Battery Gauge", nameof(BatteryGaugeTracker)),
+        new ("Automaton Timer", nameof(AutomatonTracker))
     };
 
     public MCHModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -41,7 +41,7 @@ public class MCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Heat Gauge",ref TweakConfigs.MCHHideAll, ref update);
+        ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHideAll, ref update);
         HideWarning(TweakConfigs.MCHHideAll);
 
         PositionControls("Move Battery Gauge", ref TweakConfigs.MCHBatteryPos, ref update);
@@ -62,7 +62,7 @@ public class MCHModule : JobModule
             ((AtkUnitBase*)heatGauge)->GetNodeById(2)->ToggleVisibility(!hideAll && !simple0);
             ((AtkUnitBase*)heatGauge)->GetNodeById(33)->ToggleVisibility(!hideAll && simple0);
 
-            heatGauge->GaugeStandard.BatteryContainer->SetPositionFloat(batteryPos.X,batteryPos.Y + 59);
+            heatGauge->GaugeStandard.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 59);
             heatGauge->GaugeSimple.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 72);
         }
     }

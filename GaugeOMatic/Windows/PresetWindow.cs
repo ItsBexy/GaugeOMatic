@@ -87,14 +87,14 @@ public class PresetWindow : Window, IDisposable
         var filter = Configuration.PresetFiltering;
         
         ImGui.SameLine();
-        if (ImGui.RadioButton("All", ref filter, 0)) {Configuration.PresetFiltering = 0; Configuration.Save(); }
+        if (ImGui.RadioButton("All", ref filter, 0)) { Configuration.PresetFiltering = 0; Configuration.Save(); }
         ImGui.SameLine();
-        if (ImGui.RadioButton("Role Only", ref filter, 1)) {Configuration.PresetFiltering = 1; Configuration.Save(); }
+        if (ImGui.RadioButton("Role Only", ref filter, 1)) { Configuration.PresetFiltering = 1; Configuration.Save(); }
         ImGui.SameLine();
-        if (ImGui.RadioButton("Job Only", ref filter, 2)) {Configuration.PresetFiltering = 2; Configuration.Save(); }
+        if (ImGui.RadioButton("Job Only", ref filter, 2)) { Configuration.PresetFiltering = 2; Configuration.Save(); }
 
 
-        var presetList = new List<Preset>(UIData.PresetList.Where(p=> filter==0||p.Trackers.Any(t=> filter switch
+        var presetList = new List<Preset>(UIData.PresetList.Where(p => filter == 0||p.Trackers.Any(t => filter switch
         {
             1 => t.JobRoleMatch(module),
             2 => t.JobMatch(module),
@@ -170,7 +170,7 @@ public class PresetWindow : Window, IDisposable
                 AddTrackerButton(trackerConfig);
                 ImGui.SameLine();
 
-                ImGuiHelpy.WriteIcon(attr.Icon,attr.TypeDesc,attr.Color);
+                ImGuiHelpy.WriteIcon(attr.Icon, attr.TypeDesc, attr.Color);
 
                 ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayName ?? "");
                 ImGui.TableNextColumn();
@@ -287,7 +287,7 @@ public class PresetWindow : Window, IDisposable
 
             if (!dup)
             {
-                var importResult = new Preset(importString,true);
+                var importResult = new Preset(importString, true);
                 if (importResult.Trackers.Length > 0)
                 {
                     if (importResult.Name.Length == 0) importResult.Name = "New Preset";

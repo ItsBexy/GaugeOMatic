@@ -25,7 +25,7 @@ public class BRDModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new ("Soul Voice Gauge",nameof(SoulVoiceGaugeTracker))
+        new ("Soul Voice Gauge", nameof(SoulVoiceGaugeTracker))
     };
 
     public BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -38,7 +38,7 @@ public class BRDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Soul Voice Gauge",ref TweakConfigs.BRDHideSoulVoice, ref update);
+        ToggleControls("Hide Soul Voice Gauge", ref TweakConfigs.BRDHideSoulVoice, ref update);
         HideWarning(TweakConfigs.BRDHideSoulVoice);
 
         if (!TweakConfigs.BRDHideSoulVoice)

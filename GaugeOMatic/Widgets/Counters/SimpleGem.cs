@@ -34,15 +34,15 @@ public sealed unsafe class SimpleGem : CounterWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/JobHudSimple_StackA.tex", new(0,0,32,32),  new(32,0,32,32)), // diamond
-        new("ui/uld/JobHudSimple_StackA.tex", new(0,0,32,32),  new(32,32,32,32)),// hollow diamond
-        new("ui/uld/JobHudSimple_StackB.tex", new(0,0,32,32),  new(32,0,32,32)), // chevron
-        new("ui/uld/jobhudsmn1.tex",          new(434,597,32,32), new(434,629,32,32)), // teardrop
-        new("ui/uld/jobhudsmn1.tex",          new(498,598,32,32), new(498,630,32,32)), // rectangle
-        new("ui/uld/jobhudbrd0.tex",          new(244,110,32,32), new(278,110,32,32)), // music note
-        new("ui/uld/jobhudsam1.tex",          new(240,318,32,32), new(240,350,32,32)), // setsu
-        new("ui/uld/jobhudsam1.tex",          new(272,318,32,32), new(272,350,32,32)), // getsu
-        new("ui/uld/jobhudsam1.tex",          new(304,318,32,32), new(304,350,32,32))  // ka
+        new("ui/uld/JobHudSimple_StackA.tex", new(0, 0, 32, 32),  new(32, 0, 32, 32)), // diamond
+        new("ui/uld/JobHudSimple_StackA.tex", new(0, 0, 32, 32),  new(32, 32, 32, 32)),// hollow diamond
+        new("ui/uld/JobHudSimple_StackB.tex", new(0, 0, 32, 32),  new(32, 0, 32, 32)), // chevron
+        new("ui/uld/jobhudsmn1.tex",          new(434, 597, 32, 32), new(434, 629, 32, 32)), // teardrop
+        new("ui/uld/jobhudsmn1.tex",          new(498, 598, 32, 32), new(498, 630, 32, 32)), // rectangle
+        new("ui/uld/jobhudbrd0.tex",          new(244, 110, 32, 32), new(278, 110, 32, 32)), // music note
+        new("ui/uld/jobhudsam1.tex",          new(240, 318, 32, 32), new(240, 350, 32, 32)), // setsu
+        new("ui/uld/jobhudsam1.tex",          new(272, 318, 32, 32), new(272, 350, 32, 32)), // getsu
+        new("ui/uld/jobhudsam1.tex",          new(304, 318, 32, 32), new(304, 350, 32, 32))  // ka
     };
 
     #region Nodes
@@ -57,7 +57,7 @@ public sealed unsafe class SimpleGem : CounterWidget
 
         BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(16,16);
+        return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(16, 16);
     }
 
     private void BuildStacks(int count)
@@ -73,9 +73,9 @@ public sealed unsafe class SimpleGem : CounterWidget
 
             Gems.Add(ImageNodeFromPart(0, 1)
                      .SetMultiply(80)
-                     .SetOrigin(16,16).SetAlpha(0));
+                     .SetOrigin(16, 16).SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i*20,0).SetOrigin(16,16));
+            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i*20, 0).SetOrigin(16, 16));
         }
     }
 
@@ -87,22 +87,22 @@ public sealed unsafe class SimpleGem : CounterWidget
     {
         var colorOffset = GetColorOffset();
         Animator += new Tween(Gems[i], 
-                              new(0){Scale=2.4f,Alpha=0,AddRGB = Config.GemColor + colorOffset + new AddRGB(80)},
-                              new(125) { Scale=1,Alpha=255,AddRGB=Config.GemColor + colorOffset });
+                              new(0) { Scale = 2.4f, Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80) },
+                              new(125) { Scale = 1, Alpha = 255, AddRGB = Config.GemColor + colorOffset });
     }
 
     public override void HideStack(int i)
     {
         var colorOffset = GetColorOffset();
         Animator += new Tween(Gems[i],
-                              new(0) { Alpha = 255, AddRGB = Config.GemColor + colorOffset, Scale=1 },
-                              new(90) { Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80),Scale=0.8f });
+                              new(0) { Alpha = 255, AddRGB = Config.GemColor + colorOffset, Scale = 1 },
+                              new(90) { Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80), Scale = 0.8f });
     }
 
     private void AllVanish() =>
         Animator += new Tween(WidgetRoot,
-                              new(0){Alpha=255,AddRGB=0},
-                              new(200){Alpha=0,AddRGB=100});
+                              new(0) { Alpha = 255, AddRGB = 0 },
+                              new(200) { Alpha = 0, AddRGB = 100 });
 
     private void AllAppear() =>
         Animator += new Tween(WidgetRoot,
@@ -121,7 +121,7 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { AllAppear(); } }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { AllAppear(); }}
 
     #endregion
 
@@ -146,7 +146,7 @@ public sealed unsafe class SimpleGem : CounterWidget
 
         public Vector2 Position;
         public float Scale = 1;
-        public AddRGB GemColor = new(120,30,-40);
+        public AddRGB GemColor = new(120, 30,-40);
         public GemShapes GemShape;
         public float Spacing = 20;
         public float Angle;
@@ -173,7 +173,7 @@ public sealed unsafe class SimpleGem : CounterWidget
             Curve = config.Curve;
             FrameColor = config.FrameColor;
             HideEmpty = config.HideEmpty;
-            ChevDir =config.ChevDir;
+            ChevDir = config.ChevDir;
             
             AsTimer = config.AsTimer;
             TimerSize = config.TimerSize;
@@ -196,7 +196,7 @@ public sealed unsafe class SimpleGem : CounterWidget
         var widgetAngle = Config.Angle+(Config.Curve/2f);
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle,true);
+                  .SetRotation(widgetAngle, true);
 
         var posAngle = 0f;
         double x = 0;
@@ -271,16 +271,16 @@ public sealed unsafe class SimpleGem : CounterWidget
             Getsu => new(14, 7, -82),
             Ka => new(-65, 29, 25),
             Teardrop => new(-53, 34, 15),
-            Rectangle => new(78,24,86),
+            Rectangle => new(78, 24, 86),
             _ => new(0)
         };
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
         Heading("Layout");
-        RadioIcons("Shape", ref Config.GemShape, new() { DiamondFull, DiamondHollow, Chevron }, new() { Diamond,Expand, ChevronRight }, ref update);
+        RadioIcons("Shape", ref Config.GemShape, new() { DiamondFull, DiamondHollow, Chevron }, new() { Diamond, Expand, ChevronRight }, ref update);
         RadioIcons(" ##Shape2", ref Config.GemShape, new List<GemShapes> { Teardrop, Rectangle, MusicNote }, new() { MapMarker, Mobile, Music }, ref update);
-        RadioIcons(" ##Shape3", ref Config.GemShape, new List<GemShapes> { Setsu, Getsu, Ka }, new() { Snowflake,Moon,Splotch }, ref update);
+        RadioIcons(" ##Shape3", ref Config.GemShape, new List<GemShapes> { Setsu, Getsu, Ka }, new() { Snowflake, Moon, Splotch }, ref update);
 
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);

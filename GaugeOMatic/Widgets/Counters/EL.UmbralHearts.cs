@@ -48,31 +48,33 @@ public sealed unsafe class UmbralHearts : CounterWidget
     {
         Max = GetMax();
         BuildStacks(Max);
-        return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(12,34);
+        return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(12, 34);
     }
 
     private void BuildStacks(int count)
     {
         Stacks = new();
         Hearts = new();
+        GlowWrappers = new();
+        Glows = new();
 
         for (var i = 0; i < count; i++)
         {
-            Hearts.Add(ImageNodeFromPart(0,5).SetPos(0,-20).SetOrigin(12,34).SetAlpha(0));
+            Hearts.Add(ImageNodeFromPart(0, 5).SetPos(0,-20).SetOrigin(12, 34).SetAlpha(0));
 
-            Glows.Add(ImageNodeFromPart(0,20).SetScale(1.3f,1.2f).SetOrigin(12,34).SetImageWrap(1));
+            Glows.Add(ImageNodeFromPart(0, 20).SetScale(1.3f, 1.2f).SetOrigin(12, 34).SetImageWrap(1));
 
             Animator += new Tween(Glows[i],
                                   new(0) { ScaleX = 1, ScaleY = 1, Alpha = 4 },
                                   new(300) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 152 },
                                   new(630) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
                                   new(960) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 }) 
-                                  { Repeat=true, Ease=SinInOut };
+                                  { Repeat = true, Ease = SinInOut };
 
             Glows[i].UnsetNodeFlags(NodeFlags.UseDepthBasedPriority);
             GlowWrappers.Add(new CustomNode(CreateResNode(), Glows[i]).SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Hearts[i], GlowWrappers[i]).SetOrigin(12,34));
+            Stacks.Add(new CustomNode(CreateResNode(), Hearts[i], GlowWrappers[i]).SetOrigin(12, 34));
         }
     }
 
@@ -83,10 +85,10 @@ public sealed unsafe class UmbralHearts : CounterWidget
     public override void ShowStack(int i) =>
         Animator += new Tween[]
         {
-            new(Hearts[i],
-                new(0) {Y=-20,Alpha=0},
-                new(200) {Y=0,Alpha=200},
-                new(300){Y=0,Alpha=255}),
+            new(Hearts[i], 
+                new(0) { Y = -20, Alpha = 0 },
+                new(200) { Y = 0, Alpha = 200 },
+                new(300) { Y = 0, Alpha = 255 }),
             new(GlowWrappers[i],
                 Hidden[0],
                 Visible[300])
@@ -105,7 +107,6 @@ public sealed unsafe class UmbralHearts : CounterWidget
                 Hidden[300])
         };
     
-
     #endregion
 
     #region UpdateFuncs
@@ -168,9 +169,9 @@ public sealed unsafe class UmbralHearts : CounterWidget
     {
 
         var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetRoot.SetPos(Config.Position+new Vector2(19,22))
+        WidgetRoot.SetPos(Config.Position+new Vector2(19, 22))
                   .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle,true);
+                  .SetRotation(widgetAngle, true);
 
         var posAngle = 0f;
         double x = 0;

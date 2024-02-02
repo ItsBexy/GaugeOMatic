@@ -38,7 +38,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
             new(0, 176, 102, 62),
             new(66, 78, 24, 20),
             new(66, 98, 46, 46),
-            new(116, 150, 190, 26))}; // gem pulsar
+            new(116, 150, 190, 26)) }; // gem pulsar
 
     #region Nodes
 
@@ -58,7 +58,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
     private CustomNode BuildStack(float x, float y)
     {
-        var gem = ImageNodeFromPart(0,1).SetOrigin(12,10);
+        var gem = ImageNodeFromPart(0, 1).SetOrigin(12, 10);
         var glow = ImageNodeFromPart(0, 2).SetOrigin(23, 23).SetPos(-11, -13).SetAlpha(0).SetImageFlag(32)
                                           .DefineTimeline(new(0) { Alpha = 0, Scale = 1 }, new(150) { Alpha = 255, Scale = 1 }, new(300) { Alpha = 0, Scale = 1 });
         var glow2 = ImageNodeFromPart(0, 2).SetOrigin(23, 23)
@@ -68,10 +68,10 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                                            .SetAlpha(0)
                                            .SetImageFlag(32);
 
-        var pulsar = ImageNodeFromPart(0, 3).SetOrigin(95,13)
+        var pulsar = ImageNodeFromPart(0, 3).SetOrigin(95, 13)
                                             .SetPos(-82, -3)
                                             .SetAlpha(0)
-                                            .SetScale(0.5f,0.4f)
+                                            .SetScale(0.5f, 0.4f)
                                             .SetImageFlag(32)
                                             .DefineTimeline(new(0) { Alpha = 0, ScaleX = 0, ScaleY = 0.4f },
                                                             new(150) { Alpha = 255, ScaleX = 0.25f, ScaleY = 0.35f },
@@ -83,7 +83,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         Pulsars.Add(pulsar);
 
 
-        return new CustomNode(CreateResNode(), gem, glow,glow2, pulsar).SetPos(x,y);
+        return new CustomNode(CreateResNode(), gem, glow, glow2, pulsar).SetPos(x, y);
     }
 
     #endregion
@@ -197,7 +197,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
             GemColor = config.GemColor;
             HideEmpty = config.HideEmpty;
 
-            Pulse=config.Pulse;
+            Pulse = config.Pulse;
             AsTimer = config.AsTimer;
             TimerSize = config.TimerSize;
             InvertTimer = config.InvertTimer;

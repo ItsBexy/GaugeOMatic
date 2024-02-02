@@ -40,7 +40,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         new ("ui/uld/emjintroparts08.tex", 
              new Vector4(0, 17, 720, 32),
              new Vector4(0, 17, 720, 32) ),
-        new ("ui/uld/emjintroparts03.tex", new Vector4(0,0,64,64)),
+        new ("ui/uld/emjintroparts03.tex", new Vector4(0, 0, 64, 64)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4(256, 152, 20, 88))
     };
     #region Nodes
@@ -59,29 +59,29 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     {
         Bar = BuildBar();
         Frame = NineGridFromPart(1, 0, 28, 28, 28, 28).SetSize(0, 32);
-        LabelTextNode = new(Config.LabelText.Text,Tracker.DisplayName);
+        LabelTextNode = new(Config.LabelText.Text, Tracker.DisplayName);
         NumTextNode = new();
 
         Tick = ImageNodeFromPart(2, 0).SetAlpha(0).SetOrigin(20, 44).SetPos(0, -27.5f).SetScale(0.8f, 0.55f).SetImageFlag(32);
-        TickWrapper = new CustomNode(CreateResNode(),Tick).SetX(Config.Width/-2);
+        TickWrapper = new CustomNode(CreateResNode(), Tick).SetX(Config.Width/-2);
 
         Animator += new Tween(Tick,
-                              new(0){ScaleY=0.54f,ScaleX=0.81f},
-                              new(300){ScaleY=0.56f, ScaleX = 0.79f },
-                              new(600){ ScaleY = 0.54f, ScaleX = 0.81f })
-                              {Repeat = true,Ease = SinInOut};
+                              new(0) { ScaleY = 0.54f, ScaleX = 0.81f },
+                              new(300) { ScaleY = 0.56f, ScaleX = 0.79f },
+                              new(600) { ScaleY = 0.54f, ScaleX = 0.81f })
+                              { Repeat = true, Ease = SinInOut };
 
         Contents = new(CreateResNode(), Bar, Frame, TickWrapper);
 
-        return new CustomNode(CreateResNode(), Contents, LabelTextNode, NumTextNode).SetOrigin(0,32);
+        return new CustomNode(CreateResNode(), Contents, LabelTextNode, NumTextNode).SetOrigin(0, 32);
     }
 
     private CustomNode BuildBar()
     {
-        Backdrop = ImageNodeFromPart(0, 1).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32);
-        Drain = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32).SetOrigin(0, 16);
-        Gain = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32).SetOrigin(0,16);
-        Main = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0,32).SetOrigin(0, 16);
+        Backdrop = ImageNodeFromPart(0, 1).SetSize(2880, 50).SetImageWrap(3).SetSize(0, 32);
+        Drain = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0, 32).SetOrigin(0, 16);
+        Gain = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0, 32).SetOrigin(0, 16);
+        Main = ImageNodeFromPart(0, 0).SetSize(2880, 50).SetImageWrap(3).SetSize(0, 32).SetOrigin(0, 16);
 
         return new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main).SetPos(0, 0).SetSize(Config.Width, 32);
     }
@@ -90,7 +90,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
     public void CollapseBar(int kf1, int kf2)
     {
@@ -104,7 +104,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                 new(kf2) { X = 0, Width = 0, Height = 32, AddRGB = 255, Alpha = 0, Y = 16 })
                 { Ease = SinInOut },
             new(Bar,
-                new(0) { X = -halfWidth, Alpha = 255, Y = 0, ScaleX=1, Height = 32 },
+                new(0) { X = -halfWidth, Alpha = 255, Y = 0, ScaleX = 1, Height = 32 },
                 new((int)(kf1*0.9f)) { X = 0 , Alpha = 128, Y = 0, ScaleX = 0, Height = 32 },
                 new(kf2) { X = 0 , Alpha = 0, Y = 16, ScaleX = 0, Height = 0 })
                 { Ease = SinInOut },
@@ -123,20 +123,20 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Alpha = 0, Y = 16, X = -16, Width = 32, Height=0, AddRGB = new(200) },
-                new(kf1) { Alpha = 255, Y = 0, X = -16, Width = 32, Height=32, AddRGB = new(255) },
+                new(0) { Alpha = 0, Y = 16, X = -16, Width = 32, Height = 0, AddRGB = new(200) },
+                new(kf1) { Alpha = 255, Y = 0, X = -16, Width = 32, Height = 32, AddRGB = new(255) },
                 new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, Height = 32, Width = Config.Width, AddRGB = 0 })
                 { Ease = SinInOut },
 
             new(Bar,
-                new(0) { Alpha = 0, Y = 16, X = -16,ScaleY=0, ScaleX = 32f/Config.Width, Height=0 },
-                new(kf1) { Alpha = 255, Y = 0, X = -16 ,ScaleY=1, ScaleX = 32f / Config.Width, Height=32 },
+                new(0) { Alpha = 0, Y = 16, X = -16, ScaleY = 0, ScaleX = 32f/Config.Width, Height = 0 },
+                new(kf1) { Alpha = 255, Y = 0, X = -16 , ScaleY = 1, ScaleX = 32f / Config.Width, Height = 32 },
                 new(kf2) { Alpha = 255, Y = 0, X = -halfWidth, ScaleX = 1, Height = 32 })
                 { Ease = SinInOut },
 
             new(Backdrop,
-                new(0) { X=0,Height=0,Alpha = 255 },
-                new(kf1) { X = 0,Height=32,Alpha = Config.Background.A },
+                new(0) { X = 0, Height = 0, Alpha = 255 },
+                new(kf1) { X = 0, Height = 32, Alpha = Config.Background.A },
                 new(kf2) { X = 0, Alpha = Config.Background.A })
                 { Ease = SinInOut },
 
@@ -173,7 +173,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public override void PlaceTickMark(float prog)
     {
-        var wid = Max(Drain.Width,Main.Width);
+        var wid = Max(Drain.Width, Main.Width);
         Tick.SetPos(wid - 20, -27.5f)
             .SetAlpha(prog switch {
                 < 0.025f => (byte)(prog * 10200F),
@@ -196,11 +196,11 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         Animator += new Tween[]
         {
             new(Main,
-                new(0,Main),
+                new(0, Main),
                 new(200) { PartCoords = new(720, 17, 720, 32) })
                 { Ease = SinInOut, Label = "ScrollAni" },
             new(Backdrop,
-                new(0,Backdrop),
+                new(0, Backdrop),
                 new(200) { PartCoords = new(0, 17, 720, 32) })
                 { Ease = SinInOut, Label = "ScrollAni" }
         };
@@ -291,7 +291,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                   .SetWidth(Config.Width)
                   .SetScale(Config.Scale);
 
-        Contents.SetRotation(Config.Angle,true).SetOrigin(0,16);
+        Contents.SetRotation(Config.Angle, true).SetOrigin(0, 16);
 
         Frame.SetPos(Config.Width / -2, 0).SetWidth(Config.Width);
         Bar.SetPos(Config.Width / -2, 0).SetWidth(Config.Width);
@@ -302,7 +302,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             .DefineTimeline(BarTimeline)
             .SetProgress(CalcProg());
 
-        Backdrop.SetAddRGB(Config.Background,true);
+        Backdrop.SetAddRGB(Config.Background, true);
 
         Drain.SetAddRGB(Config.DrainColor, true)
              .SetOrigin(Config.Width/2f, 16)
@@ -319,7 +319,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         
         LabelTextNode.ApplyProps(Config.LabelText, new Vector2(Config.Width / -2, -15));
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(-1,17));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(-1, 17));
         NumTextNode.SetOrigin((NumTextNode.Width / 2) + 1, (NumTextNode.Height / 2) - 1);
 
     }

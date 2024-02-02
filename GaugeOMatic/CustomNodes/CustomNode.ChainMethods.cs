@@ -366,6 +366,10 @@ public unsafe partial class CustomNode
         return this;
     }
 
+    public CustomNode SetPartId(uint id) => SetPartId((ushort)id);
+
+    public CustomNode SetPartId(int id) => SetPartId((ushort)id);
+
     public CustomNode SetPartId(ushort id)
     {
         if (Node->Type == Image) Node->GetAsAtkImageNode()->PartId = id;

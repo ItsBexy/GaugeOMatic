@@ -26,7 +26,7 @@ public class SMNModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu => new()
     {
-        new("Aetherflow Gauge",nameof(AetherflowSMNGaugeTracker))
+        new("Aetherflow Gauge", nameof(AetherflowSMNGaugeTracker))
     };
 
     public SMNModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -39,7 +39,7 @@ public class SMNModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Aetherflow Gauge",ref TweakConfigs.SMNHideAetherflow, ref update);
+        ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SMNHideAetherflow, ref update);
         HideWarning(TweakConfigs.SMNHideAetherflow);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

@@ -25,7 +25,7 @@ public class MNKModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Chakra Gauge",nameof(ChakraGaugeTracker))
+        new("Chakra Gauge", nameof(ChakraGaugeTracker))
     };
 
     public MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -38,7 +38,7 @@ public class MNKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Chakra Gauge",ref TweakConfigs.MNKHideChakra, ref update);
+        ToggleControls("Hide Chakra Gauge", ref TweakConfigs.MNKHideChakra, ref update);
         HideWarning(TweakConfigs.MNKHideChakra);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

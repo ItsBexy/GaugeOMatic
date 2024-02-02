@@ -61,8 +61,8 @@ public abstract class CounterWidget : Widget
         if (GetConfig.AsTimer)
         {
             max = GetConfig.TimerSize;
-            current = (int)Ceiling(Clamp(Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge,0,1) * max);
-            previous = (int)Ceiling(Clamp(Tracker.PreviousData.GaugeValue / Tracker.CurrentData.MaxGauge,0,1) * max);
+            current = (int)Ceiling(Clamp(Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge, 0, 1) * max);
+            previous = (int)Ceiling(Clamp(Tracker.PreviousData.GaugeValue / Tracker.CurrentData.MaxGauge, 0, 1) * max);
 
             if (GetConfig.InvertTimer)
             {
@@ -115,6 +115,8 @@ public abstract class CounterWidget : Widget
 
     public void CounterAsTimerControls(ref bool useAsTimer, ref bool invertTimer, ref int timerSize, string term, ref UpdateFlags update)
     {
+        if (term == "Cooldown") term = "Timer";
+
         if (ToggleControls($"Use as {term}", ref useAsTimer, ref update)) SizeChange();
         if (!useAsTimer) return;
 

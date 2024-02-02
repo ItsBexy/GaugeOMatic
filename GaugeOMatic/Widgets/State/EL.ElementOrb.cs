@@ -122,7 +122,7 @@ public sealed unsafe class ElementOrb : StateWidget
         SetupPulse(Config.GetOrbPulse(current));
         Halo.SetAddRGB(Config.GetHaloColor(current));
         var partId = (ushort)Config.GetBaseColor(current);
-        Orb.SetPartId((ushort)(partId == 0 ? 24 : partId));
+        Orb.SetPartId(partId == 0 ? 24 : partId);
         OrbContainer.SetAddRGB(Config.GetOrbModifier(current));
 
         Animator += new Tween[]
@@ -255,7 +255,7 @@ public sealed unsafe class ElementOrb : StateWidget
             var orbMod = Config.OrbModifiers[i];
             var orbPulse = Config.OrbPulses[i];
             var haloColor = Config.HaloColors[i];
-            if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() { Grey, Red, Blue }, new() { "Grey", "Red", "Blue" }, ref update)) Config.BaseColors[i] = baseColor;
+            if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() {Grey, Red, Blue}, new() {"Grey", "Red", "Blue"}, ref update)) Config.BaseColors[i] = baseColor;
             if (ColorPickerRGB($"Color Modifier##orbMod{i}", ref orbMod, ref update)) Config.OrbModifiers[i] = orbMod;
             if (ColorPickerRGB($"Orb Pulse##orbPulse{i}", ref orbPulse, ref update)) Config.OrbPulses[i] = orbPulse;
             if (ColorPickerRGB($"Rim Pulse##rimPulse{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;

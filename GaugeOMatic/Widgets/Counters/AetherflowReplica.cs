@@ -58,7 +58,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         SocketPlate = BuildSocketPlate(Max, out var size);
         Gems = BuildGems(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((size/2f)-1,37);
+        return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((size/2f)-1, 37);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -185,13 +185,13 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     public override void OnFirstRun(int count, int max)
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
-        for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count).SetScale(flipFactor,1);
+        for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count).SetScale(flipFactor, 1);
         if (Config.HideEmpty && count == 0) WidgetRoot.Hide();
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { PlateAppear(); } }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { PlateAppear(); }}
 
     #endregion
 
@@ -241,8 +241,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         WidgetRoot.SetPos(Config.Position)
-                  .SetScale(Config.Scale,Config.Scale * flipFactor)
-                  .SetRotation(Config.Angle,true)
+                  .SetScale(Config.Scale, Config.Scale * flipFactor)
+                  .SetRotation(Config.Angle, true)
                   .SetAlpha(Tracker.CurrentData.Count != 0 || !Config.HideEmpty);
 
         SocketPlate.SetScaleX(flipFactor)

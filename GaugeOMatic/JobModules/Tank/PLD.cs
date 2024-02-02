@@ -22,8 +22,8 @@ public class PLDModule : JobModule
         new("_ParameterWidget", "Parameter Bar")
     };
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()    {
-        new("Oath Gauge",nameof(OathGaugeTracker))
+    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+        new("Oath Gauge", nameof(OathGaugeTracker))
     };
 
     public PLDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -36,7 +36,7 @@ public class PLDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Oath Gauge",ref TweakConfigs.PLDHide0, ref update);
+        ToggleControls("Hide Oath Gauge", ref TweakConfigs.PLDHide0, ref update);
         HideWarning(TweakConfigs.PLDHide0);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

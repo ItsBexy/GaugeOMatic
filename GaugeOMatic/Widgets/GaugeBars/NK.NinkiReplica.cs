@@ -108,8 +108,8 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         BottomBorder = ImageNodeFromPart(0, 8).SetPos(11, 77).SetOrigin(0, 16).SetAddRGB(Config.BorderGlow);
         CalligraphyFlash2 = ImageNodeFromPart(0, 3).SetPos(24, 29).SetOrigin(98, 28).SetScale(1.5f).SetAddRGB(Config.FlashH).SetAlpha(0);
 
-        Animator +=BorderTween(TopBorder);
-        Animator +=BorderTween(BottomBorder);
+        Animator += BorderTween(TopBorder);
+        Animator += BorderTween(BottomBorder);
 
         return new CustomNode(CreateResNode(), GaugeBarV, GaugeBarH, ScrollImage, VSigil, Shine, TopBorder, BottomBorder, CalligraphyFlash2).SetSize(256, 100);
     }
@@ -119,8 +119,8 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     #region Animations
 
-    private KeyFrame[] HTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Max(0.001f, Config.Midpoint)) { Width = 175 }, new(1) { Width = 175 } };
-    private KeyFrame[] VTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Min(0.999f, Config.Midpoint)) { Width = 0 }, new(1) { Width = 57 } };
+    private KeyFrame[] HTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Max(0.001f, Config.Midpoint)) { Width = 175 }, new(1) { Width = 175 }};
+    private KeyFrame[] VTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Min(0.999f, Config.Midpoint)) { Width = 0 }, new(1) { Width = 57 }};
 
     public static Tween BorderTween(CustomNode target) => new(target, new(0) { ScaleY = 1.2f, Alpha = 127 }, new(166) { ScaleY = 1f, Alpha = 51 }, new(666) { ScaleY = 1.2f, Alpha = 127 }) { Repeat = true };
 
@@ -329,7 +329,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         TopBorder.SetAddRGB(Config.BorderGlow);
         BottomBorder.SetAddRGB(Config.BorderGlow);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(229,83));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(229, 83));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

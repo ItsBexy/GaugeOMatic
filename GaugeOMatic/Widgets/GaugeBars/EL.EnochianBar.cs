@@ -74,7 +74,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
         Bar = new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(11, 10).SetSize(86, 86).SetAddRGB(-20).SetMultiply(50);
 
-        ClockHand = ImageNodeFromPart(0, 12).SetOrigin(15, 10).DefineTimeline(new(0){ Rotation = -1.5707963267949f },new(1){ Rotation = 0 });
+        ClockHand = ImageNodeFromPart(0, 12).SetOrigin(15, 10).DefineTimeline(new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 });
 
         ClockHand.Node->Priority = 1;
 
@@ -85,14 +85,14 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
         Contents = new CustomNode(CreateResNode(), Backplate, Bar, ClockHandContainer).SetSize(128, 124).SetOrigin(8, 8);
 
-        return new(CreateResNode(), NumTextNode,Contents );
+        return new(CreateResNode(), NumTextNode, Contents );
     }
 
     #endregion
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 } };
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 }};
 
     private void ShowBar()
     {
@@ -131,7 +131,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override void PlaceTickMark(float prog)
     {
-        ClockHand.SetProgress(Max(Main.Progress,Drain.Progress));
+        ClockHand.SetProgress(Max(Main.Progress, Drain.Progress));
         ClockHand.SetAlpha(!Config.HideHand || prog > 0);
         if (prog > 0 && !Activated) { UnDimBar(); }
     }
@@ -303,7 +303,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         GainContainer.SetPos(containerPos);
         MainContainer.SetPos(containerPos);
 
-        NumTextNode.ApplyProps(NumTextProps,new Vector2(8, 5));
+        NumTextNode.ApplyProps(NumTextProps, new Vector2(8, 5));
         NumTextNode.Show().SetAlpha(NumTextProps.Enabled);
     }
 

@@ -46,10 +46,10 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        Backdrop = ImageNodeFromPart(0,1).SetImageWrap(1).SetRGBA(Config.Background);
-        Drain = ImageNodeFromPart(0,0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.DrainColor);
-        Gain = ImageNodeFromPart(0,0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.GainColor);
-        Main = ImageNodeFromPart(0,0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.MainColor);
+        Backdrop = ImageNodeFromPart(0, 1).SetImageWrap(1).SetRGBA(Config.Background);
+        Drain = ImageNodeFromPart(0, 0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.DrainColor);
+        Gain = ImageNodeFromPart(0, 0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.GainColor);
+        Main = ImageNodeFromPart(0, 0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.MainColor);
         NumTextNode = new();
 
         return new(CreateResNode(), Backdrop, Drain, Gain, Main, NumTextNode);
@@ -59,7 +59,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 174 } };
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 174 }};
 
     #endregion
 
@@ -134,7 +134,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         Gain.SetRGBA(Config.GainColor).DefineTimeline(BarTimeline);
         Drain.SetRGBA(Config.DrainColor).DefineTimeline(BarTimeline);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(109,40));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(109, 40));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

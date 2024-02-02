@@ -120,7 +120,7 @@ internal static class WidgetUI
         LabelColumn(label);
 
         ImGui.SetNextItemWidth(142f * GlobalScale);
-        if (ImGui.InputTextWithHint($"##{label}",hintText,ref str,40u))
+        if (ImGui.InputTextWithHint($"##{label}", hintText, ref str, 40u))
         {
             update |= UpdateFlags.Save;
             return true;
@@ -243,7 +243,7 @@ internal static class WidgetUI
 
             if (i > 0) SameLineSquished();
             
-            if (IconButton($"{label}{option}{i}",icon,16f, val is not null && val.Equals(option) ? activeColor : buttonColor)) {
+            if (IconButton($"{label}{option}{i}", icon, 16f, val is not null && val.Equals(option) ? activeColor : buttonColor)) {
                 val = option;
                 update |= UpdateFlags.Save;
                 ret = true;
@@ -285,7 +285,7 @@ internal static class WidgetUI
     {
         ImGui.SetNextItemWidth(90f * GlobalScale);
 
-        var input1 = ImGui.DragFloat($"##{label}Drag", ref val, step, min, max,format);
+        var input1 = ImGui.DragFloat($"##{label}Drag", ref val, step, min, max, format);
 
         ImGui.PushButtonRepeat(true);
         SameLineSquished();
@@ -323,7 +323,7 @@ internal static class WidgetUI
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
-        ImGui.PushStyleColor(Text,new Vector4(1,1,1,0.3f));
+        ImGui.PushStyleColor(Text, new Vector4(1, 1, 1, 0.3f));
         ImGui.Text(headingText);
         ImGui.PopStyleColor();
     }

@@ -40,15 +40,15 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     public override CustomPartsList[] PartsLists { get; } = { 
         new ("ui/uld/Mobhunt5.tex", 
              new(650, 0, 16, 192), 
-             new(616, 192,50, 140)), // smudge
+             new(616, 192, 50, 140)), // smudge
         new ("ui/uld/JobHudRDM0.tex", 
-             new(119, 322, 85,56), 
-             new(0,265,42,44), 
-             new(79,207,34,34), 
-             new(125,212,24,22), 
-             new(123,234,28,20), 
-             new(148,222,14,15), 
-             new(207,321,39,59))
+             new(119, 322, 85, 56), 
+             new(0, 265, 42, 44), 
+             new(79, 207, 34, 34), 
+             new(125, 212, 24, 22), 
+             new(123, 234, 28, 20), 
+             new(148, 222, 14, 15), 
+             new(207, 321, 39, 59))
     };
 
     #region Nodes
@@ -83,14 +83,14 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                                       .Hide();
 
         Animator += new Tween(Tick,
-                              new(0){ScaleX=0.5f, ScaleY=1.55f},
-                              new(600){ScaleX=0.5f,ScaleY=1.6f},
-                              new(1000){ScaleX = 0.5f, ScaleY=1.55f}) 
-                              {Repeat=true,Ease = SinInOut};
+                              new(0) { ScaleX = 0.5f, ScaleY = 1.55f },
+                              new(600) { ScaleX = 0.5f, ScaleY = 1.6f },
+                              new(1000) { ScaleX = 0.5f, ScaleY = 1.55f }) 
+                              { Repeat = true, Ease = SinInOut };
 
         Backdrop = ImageNodeFromPart(0, 1).SetRotation((float)(PI / 2f))
-                                          .SetPos(29,11)
-                                          .SetScale(0.8f,1.2f);
+                                          .SetPos(29, 11)
+                                          .SetScale(0.8f, 1.2f);
 
         DrainContainer = BuildFillNode();
         GainContainer = BuildFillNode();
@@ -100,23 +100,23 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         Drain = DrainContainer[0];
 
         Splatter1 = ImageNodeFromPart(1, 5).SetAlpha(0);
-        Splatter2 = ImageNodeFromPart(1, 4).SetAlpha(0).SetOrigin(14,10);
-        Splatter3 = ImageNodeFromPart(1, 3).SetAlpha(0).SetOrigin(12,11);
+        Splatter2 = ImageNodeFromPart(1, 4).SetAlpha(0).SetOrigin(14, 10);
+        Splatter3 = ImageNodeFromPart(1, 3).SetAlpha(0).SetOrigin(12, 11);
         Splatter4 = ImageNodeFromPart(1, 5).SetAlpha(0);
-        Splatter5 = ImageNodeFromPart(1, 6).SetAlpha(0).SetAddRGB(-255).SetOrigin(0,59);
+        Splatter5 = ImageNodeFromPart(1, 6).SetAlpha(0).SetAddRGB(-255).SetOrigin(0, 59);
 
-        SplatterBox = new CustomNode(CreateResNode(), Splatter1, Splatter2, Splatter3, Splatter4, Splatter5).SetPos(0,30);
+        SplatterBox = new CustomNode(CreateResNode(), Splatter1, Splatter2, Splatter3, Splatter4, Splatter5).SetPos(0, 30);
 
         return new(CreateResNode(), Backdrop, SplatterBox, DrainContainer, GainContainer, MainContainer, Tick);
     }
 
-    private CustomNode BuildFillNode() => new CustomNode(CreateResNode(), ImageNodeFromPart(0, 0).SetSize(16,0).SetImageWrap(1).SetPos(0,22).SetScale(1,1).SetRotation(-(float)(PI / 2f))).SetPos(-152, 30).SetSize(192, 16);
+    private CustomNode BuildFillNode() => new CustomNode(CreateResNode(), ImageNodeFromPart(0, 0).SetSize(16, 0).SetImageWrap(1).SetPos(0, 22).SetScale(1, 1).SetRotation(-(float)(PI / 2f))).SetPos(-152, 30).SetSize(192, 16);
 
     #endregion
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 3 }, new(1) { Height = 188 } };
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 3 }, new(1) { Height = 188 }};
 
     #endregion
 
@@ -143,12 +143,12 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     {
         base.OnFirstRun(prog);
         Tick.SetAlpha(prog > 0);
-        Backdrop.SetAddRGB(prog <= 0 ? Config.BackdropInactive : Config.BackdropColor,true);
+        Backdrop.SetAddRGB(prog <= 0 ? Config.BackdropInactive : Config.BackdropColor, true);
     }
 
     public override void OnIncrease(float prog, float prevProg)
     {
-        SplatterBox.SetPos(Interpolate(-147f,38f,prog)!.Value, 30);
+        SplatterBox.SetPos(Interpolate(-147f, 38f, prog)!.Value, 30);
 
         var flash = Config.MainColor / 2;
         var avgScale = (Config.Scale.Y + Config.Scale.X) / 2f;
@@ -219,7 +219,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         public Vector2 Position;
         public Vector2 Scale = new(1, 1);
         public AddRGB BackdropColor = new(-255);
-        public AddRGB BackdropInactive = new(-255,-255,-255,128);
+        public AddRGB BackdropInactive = new(-255,-255,-255, 128);
         public AddRGB MainColor = new(55, -255, -255);
         public AddRGB GainColor = "0xFF785CFF";
         public AddRGB DrainColor = "0x6A003CFF";

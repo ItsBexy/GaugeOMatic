@@ -53,26 +53,26 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        Main = ImageNodeFromPart(0, 0).SetPos(11,19)
+        Main = ImageNodeFromPart(0, 0).SetPos(11, 19)
                                       .SetAlpha(0)
                                       .SetImageFlag(32)
                                       .SetImageWrap(1)
                                       .DefineTimeline(BarTimeline);
 
-        BorderBottom = ImageNodeFromPart(0, 1).SetPos(11,77)
+        BorderBottom = ImageNodeFromPart(0, 1).SetPos(11, 77)
                                               .SetAlpha(0)
                                               .SetImageFlag(32)
                                               .SetImageWrap(1)
                                               .DefineTimeline(BarTimeline);
 
         TickTop = ImageNodeFromPart(0, 2).SetPos(0,-16)
-                                         .SetOrigin(22,43.5f)
-                                         .SetScale(0.5f,0.15f)
+                                         .SetOrigin(22, 43.5f)
+                                         .SetScale(0.5f, 0.15f)
                                          .DefineTimeline(TickTimeline);
 
-        TickBottom = ImageNodeFromPart(0, 2).SetPos(0,38)
-                                            .SetOrigin(22,43.5f)
-                                            .SetScale(0.5f,0.15f)
+        TickBottom = ImageNodeFromPart(0, 2).SetPos(0, 38)
+                                            .SetOrigin(22, 43.5f)
+                                            .SetScale(0.5f, 0.15f)
                                             .DefineTimeline(TickTimeline);
        
         Shine = ImageNodeFromPart(0, 2).SetAlpha(0)

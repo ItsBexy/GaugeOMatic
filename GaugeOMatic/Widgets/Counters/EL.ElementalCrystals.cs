@@ -50,7 +50,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
         Max = GetMax();
         BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(16,16);
+        return new CustomNode(CreateResNode(), Stacks.ToArray()).SetOrigin(16, 16);
     }
 
     private void BuildStacks(int count)
@@ -63,18 +63,18 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
         for (var i = 0; i < count; i++)
         {
-            Crystals.Add(ImageNodeFromPart(0,4).SetOrigin(10,24));
-            Glows1.Add(ImageNodeFromPart(0,7).SetOrigin(10,24).SetAlpha(0));
-            Glows2.Add(ImageNodeFromPart(0, 7).SetOrigin(10, 24).SetAlpha(0).SetScale(1.3f,1.2f).SetAlpha(0).Hide());
+            Crystals.Add(ImageNodeFromPart(0, 4).SetOrigin(10, 24));
+            Glows1.Add(ImageNodeFromPart(0, 7).SetOrigin(10, 24).SetAlpha(0));
+            Glows2.Add(ImageNodeFromPart(0, 7).SetOrigin(10, 24).SetAlpha(0).SetScale(1.3f, 1.2f).SetAlpha(0).Hide());
             StackContents.Add(new CustomNode(CreateResNode(),
                                              Crystals[i],
                                              Glows1[i], 
-                                             new (CreateResNode(),Glows2[i])).SetAlpha(0));
+                                             new (CreateResNode(), Glows2[i])).SetAlpha(0));
 
             Animator += new Tween(Glows2[i],
-                                  new(0) {ScaleX=1,ScaleY=1,Alpha=0},
-                                  new(450) {ScaleX=1.2f,ScaleY=1.1f,Alpha=101},
-                                  new(950) {ScaleX=1.3f,ScaleY=1.2f,Alpha=0},
+                                  new(0) { ScaleX = 1, ScaleY = 1, Alpha = 0 },
+                                  new(450) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 101 },
+                                  new(950) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
                                   new(1600) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
                                   { Repeat = true, Ease = SinInOut, Label = "Pulse" };
             Stacks.Add(new CustomNode(CreateResNode(), StackContents[i]).SetOrigin(10, 24));
@@ -88,9 +88,9 @@ public sealed unsafe class ElementalCrystals : CounterWidget
     public override void ShowStack(int i)
     {
         Animator += new Tween(StackContents[i],
-                              new(0){Y=-20,Alpha=0},
-                              new(225){Y=0,Alpha=200},
-                              new(300){Y=0,Alpha=255});
+                              new(0) { Y = -20, Alpha = 0 },
+                              new(225) { Y = 0, Alpha = 200 },
+                              new(300) { Y = 0, Alpha = 255 });
 
         Glows2[i].Show();
     }
@@ -177,9 +177,9 @@ public sealed unsafe class ElementalCrystals : CounterWidget
     {
 
         var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetRoot.SetPos(Config.Position+new Vector2(19,22))
+        WidgetRoot.SetPos(Config.Position+new Vector2(19, 22))
                   .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle,true);
+                  .SetRotation(widgetAngle, true);
 
         var posAngle = 0f;
         double x = 0;
@@ -214,7 +214,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
         FloatControls("Curve", ref Config.Curve, -180, 180, 1f, ref update);
 
         Heading("Colors");
-        RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, ref update,true);
+        RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, ref update, true);
         ColorPickerRGB("Color Modifier", ref Config.CrystalColor, ref update);
         ColorPickerRGB("Glow Color", ref Config.GlowColor, ref update);
 

@@ -55,39 +55,39 @@ public unsafe class HeatReplica : GaugeBarWidget
     
     public override CustomNode BuildRoot()
     {
-        TabBg = ImageNodeFromPart(0,0).SetPos(7, 12).SetImageWrap(1);
+        TabBg = ImageNodeFromPart(0, 0).SetPos(7, 12).SetImageWrap(1);
         TabFrame = ImageNodeFromPart(0, 9).SetImageWrap(1);
-        Tab = new CustomNode(CreateResNode(),TabBg,TabFrame).SetPos(40,8).SetSize(98,40).SetAddRGB(12);
+        Tab = new CustomNode(CreateResNode(), TabBg, TabFrame).SetPos(40, 8).SetSize(98, 40).SetAddRGB(12);
 
-        Barrel = NineGridFromPart(0,2,0,40,0,40).SetPos(35,33);
+        Barrel = NineGridFromPart(0, 2, 0, 40, 0, 40).SetPos(35, 33);
 
         ClockFace = ImageNodeFromPart(0, 4).SetImageWrap(1).SetPos(3, 10);
         Needle = ImageNodeFromPart(0, 17).SetImageWrap(1).SetPos(28, 20).SetOrigin(7, 25);
-        HeatClock = new CustomNode(CreateResNode(), ClockFace, Needle).SetOrigin(35,44);
+        HeatClock = new CustomNode(CreateResNode(), ClockFace, Needle).SetOrigin(35, 44);
 
         Bar = BuildBar();
         NumTextNode = new();
 
-        Contents = new CustomNode(CreateResNode(), Tab, Barrel, HeatClock, Bar).SetOrigin(35,44);
+        Contents = new CustomNode(CreateResNode(), Tab, Barrel, HeatClock, Bar).SetOrigin(35, 44);
 
-        return new CustomNode(CreateResNode(), Contents, NumTextNode).SetSize(234,94);
+        return new CustomNode(CreateResNode(), Contents, NumTextNode).SetSize(234, 94);
     }
 
     private CustomNode BuildBar()
     {
-        Backdrop = NineGridFromPart(0,10,0,18,0,18);
-        Drain = NineGridFromPart(0, 12,0,18,0,18).SetAddRGB(-100).SetOrigin(10, 0).SetWidth(0);
-        Gain = NineGridFromPart(0, 12,0,18,0,18).SetOrigin(10, 0).SetWidth(0).SetAddRGB(255);
+        Backdrop = NineGridFromPart(0, 10, 0, 18, 0, 18);
+        Drain = NineGridFromPart(0, 12, 0, 18, 0, 18).SetAddRGB(-100).SetOrigin(10, 0).SetWidth(0);
+        Gain = NineGridFromPart(0, 12, 0, 18, 0, 18).SetOrigin(10, 0).SetWidth(0).SetAddRGB(255);
         Main = NineGridFromPart(0, 12, 0, 18, 0, 18).SetOrigin(10, 0);
 
-        return new CustomNode(CreateResNode(),Backdrop,Drain,Gain,Main).SetPos(61,36).SetSize(148,36);
+        return new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main).SetPos(61, 36).SetSize(148, 36);
     }
 
     #endregion
 
     #region Animations
 
-    public virtual KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 20 }, new(1) { Width = Config.Width } };
+    public virtual KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 20 }, new(1) { Width = Config.Width }};
 
     protected override void StartMilestoneAnim()
     {
@@ -165,13 +165,13 @@ public unsafe class HeatReplica : GaugeBarWidget
         public ushort BaseColor = 12;
         public AddRGB BackdropColor;
 
-        public AddRGB MainColorOrange = new(91,52,-27);
-        public AddRGB GainColorOrange = new(346,307,228);
+        public AddRGB MainColorOrange = new(91, 52,-27);
+        public AddRGB GainColorOrange = new(346, 307, 228);
         public AddRGB DrainColorOrange = new(-9,-48,-127);
 
         public AddRGB MainColorBlue = new(-38, 100, 116);
-        public AddRGB GainColorBlue = new(217,355,371);
-        public AddRGB DrainColorBlue = new(-138,0,16);
+        public AddRGB GainColorBlue = new(217, 355, 371);
+        public AddRGB DrainColorBlue = new(-138, 0, 16);
 
         protected override NumTextProps NumTextDefault => new(enabled: true, 
                                                               position: new(0), 
@@ -233,7 +233,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         Backdrop.SetWidth(Config.Width);
 
         var orange = Config.BaseColor == 12;
-        AddRGB colorOffset = orange?new(-91,-52,27):new(38,-100,-116);
+        AddRGB colorOffset = orange?new(-91,-52, 27):new(38,-100,-116);
 
         Main.SetPartId(Config.BaseColor)
             .SetAddRGB(colorOffset + (orange ? Config.MainColorOrange : Config.MainColorBlue))
@@ -250,7 +250,7 @@ public unsafe class HeatReplica : GaugeBarWidget
             .DefineTimeline(BarTimeline)
             .SetWidth(0);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(Config.Width+6,74));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width+6, 74));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

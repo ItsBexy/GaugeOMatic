@@ -24,10 +24,10 @@ public class RPRModule : JobModule
     };
 
     public override List<MenuOption> JobGaugeMenu { get; } = new() {
-        new("Soul Gauge",nameof(SoulGaugeTracker)),
-        new("Shroud Gauge",nameof(ShroudGaugeTracker)),
-        new("Lemure Shroud",nameof(LemureShroudTracker)),
-        new("Void Shroud",nameof(VoidShroudTracker))
+        new("Soul Gauge", nameof(SoulGaugeTracker)),
+        new("Shroud Gauge", nameof(ShroudGaugeTracker)),
+        new("Lemure Shroud", nameof(LemureShroudTracker)),
+        new("Void Shroud", nameof(VoidShroudTracker))
     };
 
     public RPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -41,9 +41,9 @@ public class RPRModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Soul Gauge",ref TweakConfigs.RPRHideSoul,ref update);
+        ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHideSoul, ref update);
         HideWarning(TweakConfigs.RPRHideSoul);
-        ToggleControls("Hide Death Gauge",ref TweakConfigs.RPRHideDeath,ref update);
+        ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHideDeath, ref update);
         HideWarning(TweakConfigs.RPRHideDeath);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

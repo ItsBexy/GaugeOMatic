@@ -25,7 +25,7 @@ public class GNBModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Powder Gauge",nameof(PowderGaugeTracker))
+        new("Powder Gauge", nameof(PowderGaugeTracker))
     };
 
     public GNBModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }

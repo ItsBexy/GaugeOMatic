@@ -51,7 +51,7 @@ public static class ImGuiHelpy
         ImGui.PopStyleColor(4);
     }
 
-    public static bool IconButton(string label, FontAwesomeIcon icon, float minWidth = 15f, Vector4? defaultColor=null,Vector4? activeColor = null, Vector4? hoveredColor = null)
+    public static bool IconButton(string label, FontAwesomeIcon icon, float minWidth = 15f, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null)
     {
         minWidth *= Dalamud.Interface.Utility.ImGuiHelpers.GlobalScale;
         var iconText = icon.ToIconString();
@@ -198,7 +198,7 @@ public static class ImGuiHelpy
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
         ImGui.Text(text);
 
-        if (gottaPop) {ImGui.PopStyleColor();}
+        if (gottaPop) { ImGui.PopStyleColor(); }
     }
 
     public static void ToolTip(string toolTipText)
@@ -265,6 +265,6 @@ public static class ImGuiHelpy
         var space = ImGui.GetColumnWidth();
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (space - w));
 
-        ImGui.TextColored(color,text);
+        ImGui.TextColored(color, text);
     }
 }

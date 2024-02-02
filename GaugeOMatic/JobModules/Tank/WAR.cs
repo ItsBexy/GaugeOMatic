@@ -22,8 +22,8 @@ public class WARModule : JobModule
         new("_ParameterWidget", "Parameter Bar")
     };
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()    {
-        new("Beast Gauge",nameof(BeastGaugeTracker))
+    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+        new("Beast Gauge", nameof(BeastGaugeTracker))
     };
 
     public WARModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -36,7 +36,7 @@ public class WARModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Beast Gauge",ref TweakConfigs.WARHide0, ref update);
+        ToggleControls("Hide Beast Gauge", ref TweakConfigs.WARHide0, ref update);
         HideWarning(TweakConfigs.WARHide0);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

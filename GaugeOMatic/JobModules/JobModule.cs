@@ -142,7 +142,7 @@ public abstract class JobModule : IDisposable
     public void ReqUpdateHandler(AddonEvent type, AddonArgs args)
     {
         try { ApplyTweaks(); }
-        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! \n{ex}"); }
+        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! \n{ex}");}
     }
 
     public void BuildWidgets()

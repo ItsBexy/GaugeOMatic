@@ -38,12 +38,12 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/Parameter_Gauge.tex",
-             new(0,0,160,20),  // 0 frame
-             new(0,20,160,20), // 1 glow
-             new(0,40,160,20), // 2 bw bar
-             new(0,60,160,20), // 3 blue bar
-             new(0,80,160,20), // 4 orange bar
-             new(0,100,160,20) // 5 brown bar
+             new(0, 0, 160, 20),  // 0 frame
+             new(0, 20, 160, 20), // 1 glow
+             new(0, 40, 160, 20), // 2 bw bar
+             new(0, 60, 160, 20), // 3 blue bar
+             new(0, 80, 160, 20), // 4 orange bar
+             new(0, 100, 160, 20) // 5 brown bar
         )
     };
 
@@ -68,7 +68,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         Bar = new(CreateResNode(), Drain, Gain, Main);
         BarFrame = new(CreateResNode(), Backdrop, Bar, Frame);
 
-        return new CustomNode(CreateResNode(), NumTextNode, BarFrame, LabelTextNode).SetOrigin(0,10);
+        return new CustomNode(CreateResNode(), NumTextNode, BarFrame, LabelTextNode).SetOrigin(0, 10);
     }
 
 
@@ -76,12 +76,12 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 13 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 13 }, new(1) { Width = Config.Width }};
 
     public void HideBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot, new(0, WidgetRoot), Hidden[time]){Label="Fade",Ease=SinInOut};
+        Animator += new Tween(WidgetRoot, new(0, WidgetRoot), Hidden[time]) { Label ="Fade", Ease = SinInOut };
 
     }
 
@@ -191,17 +191,17 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position + new Vector2(48,27))
+        WidgetRoot.SetPos(Config.Position + new Vector2(48, 27))
                   .SetScale(Config.Scale);
 
         var flipFactor = Abs(Config.Angle) > 90 ? -1:1;
 
         Frame.SetWidth(Config.Width)
-             .SetOrigin(Config.Width/2,10)
+             .SetOrigin(Config.Width/2, 10)
              .SetScaleX(flipFactor)
              .SetMultiply(Config.FrameColor);
 
-        Backdrop.SetWidth(Config.Width).SetAddRGB(Config.BGColor,true);
+        Backdrop.SetWidth(Config.Width).SetAddRGB(Config.BGColor, true);
         BarFrame.SetX(Config.Width / -2)
                 .SetOrigin(Config.Width / 2, 10)
                 .SetRotation(Config.Angle, true)
@@ -214,9 +214,9 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         Drain.SetAddRGB(Config.DrainColor + new AddRGB(-127, -42, 126)).SetWidth(0).DefineTimeline(BarTimeline);
 
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new((Config.Width/2)-71,26));
-        LabelTextNode.ApplyProps(Config.LabelTextProps,new(Config.Width / -2, -7));
-        LabelTextNode.SetWidth(Config.Width);
+        NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width/2)-71, 26));
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width / -2, -7))
+                     .SetWidth(Config.Width);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

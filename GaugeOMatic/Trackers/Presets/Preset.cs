@@ -34,12 +34,12 @@ public struct Preset
         Trackers = trackers;
     }
 
-    public readonly Preset Clone() => new(ExportStr(),true);
+    public readonly Preset Clone() => new(ExportStr(), true);
 
-    public readonly string ExportStr() => Zip(SerializeObject(this,JsonSettings));
+    public readonly string ExportStr() => Zip(SerializeObject(this, JsonSettings));
     public static implicit operator string(Preset p) => p.ExportStr();
 
-    public static implicit operator Preset(string s) => new(s,true);
+    public static implicit operator Preset(string s) => new(s, true);
     public static implicit operator TrackerConfig[](Preset p) => p.Trackers;
 
     public static string Zip(string s) => ToBase64String(CompressString(s));

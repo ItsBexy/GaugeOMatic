@@ -11,19 +11,29 @@ public unsafe partial class CustomNodeManager
 {
     public struct CustomPartsList : IDisposable
     {
-        public AtkUldPartsList* AtkPartsList;
-        public AtkUldAsset* Asset;
+        internal static uint NextPLId;
+        internal static uint NextAssetId;
+
         public string TexturePath;
+        public Vector4[] Coordinates;
         public int Count;
 
-        public static implicit operator AtkUldPartsList*(CustomPartsList c) => c.AtkPartsList;
+        public AtkUldPartsList* AtkUldPartsList;
+        public AtkUldAsset* Asset;
+        public AtkTexture Texture;
 
-        public CustomPartsList(string texturePath, params Vector4[] customParts)
+        public static implicit operator AtkUldPartsList*(CustomPartsList c) => c.AtkUldPartsList;
+
+        public CustomPartsList(string texturePath, params Vector4[] coords)
         {
-            Count = customParts.Length;
+            Coordinates = coords;
+            Count = Coordinates.Length;
+
             TexturePath = texturePath;
-            Asset = CreateAsset(TexturePath, 1);
-            AtkPartsList = CreateAtkPartsList(customParts,Asset);
+            Asset = CreateAsset(TexturePath, NextPLId++);
+            Texture = Asset->AtkTexture;
+
+            AtkUldPartsList = CreateAtkUldPartsList(Coordinates, Asset, NextAssetId++);
         }
 
         private static AtkUldAsset* CreateAsset(string texturePath, uint assetID)
@@ -35,16 +45,16 @@ public unsafe partial class CustomNodeManager
             return atkAsset;
         }
 
-        private static AtkUldPartsList* CreateAtkPartsList(IReadOnlyList<Vector4> customParts, AtkUldAsset* asset)
+        private static AtkUldPartsList* CreateAtkUldPartsList(IReadOnlyList<Vector4> coords, AtkUldAsset* asset, uint id)
         {
-            var count = customParts.Count;
+            var count = coords.Count;
 
-            var atkPartsList = MemoryHelper.Alloc<AtkUldPartsList>();
+            var atkUldPartsList = MemoryHelper.Alloc<AtkUldPartsList>();
             var atkParts = (AtkUldPart*)MemoryHelper.Alloc((ulong)sizeof(AtkUldPart) * (ulong)count);
 
             for (var i = 0; i < count; i++)
             {
-                var part = customParts[i];
+                var part = coords[i];
                 atkParts[i].U = (ushort)part.X;
                 atkParts[i].V = (ushort)part.Y;
                 atkParts[i].Width = (ushort)part.Z;
@@ -52,21 +62,21 @@ public unsafe partial class CustomNodeManager
                 atkParts[i].UldAsset = asset;
             }
 
-            atkPartsList->Id = 1;
-            atkPartsList->PartCount = (uint)count;
-            atkPartsList->Parts = atkParts;
+            atkUldPartsList->Id = id;
+            atkUldPartsList->PartCount = (uint)count;
+            atkUldPartsList->Parts = atkParts;
 
-            return atkPartsList;
+            return atkUldPartsList;
         }
 
-        public readonly void Dispose()
+        public void Dispose()
         {
             try
             {
-                IMemorySpace.Free(AtkPartsList->Parts, (ulong)sizeof(AtkUldPart) * AtkPartsList->PartCount);
-                IMemorySpace.Free(AtkPartsList, (ulong)sizeof(AtkUldPartsList));
-                Asset->AtkTexture.ReleaseTexture();
-                IMemorySpace.Free(Asset,(ulong)sizeof(AtkUldAsset));
+                IMemorySpace.Free(AtkUldPartsList->Parts, (ulong)sizeof(AtkUldPart) * AtkUldPartsList->PartCount);
+                IMemorySpace.Free(AtkUldPartsList, (ulong)sizeof(AtkUldPartsList));
+                IMemorySpace.Free(Asset, (ulong)sizeof(AtkUldAsset));
+                Texture.ReleaseTexture();
             }
             catch (Exception ex)
             {

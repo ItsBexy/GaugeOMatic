@@ -16,7 +16,7 @@ public static class Color
         public IColor FromVec3(Vector3 v);
     }
 
-    /// <summary>this is just a reimplemenetation of <see cref="ByteColor"/> but look, i gave it all these operators</summary>
+    /// <summary>this is just a reimplemenetation of <see cref ="ByteColor"/> but look, i gave it all these operators</summary>
     public struct ColorRGB : IColor
     {
         public byte R = 255;
@@ -63,7 +63,7 @@ public static class Color
     }
 
     /// <summary>
-    /// kinda like <see cref="ColorRGB"/> but for making Add values color picker friendly.<br/>
+    /// kinda like <see cref ="ColorRGB"/> but for making Add values color picker friendly.<br/>
     /// also still throws in the alpha because sometimes i want that alongside the Adds
     /// </summary>
     public struct AddRGB : IColor
@@ -102,10 +102,10 @@ public static class Color
         public static implicit operator Vector4(AddRGB a) => new(a, a.A / 255f);
         public static implicit operator string(AddRGB a) => (ColorRGB)(Vector4)a;
 
-        public static AddRGB operator +(AddRGB a, AddRGB b) => new((short)(a.R + b.R), (short)(a.G + b.G), (short)(a.B + b.B), (byte)Math.Clamp(a.A + b.A,0,255));
+        public static AddRGB operator +(AddRGB a, AddRGB b) => new((short)(a.R + b.R), (short)(a.G + b.G), (short)(a.B + b.B), (byte)Math.Clamp(a.A + b.A, 0, 255));
         public static AddRGB operator -(AddRGB a, AddRGB b) => new((short)(a.R - b.R), (short)(a.G - b.G), (short)(a.B - b.B), (byte)Math.Clamp(a.A - b.A, 0, 255));
         public static AddRGB operator *(AddRGB a, float n) => new((short)(a.R * n), (short)(a.G * n), (short)(a.B * n));
-        public static AddRGB operator *(float n,AddRGB a) => a*n;
+        public static AddRGB operator *(float n, AddRGB a) => a*n;
         public static AddRGB operator /(AddRGB a, float n) => a*(1f/n);
 
         public readonly Vector4 AsVec4() => this;
@@ -116,9 +116,9 @@ public static class Color
 
     public struct ColorSet
     {
-        public ColorRGB Base = new(255,255,255);
-        public AddRGB Add = new(0,0,0);
-        public ColorRGB Multiply = new(100,100,100);
+        public ColorRGB Base = new(255, 255, 255);
+        public AddRGB Add = new(0, 0, 0);
+        public ColorRGB Multiply = new(100, 100, 100);
 
         public ColorSet() {        
         Base = new(255, 255, 255);

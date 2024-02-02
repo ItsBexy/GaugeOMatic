@@ -59,7 +59,7 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
     }
 }
 
-public enum MilestoneType {None,Above,Below}
+public enum MilestoneType { None, Above, Below }
 
 public abstract class GaugeBarWidget : Widget
 {
@@ -105,7 +105,7 @@ public abstract class GaugeBarWidget : Widget
     protected virtual void StopMilestoneAnim() { }
 
     public bool MilestoneActive;
-    protected void HandleMilestone(float prog,bool reset = false)
+    protected void HandleMilestone(float prog, bool reset = false)
     {
         if (reset)
         {

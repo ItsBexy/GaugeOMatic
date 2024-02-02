@@ -73,8 +73,8 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
         for (var i = 0; i < count; i++)
         {
-            Frames.Add(ImageNodeFromPart(0,19).SetOrigin(27.5f, 41.5f));
-            Gems.Add(ImageNodeFromPart(0,13).SetPos(12,18).SetOrigin(15,23).SetAlpha(0));
+            Frames.Add(ImageNodeFromPart(0, 19).SetOrigin(27.5f, 41.5f));
+            Gems.Add(ImageNodeFromPart(0, 13).SetPos(12, 18).SetOrigin(15, 23).SetAlpha(0));
             Glows1.Add(BuildGlowNode());
             Glows2.Add(BuildGlowNode());
 
@@ -86,7 +86,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
             Stacks.Add(new CustomNode(CreateResNode(), 
                                       Frames[i], 
                                       GemContainers[i],
-                                      Glows2[i]).SetSize(54,83).SetOrigin(27.5f,41.5f));
+                                      Glows2[i]).SetSize(54, 83).SetOrigin(27.5f, 41.5f));
         }
     }
 
@@ -123,9 +123,9 @@ public sealed unsafe class PolyglotGem : CounterWidget
         Animator += new Tween[]
         {
             new(Gems[i],
-                new(0){ScaleX=flipX, ScaleY = flipY, Alpha =255},
-                new(70) {ScaleX=1.6f* flipX, ScaleY = 1.6f * flipY, Alpha =50},
-                new(170){ScaleX=2 * flipX, ScaleY = 2f * flipY, Alpha =0}),
+                new(0) { ScaleX = flipX, ScaleY = flipY, Alpha = 255 },
+                new(70) { ScaleX = 1.6f* flipX, ScaleY = 1.6f * flipY, Alpha = 50 },
+                new(170) { ScaleX = 2 * flipX, ScaleY = 2f * flipY, Alpha = 0 }),
             new(Glows1[i],
                 new(0) { Scale = 0f, Alpha = 0 },
                 new(150) { Scale = 1.8f, Alpha = 200 },
@@ -183,7 +183,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
                     { Label = "Pulse" },
                 new(Glows2[i],
                     new(0, Glows2[i]),
-                    new(200) { Scale=2.2f,Alpha=0 })
+                    new(200) { Scale = 2.2f, Alpha = 0 })
                     { Label = "Pulse" }
 
             };
@@ -270,7 +270,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
         var widgetAngle = Config.Angle+(Config.Curve/2f);
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle,true);
+                  .SetRotation(widgetAngle, true);
 
         var gemColorOffset = new AddRGB(-27, 78, -50);
         var glowColorOffset = new AddRGB(-76, 128, -127);
@@ -293,7 +293,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
             float scaleX = combinedAngle is <= -53 or >= 128 ? -1 : 1;
             float scaleY = combinedAngle is <= -128 or >= 53 ? -1 : 1;
 
-            Gems[i].SetScale(scaleX,scaleY).SetAddRGB(gemColorOffset + Config.GemColor);
+            Gems[i].SetScale(scaleX, scaleY).SetAddRGB(gemColorOffset + Config.GemColor);
             Glows1[i].SetAddRGB(glowColorOffset + Config.GlowColor);
             Glows2[i].SetAddRGB(glowColorOffset + Config.GlowColor);
 

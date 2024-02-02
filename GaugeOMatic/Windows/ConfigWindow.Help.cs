@@ -64,7 +64,7 @@ public partial class ConfigWindow
             ImGui.Text("2) Select a tracker to use. There are three categories:");
 
             ImGui.Indent(30f);
-            WriteIcon(FontAwesomeIcon.Tags,null, 0x1c6e68ff);
+            WriteIcon(FontAwesomeIcon.Tags, null, 0x1c6e68ff);
             ImGui.Text("Status Effects - Retrieves the time remaining or number of stacks.");
 
             WriteIcon(FontAwesomeIcon.FistRaised, null, 0xaa372dff);
@@ -108,7 +108,7 @@ public partial class ConfigWindow
 
             ImGui.Text("-Add elements from the preset individually");
             ImGui.SameLine();
-            IconButton("", FontAwesomeIcon.Plus,10f);
+            IconButton("", FontAwesomeIcon.Plus, 10f);
 
             ImGui.Text("-Add all elements at once");
             ImGui.SameLine();

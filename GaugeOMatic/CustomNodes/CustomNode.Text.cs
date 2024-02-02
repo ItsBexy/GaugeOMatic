@@ -23,7 +23,7 @@ public unsafe partial class CustomNodeManager
         node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
         node->AtkResNode.DrawFlags |= 8;
 
-        InitializePosition((AtkResNode*)node,0,0);
+        InitializePosition((AtkResNode*)node, 0, 0);
 
         return node;
     }

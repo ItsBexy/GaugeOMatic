@@ -20,6 +20,7 @@ public abstract partial class StatusData
         { 84,   new(84,   Job.None, "Bloodbath",               Self,   1, 20, Melee                           ) },
         { 1191, new(1191, Job.None, "Rampart",                 Self,   1, 20, Tank                            ) },
         { 1193, new(1193, Job.None, "Reprisal",                Target, 1, 10, Tank                            ) },
+        { 1195, new(1195, Job.None, "Feint",                   Target, 1, 10, Melee ) },
         { 1203, new(1203, Job.None, "Addle",                   Target, 1, 10, Caster                          ) },
         { 1204, new(1204, Job.None, "Lucid Dreaming",          Self,   1, 21, Caster | Healer            ) },
         { 1209, new(1209, Job.None, "Arm's Length",            Self,   1, 6,  Melee | Ranged | Tank ) },
@@ -68,7 +69,6 @@ public abstract partial class StatusData
         { 614,  new(614,  NIN, "Hidden",                   Self,   1, 0  ) },
         { 638,  new(638,  NIN, "Mug",                      Target, 1, 20 ) },
         { 1186, new(1186, NIN, "Ten Chi Jin",              Self,   1, 6  ) },
-        { 1195, new(1195, NIN, "Feint",                    Target, 1, 10 ) },
         { 1954, new(1954, NIN, "Bunshin",                  Self,   5, 30 ) },
         { 2689, new(2689, NIN, "Meisui",                   Self,   1, 30 ) },
         { 2690, new(2690, NIN, "Raiju Ready",              Self,   3, 30 ) },
@@ -94,7 +94,7 @@ public abstract partial class StatusData
         { 2593, new(2593, RPR, "Enshrouded",               Self,   1, 30 ) },
         { 2594, new(2594, RPR, "Soulsow",                  Self,   1, 0  ) },
         { 2595, new(2595, RPR, "Threshold",                Self,   1, 10 ) },
-        { 2597, new(2597, RPR, "Crest of Time Borrowed",   Self,   1, 5, Role.None,new(2596)) },
+        { 2597, new(2597, RPR, "Crest of Time Borrowed",   Self,   1, 5, Role.None, new(2596)) },
         { 2598, new(2598, RPR, "Crest of Time Returned",   Self,   1, 15  ) },
         { 2599, new(2599, RPR, "Arcane Circle",            Self,   1, 20 ) },
         { 2600, new(2600, RPR, "Circle of Sacrifice",      Self,   1, 5  ) },
@@ -110,8 +110,8 @@ public abstract partial class StatusData
         { 128,  new(128,  BRD, "Barrage",                  Self,   1, 10 ) },
         { 141,  new(141,  BRD, "Battle Voice",             Self,   1, 15 ) },
         { 866,  new(866,  BRD, "The Warden's Paean",       Self,   1, 30 ) },
-        { 1200, new(1200, BRD, "Caustic Bite",             Target, 1, 45 , seeAlso: new() {124} ) },
-        { 1201, new(1201, BRD, "Stormbite",                Target, 1, 45 , seeAlso: new() {129}) },
+        { 1200, new(1200, BRD, "Caustic Bite",             Target, 1, 45 , seeAlso: new() { 124 } ) },
+        { 1201, new(1201, BRD, "Stormbite",                Target, 1, 45 , seeAlso: new() { 129 }) },
         { 1202, new(1202, BRD, "Nature's Minne",           Self,   1, 15 ) },
         { 1932, new(1932, BRD, "Army's Muse",              Self,   1, 10 ) },
         { 1934, new(1934, BRD, "Troubadour",               Self,   1, 15 ) },
@@ -127,7 +127,7 @@ public abstract partial class StatusData
         { 860,  new(860,  MCH, "Dismantled",              Target,   1, 5 ) },
         { 1205, new(1205, MCH, "Flamethrower",             Self,   1, 10 ) },
         { 1866, new(1866, MCH, "Bioblaster",               Target, 1, 15 ) },
-        { 1946, new(1946, MCH, "Wildfire",                 Self,   1, 10, seeAlso: new() {861} ) },
+        { 1946, new(1946, MCH, "Wildfire",                 Self,   1, 10, seeAlso: new() { 861 } ) },
         { 1951, new(1951, MCH, "Tactician",                Self,   1, 15 ) },
         { 2688, new(2688, MCH, "Overheated",               Self,   5, 10 ) },
 
@@ -153,7 +153,7 @@ public abstract partial class StatusData
 
          #region Caster
          
-        { 163,  new(163,  BLM, "Thunder",                  Target, 1, 30 , seeAlso: new() {161} ) },
+        { 163,  new(163,  BLM, "Thunder",                  Target, 1, 30 , seeAlso: new() { 161 } ) },
         { 164,  new(164,  BLM, "Thundercloud",             Self,   1, 40 ) },
         { 165,  new(165,  BLM, "Firestarter",              Self,   1, 30 ) },
         { 168,  new(168,  BLM, "Manaward",                 Self,   1, 20 ) },
@@ -197,7 +197,7 @@ public abstract partial class StatusData
         { 1368, new(1368, PLD, "Requiescat",               Self,   4, 30 ) },
         { 1902, new(1902, PLD, "Sword Oath",               Self,   3, 30 ) },
         { 2673, new(2673, PLD, "Divine Might",             Self,   1, 30 ) },
-        { 2674, new(2674, PLD, "Sheltron",                 Self,   1, 8  , seeAlso: new() {728,1856}) },
+        { 2674, new(2674, PLD, "Sheltron",                 Self,   1, 8  , seeAlso: new() { 728, 1856 }) },
         { 2675, new(2675, PLD, "Knight's Resolve",         Self,   1, 4  ) },
         { 2676, new(2676, PLD, "Knight's Benediction",     Self,   1, 12 ) },
         { 3019, new(3019, PLD, "Confiteor Ready",          Self,   1, 30 ) },
@@ -205,13 +205,13 @@ public abstract partial class StatusData
         { 87,   new(87,   WAR, "Thrill of Battle",         Self,   1, 10 ) },
         { 89,   new(89,   WAR, "Vengeance",                Self,   1, 15 ) },
         { 91,   new(91,   WAR, "Defiance",                 Self,   1, 0  ) },
-        { 1177, new(1177, WAR, "Inner Release",            Self,   3, 15 , seeAlso: new() {86}) },
+        { 1177, new(1177, WAR, "Inner Release",            Self,   3, 15 , seeAlso: new() { 86 }) },
         { 1457, new(1457, WAR, "Shake It Off",             Self,   1, 30 ) },
         { 1897, new(1897, WAR, "Nascent Chaos",            Self,   1, 30 ) },
         { 2108, new(2108, WAR, "Shake It Off (Over Time)", Self,   1, 15) },
         { 2624, new(2624, WAR, "Primal Rend Ready",        Self,   1, 30 ) },
         { 2663, new(2663, WAR, "Inner Strength",           Self,   1, 15 ) },
-        { 2677, new(2677, WAR, "Surging Tempest",          Self,   1, 60 , seeAlso: new() {735}) },
+        { 2677, new(2677, WAR, "Surging Tempest",          Self,   1, 60 , seeAlso: new() { 735 }) },
         { 2678, new(2678, WAR, "Bloodwhetting",            Self,   1, 8  ) },
         { 2679, new(2679, WAR, "Stem the Flow",            Self,   1, 4  ) },
         { 2680, new(2680, WAR, "Stem the Tide",            Self,   1, 20 ) },
@@ -240,7 +240,7 @@ public abstract partial class StatusData
         { 1843, new(1843, GNB, "Ready to Tear",            Self,   1, 10 ) },
         { 1844, new(1844, GNB, "Ready to Gouge",           Self,   1, 10 ) },
         { 1898, new(1898, GNB, "Brutal Shell",             Self,   1, 30 ) },
-        { 2683, new(2683, GNB, "Heart of Corundum",        Self,   1, 8 , seeAlso: new() {1840}) },
+        { 2683, new(2683, GNB, "Heart of Corundum",        Self,   1, 8 , seeAlso: new() { 1840 }) },
         { 2684, new(2684, GNB, "Clarity of Corundum",      Self,   1, 4  ) },
         { 2685, new(2685, GNB, "Catharsis of Corundum",    Self,   1, 20 ) },
         { 2686, new(2686, GNB, "Ready to Blast",           Self,   1, 10 ) },
@@ -257,9 +257,9 @@ public abstract partial class StatusData
         { 1217, new(1217, WHM, "Thin Air",                 Self,   1, 12 ) },
         { 1218, new(1218, WHM, "Divine Benison",           Self,   1, 15 ) },
         { 1219, new(1219, WHM, "Confession",               Self,   1, 10 ) },
-        { 1871, new(1871, WHM, "Dia",                      Target, 1, 30, seeAlso: new() {143,144,798}) },
-        { 1872, new(1872, WHM, "Temperance",               Self,   1, 20, seeAlso: new() {1873} ) },
-        { 1911, new(1911, WHM, "Asylum",                   Self,   1, 24, seeAlso: new() {1912} ) },
+        { 1871, new(1871, WHM, "Dia",                      Target, 1, 30, seeAlso: new() { 143, 144, 798 }) },
+        { 1872, new(1872, WHM, "Temperance",               Self,   1, 20, seeAlso: new() { 1873 } ) },
+        { 1911, new(1911, WHM, "Asylum",                   Self,   1, 24, seeAlso: new() { 1912 } ) },
         { 2708, new(2708, WHM, "Aquaveil",                 Self,   1, 8  ) },
         { 2709, new(2709, WHM, "Liturgy of the Bell",      Self,   5, 20 ) },
 
@@ -271,7 +271,7 @@ public abstract partial class StatusData
         { 1220, new(1220, SCH, "Excogitation",             Self,   1, 45 ) },
         { 1221, new(1221, SCH, "Chain Stratagem",          Target, 1, 15 ) },
         { 1223, new(1223, SCH, "Fey Union",                Self,   1, 60 ) },
-        { 1895, new(1895, SCH, "Biolysis",                 Target, 1, 30 , seeAlso: new() {189,179}) },
+        { 1895, new(1895, SCH, "Biolysis",                 Target, 1, 30 , seeAlso: new() { 189, 179 }) },
         { 1896, new(1896, SCH, "Recitation",               Self,   1, 15 ) },
         { 1917, new(1917, SCH, "Seraphic Veil",            Self,   1, 30 ) },
         { 2710, new(2710, SCH, "Protraction",              Self,   1, 10 ) },
@@ -292,7 +292,7 @@ public abstract partial class StatusData
         { 1248, new(1248, AST, "Giant Dominance",          Self,   1, 10 ) },
         { 1878, new(1878, AST, "Divination",               Self,   1, 15 ) },
         { 1879, new(1879, AST, "Opposition",               Self,   1, 15 ) },
-        { 1881, new(1881, AST, "Combust",                  Target, 1, 30 , seeAlso: new() {838,843}) },
+        { 1881, new(1881, AST, "Combust",                  Target, 1, 30 , seeAlso: new() { 838, 843 }) },
         { 1882, new(1883, AST, "The Balance",              Self,   1, 15 ) },
         { 1883, new(1883, AST, "The Bole",                 Self,   1, 15 ) },
         { 1884, new(1884, AST, "The Arrow",                Self,   1, 15 ) },
@@ -320,10 +320,10 @@ public abstract partial class StatusData
         { 2611, new(2611, SGE, "Zoe",                      Self,   1, 30 ) },
         { 2612, new(2612, SGE, "Haima",                    Self,   1, 15 ) },
         { 2613, new(2613, SGE, "Panhaima",                 Self,   1, 15 ) },
-        { 2616, new(2616, SGE, "Eukrasian Dosis",          Target, 1, 30 , seeAlso: new() {2614,2615}) },
+        { 2616, new(2616, SGE, "Eukrasian Dosis",          Target, 1, 30 , seeAlso: new() { 2614, 2615 }) },
         { 2618, new(2618, SGE, "Kerachole",                Self,   1, 15 ) },
         { 2619, new(2619, SGE, "Taurochole",               Self,   1, 15 ) },
-        { 2620, new(2620, SGE, "Physis",                   Self,   1, 15 , seeAlso: new() {2617}) },
+        { 2620, new(2620, SGE, "Physis",                   Self,   1, 15 , seeAlso: new() { 2617 }) },
         { 2621, new(2621, SGE, "Autophysis",               Self,   1, 10 ) },
         { 2622, new(2622, SGE, "Krasis",                   Self,   1, 10 ) },
         { 2642, new(2642, SGE, "Haimatinon",               Self,   5, 15 ) },
@@ -340,7 +340,7 @@ public abstract partial class StatusData
         if (PlayerStatus != null)
         {
             foreach (var desc in from status in PlayerStatus.Where(static s => s.StatusId != 0)
-                                 let desc = $"{ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation},{status.StatusId},{status.GameData.Name},Self,{status.GameData.MaxStacks},{status.RemainingTime}"
+                                 let desc = $"{ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation},{ status.StatusId},{ status.GameData.Name}, Self,{status.GameData.MaxStacks},{status.RemainingTime}"
                                  where configuration.StatusCollection.TryAdd(status.StatusId, desc)
                                  select desc)
             {
@@ -352,7 +352,7 @@ public abstract partial class StatusData
         if (TargetStatus != null)
         {
             foreach (var desc in from status in TargetStatus.Where(static s => s.StatusId != 0)
-                                 let desc = $"{ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation},{status.StatusId},{status.GameData.Name},Target,{status.GameData.MaxStacks},{status.RemainingTime}"
+                                 let desc = $"{ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation},{ status.StatusId},{ status.GameData.Name}, Target,{status.GameData.MaxStacks},{status.RemainingTime}"
                                  where configuration.StatusCollection.TryAdd(status.StatusId, desc)
                                  select desc)
             {

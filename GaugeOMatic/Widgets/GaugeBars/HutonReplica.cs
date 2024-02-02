@@ -271,7 +271,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
         ClockHand.SetMultiply(Config.HandColor);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(69,72));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(69, 72));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

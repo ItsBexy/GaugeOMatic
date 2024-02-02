@@ -40,19 +40,19 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudDNC1.tex",
-             new(0,0,168,76),    // 0  bar
-             new(1,77,166,74),   // 1  backdrop
-             new(168,0,48,108),  // 2  feather
-             new(216,0,84,100),  // 3  half fan
-             new(216,100,84,80), // 4  half frame
-             new(168,108,48,32), // 5  corner clip thingy
-             new(168,140,48,36), // 6  number bg
-             new(2,160,76,60),   // 7  feather glow
-             new(80,156,54,40),  // 8  spotlights
-             new(79,198,54,40),  // 9  streaks
-             new(132,153,20,20), // 10 star
-             new(216,180,84,80)  // 11 half frame cover
-            )};
+             new(0, 0, 168, 76),    // 0  bar
+             new(1, 77, 166, 74),   // 1  backdrop
+             new(168, 0, 48, 108),  // 2  feather
+             new(216, 0, 84, 100),  // 3  half fan
+             new(216, 100, 84, 80), // 4  half frame
+             new(168, 108, 48, 32), // 5  corner clip thingy
+             new(168, 140, 48, 36), // 6  number bg
+             new(2, 160, 76, 60),   // 7  feather glow
+             new(80, 156, 54, 40),  // 8  spotlights
+             new(79, 198, 54, 40),  // 9  streaks
+             new(132, 153, 20, 20), // 10 star
+             new(216, 180, 84, 80)  // 11 half frame cover
+            ) };
 
     #region Nodes
 
@@ -74,14 +74,14 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         Fan = BuildFan();
         NumTextNode = new();
         NumTextNode.SetAlpha(0);
-        return new CustomNode(CreateResNode(), Fan, NumTextNode).SetSize(200,128).SetOrigin(100,113);
+        return new CustomNode(CreateResNode(), Fan, NumTextNode).SetSize(200, 128).SetOrigin(100, 113);
     }
 
     private CustomNode BuildFan()
     {
         FanPlate = ImageNodeFromPart(0, 3).SetImageWrap(3).SetPos(16, 22).SetSize(168, 100);
         BarContents = BuildBarContents();
-        FanClip = ImageNodeFromPart(0, 5).SetPos(76, 90).SetSize(48, 32).SetImageWrap(1).SetOrigin(24,32);
+        FanClip = ImageNodeFromPart(0, 5).SetPos(76, 90).SetSize(48, 32).SetImageWrap(1).SetOrigin(24, 32);
 
         return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetOrigin(100, 113).SetAlpha(0);
     }
@@ -93,13 +93,13 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         FrameCover = ImageNodeFromPart(0, 11).SetSize(168, 80).SetImageWrap(3).Hide(); // dunno whether/when to bother displaying this
         Frame = ImageNodeFromPart(0, 4).SetSize(168, 80).SetImageWrap(3);
 
-        return new CustomNode(CreateResNode(), Backdrop, FillNodes, FrameCover, Frame).SetPos(16,22).SetSize(168,80);
+        return new CustomNode(CreateResNode(), Backdrop, FillNodes, FrameCover, Frame).SetPos(16, 22).SetSize(168, 80);
     }
 
     private CustomNode BuildFillNodes()
     {
         CustomNode FillNode() => ImageNodeFromPart(0, 0).SetOrigin(84, 82)
-                                                        .SetRotation(-151,true)
+                                                        .SetRotation(-151, true)
                                                         .SetDrawFlags(0xC)
                                                         .DefineTimeline(BarTimeline);
 
@@ -108,7 +108,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
                 .SetSize(168, 70)
                 .SetNodeFlags(NodeFlags.Clip)
                 .SetDrawFlags(0x200)
-                .SetOrigin(84,70);
+                .SetOrigin(84, 70);
 
         Drain = FillNode();
         Gain = FillNode();
@@ -118,21 +118,21 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         DrainContainer = FillContainer(Drain);
         GainContainer = FillContainer(Gain);
 
-        return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0,1).SetSize(168,70).SetOrigin(0,-1);
+        return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0, 1).SetSize(168, 70).SetOrigin(0,-1);
     }
 
     #endregion
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -2.6542183675969f + 0.01f}, new(1) { Rotation = -0.05f } };
+    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -2.6542183675969f + 0.01f }, new(1) { Rotation = -0.05f }};
 
     protected override void StartMilestoneAnim()
     {
         Animator -= "BarPulse";
         Animator += new Tween(MainContainer,
-                                  new(0) {AddRGB = Config.PulseColor2 - Config.MainColor },
-                                  new(800) {AddRGB = Config.PulseColor - Config.MainColor},
+                                  new(0) { AddRGB = Config.PulseColor2 - Config.MainColor },
+                                  new(800) { AddRGB = Config.PulseColor - Config.MainColor },
                                   new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor }) 
                                   { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
@@ -167,7 +167,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
             new(Fan,
                 new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
                 new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
-                { Ease = SinInOut,Label="Hide" },
+                { Ease = SinInOut, Label ="Hide" },
             new(NumTextNode,
                 Visible[0],
                 Hidden[120])
@@ -222,9 +222,9 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), 0x8E6A0CFF, Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled: true,
-                                                              position: new(0,0), 
+                                                              position: new(0, 0), 
                                                               color: new(255),
-                                                              edgeColor: new(157,131,91), 
+                                                              edgeColor: new(157, 131, 91), 
                                                               showBg: true, 
                                                               bgColor: new(0), 
                                                               font: MiedingerMed,
@@ -308,7 +308,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
         Frame.SetMultiply(Config.FrameColor);
 
-        Backdrop.SetAddRGB(Config.Backdrop,true);
+        Backdrop.SetAddRGB(Config.Backdrop, true);
 
 
         MainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
@@ -319,9 +319,9 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         Drain.SetAddRGB(Config.DrainColor).SetPos(-offsetX, -offsetY);
         Gain.SetAddRGB(Config.GainColor).SetPos(-offsetX, -offsetY);
 
-        HandleMilestone(CalcProg(),true);
+        HandleMilestone(CalcProg(), true);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,textOffset);
+        NumTextNode.ApplyProps(Config.NumTextProps, textOffset);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -332,8 +332,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
         ToggleControls("Fan Plate", ref Config.ShowPlate, ref update);
 
-        RadioIcons("Angle", ref Config.Angle, new() { 0,90,180,270 }, new() { ChevronUp, ChevronRight, ChevronDown, ChevronLeft }, ref update);
-        RadioIcons("Direction",ref Config.Clockwise,new() {true,false}, new() { RedoAlt,UndoAlt}, ref update);
+        RadioIcons("Angle", ref Config.Angle, new() { 0, 90, 180, 270 }, new() { ChevronUp, ChevronRight, ChevronDown, ChevronLeft }, ref update);
+        RadioIcons("Direction", ref Config.Clockwise, new() { true, false }, new() { RedoAlt, UndoAlt }, ref update);
 
         Heading("Colors");
 

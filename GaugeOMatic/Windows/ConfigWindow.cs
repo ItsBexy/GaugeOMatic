@@ -52,7 +52,7 @@ public partial class ConfigWindow : Window, IDisposable
 
             ImGui.TableSetupColumn("VertTabBar", ImGuiTableColumnFlags.WidthFixed, 40f * GlobalScale);
             ImGui.TableSetupColumn("VertTabBar2", ImGuiTableColumnFlags.WidthFixed, 40f * GlobalScale);
-            ImGui.TableSetupColumn("body",ImGuiTableColumnFlags.WidthFixed,1200f * GlobalScale);
+            ImGui.TableSetupColumn("body", ImGuiTableColumnFlags.WidthFixed, 1200f * GlobalScale);
 
             VerticalTabBar();
 
@@ -87,7 +87,7 @@ public partial class ConfigWindow : Window, IDisposable
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
 
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
-            if (ImGui.Button($"{job}       "))
+            if (ImGui.Button($"{job}"))
             {
                 Configuration.JobTab = job;
                 Configuration.GeneralTab = Jobs;

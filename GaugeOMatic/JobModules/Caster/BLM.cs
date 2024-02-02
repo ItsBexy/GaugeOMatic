@@ -33,19 +33,19 @@ public class BLMModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Element Status",nameof(ElementTracker)),
-        new("Astral Fire",nameof(AstralFireTracker)),
-        new("Umbral Ice",nameof(UmbralIceTracker)),
-        new("Enochian / Polyglot",nameof(EnochianTracker)),
-        new("Umbral Hearts",nameof(UmbralHeartTracker)),
-        new("Paradox",nameof(ParadoxTracker))
+        new("Element Status", nameof(ElementTracker)),
+        new("Astral Fire", nameof(AstralFireTracker)),
+        new("Umbral Ice", nameof(UmbralIceTracker)),
+        new("Enochian / Polyglot", nameof(EnochianTracker)),
+        new("Umbral Hearts", nameof(UmbralHeartTracker)),
+        new("Paradox", nameof(ParadoxTracker))
     };
 
     public override void TweakUI(ref UpdateFlags update)
     {
         // todo: "recolor MP bar by element" tweak
 
-        ToggleControls("Hide Elemental Gauge",ref TweakConfigs.BLMHideAll, ref update);
+        ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHideAll, ref update);
         HideWarning(TweakConfigs.BLMHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

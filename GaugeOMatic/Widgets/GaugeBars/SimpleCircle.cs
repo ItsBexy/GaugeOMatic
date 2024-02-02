@@ -22,11 +22,11 @@ using static System.Math;
 namespace GaugeOMatic.Widgets;
 
 // OTHER TEXTURES TO TRY:
-// ui/uld/cursorlocation.tex (0,0,128,128) -- has gradient fill, will give a pie-ish effect
-// ui/uld/deepdungeoninformation.tex (99,2,67,67) -- very glowy, not that big though
-// ui/uld/eurekaelementalhud.tex (0,181,75,75) -- hi-res, glowy, slightly thin but still p good
-// ui/uld/gatheringcollectable.tex Quarter:(0,212,81,81) Half:(99,10,81,160) - jackpot
-// ui/uld/qte_button.tex new(1,72,80,79)
+// ui/uld/cursorlocation.tex (0, 0, 128, 128) -- has gradient fill, will give a pie-ish effect
+// ui/uld/deepdungeoninformation.tex (99, 2, 67, 67) -- very glowy, not that big though
+// ui/uld/eurekaelementalhud.tex (0, 181, 75, 75) -- hi-res, glowy, slightly thin but still p good
+// ui/uld/gatheringcollectable.tex Quarter:(0, 212, 81, 81) Half:(99, 10, 81, 160) - jackpot
+// ui/uld/qte_button.tex new(1, 72, 80, 79)
 
 public sealed unsafe class SimpleCircle : GaugeBarWidget
 {
@@ -43,8 +43,8 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/gatheringcollectable.tex",new Vector4(99,10,81,160) ),
-        new("ui/uld/cursorlocation.tex",new Vector4(0,0,128,128))
+        new("ui/uld/gatheringcollectable.tex", new Vector4(99, 10, 81, 160) ),
+        new("ui/uld/cursorlocation.tex", new Vector4(0, 0, 128, 128))
     };
 
     #region Nodes
@@ -69,17 +69,17 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
                                                                  .SetNodeFlags(NodeFlags.Clip)
                                                                  .SetDrawFlags(0xD);
 
-        RightHalf = ImageNodeFromPart(0, 0).SetX(0).SetOrigin(1,80).SetDrawFlags(0xD).SetImageFlag(33);
+        RightHalf = ImageNodeFromPart(0, 0).SetX(0).SetOrigin(1, 80).SetDrawFlags(0xD).SetImageFlag(33);
         RightContainer = new CustomNode(CreateResNode(), RightHalf).SetX(39)
                                                                    .SetSize(81, 160)
                                                                    .SetNodeFlags(NodeFlags.Clip)
                                                                    .SetDrawFlags(0xD);
        
         Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetDrawFlags(0xD);
-        Halo = ImageNodeFromPart(1, 0).SetOrigin(64, 64).SetPos(-24,16).SetImageFlag(32).SetAlpha(0);
+        Halo = ImageNodeFromPart(1, 0).SetOrigin(64, 64).SetPos(-24, 16).SetImageFlag(32).SetAlpha(0);
         NumTextNode = new();
 
-        return new CustomNode(CreateResNode(), Circle, Halo, NumTextNode).SetDrawFlags(0xD).SetOrigin(40,80);
+        return new CustomNode(CreateResNode(), Circle, Halo, NumTextNode).SetDrawFlags(0xD).SetOrigin(40, 80);
     }
 
     #endregion
@@ -106,7 +106,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         var max = Tracker.CurrentData.MaxGauge;
 
         if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
-        NumTextNode.UpdateValue(current,max);
+        NumTextNode.UpdateValue(current, max);
 
         if (prog > prevProg)
         {
@@ -124,7 +124,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         if (Config.Direction == Erode)
         {
-            LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f,true).SetAlpha(prog > 0.01f);
+            LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
             RightHalf.SetRotation((1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
         }
         else if (Config.Direction == CW)
@@ -139,7 +139,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
             var rProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
             var lProg = Clamp(prog / 0.5f, 0, 1f);
             LeftHalf.SetRotation((1 - lProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-            RightHalf.SetRotation((1 - rProg) * 180 * 0.998f,true).SetAlpha(prog >= 0.5f);
+            RightHalf.SetRotation((1 - rProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
         }
 
         Animator.RunTweens();
@@ -149,7 +149,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override void OnDecreaseToMin() => HaloPulse();
 
-    public override void OnIncreaseFromMin() => Animator += new Tween(Circle,Hidden[0],new(150){Alpha=Config.Color.A});
+    public override void OnIncreaseFromMin() => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
 
     #endregion
 
@@ -157,7 +157,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public sealed class SimpleCircleConfig : GaugeBarWidgetConfig
     {
-        public enum CircleStyles { CW,CCW,Erode }
+        public enum CircleStyles { CW, CCW, Erode }
 
         public Vector2 Position;
         public float Scale = 1;
@@ -194,10 +194,10 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     public override void ApplyConfigs()
     {
         WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
-        Circle.SetMultiply(40).SetAddRGB(Config.Color,true);
+        Circle.SetMultiply(40).SetAddRGB(Config.Color, true);
         Halo.SetAddRGB(Config.Color+new AddRGB(30));
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(38,80));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(38, 80));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -213,7 +213,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        RadioIcons("Direction",ref Config.Direction, new() { CW, CCW, Erode },new () { Redo ,Undo, CircleNotch },ref update);
+        RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new () { Redo , Undo, CircleNotch }, ref update);
        
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 

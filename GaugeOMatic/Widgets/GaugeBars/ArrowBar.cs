@@ -38,11 +38,11 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudBRD0.tex",
-             new(1,366,188,34),
-             new(1,419,151,6),
-             new(59,427,93,6),
-             new(215,211,15,43),
-             new(280,150,21,44))
+             new(1, 366, 188, 34),
+             new(1, 419, 151, 6),
+             new(59, 427, 93, 6),
+             new(215, 211, 15, 43),
+             new(280, 150, 21, 44))
     };
 
     #region Nodes
@@ -83,7 +83,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
     public void CollapseBar(int kf1, int kf2)
     {
@@ -263,8 +263,8 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         Backdrop.SetWidth(Config.Width)
                 .SetAddRGB(Config.Background, true);
 
-        LabelTextNode.ApplyProps(Config.LabelText, new((frameWidth / -2f) + 38, 0));
-        LabelTextNode.SetWidth(Max(0, Config.Width - 40));
+        LabelTextNode.ApplyProps(Config.LabelText, new((frameWidth / -2f) + 38, 0))
+                     .SetWidth(Max(0, Config.Width - 40));
 
         NumTextNode.ApplyProps(Config.NumTextProps, new((frameWidth / 2f) + 20, 17.5f));
 

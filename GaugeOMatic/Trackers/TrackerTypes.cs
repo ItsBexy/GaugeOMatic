@@ -74,7 +74,7 @@ public sealed class ActionTracker : Tracker
     public override string DisplayName => ItemRef?.Name ?? string.Empty;
 
     public override string TermCount => "Charges";
-    public override string TermGauge => "Cooldown";
+    public override string TermGauge => "Timer";
     public override string[] StateNames { get; } = { "Unavailable", "Available" };
 
     public override TrackerData GetCurrentData(float? preview = null) => new((ActionRef)ItemRef!, preview);

@@ -51,25 +51,25 @@ public partial class ActionData
         { 94,    new(94,    DRG,  "Elusive Jump",           30     ) },
         { 95,    new(95,    DRG,  "Spineshatter Dive",      60,  2 ) },
         { 96,    new(96,    DRG,  "Dragonfire Dive",        120    ) },
-        { 3555,  new(3555,  DRG,  "Geirskogul",             30     ) { ReadyType = Ants } },
+        { 3555,  new(3555,  DRG,  "Geirskogul",             30     ) { ReadyType = Ants }},
         { 3557,  new(3557,  DRG,  "Battle Litany",          120    ) },
         { 7398,  new(7398,  DRG,  "Dragon Sight",           120    ) },
-        { 16478, new(16478, DRG,  "High Jump",              30     ) { HasUpgrades = true } },
+        { 16478, new(16478, DRG,  "High Jump",              30     ) { HasUpgrades = true }},
         { 16480, new(16480, DRG,  "Stardiver",              30     ) },
         { 25773, new(25773, DRG,  "Wyrmwind Thrust",        10     ) { ReadyType = Ants }},
 
         { 2241,  new(2241,  ROG,  "Shade Shift",            120    ) },
         { 2245,  new(2245,  ROG,  "Hide",                   20     ) },
         { 2248,  new(2248,  ROG,  "Mug",                    120    ) },
-        { 2258,  new(2258,  ROG,  "Trick Attack",           60     ) { ReadyType = StatusEffect, ReadyStatus = 507} },
+        { 2258,  new(2258,  ROG,  "Trick Attack",           60     ) { ReadyType = StatusEffect, ReadyStatus = 507 }},
         { 2259,  new(2259,  NIN,  "Mudra",                  20,  2 ) }, // using Ten to stand in for all three mudras
         { 2262,  new(2262,  NIN,  "Shukuchi",               60,  2 ) },
         { 2264,  new(2264,  NIN,  "Kassatsu",               60     ) },
         { 3566,  new(3566,  NIN,  "Dream Within a Dream",   60     ) { HasUpgrades = true }},
         { 7403,  new(7403,  NIN,  "Ten Chi Jin",            120    ) },
-        { 16489, new(16489, NIN,  "Meisui",                 120    ) { ReadyType = StatusEffect, ReadyStatus = 507} },
-        { 16493, new(16493, NIN,  "Bunshin",                90     ) { ReadyType = Ants } },
-        { 25774, new(25774, NIN,  "Phantom Kamaitachi",     2.5f   ) { ReadyType = StatusEffect, ReadyStatus = 2723}},
+        { 16489, new(16489, NIN,  "Meisui",                 120    ) { ReadyType = StatusEffect, ReadyStatus = 507 }},
+        { 16493, new(16493, NIN,  "Bunshin",                90     ) { ReadyType = Ants }},
+        { 25774, new(25774, NIN,  "Phantom Kamaitachi",     2.5f   ) { ReadyType = StatusEffect, ReadyStatus = 2723 }},
         { 2242,  new(2242,  NIN,  "Gust Slash",             2.5f   ) { ReadyType = Ants }},
 
         { 7492,  new(7492,  SAM,  "Hissatsu: Gyoten",       10     ) { ReadyType = Ants }},
@@ -151,7 +151,7 @@ public partial class ActionData
         { 7421,  new(7421,  BLM,  "Triplecast",             60,  2 ) },
         { 25796, new(25796, BLM,  "Amplifier",              120    ) { ReadyType = Ants }},
         
-        { 7427,  new(7427,  SMN,  "Summon Bahamut",         60     ) { HasUpgrades = true } },
+        { 7427,  new(7427,  SMN,  "Summon Bahamut",         60     ) { HasUpgrades = true }},
         { 7429,  new(7429,  SMN,  "Enkindle Bahamut",       20     ) },
         { 16508, new(16508, ACN,  "Energy Drain",           60     ) },
         { 16510, new(16510, SMN,  "Energy Siphon",          60     ) },
@@ -159,7 +159,7 @@ public partial class ActionData
         { 25801, new(25801, SMN,  "Searing Light",          120    ) },
 
         { 7506,  new(7506,  RDM,  "Corps-a-corps",          35,  2 ) },
-        { 7515,  new(7515,  RDM,  "Engagement / Displacement",35,2 ) },
+        { 7515,  new(7515,  RDM,  "Engagement / Displacement", 35, 2 ) },
         { 7517,  new(7517,  RDM,  "Fleche",                 25     ) },
         { 7518,  new(7518,  RDM,  "Acceleration",           55,  2 ) },
         { 7519,  new(7519,  RDM,  "Contre Sixte",           45     ) },
@@ -288,8 +288,8 @@ public partial class ActionData
         { 24298, new(24298, SGE,  "Kerachole",              30     ) },
         { 24295, new(24295, SGE,  "Icarus",                 45     ) },
         { 24294, new(24294, SGE,  "Soteria",                90     ) },
-        { 24289, new(24289, SGE,  "Phlegma",                40, 2  ) { HasUpgrades = true } },
-        { 24288, new(24288, SGE,  "Physis",                 60     ) { HasUpgrades = true } },
+        { 24289, new(24289, SGE,  "Phlegma",                40, 2  ) { HasUpgrades = true }},
+        { 24288, new(24288, SGE,  "Physis",                 60     ) { HasUpgrades = true }},
 
         #endregion
     };

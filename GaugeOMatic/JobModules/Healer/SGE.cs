@@ -26,9 +26,9 @@ public class SGEModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu => new()
     {
-        new("Eukrasia",nameof(EukrasiaTracker)),
-        new("Addersgall Gauge",nameof(AddersgallTracker)),
-        new("Addersting Counter",nameof(AdderstingTracker))
+        new("Eukrasia", nameof(EukrasiaTracker)),
+        new("Addersgall Gauge", nameof(AddersgallTracker)),
+        new("Addersting Counter", nameof(AdderstingTracker))
     };
 
     public SGEModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -41,9 +41,9 @@ public class SGEModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Eukrasia",ref TweakConfigs.SGEHideEukrasia, ref update);
+        ToggleControls("Hide Eukrasia", ref TweakConfigs.SGEHideEukrasia, ref update);
         HideWarning(TweakConfigs.SGEHideEukrasia);
-        ToggleControls("Hide Addersgall Gauge",ref TweakConfigs.SGEHideAddersgall, ref update);
+        ToggleControls("Hide Addersgall Gauge", ref TweakConfigs.SGEHideAddersgall, ref update);
         HideWarning(TweakConfigs.SGEHideAddersgall);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

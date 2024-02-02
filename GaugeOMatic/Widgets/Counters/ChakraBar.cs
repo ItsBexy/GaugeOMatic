@@ -66,7 +66,7 @@ public sealed unsafe class ChakraBar : CounterWidget
         SocketPlate = BuildSocketPlate(Max, out var size).SetOrigin(size / 2, 29);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2,29);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2, 29);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -104,17 +104,17 @@ public sealed unsafe class ChakraBar : CounterWidget
         ActionLines2 = new();
         for (var i = 0; i < count; i++)
         {
-            Pearls.Add(ImageNodeFromPart(1, 0).SetOrigin(19.2f,19.6f)
+            Pearls.Add(ImageNodeFromPart(1, 0).SetOrigin(19.2f, 19.6f)
                                               .SetAlpha(0));
 
-            Lines.Add(ImageNodeFromPart(1, 5).SetOrigin(34,3)
-                                             .SetScale(4,0)
-                                             .SetPos(-15,16)
+            Lines.Add(ImageNodeFromPart(1, 5).SetOrigin(34, 3)
+                                             .SetScale(4, 0)
+                                             .SetPos(-15, 16)
                                              .SetImageFlag(32)
                                              .SetAddRGB(200, 100,-100)
                                              .SetMultiply(50));
 
-            Rings.Add(ImageNodeFromPart(1, 3).SetOrigin(23,23)
+            Rings.Add(ImageNodeFromPart(1, 3).SetOrigin(23, 23)
                                              .SetScale(1.2f)
                                              .SetPos(-4,-4)
                                              .SetImageFlag(32)
@@ -122,16 +122,16 @@ public sealed unsafe class ChakraBar : CounterWidget
                                              .SetMultiply(50)
                                              .SetAlpha(0));
 
-            Glows.Add(ImageNodeFromPart(1,1).SetOrigin(19,19)
+            Glows.Add(ImageNodeFromPart(1, 1).SetOrigin(19, 19)
                                             .SetScale(1.2f)
-                                            .SetPos(0,0)
+                                            .SetPos(0, 0)
                                             .SetMultiply(100)
                                             .SetAlpha(0));
 
-            ActionLines.Add(ImageNodeFromPart(1,4).SetOrigin(32,32)
+            ActionLines.Add(ImageNodeFromPart(1, 4).SetOrigin(32, 32)
                                                   .SetImageFlag(32)
                                                   .SetPos(-13,-14)
-                                                  .SetAddRGB(150,0,-150)
+                                                  .SetAddRGB(150, 0,-150)
                                                   .SetMultiply(70)
                                                   .SetAlpha(0));
 
@@ -146,7 +146,7 @@ public sealed unsafe class ChakraBar : CounterWidget
             Stacks.Add(new CustomNode(CreateResNode(), Pearls[i], Lines[i], Rings[i], Glows[i], ActionLines[i], ActionLines2[i]).SetScale(0.8f).SetPos(29 + (i * 36), 13f));
         }
 
-        return new(CreateResNode(),Stacks.ToArray());
+        return new(CreateResNode(), Stacks.ToArray());
     }
 
     #endregion
@@ -157,17 +157,17 @@ public sealed unsafe class ChakraBar : CounterWidget
         Animator += new Tween[]
         {
             new(Pearls[i],
-                new(0){Alpha = 0,Scale = 0.6f},
-                new(80){Alpha=255,Scale = 1}),
+                new(0) { Alpha = 0, Scale = 0.6f },
+                new(80) { Alpha = 255, Scale = 1 }),
 
             new(Lines[i],
-                new(0) { Alpha = 0, ScaleX = 0f, ScaleY = 1, AddRGB = new(200,100,-100), MultRGB = new(50)},
-                new(80) { Alpha = 255, ScaleX = 2, ScaleY = 1, AddRGB = new(100,0,-100), MultRGB = new(100)},
-                new(300) { Alpha = 0, ScaleX = 4, ScaleY = 0, AddRGB = new(200,100,-100), MultRGB = new(50) }),
+                new(0) { Alpha = 0, ScaleX = 0f, ScaleY = 1, AddRGB = new(200, 100,-100), MultRGB = new(50) },
+                new(80) { Alpha = 255, ScaleX = 2, ScaleY = 1, AddRGB = new(100, 0,-100), MultRGB = new(100) },
+                new(300) { Alpha = 0, ScaleX = 4, ScaleY = 0, AddRGB = new(200, 100,-100), MultRGB = new(50) }),
 
             new(Rings[i],
-                new(0) { Alpha = 0, Scale = 0.3f, AddRGB = new(183,83,-250), MultRGB = new(50) },
-                new(80) { Alpha = 255, Scale = 1, AddRGB = new(100,0,-250), MultRGB = new(100) },
+                new(0) { Alpha = 0, Scale = 0.3f, AddRGB = new(183, 83,-250), MultRGB = new(50) },
+                new(80) { Alpha = 255, Scale = 1, AddRGB = new(100, 0,-250), MultRGB = new(100) },
                 new(300) { Alpha = 0, Scale = 1.2f , AddRGB = new(200,-100,-250), MultRGB = new(50) }),
 
             new(Glows[i],
@@ -179,13 +179,13 @@ public sealed unsafe class ChakraBar : CounterWidget
                 new(300) { Alpha = 0, X = 2, Y = 2 }),
 
             new(ActionLines[i],
-                new(0) { Scale = 2,Alpha=142,AddRGB=new AddRGB(80,0,-160)},
+                new(0) { Scale = 2, Alpha = 142, AddRGB = new AddRGB(80, 0,-160) },
                 new(144) { Scale = 1, Alpha = 0, AddRGB = new(80, 0, -160) },
-                new(146) { Scale = 2, Alpha =73, AddRGB = new(150, 0, -150)},
+                new(146) { Scale = 2, Alpha = 73, AddRGB = new(150, 0, -150) },
                 new(300) { Scale = 1, Alpha = 0, AddRGB = new(150, 0, -150) }),
 
             new(ActionLines2[i],
-                new(0) {Scale = 1.6f,Alpha=128 },
+                new(0) { Scale = 1.6f, Alpha = 128 },
                 new(200) { Scale = 1, Alpha = 0 })
         };
 
@@ -193,7 +193,7 @@ public sealed unsafe class ChakraBar : CounterWidget
         Animator += new Tween[] { 
 
             new(Pearls[i],
-                new(0) { Alpha = 255, Scale = 1,AddRGB=new AddRGB(0) },
+                new(0) { Alpha = 255, Scale = 1, AddRGB = new AddRGB(0) },
                 new(100) { Alpha = 255, Scale = 1.1f, AddRGB = new(100) },
                 new(250) { Alpha = 0, Scale = 0.2f, AddRGB = new(0) }),
 

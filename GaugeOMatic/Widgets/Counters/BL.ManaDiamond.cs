@@ -63,7 +63,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
         SocketPlate = BuildSocketPlate(Max, out var size);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2,30.5f);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2, 30.5f);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -97,8 +97,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
         for (var i = 0; i < count; i++)
         {
             Pulses.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0).Hide().SetPos(17 + (26 * i), 10));
-            Halos.Add(ImageNodeFromPart(0, 2).SetPos(-15,-10).SetOrigin(30,30).SetAlpha(0));
-            Gems.Add(ImageNodeFromPart(0, 0).SetOrigin(15,20));
+            Halos.Add(ImageNodeFromPart(0, 2).SetPos(-15,-10).SetOrigin(30, 30).SetAlpha(0));
+            Gems.Add(ImageNodeFromPart(0, 0).SetOrigin(15, 20));
             Glows.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0));
 
             GemContainers.Add(new CustomNode(CreateResNode(), Halos[i], Gems[i], Glows[i]).SetPos(17 + (26 * i), 10).SetOrigin(18, 24));
@@ -119,13 +119,13 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
         Animator += new Tween[] { 
             new(Halos[i],
-                new(0){Scale=1,Alpha=0},
-                new(150){Scale=1.2f,Alpha=200},
-                new(360) {Scale=0,Alpha=0}),
+                new(0) { Scale = 1, Alpha = 0 },
+                new(150) { Scale = 1.2f, Alpha = 200 },
+                new(360) { Scale = 0, Alpha = 0 }),
 
             new(Gems[i],
-                new(0){Scale = 2,Alpha=0},
-                new(166){Scale = 1,Alpha=255}),
+                new(0) { Scale = 2, Alpha = 0 },
+                new(166) { Scale = 1, Alpha = 255 }),
 
             new(Gems[i],
                 new(0) { AddRGB = new(0) },
@@ -150,9 +150,9 @@ public sealed unsafe class ManaDiamond : CounterWidget
                 new(0) { Scale = 1, Alpha = 255 },
                 new(166) { Scale = 2, Alpha = 0 }),
             new(Glows[i],
-                new(0){Scale=1.8f,Alpha=0},
-                new(160){ Scale= 1.8f,Alpha=200 },
-                new(250){ Scale= 2.5f,Alpha=0 })
+                new(0) { Scale = 1.8f, Alpha = 0 },
+                new(160) { Scale = 1.8f, Alpha = 200 },
+                new(250) { Scale = 2.5f, Alpha = 0 })
         };
     }
 
@@ -165,7 +165,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     private void PlateVanish() =>
         Animator += new Tween(WidgetRoot,
                                  new(0) { Scale = Config.Scale, Alpha = 255 },
-                                 new(150) { Scale=Config.Scale*0.65f, Alpha = 0 })
+                                 new(150) { Scale = Config.Scale*0.65f, Alpha = 0 })
                                  { Ease = SinInOut };
 
     #endregion
@@ -189,7 +189,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
                     new(390) { Scale = 0f, Alpha = 0 },
                     new(870) { Scale = 1.4f, Alpha = 152 },
                     new(1290) { Scale = 1.8f, Alpha = 0 })
-                { Repeat = true, Ease = SinInOut,Label="Pulse"},
+                { Repeat = true, Ease = SinInOut, Label ="Pulse" },
                 new(stack[1],
                     new(0) { AddRGB = new(0) },
                     new(870) { AddRGB = new(150) },
@@ -249,7 +249,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
             GemColor = config.GemColor;
             HideEmpty = config.HideEmpty;
 
-            Pulse=config.Pulse;
+            Pulse = config.Pulse;
             AsTimer = config.AsTimer;
             TimerSize = config.TimerSize;
             InvertTimer = config.InvertTimer;

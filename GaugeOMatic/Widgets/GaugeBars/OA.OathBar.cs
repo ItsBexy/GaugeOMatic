@@ -43,22 +43,22 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudPLD.tex",
-             new(246,0,168,18),    // 0 blue bar
-             new(246,18,168,18),   // 1 grey bar
-             new(414,0,34,60),     // 2 tickmark
-             new(0,0,246,120),     // 3 full frame
-             new(0,0,123,120),     // 4 half frame L
-             new(123,0,123,120),   // 5 half frame R
-             new(0,0,64,120),      // 6 endcap L
-             new(182,0,64,120),    // 7 endcap R
-             new(0,301,238,120),   // 8 full glow
-             new(0,301,123,120),   // 9 half glow L
-             new(123,301,118,120), // 10 half glow R
-             new(0,301,64,120),    // 11 glow endcap L
-             new(182,301,58,120),  // 12 glow endcap R
-             new(238,300,50,50),   // 13 halo
-             new(246,36,102,102),  // 14 shine
-             new(180,274,190,26)   // 15 streak
+             new(246, 0, 168, 18),    // 0 blue bar
+             new(246, 18, 168, 18),   // 1 grey bar
+             new(414, 0, 34, 60),     // 2 tickmark
+             new(0, 0, 246, 120),     // 3 full frame
+             new(0, 0, 123, 120),     // 4 half frame L
+             new(123, 0, 123, 120),   // 5 half frame R
+             new(0, 0, 64, 120),      // 6 endcap L
+             new(182, 0, 64, 120),    // 7 endcap R
+             new(0, 301, 238, 120),   // 8 full glow
+             new(0, 301, 123, 120),   // 9 half glow L
+             new(123, 301, 118, 120), // 10 half glow R
+             new(0, 301, 64, 120),    // 11 glow endcap L
+             new(182, 301, 58, 120),  // 12 glow endcap R
+             new(238, 300, 50, 50),   // 13 halo
+             new(246, 36, 102, 102),  // 14 shine
+             new(180, 274, 190, 26)   // 15 streak
             )
     };
 
@@ -147,7 +147,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
     public void Twinkle() =>
         Animator += new Tween[] {
@@ -443,8 +443,8 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(0, 83.5f));
 
-        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-80, 60));
-        LabelTextNode.SetWidth(Config.Width - 4);
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-80, 60))
+                     .SetWidth(Config.Width - 4);
 
     }
 

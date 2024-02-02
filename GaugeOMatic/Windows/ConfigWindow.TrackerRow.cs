@@ -31,7 +31,7 @@ public partial class ConfigWindow
         var displayProps = tracker.TrackerConfig.DisplayAttributes();
         WriteIcon(displayProps.Icon, displayProps.TypeDesc, displayProps.Color);
 
-        tracker.ItemRefMenu.Draw("[ Track... ]",180f, ref update);
+        tracker.ItemRefMenu.Draw("[ Track... ]", 180f, ref update);
 
         ImGui.TableNextColumn();
         LayerControls(tracker, hash, index, ref update);

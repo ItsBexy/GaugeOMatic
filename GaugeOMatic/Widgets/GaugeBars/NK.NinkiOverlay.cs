@@ -63,16 +63,16 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
 
     public KeyFrame[] BarTimeline => new KeyFrame[]
     {
-        new(0) { Width = 18,Alpha=0 },
-        new(10){ Width =28, Alpha = Config.ScrollColor.A },
-        new(219) { Width =237,Alpha = Config.ScrollColor.A },
-        new(229) { Width = 247,Alpha= Config.ScrollColor.A/2f }
+        new(0) { Width = 18, Alpha = 0 },
+        new(10) { Width = 28, Alpha = Config.ScrollColor.A },
+        new(219) { Width = 237, Alpha = Config.ScrollColor.A },
+        new(229) { Width = 247, Alpha = Config.ScrollColor.A/2f }
     };
     public static KeyFrame[] TickTimeline => new KeyFrame[]
     {
-        new(0) { X = -1,Alpha=0 },
-        new(10){ X = 9, Alpha = 255 },
-        new(219) { X = 218,Alpha = 255 }, 
+        new(0) { X = -1, Alpha = 0 },
+        new(10) { X = 9, Alpha = 255 },
+        new(219) { X = 218, Alpha = 255 }, 
         new(229) { X = 228, Alpha = 0 }
     };
 

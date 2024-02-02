@@ -18,8 +18,8 @@ public unsafe partial class CustomNodeManager
 
             node->AtkResNode.Type = NodeType.Image;
             node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
-            node->AtkResNode.Width = customPartsList.AtkPartsList->Parts[partId].Width;
-            node->AtkResNode.Height = customPartsList.AtkPartsList->Parts[partId].Height;
+            node->AtkResNode.Width = customPartsList.AtkUldPartsList->Parts[partId].Width;
+            node->AtkResNode.Height = customPartsList.AtkUldPartsList->Parts[partId].Height;
 
             node->AtkResNode.NodeID = GetFreeId();
             RegisteredNodes.Add(node->AtkResNode.NodeID, (AtkResNode*)node);

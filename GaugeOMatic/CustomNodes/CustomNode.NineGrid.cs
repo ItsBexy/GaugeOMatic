@@ -12,7 +12,7 @@ public unsafe partial class CustomNodeManager
     {
         try
         {
-            var partsList = customPartsList.AtkPartsList;
+            var partsList = customPartsList.AtkUldPartsList;
             var node = CleanAlloc<AtkNineGridNode>();
 
             node->Ctor();

@@ -37,18 +37,18 @@ public sealed unsafe class AddersCounter : CounterWidget
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudGFF1.tex", 
             new(88, 56, 36, 44), // 0 frame
-            new(124,56,20,24),   // 1 gem (active)
-            new(144,56,20,24),   // 2 gem (inactive)
-            new(164,56,32,32),   // 3 halo
-            new(176,88,24,12),   // 4 streak
-            new(144,80,20,20),   // 5 dot
-            new(124,80,20,20)    // 6 star
+            new(124, 56, 20, 24),   // 1 gem (active)
+            new(144, 56, 20, 24),   // 2 gem (inactive)
+            new(164, 56, 32, 32),   // 3 halo
+            new(176, 88, 24, 12),   // 4 streak
+            new(144, 80, 20, 20),   // 5 dot
+            new(124, 80, 20, 20)    // 6 star
             ),
         new("ui/uld/JobHudGFF1.tex",
-            new(0,148,50,50),
-            new(50,148,50,50),
-            new(100,148,50,50),
-            new(150,148,50,50)
+            new(0, 148, 50, 50),
+            new(50, 148, 50, 50),
+            new(100, 148, 50, 50),
+            new(150, 148, 50, 50)
             )
     };
 
@@ -76,7 +76,7 @@ public sealed unsafe class AddersCounter : CounterWidget
 
         for (var i = 0; i < count; i++)
         {
-            var inactiveGem = ImageNodeFromPart(0,2).SetPos(8,9)
+            var inactiveGem = ImageNodeFromPart(0, 2).SetPos(8, 9)
                                                     .SetImageWrap(2)
                                                     .SetMultiply(80)
                                                     .SetAlpha(255);
@@ -89,8 +89,8 @@ public sealed unsafe class AddersCounter : CounterWidget
                                               .SetAlpha(0);
             
             var effectOverlay = ImageNodeFromPart(1, 3).SetPos(-7,-4)
-                                                       .SetScale(0.5f,0.6f)
-                                                       .SetOrigin(25,25)
+                                                       .SetScale(0.5f, 0.6f)
+                                                       .SetOrigin(25, 25)
                                                        .SetImageWrap(2)
                                                        .SetImageFlag(32);
 
@@ -197,14 +197,14 @@ public sealed unsafe class AddersCounter : CounterWidget
 
         Animator += new Tween[] {
             new(Stacks[i][2],
-                new(0) { Alpha = 0,AddRGB=0 },
-                new(160) { Alpha = 255,AddRGB=Config.GemColor },
+                new(0) { Alpha = 0, AddRGB = 0 },
+                new(160) { Alpha = 255, AddRGB = Config.GemColor },
                 new(630) { Alpha = 0, AddRGB = 0 }),
 
             new(Effects[i][8], 
-                new(0) { Alpha = 255,ScaleX=1.5f,ScaleY=1 }, 
-                new(160) { Alpha = 255,ScaleX=3,ScaleY=1}, 
-                new(630) { Alpha = 0,ScaleX=1.5f,ScaleY=0.2f })
+                new(0) { Alpha = 255, ScaleX = 1.5f, ScaleY = 1 }, 
+                new(160) { Alpha = 255, ScaleX = 3, ScaleY = 1 }, 
+                new(630) { Alpha = 0, ScaleX = 1.5f, ScaleY = 0.2f })
             };
     }
 
@@ -212,8 +212,8 @@ public sealed unsafe class AddersCounter : CounterWidget
     {
         Animator += new Tween[] {
             new(Stacks[i][0], 
-                new(0){Alpha=255,AddRGB=100}, 
-                new(420){Alpha=255,AddRGB=0}),
+                new(0) { Alpha = 255, AddRGB = 100 }, 
+                new(420) { Alpha = 255, AddRGB = 0 }),
 
             new(Stacks[i][1],
                 Visible[0],
@@ -273,13 +273,13 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     private void AllVanish() =>
         Animator += new Tween(WidgetRoot, 
-                                  new(0) { Alpha = 255, AddRGB = 0 }, 
-                                  new(200) { Alpha = 0, AddRGB = 100 });
+                              new(0) { Alpha = 255, AddRGB = 0 }, 
+                              new(200) { Alpha = 0, AddRGB = 100 });
 
     private void AllAppear() =>
         Animator += new Tween(WidgetRoot, 
-                                  new(0) { Alpha = 0, AddRGB = 100 },
-                                  new(200) { Alpha = 255, AddRGB = 0 });
+                              new(0) { Alpha = 0, AddRGB = 100 },
+                              new(200) { Alpha = 255, AddRGB = 0 });
 
     #endregion
 
@@ -292,7 +292,7 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { AllAppear(); } }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { AllAppear(); }}
 
     #endregion
 
@@ -302,7 +302,7 @@ public sealed unsafe class AddersCounter : CounterWidget
     {
         public Vector2 Position;
         public float Scale = 1;
-        public AddRGB GemColor = new(-10,49,82);
+        public AddRGB GemColor = new(-10, 49, 82);
         public AddRGB FXColor = new(-200, -100, 255);
         public float Spacing = 30;
         public float Angle;
@@ -347,7 +347,7 @@ public sealed unsafe class AddersCounter : CounterWidget
         var widgetAngle = Config.Angle+(Config.Curve/2f);
         WidgetRoot.SetPos(Config.Position+new Vector2(-48,-38))
                   .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle,true);
+                  .SetRotation(widgetAngle, true);
 
         var posAngle = 0f;
         double x = 0;

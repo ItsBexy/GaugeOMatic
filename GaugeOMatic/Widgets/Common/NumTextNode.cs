@@ -44,7 +44,7 @@ public class NumTextNode : CustomNode
             .SetTextAlign(Props.Align)
             .SetWidth(Props.FontSize * 6f)
             .SetTextSize(Props.FontSize)
-            .SetPos(Props.Position + (posAdjust??new(0)) + new Vector2(-Props.FontSize*3f,0))
+            .SetPos(Props.Position + (posAdjust??new(0)) + new Vector2(-Props.FontSize*3f, 0))
             .SetVis(Props.Enabled);
 
         BgNode.SetScale(Props.FontSize / 20f)

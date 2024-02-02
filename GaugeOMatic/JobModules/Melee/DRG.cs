@@ -24,8 +24,8 @@ public class DRGModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Life of the Dragon",nameof(LotDTracker)),
-        new("Firstminds' Focus",nameof(FirstmindsFocusTracker))
+        new("Life of the Dragon", nameof(LotDTracker)),
+        new("Firstminds' Focus", nameof(FirstmindsFocusTracker))
     };
 
     public DRGModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -38,7 +38,7 @@ public class DRGModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Dragon Gauge",ref TweakConfigs.DRGHideAll, ref update);
+        ToggleControls("Hide Dragon Gauge", ref TweakConfigs.DRGHideAll, ref update);
         HideWarning(TweakConfigs.DRGHideAll);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

@@ -35,7 +35,7 @@ public partial class ConfigWindow
 
         if (ImGui.BeginTable($"{jobModule.Abbr}TweaksTable", 2, SizingFixedFit))
         {
-            ImGui.TableSetupColumn("Labels",default,150f);
+            ImGui.TableSetupColumn("Labels", default, 150f);
             ImGui.TableSetupColumn("Options");
 
             WidgetUI.Heading("Job Gauge Tweaks");
@@ -69,7 +69,7 @@ public partial class ConfigWindow
             if (IconButtonWithText("Add", FontAwesomeIcon.Plus, "AddButton")) jobModule.AddBlankTracker();
 
             ImGui.TableNextColumn();
-            if (IconButtonWithText("Presets",FontAwesomeIcon.ObjectGroup,"PresetButton")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
+            if (IconButtonWithText("Presets", FontAwesomeIcon.ObjectGroup,"PresetButton")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
 
             ImGui.EndTable();
         }

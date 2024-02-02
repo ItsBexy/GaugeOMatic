@@ -43,20 +43,20 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudGFF1.tex",
-             new(0,24,200,32), // frame
-             new(0,0,200,24),
-             new(89,100,8,24),
-             new(99,100,30,24), // bar overlay
-             new(130,100,22,24),
-             new(152,100,22,24),
-             new(174,100,22,24),
-             new(178,124,22,24),
-             new(1,124,142,24), // bar fill
-             new(124,80,20,20),
-             new(144,80,20,20),
-             new(164,56,32,32),
-             new(176,88,24,12),
-             new(164,88,12,12))
+             new(0, 24, 200, 32), // frame
+             new(0, 0, 200, 24),
+             new(89, 100, 8, 24),
+             new(99, 100, 30, 24), // bar overlay
+             new(130, 100, 22, 24),
+             new(152, 100, 22, 24),
+             new(174, 100, 22, 24),
+             new(178, 124, 22, 24),
+             new(1, 124, 142, 24), // bar fill
+             new(124, 80, 20, 20),
+             new(144, 80, 20, 20),
+             new(164, 56, 32, 32),
+             new(176, 88, 24, 12),
+             new(164, 88, 12, 12))
     };
 
     #region Nodes
@@ -102,13 +102,13 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     {
         var sparkleNodes = new[]
         {
-            ImageNodeFromPart(0,4).SetScale(1,0.95f).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(-10,10).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(2.25f,6).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(4,9).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(2,3).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,13).SetOrigin(6,6).SetPos(4,0).SetAddRGB(-100,0,0),
-            ImageNodeFromPart(0,5).SetPos(0,0)
+            ImageNodeFromPart(0, 4).SetScale(1, 0.95f).SetAddRGB(-100, 0, 0),
+            ImageNodeFromPart(0, 13).SetOrigin(6, 6).SetPos(-10, 10).SetAddRGB(-100, 0, 0),
+            ImageNodeFromPart(0, 13).SetOrigin(6, 6).SetPos(2.25f, 6).SetAddRGB(-100, 0, 0),
+            ImageNodeFromPart(0, 13).SetOrigin(6, 6).SetPos(4, 9).SetAddRGB(-100, 0, 0),
+            ImageNodeFromPart(0, 13).SetOrigin(6, 6).SetPos(2, 3).SetAddRGB(-100, 0, 0),
+            ImageNodeFromPart(0, 13).SetOrigin(6, 6).SetPos(4, 0).SetAddRGB(-100, 0, 0),
+            ImageNodeFromPart(0, 5).SetPos(0, 0)
         };
 
         AnimateSparkles(sparkleNodes);
@@ -120,7 +120,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
     public void CollapseBar(int kf1, int kf2)
     {
@@ -403,8 +403,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
         Sparkles.SetX(barSize - 13);
 
-        LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width / -2, 0));
-        LabelTextNode.SetWidth(Config.Width);
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width / -2, 0))
+                     .SetWidth(Config.Width);
 
         NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width / 2) + 88, 11.5f));
     }

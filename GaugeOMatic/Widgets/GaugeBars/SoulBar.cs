@@ -67,10 +67,10 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Corners = NineGridFromPart(0, 3, 14, 14, 14, 14).SetHeight(30).SetY(-5).SetOrigin(15, 15);
         MidMarkers = NineGridFromPart(0, 2, 14, 0, 14, 0).SetHeight(30).SetY(-5).SetX(-4);
         NumTextNode = new();
-        LabelTextNode = new(Config.LabelTextProps.Text,Tracker.DisplayName); 
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName); 
         LabelTextNode.SetWidth(180);
 
-        BarFrame = new(CreateResNode(), Frame, Bar, Corners, MidMarkers,LabelTextNode, NumTextNode);
+        BarFrame = new(CreateResNode(), Frame, Bar, Corners, MidMarkers, LabelTextNode, NumTextNode);
 
         return new CustomNode(CreateResNode(), BarFrame).SetOrigin(28, 12);
     }
@@ -119,7 +119,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
     public void CollapseBar(int kf1, int kf2, int kf3)
     {
@@ -155,7 +155,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             new(LabelTextNode,
                 Visible[0],
                 Hidden[kf2])
-                {Ease=SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "Collapse" },
             new(NumTextNode,
                 Visible[0],
                 Hidden[kf2])
@@ -333,8 +333,8 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             GainColorTeal = config.GainColorTeal;
             DrainColorTeal = config.DrainColorTeal;
             GlowTeal = config.GlowTeal;
-            Pulse1Teal=config.Pulse1Teal;
-            Pulse2Teal= config.Pulse2Teal;
+            Pulse1Teal = config.Pulse1Teal;
+            Pulse2Teal = config.Pulse2Teal;
 
             MainColorRed = config.MainColorRed;
             GainColorRed = config.GainColorRed;
@@ -375,7 +375,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         WidgetRoot.SetPos(Config.Position)
                   .SetOrigin(0, 16f)
                   .SetScale(Config.Scale)
-                  .SetRotation(Config.Angle,true);
+                  .SetRotation(Config.Angle, true);
 
         NumTextNode.SetRotation(-Config.Angle, true);
 
@@ -400,7 +400,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Gain.SetAddRGB(red ? Config.GainColorRed : Config.GainColorTeal).SetWidth(0)
             .DefineTimeline(BarTimeline);
         Main.SetAddRGB(red ? Config.MainColorRed + new AddRGB(-57, 115, 96) : Config.MainColorTeal + new AddRGB(128, -74, -71))
-            .SetPartId((ushort)(red ? 8 : 9))
+            .SetPartId(red ? 8 : 9)
             .DefineTimeline(BarTimeline)
             .SetProgress(CalcProg());
 
@@ -408,13 +408,13 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         TickLine.SetAddRGB(red ? Config.TickRed : Config.TickTeal);
         TickDot.SetAddRGB(red ? Config.TickRed : Config.TickTeal);
 
-        LabelTextNode.SetWidth(Config.Width);
-        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-Config.Width / 2,-7f));
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-Config.Width / 2,-7f))
+                     .SetWidth(Config.Width);
 
-        PartsLists[0].AtkPartsList->Parts[8].Width = (ushort)Clamp(Config.Width, 1, 180);
-        PartsLists[0].AtkPartsList->Parts[8].U = (ushort)Clamp(182 - Config.Width, 2, 181);
-        PartsLists[0].AtkPartsList->Parts[9].Width = (ushort)Clamp(Config.Width, 1, 180);
-        PartsLists[0].AtkPartsList->Parts[9].U = (ushort)Clamp(182 - Config.Width, 2, 181);
+        PartsLists[0].AtkUldPartsList->Parts[8].Width = (ushort)Clamp(Config.Width, 1, 180);
+        PartsLists[0].AtkUldPartsList->Parts[8].U = (ushort)Clamp(182 - Config.Width, 2, 181);
+        PartsLists[0].AtkUldPartsList->Parts[9].Width = (ushort)Clamp(Config.Width, 1, 180);
+        PartsLists[0].AtkUldPartsList->Parts[9].U = (ushort)Clamp(182 - Config.Width, 2, 181);
 
         NumTextNode.ApplyProps(Config.NumTextProps, new Vector2((Config.Width / 2) + 59, 10.5f));
 

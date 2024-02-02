@@ -25,9 +25,9 @@ public class DNCModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new()
     {
-        new("Fourfold Feathers",nameof(FourfoldTracker)),
-        new("Esprit Gauge",nameof(EspritGaugeTracker)),
-        new("Dance Steps",nameof(DanceStepTracker))
+        new("Fourfold Feathers", nameof(FourfoldTracker)),
+        new("Esprit Gauge", nameof(EspritGaugeTracker)),
+        new("Dance Steps", nameof(DanceStepTracker))
     };
 
     public DNCModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -41,7 +41,7 @@ public class DNCModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Fourfold Feathers",ref TweakConfigs.DNCHideFeathers, ref update);
+        ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHideFeathers, ref update);
         HideWarning(TweakConfigs.DNCHideFeathers);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

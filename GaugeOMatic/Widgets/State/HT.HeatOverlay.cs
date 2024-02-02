@@ -46,14 +46,14 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override CustomNode BuildRoot()
     {
-        Smoke1 = ImageNodeFromPart(0, 16).SetPos(-11, -9).SetOrigin(32,85).SetAlpha(0);
+        Smoke1 = ImageNodeFromPart(0, 16).SetPos(-11, -9).SetOrigin(32, 85).SetAlpha(0);
         Smoke2 = ImageNodeFromPart(0, 16).SetPos(71, -26).SetOrigin(32, 85).SetAlpha(0);
         Smoke3 = ImageNodeFromPart(0, 16).SetPos(171, -1).SetOrigin(32, 85).SetAlpha(0);
-        SmokeContainer = new CustomNode(CreateResNode(),Smoke1,Smoke2,Smoke3).SetOrigin(35,63);
+        SmokeContainer = new CustomNode(CreateResNode(), Smoke1, Smoke2, Smoke3).SetOrigin(35, 63);
         Glow = NineGridFromPart(0, 7, 0, 60, 0, 120).SetPos(1, 1).SetNineGridBlend(2).SetAlpha(0);
         GlowWrapper = new CustomNode(CreateResNode(), Glow).SetOrigin(35, 43);
 
-        return new(CreateResNode(),GlowWrapper,SmokeContainer);
+        return new(CreateResNode(), GlowWrapper, SmokeContainer);
     }
 
     #endregion
@@ -84,10 +84,10 @@ public sealed unsafe class HeatOverlay : StateWidget
         Animator += new Tween[]
         {
             new(Glow,
-                new(0) {Alpha=0,ScaleY=1},
-                new(450) {Alpha=101,ScaleY=1.04f},
-                new(950) {Alpha=0,ScaleY=1.08f})
-                {Repeat = true, Label = "Pulse"},
+                new(0) { Alpha = 0, ScaleY = 1 },
+                new(450) { Alpha = 101, ScaleY = 1.04f },
+                new(950) { Alpha = 0, ScaleY = 1.08f })
+                { Repeat = true, Label = "Pulse" },
            
             new(Smoke1,
                 new(0) { Scale = 0.9f, Alpha = 0 },
@@ -98,7 +98,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(560) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
                 new(660) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
                 new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
-                { Repeat = true, Label = "Pulse",PerCycle = () => RandomPosition(Smoke1,0,0.2f) },
+                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke1, 0, 0.2f) },
            
             new(Smoke2,
                 new(0) { Scale = 0.9f, Alpha = 0 },
@@ -110,7 +110,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(660) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
                 new(760) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
                 new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
-                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke2,0.4f,0.6f) },
+                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke2, 0.4f, 0.6f) },
            
             new(Smoke3,
                 new(0) { Scale = 0.9f, Alpha = 0 },
@@ -122,7 +122,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(760) { ScaleX = 1, ScaleY = 1.2f, Alpha = 10 },
                 new(860) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
                 new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
-                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke3,0.8f,1f) }
+                { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke3, 0.8f, 1f) }
         };
 
     }
@@ -135,8 +135,8 @@ public sealed unsafe class HeatOverlay : StateWidget
         Animator += new Tween[] {
             new(Glow,
                 new(0, Glow),
-                new(450) { Alpha = 0, ScaleY = 1.08f})
-                {Label = "Pulse"},
+                new(450) { Alpha = 0, ScaleY = 1.08f })
+                { Label = "Pulse" },
 
             new(Smoke1,
                 new(0, Smoke1),
@@ -159,8 +159,8 @@ public sealed unsafe class HeatOverlay : StateWidget
     {
         var color = Config.Colors.ElementAtOrDefault(current);
         Animator += new Tween(Glow,
-                              new(0,Glow),
-                              new(300){ AddRGB = color + ColorOffset });
+                              new(0, Glow),
+                              new(300) { AddRGB = color + ColorOffset });
     }
 
     #endregion
@@ -169,7 +169,7 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public class HeatOverlayConfig
     {
-        public Vector2 Position = new(0,0);
+        public Vector2 Position = new(0, 0);
         public float Scale = 1;
         public float Width = 148;
         public List<AddRGB> Colors = new();
@@ -217,7 +217,7 @@ public sealed unsafe class HeatOverlay : StateWidget
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
-        GlowWrapper.SetRotation(Config.Angle,true);
+        GlowWrapper.SetRotation(Config.Angle, true);
         SmokeContainer.SetRotation(Config.Angle, true);
 
         Smoke1.SetRotation(-Config.Angle, true);

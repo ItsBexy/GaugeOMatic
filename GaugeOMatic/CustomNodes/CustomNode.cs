@@ -77,6 +77,6 @@ public unsafe partial class CustomNode : IDisposable
     }
 
     public void Detach() => DetachNode(Node);
-    public void AttachTo(AtkUnitBase* parentAddon) => AttachNode(parentAddon,Node);
-    public void AttachTo(AtkResNode* parentNode) => AttachNode(parentNode,Node);
+    public void AttachTo(AtkUnitBase* parentAddon) => AttachNode(parentAddon, Node);
+    public void AttachTo(AtkResNode* parentNode) => AttachNode(parentNode, Node);
 }

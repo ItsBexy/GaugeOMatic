@@ -47,7 +47,7 @@ public class WidgetInfo
             var widgetInfo = (WidgetInfo?)type.GetProperty("GetWidgetInfo")?.GetValue(null);
             if (widgetInfo == null) continue;
 
-            WidgetList.Add(type.Name,widgetInfo);
+            WidgetList.Add(type.Name, widgetInfo);
             Log.Verbose($"Added Widget Option: {widgetInfo.DisplayName}");
         }
     }

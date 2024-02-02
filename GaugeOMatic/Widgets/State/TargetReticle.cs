@@ -51,7 +51,7 @@ public sealed unsafe class TargetReticle : StateWidget
                                       .SetOrigin(225, 225)
                                       .SetPos(-225, -225);
 
-        InnerHalo = ImageNodeFromPart(0,0).RemoveFlags(SetVisByAlpha)
+        InnerHalo = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
                                           .SetAlpha(0)
                                           .SetImageFlag(32)
                                           .SetOrigin(225, 225)
@@ -60,7 +60,7 @@ public sealed unsafe class TargetReticle : StateWidget
 
         BeginRotation();
 
-        return new(CreateResNode(), Halo,InnerHalo);
+        return new(CreateResNode(), Halo, InnerHalo);
     }
 
     private void BeginRotation()
@@ -84,7 +84,7 @@ public sealed unsafe class TargetReticle : StateWidget
                 new(Halo,
                     new(0) { Rotation = startAngle },
                     new((int)rotationTime) { Rotation = endAngle })
-                    { Repeat = true, Label="RotationTween" },
+                    { Repeat = true, Label ="RotationTween" },
                 new(InnerHalo,
                     new(0) { Rotation = startAngle2 },
                     new((int)(rotationTime*1.2f)) { Rotation = endAngle2 })
@@ -119,7 +119,7 @@ public sealed unsafe class TargetReticle : StateWidget
         {
             new(Halo,
                 new(0) { Alpha = 0, Scale = 0.2f, MultRGB = color },
-                new(400) { Alpha = 255, Scale = 1, MultRGB = color }){ Label = "HaloAlpha" },
+                new(400) { Alpha = 255, Scale = 1, MultRGB = color }) { Label = "HaloAlpha" },
             new(InnerHalo,
                 new(0) { Alpha = 0, Scale = 2.1f, MultRGB = color },
                 new(200) { Alpha = 255, Scale = 0.6f, MultRGB = color })
@@ -136,10 +136,10 @@ public sealed unsafe class TargetReticle : StateWidget
         Animator += new Tween[] {
             new(Halo,
                 new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
-                new(200) { Alpha = 0, ScaleX=1.2f,ScaleY=1.2f })
-            { Complete = () => Halo.Hide(), Label = "HaloAlpha" },
+                new(200) { Alpha = 0, ScaleX = 1.2f, ScaleY = 1.2f })
+                { Complete = () => Halo.Hide(), Label = "HaloAlpha" },
             new(InnerHalo,
-                new(0) { Alpha = 255, ScaleX=0.6f,ScaleY=0.6f },
+                new(0) { Alpha = 255, ScaleX = 0.6f, ScaleY = 0.6f },
                 new(200) { Alpha = 0, ScaleX = 0.2f, ScaleY = 0.2f })
                 { Complete = () => Halo.Hide(), Label = "HaloAlpha" }
         };

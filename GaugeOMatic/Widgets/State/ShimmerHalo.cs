@@ -44,7 +44,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     public override CustomNode BuildRoot()
     {
-        Halo = ImageNodeFromPart(0,0)
+        Halo = ImageNodeFromPart(0, 0)
                .RemoveFlags(SetVisByAlpha)
                .SetAlpha(0)
                .SetImageFlag(32)
@@ -67,7 +67,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
             Animator += new Tween(Halo, 
                                   new(0) { Rotation = startAngle }, 
                                   new((int)(60000f / rpm)) { Rotation = endAngle }) 
-                                  { Repeat = true, Label="RotationTween" };
+                                  { Repeat = true, Label ="RotationTween" };
         }
     }
 
@@ -143,7 +143,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
         public void FillColorList(int maxState)
         {
-            while (ColorList.Count <= maxState) ColorList.Add(new(255,255,255));
+            while (ColorList.Count <= maxState) ColorList.Add(new(255, 255, 255));
         }
     }
 

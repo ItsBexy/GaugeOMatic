@@ -24,8 +24,8 @@ public class NINModule : JobModule
     };
 
     public override List<MenuOption> JobGaugeMenu { get; } = new() {
-        new("Ninki Gauge",nameof(NinkiGaugeTracker)),
-        new("Huton Gauge",nameof(HutonGaugeTracker))
+        new("Ninki Gauge", nameof(NinkiGaugeTracker)),
+        new("Huton Gauge", nameof(HutonGaugeTracker))
     };
 
     public NINModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -38,10 +38,10 @@ public class NINModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Ninki Gauge",ref TweakConfigs.NINHideNinki, ref update);
+        ToggleControls("Hide Ninki Gauge", ref TweakConfigs.NINHideNinki, ref update);
         HideWarning(TweakConfigs.NINHideNinki);
         
-        ToggleControls("Hide Huton Gauge",ref TweakConfigs.NINHideHuton, ref update);
+        ToggleControls("Hide Huton Gauge", ref TweakConfigs.NINHideHuton, ref update);
         HideWarning(TweakConfigs.NINHideHuton);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();

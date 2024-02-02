@@ -31,5 +31,5 @@ public class ParamRef : ItemRef
     public static implicit operator ParamRef(uint i) => new((ParamTypes)i);
     public static implicit operator ParamRef(ParamTypes p) => new(p);
 
-    public enum ParamTypes { HP=1, MP=2, Castbar=3 }
+    public enum ParamTypes { HP = 1, MP = 2, Castbar = 3 }
 }

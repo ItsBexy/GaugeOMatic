@@ -37,8 +37,8 @@ public sealed unsafe class FinishIcon : StateWidget
     public override CustomPartsList[] PartsLists { get; } =
     {
         new("ui/uld/JobHudDNC0.tex",
-            new(168,136,56,56),
-            new(224,136,56,56))
+            new(168, 136, 56, 56),
+            new(224, 136, 56, 56))
     };
 
     #region Nodes
@@ -49,11 +49,11 @@ public sealed unsafe class FinishIcon : StateWidget
     {
         Symbol = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
                                         .SetAlpha(0)
-                                        .SetOrigin(28,28);
+                                        .SetOrigin(28, 28);
 
         BeginRotation();
 
-        return new CustomNode(CreateResNode(), Symbol).SetOrigin(28,28);
+        return new CustomNode(CreateResNode(), Symbol).SetOrigin(28, 28);
     }
 
     private void BeginRotation()
@@ -172,7 +172,7 @@ public sealed unsafe class FinishIcon : StateWidget
                   .SetRotation(Config.Angle * 0.0174532925199433f);
         
         Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State))
-              .SetPartId((ushort)(Config.Tech?1:0));
+              .SetPartId(Config.Tech?1:0);
 
         if (Symbol.Visible) { BeginRotation(); }
     }

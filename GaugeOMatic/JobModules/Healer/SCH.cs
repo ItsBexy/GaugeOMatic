@@ -26,9 +26,9 @@ public class SCHModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu => new()
     {
-        new("Aetherflow Gauge",nameof(AetherflowSCHGaugeTracker)),
-        new("Fae Aether",nameof(FaerieGaugeTracker)),
-        new("Seraph Timer",nameof(SeraphTracker))
+        new("Aetherflow Gauge", nameof(AetherflowSCHGaugeTracker)),
+        new("Fae Aether", nameof(FaerieGaugeTracker)),
+        new("Seraph Timer", nameof(SeraphTracker))
     };
 
     public SCHModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
@@ -41,11 +41,11 @@ public class SCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Aetherflow Gauge",ref TweakConfigs.SCHHideAetherflow, ref update);
+        ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SCHHideAetherflow, ref update);
         HideWarning(TweakConfigs.SCHHideAetherflow);
-        ToggleControls("Hide Faerie Gauge",ref TweakConfigs.SCHHideFaerie, ref update);
+        ToggleControls("Hide Faerie Gauge", ref TweakConfigs.SCHHideFaerie, ref update);
         HideWarning(TweakConfigs.SCHHideFaerie);
-        ToggleControls("Hide Fae Aether value while faerie-less",ref TweakConfigs.SCHDissHideText, ref update);
+        ToggleControls("Hide Fae Aether value while faerie-less", ref TweakConfigs.SCHDissHideText, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }

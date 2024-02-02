@@ -55,7 +55,7 @@ public sealed class SimpleTimer : GaugeBarWidget
 
         if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
 
-        NumTextNode.UpdateValue(current,max);
+        NumTextNode.UpdateValue(current, max);
         Animator.RunTweens();
     }
 
@@ -93,7 +93,7 @@ public sealed class SimpleTimer : GaugeBarWidget
         var label = $"{Tracker.TermGauge} Text";
         ImGuiHelpy.TableSeparator(2);
 
-        PositionControls($"Position##{label}Pos",ref numTextProps.Position, ref update);
+        PositionControls($"Position##{label}Pos", ref numTextProps.Position, ref update);
         ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
         ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
         ToggleControls("Backdrop", ref numTextProps.ShowBg, ref update);
@@ -104,7 +104,7 @@ public sealed class SimpleTimer : GaugeBarWidget
         RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons, ref update);
         IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1, ref update);
 
-        RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update,true);
+        RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update, true);
         ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
         ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
 
