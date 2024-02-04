@@ -94,19 +94,19 @@ public sealed unsafe class FinishIcon : StateWidget
         var color = Config.Colors.ElementAtOrDefault(current);
 
         Symbol.Show();
-        Animator -= "ShimmerAlpha";
+        Animator -= "SymbolAlpha";
         Animator += new Tween(Symbol,
                               new(0) { Alpha = 0, AddRGB = color },
                               new(200) { Alpha = 255, AddRGB = color })
-                              { Label = "ShimmerAlpha" };
+                              { Label = "SymbolAlpha" };
 
         BeginRotation();
     }
 
     public override void Deactivate(int previous)
     {
-        Animator -= "ShimmerAlpha";
-        Animator += new Tween(Symbol, Visible[0], Hidden[200]) { Complete = () => Symbol.Hide(), Label = "ShimmerAlpha" };
+        Animator -= "SymbolAlpha";
+        Animator += new Tween(Symbol, Visible[0], Hidden[200]) { Complete = () => Symbol.Hide(), Label = "SymbolAlpha" };
     }
 
     public override void StateChange(int current, int previous)

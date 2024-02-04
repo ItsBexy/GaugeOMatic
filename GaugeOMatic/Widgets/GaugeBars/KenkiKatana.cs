@@ -77,7 +77,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
 
         Tassel = ImageNodeFromPart(0, 6).SetPos(-7, 28).SetOrigin(15,7);
 
-        Effects = new CustomNode(
+        Effects = new(
             CreateResNode(),
             NineGridFromPart(0,4,0,50,0,50).SetPos(106,40).SetSize(190,26).SetOrigin(95,13).SetScale(2,0).SetAlpha(0),
             ImageNodeFromPart(0,8).SetPos(172,22).SetScale(3).SetSize(60,60).SetOrigin(30,30).SetAlpha(0).SetImageWrap(1),
@@ -278,6 +278,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     public override void ApplyConfigs()
     {
         var flipFactor = Config.Mirror ? -1 : 1;
+
         WidgetRoot.SetPos(Config.Position + new Vector2(-15.5F, -6))
                   .SetScale(Config.Scale);
 

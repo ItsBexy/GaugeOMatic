@@ -151,4 +151,48 @@ internal static class CommonParts
             new(66, 78, 24, 20),    // 11 gem
             new(66, 98, 46, 46)     // 12 gem glow
         );
+
+    public static CustomPartsList SAM1Parts =>
+        new("ui/uld/JobHudSAM1.tex",
+            new(0, 0, 80, 80),     // 0 Setsu
+            new(80, 0, 80, 80),    // 1 Getsu
+            new(160, 0, 80, 80),   // 2 Ka
+            new(0, 80, 80, 80),    // 3 Setsu Inactive
+            new(80, 80, 80, 80),   // 4 Getsu Inactive
+            new(160, 80, 80, 80),  // 5 Ka Inactive
+            new(0, 160, 80, 80),   // 6 Setsu Kanji
+            new(80, 160, 80, 80),  // 7 Getsu Kanji
+            new(160, 160, 80, 80), // 8 Ka Kanji
+            new(240, 0, 58, 80),   // 9 Sparkle1
+            new(298, 0, 58, 80),   // 10 Sparkle1 Glow Teal
+            new(240, 80, 58, 80),  // 11 Sparkle2
+            new(298, 80, 58, 80),  // 12 Sparkle2 Glow Red
+            new(240, 160, 58, 80), // 13 White Eclipse
+            new(298, 160, 58, 80), // 14 Blue Halo
+            new(0, 240, 80, 80),   // 15 Setsu Glow
+            new(80, 240, 80, 80),  // 16 Getsu Glow
+            new(160, 240, 80, 80), // 17 Ka Glow
+            new(240, 240, 78, 78), // 18 Twinkle
+            new(318, 240, 54, 54), // 19 White Halo
+            new(0, 320, 80, 80),   // 20 Setsu Kanji Glow
+            new(80, 320, 80, 80),  // 21 Getsu Kanji Glow
+            new(160, 320, 80, 80)  // 22 Ka Kanji Glow
+            );
+
+    public static CustomPartsList DRK0Parts =>
+        new("ui/uld/JobHudDRK0.tex",
+            new(0, 0, 96, 88),       // 0 Ring
+            new(96, 0, 228, 88),     // 1 Blade
+            new(57, 92, 173, 16),    // 2 Red Bar
+            new(57, 116, 173, 16),   // 3 Grey Bar
+            new(280, 92, 96, 16),    // 4 Gritty Backdrop
+            new(0, 88, 56, 56),      // 5 Active Gem
+            new(0, 144, 276, 68),    // 6 Blade Glow
+            new(0, 212, 240, 60),    // 7 Sigil Overlay
+            new(274, 114, 100, 100), // 8 Arrow Ring
+            new(272, 216, 80, 80),   // 9 Pink Halo
+            new(324, 0, 28, 28),     // 10 Simple Star
+            new(324, 28, 56, 56)     // 11 Inactive Gem
+        );
 }
+

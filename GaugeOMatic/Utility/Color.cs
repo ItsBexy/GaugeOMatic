@@ -112,6 +112,20 @@ public static class Color
         public readonly Vector3 AsVec3() => this;
         public readonly IColor FromVec4(Vector4 v) => (AddRGB)v;
         public readonly IColor FromVec3(Vector3 v) => (AddRGB)v;
+
+        public readonly AddRGB Transform(int min, int max)
+        {
+            var oldMax = Math.Max(Math.Max(R, G), B);
+            var oldMin = Math.Min(Math.Min(R, G), B);
+
+            if (oldMax == oldMin) return new((short)((min+max)/2));
+
+            var r = (short)(((R - oldMin) / (oldMax - oldMin) * (max - min)) + min);
+            var g = (short)(((G - oldMin) / (oldMax - oldMin) * (max - min)) + min);
+            var b = (short)(((B - oldMin) / (oldMax - oldMin) * (max - min)) + min);
+
+            return new AddRGB(r,g,b);
+        }
     }
 
     public struct ColorSet
@@ -120,7 +134,7 @@ public static class Color
         public AddRGB Add = new(0, 0, 0);
         public ColorRGB Multiply = new(100, 100, 100);
 
-        public ColorSet() {        
+        public ColorSet() {
         Base = new(255, 255, 255);
         Add = new(0, 0, 0);
         Multiply = new(100, 100, 100);

@@ -64,7 +64,7 @@ public sealed unsafe class AddersCounter : CounterWidget
         Max = GetMax();
         BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), Stacks.ToArray());
+        return new(CreateResNode(), Stacks.ToArray());
     }
 
     private void BuildStacks(int count)

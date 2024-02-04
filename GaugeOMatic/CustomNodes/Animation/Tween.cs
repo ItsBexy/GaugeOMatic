@@ -76,7 +76,6 @@ public unsafe class Tween
                 PerCycle?.Invoke();
                 StartTime = StartTime.AddMilliseconds(Length);
                 timePassed %= Length;
-
             }
             else
             {

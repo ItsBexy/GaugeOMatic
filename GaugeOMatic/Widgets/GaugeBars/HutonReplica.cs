@@ -59,7 +59,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     {
         EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2).SetScale(0.9f).SetOrigin(71, 74).SetAlpha(255);
         ActiveClock = BuildClock();
-        NumTextNode = new NumTextNode();
+        NumTextNode = new();
         NumTextNode.Hide();
         Puff = ImageNodeFromPart(0, 4).SetPos(-2, -2).SetScale(0.6666667f).SetSize(144, 144).SetOrigin(72, 72).SetAlpha(0);
 

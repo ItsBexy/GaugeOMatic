@@ -116,7 +116,6 @@ public sealed unsafe class BeastGem : StateWidget
 
     public class BeastGemConfig
     {
-
         public Vector2 Position;
         public float Scale = 1;
         public List<AddRGB> Colors = new();
@@ -179,18 +178,17 @@ public sealed unsafe class BeastGem : StateWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
 
         Config.FillColorLists(Tracker.CurrentData.MaxState);
+
+        Heading("Colors");
         ColorPickerRGB("Base Tint", ref Config.BaseColor, ref update);
 
         for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
         {
-            Heading(Tracker.StateNames[i]);
-
             var color = Config.Colors[i];
-            if (ColorPickerRGB($"Gem Color##gemColor{i}", ref color, ref update)) Config.Colors[i] = color;
+            if (ColorPickerRGB($"{Tracker.StateNames[i]}", ref color, ref update)) Config.Colors[i] = color;
         }
 
-        if (update.HasFlag(Save))
-            ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BeastGemCfg = Config;
     }
 
