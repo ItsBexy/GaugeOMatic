@@ -47,7 +47,8 @@ internal static class CommonParts
              new(86, 324, 86, 40),   // 27 active paradox gem
              new(172, 324, 86, 40),  // 28 paradox glow
              new(90, 306, 29, 18),   // 29 blue sparkles
-             new(119, 306, 29, 36)); // 30 red sparkles
+             new(119, 306, 29, 36)   // 30 red sparkles
+             );
 
     public static CustomPartsList RPR0Parts =>
         new("ui/uld/JobHudRRP0.tex",
@@ -67,7 +68,8 @@ internal static class CommonParts
              new(234, 38, 10, 12),  // 13 tickmark
              new(0, 215, 184, 20),  // 14 glow frame
              new(0, 240, 162, 56),  // 15 glow scythe
-             new(206, 82, 58, 14)); // 16 streaks
+             new(206, 82, 58, 14)   // 16 streaks
+             );
 
     public static CustomPartsList MCH0Parts =>
         new("ui/uld/jobhudmch0.tex",
@@ -92,7 +94,8 @@ internal static class CommonParts
              new(160, 0, 32, 32),    // 18 simple heat icon
              new(276, 0, 62, 124),   // 19 lightning1
              new(276, 124, 62, 124), // 20 lightning2
-             new(128, 0, 32, 32));   // 21 simple battery icon
+             new(128, 0, 32, 32)     // 21 simple battery icon
+             );
 
     public static CustomPartsList WAR0Parts =>
         new("ui/uld/JobHudWAR.tex",
@@ -106,7 +109,8 @@ internal static class CommonParts
             new(242, 172, 32, 32),  // 7
             new(242, 0, 108, 108),  // 8 Gem Base
             new(242, 108, 64, 64),  // 9 Gem
-            new(306, 108, 54, 54)); // 10 Gem Glow
+            new(306, 108, 54, 54)   // 10 Gem Glow
+            );
 
 
     public static CustomPartsList PLD0Parts =>
@@ -133,7 +137,7 @@ internal static class CommonParts
             new(384, 138, 68, 68),   // 19 Gem
             new(316, 138, 68, 68),   // 20 Gem Inactive
             new(348, 70, 68, 68)     // 21 Gem Glow
-        );
+            );
 
     public static CustomPartsList SAM0Parts =>
         new("ui/uld/JobHudSAM0.tex",
@@ -150,7 +154,7 @@ internal static class CommonParts
             new(0, 176, 102, 62),   // 10 gem plate
             new(66, 78, 24, 20),    // 11 gem
             new(66, 98, 46, 46)     // 12 gem glow
-        );
+            );
 
     public static CustomPartsList SAM1Parts =>
         new("ui/uld/JobHudSAM1.tex",
@@ -193,6 +197,56 @@ internal static class CommonParts
             new(272, 216, 80, 80),   // 9 Pink Halo
             new(324, 0, 28, 28),     // 10 Simple Star
             new(324, 28, 56, 56)     // 11 Inactive Gem
+            );
+
+    public static CustomPartsList DRG0Parts =>
+        new("ui/uld/JobHudDRG0.tex",
+            new(0, 0, 320, 108),    // 0 teal dragon bg
+            new(0, 108, 320, 100),  // 1 grey dragon
+            new(0, 208, 244, 40),   // 2 bar top
+            new(356, 208, 36, 36),  // 3 open eyeball
+            new(320, 0, 100, 84),   // 4 scales1
+            new(320, 80, 100, 48),  // 5 scales2
+            new(380, 124, 40, 84),  // 6 smear
+            new(328, 124, 44, 84),  // 7 two smears
+            new(392, 208, 36, 36),  // 8 black spot
+            new(244, 296, 40, 28),  // 9 white eye glow
+            new(244, 248, 96, 48),  // 10 eye frame
+            new(0, 248, 244, 40),   // 11 bar bottom
+            new(0, 288, 245, 40),   // 12 spear
+            new(0, 328, 245, 40),   // 13 chevron scales
+            new(308, 384, 56, 68),  // 14 pointy thrust effect
+            new(340, 248, 68, 32),  // 15 eye closed
+            new(340, 280, 68, 32),  // 16 eye semi open with pupil
+            new(340, 312, 68, 32),  // 17 eye semi open no pupil
+            new(340, 344, 68, 32),  // 18 eyeopen
+            new(1, 369, 152, 18),   // 19 white bar glossy
+            new(1, 389, 152, 18),   // 20 black bar
+            new(155, 389, 152, 18), // 21 white bar flat
+            new(1, 409, 70, 42),    // 22 2 frames
+            new(1, 409, 21, 42),    // 23 left frame endcap
+            new(22, 409, 24, 42),   // 24 frame connector
+            new(46, 409, 25, 42),   // 25 right frame endcap
+            new(73, 409, 30, 30),   // 26 scale1
+            new(104, 409, 26, 30),  // 27 scale2
+            new(131, 409, 42, 42),  // 28 glow1
+            new(174, 409, 38, 42)   // 29 glow2
+        );
+
+    public static CustomPartsList SCH1Parts =>
+        new("ui/uld/JobHudSCH1.tex",
+            new Vector4(0, 0, 496, 160) / 2,     // 0 frame
+            new Vector4(6, 160, 348, 88) / 2,    // 1 bar
+            new Vector4(6, 248, 348, 88) / 2,    // 2 empty bar
+            new Vector4(0, 336, 392, 136) / 2,   // 3 butterfly wing glow
+            new Vector4(0, 608, 136, 152) / 2,   // 4 simple wings
+            new Vector4(384, 160, 88, 160) / 2,  // 5 faerie
+            new Vector4(392, 336, 104, 104) / 2, // 6 darts
+            new Vector4(392, 440, 56, 88) / 2,   // 7 sparkles
+            new Vector4(0, 472, 392, 136) / 2,   // 8 butterfly wing monotone
+            new Vector4(496, 0, 136, 392) / 2,   // 9 butterfly wing bg (rotated)
+            new Vector4(488, 384, 144, 376) / 2, // 10 feathery wing
+            new Vector4(396, 528, 88, 160) / 2   // 11 Seraph
         );
 }
 

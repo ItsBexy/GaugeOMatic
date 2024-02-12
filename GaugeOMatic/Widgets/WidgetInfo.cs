@@ -70,5 +70,8 @@ public enum WidgetTags
     Replica              = 0x40,  // Designed to recreate (in full or in part) the appearance of an existing job gauge
     MultiComponent       = 0x80,
 
+    // ReSharper disable once UnusedMember.Global
+    Special              = 0x100,
+
     Exclude              = 0x1000 // never show this Widget as an option. for WIP widgets
 }

@@ -5,3 +5,7 @@ bin/
 /GaugeOMatic/ideas.txt
 /GaugeOMatic/Widgets/GaugeBars/CrystalConfBar.cs
 /GaugeOMatic/Trackers/TrackerTypes.Mit.cs
+/GaugeOMatic/Widgets/State/DR.DragonEye.cs
+/GaugeOMatic/Widgets/State/FA.FaerieFrame.cs
+/GaugeOMatic/Widgets/Counters/PartyDash.cs
+/GaugeOMatic/Widgets/Special/PartyDash.cs

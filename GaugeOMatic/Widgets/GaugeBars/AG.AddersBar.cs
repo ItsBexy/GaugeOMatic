@@ -259,6 +259,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             prog %= 0.5f;
             Main.SetAddRGB((prog < 0.25f ? new(0, (short)(120f * prog), (short)(160f * prog)) : new AddRGB(0, (short)(60 - (120f * prog)), (short)(80 - (160f * prog)))) + Config.MainColor + (AddRGB)new(116, -3, -30));
         }
+
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
 
     protected override void StartMilestoneAnim()
@@ -443,7 +445,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck(Config.HideEmpty);
-
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 

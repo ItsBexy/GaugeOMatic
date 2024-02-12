@@ -124,7 +124,7 @@ public static class Color
             var g = (short)(((G - oldMin) / (oldMax - oldMin) * (max - min)) + min);
             var b = (short)(((B - oldMin) / (oldMax - oldMin) * (max - min)) + min);
 
-            return new AddRGB(r,g,b);
+            return new(r,g,b);
         }
     }
 

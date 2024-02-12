@@ -268,6 +268,11 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public override void PlaceTickMark(float prog) => TickMark.SetX(Main.Width + prog + 1);
 
+    public override void PostUpdate(float prog, float prevProg)
+    {
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
+    }
+
     #endregion
 
     #region Configs

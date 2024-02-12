@@ -169,6 +169,11 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                               Hidden[325]);
     }
 
+    public override void PostUpdate(float prog, float prevProg)
+    {
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
+    }
+
     #endregion
 
     #region Configs

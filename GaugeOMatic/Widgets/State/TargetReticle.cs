@@ -63,6 +63,10 @@ public sealed unsafe class TargetReticle : StateWidget
         return new(CreateResNode(), Halo, InnerHalo);
     }
 
+    #endregion
+
+    #region Animations
+
     private void BeginRotation()
     {
         StopRotation();
@@ -74,7 +78,6 @@ public sealed unsafe class TargetReticle : StateWidget
 
             var startAngle = (Halo.Node->Rotation + 6.283185f) % 6.283185f;
             var endAngle = startAngle + (Config.Speed >= 0 ? 6.283185f : -6.283185f);
-
 
             var startAngle2 = (InnerHalo.Node->Rotation + 6.283185f) % 6.283185f;
             var endAngle2 = startAngle2 + (Config.Speed >= 0 ? -6.283185f : 6.283185f);
@@ -94,10 +97,6 @@ public sealed unsafe class TargetReticle : StateWidget
     }
 
     private void StopRotation() => Animator -= "RotationTween";
-
-    #endregion
-
-    #region Animations
 
     #endregion
 

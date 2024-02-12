@@ -56,6 +56,10 @@ public sealed unsafe class ShimmerHalo : StateWidget
         return new(CreateResNode(), Halo);
     }
 
+    #endregion
+
+    #region Animations
+
     private void BeginRotation()
     {
         StopRotation();
@@ -67,15 +71,11 @@ public sealed unsafe class ShimmerHalo : StateWidget
             Animator += new Tween(Halo,
                                   new(0) { Rotation = startAngle },
                                   new((int)(60000f / rpm)) { Rotation = endAngle })
-                                  { Repeat = true, Label ="RotationTween" };
+                { Repeat = true, Label = "RotationTween" };
         }
     }
 
     private void StopRotation() => Animator -= "RotationTween";
-
-    #endregion
-
-    #region Animations
 
     #endregion
 

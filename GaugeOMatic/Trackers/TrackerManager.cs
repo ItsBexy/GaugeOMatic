@@ -28,7 +28,7 @@ public class TrackerManager : IDisposable
             new SCHModule(this, TrackerConfigs.SCH),
             new ASTModule(this, TrackerConfigs.AST),
             new SGEModule(this, TrackerConfigs.SGE),
-            
+
             new MNKModule(this, TrackerConfigs.MNK),
             new DRGModule(this, TrackerConfigs.DRG),
             new NINModule(this, TrackerConfigs.NIN),

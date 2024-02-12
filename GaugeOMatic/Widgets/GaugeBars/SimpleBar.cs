@@ -118,6 +118,11 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         Main.SetAddRGB(Config.MainColor);
     }
 
+    public override void PostUpdate(float prog, float prevProg)
+    {
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
+    }
+
     #endregion
 
     #region Configs

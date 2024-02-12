@@ -166,8 +166,7 @@ public class ItemRefMenu : BranchingDropdown
         {
             new("HP", nameof(ParameterTracker), (uint)HP),
             new("MP", nameof(ParameterTracker), (uint)MP),
-            new("Castbar", nameof(ParameterTracker), (uint)Castbar),
-            new("Target Castbar", nameof(ParameterTracker), (uint)Castbar)
+            new("Castbar", nameof(ParameterTracker), (uint)Castbar)
         };
 
         SubMenus = new()

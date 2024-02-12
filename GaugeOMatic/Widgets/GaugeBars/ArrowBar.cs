@@ -181,6 +181,11 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
             .SetVis(prog > 0);
     }
 
+    public override void PostUpdate(float prog, float prevProg)
+    {
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
+    }
+
     #endregion
 
     #region Configs

@@ -370,7 +370,7 @@ public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
                 1,
                 GaugeData->SummonTimeLeft/1000f,
                 12,
-                GaugeData->SummonActive ? 1 : 0, 
+                GaugeData->SummonActive ? 1 : 0,
                 1,
                 preview);
 }
