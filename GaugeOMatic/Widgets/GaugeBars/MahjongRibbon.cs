@@ -43,6 +43,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         new ("ui/uld/emjintroparts03.tex", new Vector4(0, 0, 64, 64)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4(256, 152, 20, 88))
     };
+
     #region Nodes
 
     public CustomNode Bar;
@@ -220,6 +221,11 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                 new(10000) { PartCoords = new(0, 17, 720, 32) })
                 { Repeat = true, Label = "ScrollAni" }
         };
+    }
+
+    public override void PostUpdate(float prog, float prevProg)
+    {
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
 
     #endregion

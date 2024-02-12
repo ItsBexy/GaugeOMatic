@@ -304,16 +304,15 @@ public sealed unsafe class ChakraBar : CounterWidget
     public AddRGB ColorOffset = new(-66, -1, 85);
     public override void ApplyConfigs()
     {
-        var angle = Config.Angle * 0.0174532925199433f;
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
 
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale)
-                  .SetRotation(angle);
+                  .SetRotation(Config.Angle,true);
         SocketPlate.SetMultiply(Config.FrameColor).SetScale(flipFactor);
         StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
 
-        for (var i = 0; i < Tracker.CurrentData.MaxCount; i++) Pearls[i].SetRotation(-angle);
+        for (var i = 0; i < Tracker.CurrentData.MaxCount; i++) Pearls[i].SetRotation(-Config.Angle, true);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

@@ -20,11 +20,14 @@ public abstract partial class Tracker
         public int State = 0;        // Status Active / Action Ready / etc
         public int MaxState;
 
+        public bool HasLabelOverride = false;
+        public string? LabelOverride = null;
+
         public TrackerData(ActionRef a, float? preview = null)
         {
             MaxCount = a.GetMaxCharges();
-            Count = preview != null ? (int)(preview * MaxCount) : 
-                        MaxCount > 1? a.GetCurrentCharges() : 
+            Count = preview != null ? (int)(preview * MaxCount) :
+                        MaxCount > 1? a.GetCurrentCharges() :
                                       a.IsReady()?1:0;
 
             MaxGauge = a.GetCooldownTotal();
@@ -77,10 +80,14 @@ public abstract partial class Tracker
                 }
                 else if (p.ParamType == Castbar)
                 {
+                    HasLabelOverride = true;
                     if (ClientState.LocalPlayer.IsCasting)
                     {
                         MaxGauge = ClientState.LocalPlayer.TotalCastTime;
                         GaugeValue = ClientState.LocalPlayer.CurrentCastTime;
+
+                        LabelOverride = GetActionSheet()?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
+
                     } else if (preview != null)
                     {
                         MaxGauge = 1;

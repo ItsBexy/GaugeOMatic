@@ -36,7 +36,7 @@ public partial class ActionData
         #endregion
 
         #region Melee
-        
+
         { 65,    new(65,    PGL,  "Mantra",                 90     ) },
         { 69,    new(69,    MNK,  "Perfect Balance",        40,  2 ) },
         { 7394,  new(4739,  MNK,  "Riddle of Earth",        120    ) },
@@ -96,7 +96,7 @@ public partial class ActionData
 
         #endregion
 
-        #region Ranged                 
+        #region Ranged
 
         { 101,   new(101,   ARC,  "Raging Strikes",         120    ) },
         { 107,   new(107,   ARC,  "Barrage",                120    ) },
@@ -113,7 +113,7 @@ public partial class ActionData
         { 7405,  new(7405,  BRD,  "Troubadour",             120    ) },
         { 7408,  new(7408,  BRD,  "Nature's Minne",         120    ) },
         { 25785, new(25785, BRD,  "Radiant Finale",         110    ) { ReadyType = Ants }},
-        
+
         { 2874,  new(2874,  MCH,  "Gauss Round",            30,  3 ) },
         { 2876,  new(2876,  MCH,  "Reassemble",             55,  2 ) },
         { 2878,  new(2878,  MCH,  "Wildfire",               120    ) },
@@ -150,7 +150,7 @@ public partial class ActionData
         { 3574,  new(3574,  BLM,  "Sharpcast",              60,  2 ) },
         { 7421,  new(7421,  BLM,  "Triplecast",             60,  2 ) },
         { 25796, new(25796, BLM,  "Amplifier",              120    ) { ReadyType = Ants }},
-        
+
         { 7427,  new(7427,  SMN,  "Summon Bahamut",         60     ) { HasUpgrades = true }},
         { 7429,  new(7429,  SMN,  "Enkindle Bahamut",       20     ) },
         { 16508, new(16508, ACN,  "Energy Drain",           60     ) },
@@ -184,7 +184,7 @@ public partial class ActionData
         { 7385,  new(7385,  PLD,  "Passage of Arms",        120    ) },
         { 25747, new(25747, PLD,  "Expiacion",              30     ) { HasUpgrades = true }},
         { 16461, new(16461, PLD,  "Intervene",              30,  2 ) },
-        
+
         { 40,    new(40,    MRD,  "Thrill of Battle",       90     ) },
         { 43,    new(43,    MRD,  "Holmgang",               240    ) },
         { 44,    new(44,    MRD,  "Vengeance",              120    ) },

@@ -28,10 +28,11 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public static WidgetInfo GetWidgetInfo => new()
     {
-        DisplayName = "Faerie-Less Gauge",
+        DisplayName = "Faerie Bar",
         Author = "ItsBexy",
         Description = "A slightly curved gauge bar shaped like the Faerie Gauge, but without the decorations.",
-        WidgetTags = GaugeBar | Replica
+        WidgetTags = GaugeBar | Replica | MultiComponent,
+        MultiCompData = new("FA", "Faerie Gauge Replica", 2)
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -117,7 +118,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.FaerieLessCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.FaerieLessCfg == null && Tracker.RefType == RefType.Action) Config.Invert = true;
     }
 
     public override void ResetConfigs() => Config = new();

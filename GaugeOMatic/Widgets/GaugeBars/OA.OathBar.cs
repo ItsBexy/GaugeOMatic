@@ -297,6 +297,11 @@ public sealed unsafe class OathBar : GaugeBarWidget
         TickMark.SetX(Main.Width - 19);
     }
 
+    public override void PostUpdate(float prog, float prevProg)
+    {
+        if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
+    }
+
     #endregion
 
     #region Configs

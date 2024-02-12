@@ -6,9 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static System.DateTime;
+using static System.TimeSpan;
 
 namespace GaugeOMatic.CustomNodes.Animation;
 
+[SuppressMessage("ReSharper", "UnassignedField.Global")]
 public unsafe class Tween
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
@@ -25,6 +27,7 @@ public unsafe class Tween
     public List<KeyFrame> KeyFrames { get; set; }
     public float Length;
     public bool IsStale;
+    public int Delay;
 
     public bool Repeat { get; set; }
     public string Label { get; set; } = string.Empty;
@@ -67,7 +70,9 @@ public unsafe class Tween
             return this;
         }
 
-        var timePassed = progOverride == null ? (Now - StartTime).TotalMilliseconds : progOverride.Value * Length;
+        var timePassed = progOverride == null ? (Now - (StartTime + FromMilliseconds(Delay))).TotalMilliseconds : progOverride.Value * Length;
+
+        if (timePassed < 0) return this;
 
         if (timePassed > Length)
         {

@@ -34,11 +34,11 @@ public static class ImGuiHelpy
     public static void IconButtonDisabled(string label, FontAwesomeIcon icon)
     {
         var grey15 = new Vector4(1, 1, 1, 0.15f);
-        PushStyleColorMulti(new(Button, grey15), 
-                            new(ButtonActive, grey15), 
-                            new(ButtonHovered, grey15), 
+        PushStyleColorMulti(new(Button, grey15),
+                            new(ButtonActive, grey15),
+                            new(ButtonHovered, grey15),
                             new(Text, new(1, 1, 1, 0.35f)));
-        
+
         ImGuiComponents.IconButton(label, icon);
         ImGui.PopStyleColor(4);
     }
@@ -235,7 +235,7 @@ public static class ImGuiHelpy
 
         var x = Math.Max(width ?? 0, (float)(iconStrSize.X + (double)textSize.X + (ImGui.GetStyle().FramePadding.X * 2.0)) + num);
         var textAdjust = (x - textSize.X - iconStrSize.X) / 2;
-        
+
         var frameHeight = ImGui.GetFrameHeight();
         var button = ImGui.Button(string.Empty, new(x, frameHeight));
         var pos1 = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X + adjust, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
