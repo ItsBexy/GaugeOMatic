@@ -35,7 +35,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
         MultiCompData = new("EL", "Elemental Gauge Replica", 4)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { BLM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
     #region Nodes
 

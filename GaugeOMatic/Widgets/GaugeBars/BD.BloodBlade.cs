@@ -38,7 +38,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         MultiCompData = new("BD", "Blood Gauge Replica", 2)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { DRK0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { DRK0 };
 
     #region Nodes
 

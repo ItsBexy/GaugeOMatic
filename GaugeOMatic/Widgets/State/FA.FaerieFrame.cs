@@ -36,7 +36,7 @@ public sealed unsafe class FaerieFrame : StateWidget
         MultiCompData = new("FA", "Faerie Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { SCH1Parts };
+    public override CustomPartsList[] PartsLists { get; } = { SCH1 };
 
     #region Nodes
 

@@ -38,7 +38,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         MultiCompData = new("DR","Replica Dragon Gauge",1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { DRG0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { DRG0 };
 
     #region Nodes
 

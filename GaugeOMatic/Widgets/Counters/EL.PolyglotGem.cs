@@ -36,7 +36,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
         MultiCompData = new("EL", "Elemental Gauge Replica", 3)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { BLM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
     #region Nodes
 

@@ -1,14 +1,18 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
+using Lumina.Excel;
 using static GaugeOMatic.GameData.ActionData.ActionRef.ReadyTypes;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.StatusData;
+using Action = Lumina.Excel.GeneratedSheets.Action;
 
 namespace GaugeOMatic.GameData;
 
 public unsafe partial class ActionData
 {
     internal static ActionManager* ActionManager => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance();
+
+    public static ExcelSheet<Action>? ActionSheet { get; } = DataManager.Excel.GetSheet<Action>("Action");
 
     public class ActionRef : ItemRef
     {
@@ -35,9 +39,7 @@ public unsafe partial class ActionData
             CooldownLength = cooldownLength;
         }
 
-        private ActionRef()
-        {
-        }
+        private ActionRef() { }
 
         public static implicit operator ActionRef(uint i) => Actions.TryGetValue(i, out var result) ? result : new();
 
@@ -55,10 +57,12 @@ public unsafe partial class ActionData
             return elapsed == 0 ? 0 : (cdOverride ?? CooldownLength) - elapsed;
         }
 
-        public bool IsReady() =>
-            GetCurrentCharges() != 0 &&
-            (!ReadyType.HasFlag(Ants) || ActionManager->IsActionHighlighted(ActionType.Action, GetID)) &&
-            (!ReadyType.HasFlag(StatusEffect) || (ReadyStatus?.TryGetStatus() ?? false));
+        public bool IsReady()
+        {
+            return GetCurrentCharges() != 0 &&
+                   !(ReadyType.HasFlag(Ants) && !ActionManager->IsActionHighlighted(ActionType.Action, GetID)) &&
+                   !(ReadyType.HasFlag(StatusEffect) && !(ReadyStatus?.TryGetStatus() ?? false));
+        }
 
         public int GetMaxCharges()
         {

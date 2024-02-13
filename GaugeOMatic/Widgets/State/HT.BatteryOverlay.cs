@@ -35,7 +35,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
         MultiCompData = new("HT", "Heat Gauge Replica", 4)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { MCH0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
     #region Nodes
 

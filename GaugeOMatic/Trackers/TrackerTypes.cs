@@ -33,6 +33,14 @@ public class TrackerDisplayAttribute : Attribute
         Job = job;
         Role = role;
     }
+
+    public TrackerDisplayAttribute(Job job)
+    {
+        Icon = Gauge;
+        Color = (uint)JobGaugeColor;
+        TypeDesc = "Job Gauge Tracker";
+        Job = job;
+    }
 }
 
 public abstract partial class Tracker

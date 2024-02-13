@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 
@@ -38,21 +39,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         WidgetTags = GaugeBar
     };
 
-    public override CustomPartsList[] PartsLists { get; } = {
-        new ("ui/uld/JobHudDNC1.tex",
-             new(0, 0, 168, 76),    // 0  bar
-             new(1, 77, 166, 74),   // 1  backdrop
-             new(168, 0, 48, 108),  // 2  feather
-             new(216, 0, 84, 100),  // 3  half fan
-             new(216, 100, 84, 80), // 4  half frame
-             new(168, 108, 48, 32), // 5  corner clip thingy
-             new(168, 140, 48, 36), // 6  number bg
-             new(2, 160, 76, 60),   // 7  feather glow
-             new(80, 156, 54, 40),  // 8  spotlights
-             new(79, 198, 54, 40),  // 9  streaks
-             new(132, 153, 20, 20), // 10 star
-             new(216, 180, 84, 80)  // 11 half frame cover
-            ) };
+    public override CustomPartsList[] PartsLists { get; } = { DNC1 };
 
     #region Nodes
 

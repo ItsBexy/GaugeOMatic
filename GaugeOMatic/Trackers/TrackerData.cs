@@ -27,8 +27,8 @@ public abstract partial class Tracker
         {
             MaxCount = a.GetMaxCharges();
             Count = preview != null ? (int)(preview * MaxCount) :
-                        MaxCount > 1? a.GetCurrentCharges() :
-                                      a.IsReady()?1:0;
+                                      MaxCount > 1 ? a.GetCurrentCharges() :
+                                      a.IsReady() ? 1 : 0;
 
             MaxGauge = a.GetCooldownTotal();
             GaugeValue = preview == null ? a.GetCooldownRemaining(MaxGauge) : (float)(preview * MaxGauge);
@@ -86,7 +86,7 @@ public abstract partial class Tracker
                         MaxGauge = ClientState.LocalPlayer.TotalCastTime;
                         GaugeValue = ClientState.LocalPlayer.CurrentCastTime;
 
-                        LabelOverride = GetActionSheet()?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
+                        LabelOverride = ActionSheet?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
 
                     } else if (preview != null)
                     {

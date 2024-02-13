@@ -36,7 +36,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
         WidgetTags = GaugeBar | Replica
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { SAM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { SAM0 };
 
     #region Nodes
 

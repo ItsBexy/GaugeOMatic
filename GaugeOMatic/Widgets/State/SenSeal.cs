@@ -34,7 +34,7 @@ public sealed unsafe class SenSeal : StateWidget
         WidgetTags = State
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { SAM1Parts };
+    public override CustomPartsList[] PartsLists { get; } = { SAM1 };
 
     #region Nodes
 

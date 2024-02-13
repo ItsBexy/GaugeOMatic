@@ -34,7 +34,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         FixedCount = 3
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { SAM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { SAM0 };
 
     #region Nodes
 

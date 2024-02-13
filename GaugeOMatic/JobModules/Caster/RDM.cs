@@ -26,8 +26,7 @@ public class RDMModule : JobModule
         new("Black Mana", nameof(BlackManaTracker)),
         new("White Mana", nameof(WhiteManaTracker)),
         new("Mana Stacks", nameof(ManaStackTracker)),
-        new("Balance Crystal", nameof(BalanceCrystalTracker)),
-        new("Weave Metronome", nameof(WeaveMetronome))
+        new("Balance Crystal", nameof(BalanceCrystalTracker))
     };
 
     public RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }

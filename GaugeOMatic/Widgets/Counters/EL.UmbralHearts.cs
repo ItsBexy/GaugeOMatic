@@ -35,7 +35,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
         MultiCompData = new("EL", "Elemental Gauge Replica", 5)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { BLM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
     #region Nodes
 

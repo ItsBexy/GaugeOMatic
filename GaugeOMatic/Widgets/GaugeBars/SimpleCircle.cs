@@ -21,13 +21,6 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
-// OTHER TEXTURES TO TRY:
-// ui/uld/cursorlocation.tex (0, 0, 128, 128) -- has gradient fill, will give a pie-ish effect
-// ui/uld/deepdungeoninformation.tex (99, 2, 67, 67) -- very glowy, not that big though
-// ui/uld/eurekaelementalhud.tex (0, 181, 75, 75) -- hi-res, glowy, slightly thin but still p good
-// ui/uld/gatheringcollectable.tex Quarter:(0, 212, 81, 81) Half:(99, 10, 81, 160) - jackpot
-// ui/uld/qte_button.tex new(1, 72, 80, 79)
-
 public sealed unsafe class SimpleCircle : GaugeBarWidget
 {
     public SimpleCircle(Tracker tracker) : base(tracker) { }

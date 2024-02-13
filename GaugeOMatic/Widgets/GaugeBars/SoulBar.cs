@@ -41,7 +41,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         WidgetTags = GaugeBar | Replica
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { RPR0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { RPR0 };
 
     #region Nodes
 

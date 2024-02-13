@@ -42,7 +42,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
             WidgetTags = GaugeBar | Replica
         };
 
-    public override CustomPartsList[] PartsLists { get; } = { WAR0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { WAR0 };
 
     #region Nodes
 

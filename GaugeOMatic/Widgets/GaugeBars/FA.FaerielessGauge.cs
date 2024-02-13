@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 
@@ -35,11 +36,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         MultiCompData = new("FA", "Faerie Gauge Replica", 2)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = {
-        new ("ui/uld/JobHudSCH1.tex",
-             new(3, 80, 174, 44),
-             new(3, 124, 174, 44))
-    };
+    public override CustomPartsList[] PartsLists { get; } = { SCH1 };
 
     #region Nodes
 
@@ -47,10 +44,10 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
-        Backdrop = ImageNodeFromPart(0, 1).SetImageWrap(1).SetRGBA(Config.Background);
-        Drain = ImageNodeFromPart(0, 0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.DrainColor);
-        Gain = ImageNodeFromPart(0, 0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.GainColor);
-        Main = ImageNodeFromPart(0, 0).SetWidth(0).SetImageWrap(1).SetRGBA(Config.MainColor);
+        Backdrop = ImageNodeFromPart(0, 2).SetImageWrap(1).SetRGBA(Config.Background);
+        Drain = ImageNodeFromPart(0, 1).SetWidth(0).SetImageWrap(1).SetRGBA(Config.DrainColor);
+        Gain = ImageNodeFromPart(0, 1).SetWidth(0).SetImageWrap(1).SetRGBA(Config.GainColor);
+        Main = ImageNodeFromPart(0, 1).SetWidth(0).SetImageWrap(1).SetRGBA(Config.MainColor);
         NumTextNode = new();
 
         return new(CreateResNode(), Backdrop, Drain, Gain, Main, NumTextNode);

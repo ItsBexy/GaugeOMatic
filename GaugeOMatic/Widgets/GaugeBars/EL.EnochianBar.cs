@@ -38,7 +38,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         MultiCompData = new("EL", "Elemental Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { BLM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
     #region Nodes
 

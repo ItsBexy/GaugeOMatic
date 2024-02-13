@@ -1,7 +1,5 @@
-using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using System;
-using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudACN0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBLM0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBRD0;
@@ -28,13 +26,12 @@ using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSMN0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudWAR0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudWHM0;
 using static GaugeOMatic.GameData.JobData.Job;
-using static GaugeOMatic.Trackers.Tracker.IconColor;
 
 namespace GaugeOMatic.Trackers;
 
 #region Melee
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", MNK)]
+[TrackerDisplay(MNK)]
 public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
 {
     public override string DisplayName => "Chakra Gauge";
@@ -52,7 +49,7 @@ public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DRG)]
+[TrackerDisplay(DRG)]
 public sealed unsafe class LotDTracker : JobGaugeTracker<DragonGaugeData>
 {
     public override string DisplayName => "Life of the Dragon";
@@ -71,7 +68,7 @@ public sealed unsafe class LotDTracker : JobGaugeTracker<DragonGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DRG)]
+[TrackerDisplay(DRG)]
 public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeData>
 {
     public override string DisplayName => "Firstminds' Focus";
@@ -89,7 +86,7 @@ public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeD
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", NIN)]
+[TrackerDisplay(NIN)]
 public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
 {
     public override string DisplayName => "Ninki Gauge";
@@ -107,7 +104,7 @@ public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", NIN)]
+[TrackerDisplay(NIN)]
 public sealed unsafe class HutonGaugeTracker : JobGaugeTracker<HutonGaugeData>
 {
     public override string DisplayName => "Huton Gauge";
@@ -125,7 +122,7 @@ public sealed unsafe class HutonGaugeTracker : JobGaugeTracker<HutonGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SAM)]
+[TrackerDisplay(SAM)]
 public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
     public override string DisplayName => "Kenki Gauge";
@@ -142,7 +139,7 @@ public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Meditation Gauge", SAM)]
+[TrackerDisplay(SAM)]
 public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
     public override string DisplayName => "";
@@ -160,7 +157,7 @@ public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeDa
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SAM)]
+[TrackerDisplay(SAM)]
 public sealed unsafe class SenGaugeSetsuTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Setsu Seal";
@@ -177,7 +174,7 @@ public sealed unsafe class SenGaugeSetsuTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SAM)]
+[TrackerDisplay(SAM)]
 public sealed unsafe class SenGaugeGetsuTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Getsu Seal";
@@ -194,7 +191,7 @@ public sealed unsafe class SenGaugeGetsuTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SAM)]
+[TrackerDisplay(SAM)]
 public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Ka Seal";
@@ -211,7 +208,7 @@ public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SAM)]
+[TrackerDisplay(SAM)]
 public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Seal Count";
@@ -231,7 +228,7 @@ public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
     }
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RPR)]
+[TrackerDisplay(RPR)]
 public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
     public override string DisplayName => "Soul Gauge";
@@ -248,7 +245,7 @@ public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RPR)]
+[TrackerDisplay(RPR)]
 public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
     public override string DisplayName => "Shroud Gauge";
@@ -265,7 +262,7 @@ public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RPR)]
+[TrackerDisplay(RPR)]
 public sealed unsafe class LemureShroudTracker : JobGaugeTracker<DeathGaugeData>
 {
     public override string DisplayName => "Lemure Shroud";
@@ -283,7 +280,7 @@ public sealed unsafe class LemureShroudTracker : JobGaugeTracker<DeathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RPR)]
+[TrackerDisplay(RPR)]
 public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
 {
     public override string DisplayName => "Void Shroud";
@@ -305,7 +302,7 @@ public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
 
 #region Ranged
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BRD)]
+[TrackerDisplay(BRD)]
 public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData>
 {
     public override string DisplayName => "Soul Voice Gauge";
@@ -322,7 +319,7 @@ public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", MCH)]
+[TrackerDisplay(MCH)]
 public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
 {
     public override string DisplayName => "Heat Gauge";
@@ -339,7 +336,7 @@ public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", MCH)]
+[TrackerDisplay(MCH)]
 public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
 {
     public override string DisplayName => "Battery Gauge";
@@ -356,7 +353,7 @@ public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", MCH)]
+[TrackerDisplay(MCH)]
 public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
 {
     public override string DisplayName => "Automaton Timer";
@@ -375,7 +372,7 @@ public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DNC)]
+[TrackerDisplay(DNC)]
 public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
 {
     public override string DisplayName => "Fourfold Feathers";
@@ -393,7 +390,7 @@ public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DNC)]
+[TrackerDisplay(DNC)]
 public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData>
 {
     public override string DisplayName => "Esprit Gauge";
@@ -410,7 +407,7 @@ public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DNC)]
+[TrackerDisplay(DNC)]
 public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 {
     public override string DisplayName => "Dance Steps";
@@ -433,7 +430,7 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 
 #region Caster
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
+[TrackerDisplay(BLM)]
 public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Enochian / Polyglot";
@@ -453,7 +450,7 @@ public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
+[TrackerDisplay(BLM)]
 public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Element Status";
@@ -474,7 +471,7 @@ public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
+[TrackerDisplay(BLM)]
 public sealed unsafe class ParadoxTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Paradox";
@@ -492,7 +489,7 @@ public sealed unsafe class ParadoxTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
+[TrackerDisplay(BLM)]
 public sealed unsafe class UmbralHeartTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Umbral Hearts";
@@ -511,7 +508,7 @@ public sealed unsafe class UmbralHeartTracker : JobGaugeTracker<ElementalGaugeDa
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
+[TrackerDisplay(BLM)]
 public sealed unsafe class AstralFireTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Astral Fire";
@@ -534,7 +531,7 @@ public sealed unsafe class AstralFireTracker : JobGaugeTracker<ElementalGaugeDat
     }
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", BLM)]
+[TrackerDisplay(BLM)]
 public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Umbral Ice";
@@ -558,7 +555,7 @@ public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData
     }
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SMN)]
+[TrackerDisplay(SMN)]
 public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<AetherflowSMNGaugeData>
 {
     public override string DisplayName => "Aetherflow Gauge";
@@ -576,7 +573,7 @@ public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RDM)]
+[TrackerDisplay(RDM)]
 public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "Mana Stacks";
@@ -592,7 +589,7 @@ public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
     }
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RDM)]
+[TrackerDisplay(RDM)]
 public sealed unsafe class BlackManaTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "Black Mana";
@@ -604,7 +601,7 @@ public sealed unsafe class BlackManaTracker : JobGaugeTracker<BalanceGaugeData>
             : new((int)Math.Floor((double)(GaugeData->BlackMana / 50)), 2, GaugeData->BlackMana, 100, GaugeData->BlackMana >= 50 ? 1 : 0, 1, preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RDM)]
+[TrackerDisplay(RDM)]
 public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "White Mana";
@@ -616,7 +613,7 @@ public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
             : new((int)Math.Floor((double)(GaugeData->WhiteMana / 50)), 2, GaugeData->WhiteMana, 100, GaugeData->WhiteMana >= 50 ? 1 : 0, 1, preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", RDM)]
+[TrackerDisplay(RDM)]
 public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "Balance Crystal";
@@ -633,37 +630,11 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
     }
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Special Tracker", RDM)]
-public sealed unsafe class WeaveMetronome : Tracker
-{
-    public override string DisplayName => "Weave Metronome";
-    public override RefType RefType => RefType.Action;
-    public override TrackerData GetCurrentData(float? preview = null)
-    {
-        var actionManager = ActionManager.Instance();
-        var adjustedId = actionManager->GetAdjustedActionId(7524);
-        var timeElapsed = actionManager->GetRecastTimeElapsed(ActionType.Action, adjustedId);
-        var timeTotal = actionManager->GetRecastTime(ActionType.Action, adjustedId);
-
-        var gcd = timeElapsed;
-        if (timeTotal == 0)
-        {
-            gcd = 0;
-            timeTotal = 1;
-        }
-
-        var casting = ClientState.LocalPlayer?.IsCasting ?? false;
-
-        return new(0, 1, gcd, timeTotal, casting ? 1 : 0, 1, preview);
-    }
-}
-
-
 #endregion
 
 #region Tank
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", PLD)]
+[TrackerDisplay(PLD)]
 public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
 {
     public override string DisplayName => "Oath Gauge";
@@ -680,7 +651,7 @@ public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", WAR)]
+[TrackerDisplay(WAR)]
 public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
 {
     public override string DisplayName => "Beast Gauge";
@@ -697,7 +668,7 @@ public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DRK)]
+[TrackerDisplay(DRK)]
 public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
 {
     public override string DisplayName => "Blood Gauge";
@@ -714,7 +685,7 @@ public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DRK)]
+[TrackerDisplay(DRK)]
 public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeData>
 {
     public override string DisplayName => "Darkside Gauge";
@@ -732,7 +703,7 @@ public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeD
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", DRK)]
+[TrackerDisplay(DRK)]
 public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeData>
 {
     public override string DisplayName => "Living Shadow";
@@ -750,7 +721,7 @@ public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeDa
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", GNB)]
+[TrackerDisplay(GNB)]
 public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 {
     public override string DisplayName => "Powder Gauge";
@@ -772,7 +743,7 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 
 #region Healer
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", WHM)]
+[TrackerDisplay(WHM)]
 public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
 {
     public override string DisplayName => "Lilies";
@@ -791,7 +762,7 @@ public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", WHM)]
+[TrackerDisplay(WHM)]
 public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
 {
     public override string DisplayName => "Blood Lily";
@@ -810,7 +781,7 @@ public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SCH)]
+[TrackerDisplay(SCH)]
 public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<AetherflowACNGaugeData>
 {
     public override string DisplayName => "Aetherflow Gauge";
@@ -828,7 +799,7 @@ public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SCH)]
+[TrackerDisplay(SCH)]
 public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
 {
     public override string DisplayName => "Fae Aether";
@@ -845,7 +816,7 @@ public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SCH)]
+[TrackerDisplay(SCH)]
 public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
 {
     public override string DisplayName => "Seraph Timer";
@@ -862,7 +833,7 @@ public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SGE)]
+[TrackerDisplay(SGE)]
 public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
 {
     public override string DisplayName => "Eukrasia";
@@ -879,7 +850,7 @@ public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SGE)]
+[TrackerDisplay(SGE)]
 public sealed unsafe class AddersgallTracker : JobGaugeTracker<AddersgallGaugeData>
 {
     public override string DisplayName => "Addersgall Gauge";
@@ -898,7 +869,7 @@ public sealed unsafe class AddersgallTracker : JobGaugeTracker<AddersgallGaugeDa
                 preview);
 }
 
-[TrackerDisplay(Gauge, JobGaugeColor, "Job Gauge Tracker", SGE)]
+[TrackerDisplay(SGE)]
 public sealed unsafe class AdderstingTracker : JobGaugeTracker<AddersgallGaugeData>
 {
     public override string DisplayName => "Addersting Counter";

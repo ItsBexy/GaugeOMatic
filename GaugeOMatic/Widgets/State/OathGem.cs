@@ -29,7 +29,7 @@ public sealed unsafe class OathGem : StateWidget
         WidgetTags = State | Replica
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { PLD0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { PLD0 };
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
     public OathGem(Tracker tracker) : base(tracker) { }

@@ -107,9 +107,7 @@ public abstract partial class Tracker : IDisposable
     public static Tracker? Create(JobModule jobModule, TrackerConfig trackerConfig)
     {
         var qualifiedTypeStr = $"{typeof(Tracker).Namespace}.{trackerConfig.TrackerType}";
-        var type = Type.GetType(qualifiedTypeStr);
-
-        var tracker = (Tracker?)CreateInstance(type ?? typeof(EmptyTracker));
+        var tracker = (Tracker?)CreateInstance(Type.GetType(qualifiedTypeStr) ?? typeof(EmptyTracker));
 
         if (tracker == null) return null;
 

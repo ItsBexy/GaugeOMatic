@@ -37,7 +37,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         MultiCompData = new("HT", "Heat Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { MCH0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
     #region Nodes
 

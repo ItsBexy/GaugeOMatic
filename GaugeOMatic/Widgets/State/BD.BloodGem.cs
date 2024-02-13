@@ -30,7 +30,7 @@ public sealed unsafe class BloodGem : StateWidget
         MultiCompData = new("BD", "Blood Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { DRK0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { DRK0 };
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
     public BloodGem(Tracker tracker) : base(tracker) { }

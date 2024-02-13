@@ -31,7 +31,7 @@ public sealed unsafe class ElementOrb : StateWidget
         MultiCompData = new("EL", "Elemental Gauge Replica", 2)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { BLM0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
     public ElementOrb(Tracker tracker) : base(tracker) { }

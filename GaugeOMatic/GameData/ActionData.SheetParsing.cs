@@ -1,4 +1,3 @@
-using Lumina.Excel;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -38,14 +37,11 @@ public partial class ActionData
             _ => None
         };
 
-    public static ExcelSheet<Action>? GetActionSheet() => DataManager.Excel.GetSheet<Action>("Action");
-
     public static void PopulateActions()
     {
-        var actionSheet = GetActionSheet();
-        if (actionSheet == null) return;
+        if (ActionSheet == null) return;
 
-        foreach (var a in actionSheet.Where(Filter()))
+        foreach (var a in ActionSheet.Where(Filter()))
         {
             var role = ParseRole(a);
             var job = role == None ? ParseJob(a) : Job.None;

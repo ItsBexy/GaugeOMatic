@@ -29,7 +29,7 @@ public sealed unsafe class BeastGem : StateWidget
         WidgetTags = State | Replica
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { WAR0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { WAR0 };
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
     public BeastGem(Tracker tracker) : base(tracker) { }

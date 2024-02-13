@@ -52,7 +52,6 @@ public class TrackerConfig
 
     public TrackerConfig? Clone() => DeserializeObject<TrackerConfig>(SerializeObject(this));
 
-
     public TrackerDisplayAttribute DisplayAttributes()
     {
         var displayAttr = (TrackerDisplayAttribute?)Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?.GetCustomAttributes(typeof(TrackerDisplayAttribute), true).First() ?? new TrackerDisplayAttribute();

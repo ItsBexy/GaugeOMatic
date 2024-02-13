@@ -33,7 +33,7 @@ public sealed unsafe class HeatOverlay : StateWidget
         MultiCompData = new("HT", "Heat Gauge Replica", 2)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { MCH0Parts };
+    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
     #region Nodes
 
