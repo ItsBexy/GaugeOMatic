@@ -76,7 +76,7 @@ public class TrackerWindow : Window, IDisposable
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiHelpy.TextRightAligned("Preview");
+        ImGuiHelpy.TextRightAligned("Test");
         var preview = Tracker.TrackerConfig.Preview;
         var previewValue = Tracker.TrackerConfig.PreviewValue;
         ImGui.TableNextColumn();

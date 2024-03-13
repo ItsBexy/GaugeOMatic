@@ -91,7 +91,7 @@ public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
 {
     public override string DisplayName => "Ninki Gauge";
     public override string GaugeAddonName => "JobHudNIN0";
-    public override string TermGauge => "Ninki";
+    public override string TermGauge => "Gauge";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?

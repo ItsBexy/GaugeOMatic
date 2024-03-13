@@ -11,7 +11,7 @@ using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
-using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
@@ -190,7 +190,6 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 new(0) { AddRGB = 0, Alpha = 255, ScaleX = 1 },
                 new(kf1) { AddRGB = 120, Alpha = 255, ScaleX = 1 },
                 new(kf2) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f })
-                { Ease = Linear }
         };
 
         if (kf2 > 0) Twinkle();

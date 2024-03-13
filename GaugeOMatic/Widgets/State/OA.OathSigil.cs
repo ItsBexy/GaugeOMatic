@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.OathSigil;
 using static GaugeOMatic.Widgets.WidgetTags;

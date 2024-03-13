@@ -8,7 +8,7 @@ using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
-using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
@@ -94,6 +94,12 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
     #endregion
 
     #region UpdateFuncs
+
+    public override void OnFirstRun(float prog)
+    {
+        base.OnFirstRun(prog);
+        if (prog <= 0 && Config.HideEmpty) HideBar(0);
+    }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(250); }
 

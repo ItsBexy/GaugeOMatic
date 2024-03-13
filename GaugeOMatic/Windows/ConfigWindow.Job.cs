@@ -58,7 +58,7 @@ public partial class ConfigWindow
             ImGui.TableSetupColumn("Widget");
             ImGui.TableSetupColumn("");
             ImGui.TableSetupColumn("Pinned to");
-            ImGui.TableSetupColumn("Preview");
+            ImGui.TableSetupColumn("Test");
 
             TableHeadersRowNoHover(new(1));
 

@@ -191,6 +191,7 @@ public abstract partial class StatusData
         { 76,   new(76,   PLD, "Fight or Flight",          Self,   1, 20 ) },
         { 77,   new(77,   PLD, "Bulwark",                  Self,   1, 10 ) },
         { 79,   new(79,   PLD, "Iron Will",                Self,   1, 0  ) },
+        { 82,   new(82,   PLD, "Hallowed Ground",          Self,   1, 10 ) },
         { 248,  new(248,  PLD, "Circle of Scorn",          Target, 1, 15 ) },
         { 1175, new(1175, PLD, "Passage of Arms",          Self,   1, 18 ) },
         { 1362, new(1362, PLD, "Divine Veil",              Self,   1, 30 ) },
@@ -205,6 +206,7 @@ public abstract partial class StatusData
         { 87,   new(87,   WAR, "Thrill of Battle",         Self,   1, 10 ) },
         { 89,   new(89,   WAR, "Vengeance",                Self,   1, 15 ) },
         { 91,   new(91,   WAR, "Defiance",                 Self,   1, 0  ) },
+        { 409,  new(409,  WAR, "Holmgang",                 Self,   1, 10 ) },
         { 1177, new(1177, WAR, "Inner Release",            Self,   3, 15 , seeAlso: new() { 86 }) },
         { 1457, new(1457, WAR, "Shake It Off",             Self,   1, 30 ) },
         { 1897, new(1897, WAR, "Nascent Chaos",            Self,   1, 30 ) },
@@ -334,32 +336,4 @@ public abstract partial class StatusData
 
         #endregion
     };
-
-   /* public static void StatusHarvest(Configuration configuration)
-    {
-        if (PlayerStatus != null)
-        {
-            foreach (var desc in from status in PlayerStatus.Where(static s => s.StatusId != 0)
-                                 let desc = $"{ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation},{ status.StatusId},{ status.GameData.Name}, Self,{status.GameData.MaxStacks},{status.RemainingTime}"
-                                 where configuration.StatusCollection.TryAdd(status.StatusId, desc)
-                                 select desc)
-            {
-                Log.Warning(desc);
-                configuration.Save();
-            }
-        }
-
-        if (TargetStatus != null)
-        {
-            foreach (var desc in from status in TargetStatus.Where(static s => s.StatusId != 0)
-                                 let desc = $"{ClientState.LocalPlayer!.ClassJob.GameData!.Abbreviation},{ status.StatusId},{ status.GameData.Name}, Target,{status.GameData.MaxStacks},{status.RemainingTime}"
-                                 where configuration.StatusCollection.TryAdd(status.StatusId, desc)
-                                 select desc)
-            {
-                Log.Warning(desc);
-                configuration.Save();
-            }
-        }
-    }*/
-
 }

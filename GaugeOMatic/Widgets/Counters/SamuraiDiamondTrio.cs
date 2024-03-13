@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.CustomNodes.Animation.Tween.Eases;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
@@ -145,7 +145,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                                   new(0) { Alpha = 0, Scale = 0f },
                                   new(230) { Alpha = 200, Scale = 1 },
                                   new(1125) { Alpha = 0, Scale = 1.3f })
-                                  { Ease = Linear, Repeat = true, Label = "Pulse" };
+                                  { Repeat = true, Label = "Pulse" };
     }
 
     private void StopPulseAll()
@@ -155,7 +155,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
             Animator += new Tween(Glows2[i],
                                   new(0) { Alpha = Glows2[i].Alpha, Scale = Glows2[i].ScaleX },
                                   new(500) { Alpha = 0, Scale = 1.3f })
-                                  { Ease = Linear, Repeat = false, Label = "Pulse" };
+                                  { Repeat = false, Label = "Pulse" };
     }
 
     public bool CheckPulse(int i) => i > 0 && (Config.Pulse == Always || (Config.Pulse == AtMax && i == 3));

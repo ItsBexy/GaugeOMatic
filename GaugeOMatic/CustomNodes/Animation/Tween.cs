@@ -1,26 +1,27 @@
 using CustomNodes;
-using GaugeOMatic.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.Utility.MiscMath;
 using static System.DateTime;
 using static System.TimeSpan;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 
 namespace GaugeOMatic.CustomNodes.Animation;
 
 [SuppressMessage("ReSharper", "UnassignedField.Global")]
 public unsafe class Tween
 {
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public static class Eases
+    public enum EaseType { Linear, SinInOut, Overshoot }
+
+    public static readonly Dictionary<EaseType, Func<float, float>> EaseFuncs = new()
     {
-        public static float Linear(float p) => p;
-        public static float Pow3InOut(float p) => MiscMath.PolyCalc(p, 0, 0.0277777777777778d, 2.91666666666667d, -1.94444444444444d);
-        public static float Overshoot(float p) => MiscMath.PolyCalc(p, 0, 0.76686507936507d, 2.96130952380954d, -2.72817460317462d);
-        public static float SinInOut(float p) => (float)((-0.5f * Math.Cos(p * Math.PI)) + 0.5f); // it's actually a cos function shhh
-    }
+        { Linear,static p => p},
+        { SinInOut,static p => (float)((-0.5f * Math.Cos(p * Math.PI)) + 0.5f)},
+        { Overshoot,static p => PolyCalc(p, 0, 0.76686507936507d, 2.96130952380954d, -2.72817460317462d)}
+    };
 
     public CustomNode Target;
     public DateTime StartTime;
@@ -31,7 +32,7 @@ public unsafe class Tween
 
     public bool Repeat { get; set; }
     public string Label { get; set; } = string.Empty;
-    public Func<float, float> Ease { get; set; } = Eases.Linear;
+    public EaseType Ease = Linear;
     public Action? Complete { get; set; }
     public Action? PerCycle { get; set; }
 
@@ -89,8 +90,11 @@ public unsafe class Tween
             }
         }
 
+
+        var easeFunc = EaseFuncs.TryGetValue(Ease, out var e) ? e : static p => p;
         var subProg = CalculateProg(timePassed, out var start, out var end);
-        Interpolate(start, end, Ease(subProg)).ApplyToNode(Target);
+
+        Interpolate(start, end, easeFunc(subProg)).ApplyToNode(Target);
 
         return this;
     }

@@ -10,3 +10,4 @@ bin/
 /GaugeOMatic/Widgets/Counters/PartyDash.cs
 /GaugeOMatic/Widgets/Special/PartyDash.cs
 /GaugeOMatic/Widgets/Special/PartyDash.cs
+/GaugeOMatic/GameData/StatusData.StatusHarvest.cs

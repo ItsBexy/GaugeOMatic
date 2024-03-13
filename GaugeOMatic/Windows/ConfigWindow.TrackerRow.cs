@@ -188,9 +188,11 @@ public partial class ConfigWindow
     private static void EnabledCheckbox(Tracker tracker, int hash, ref UpdateFlags update)
     {
         var enabled = tracker.TrackerConfig.Enabled;
-        if (!ImGui.Checkbox($"##Enabled{hash}", ref enabled)) return;
-
-        tracker.TrackerConfig.Enabled = enabled;
-        update |= Reset | Save;
+        if (ImGui.Checkbox($"##Enabled{hash}", ref enabled))
+        {
+            tracker.TrackerConfig.Enabled = enabled;
+            update |= Reset | Save;
+        }
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Enable/Disable");
     }
 }
