@@ -91,6 +91,10 @@ public sealed unsafe class BeastBar : GaugeBarWidget
             new(Bar,
                 new(0) { ScaleY = 1, Alpha = 255 },
                 new(kf1) { ScaleY = 0.2727273F, Alpha = 0 })
+                { Label = "Collapse" },
+            new(LabelTextNode,
+                Visible[0],
+                Hidden[kf1])
                 { Label = "Collapse" }
         };
     }
@@ -109,6 +113,11 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                 new(0) { ScaleY = 0.2727273F, Alpha = 0 },
                 new(kf1) { ScaleY = 0.2727273F, Alpha = 0 },
                 new(kf2) { ScaleY = 1, Alpha = 255 })
+                { Label ="Expand" },
+            new(LabelTextNode,
+                Hidden[0],
+                Hidden[kf1],
+                Visible[kf2])
                 { Label ="Expand" }
         };
     }

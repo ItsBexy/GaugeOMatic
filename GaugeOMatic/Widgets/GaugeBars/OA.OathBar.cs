@@ -170,26 +170,31 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public void CollapseBar(int kf1, int kf2)
     {
+        Animator -= "Expand";
         Animator += new Tween[]
         {
             new(FrameR,
                 new(0) { Height = 120, Y = 0 },
                 new(kf1) { Height = 96, Y = 12 },
                 new(kf2) { Height = 96, Y = 12 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "Collapse" },
             new(FrameL,
                 new(0) { Height = 120, Y = 0 },
                 new(kf1) { Height = 96, Y = 12 },
                 new(kf2) { Height = 96, Y = 12 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "Collapse" },
             new(Bar,
                 Visible[0],
                 Hidden[kf1 / 2])
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "Collapse" },
             new(Frame,
                 new(0) { AddRGB = 0, Alpha = 255, ScaleX = 1 },
                 new(kf1) { AddRGB = 120, Alpha = 255, ScaleX = 1 },
-                new(kf2) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f })
+                new(kf2) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f }),
+            new(LabelTextNode,
+                Visible[0],
+                Hidden[kf1])
+                {Label = "Collapse" }
         };
 
         if (kf2 > 0) Twinkle();
@@ -197,28 +202,34 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public void ExpandBar(int kf1, int kf2)
     {
+        Animator -= "Collapse";
         Animator += new Tween[]
         {
             new(FrameR,
                 new(0) { Height = 94, Y = 13 },
                 new(kf1) { Height = 120, Y = 0 },
                 new(kf2) { Height = 120, Y = 0 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "Expand" },
             new(FrameL,
                 new(0) { Height = 94, Y = 13 },
                 new(kf1) { Height = 120, Y = 0 },
                 new(kf2) { Height = 120, Y = 0 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "Expand" },
             new(Bar,
                 Hidden[0],
                 Hidden[kf1],
                 Visible[kf2])
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "Expand" },
             new(Frame,
                 new(0) { AddRGB = 200, Alpha = 0, ScaleX = 0.8f },
                 new(kf1) { AddRGB = 80, Alpha = 255, ScaleX = 1 },
                 new(kf2) { AddRGB = 0, Alpha = 255, ScaleX = 1 })
-                { Ease = SinInOut }
+                { Ease = SinInOut, Label = "Expand" },
+            new(LabelTextNode,
+                Hidden[0],
+                Hidden[kf1],
+                Visible[kf2])
+                {Label = "Expand" }
         };
 
         if (kf2 > 0) Twinkle();
