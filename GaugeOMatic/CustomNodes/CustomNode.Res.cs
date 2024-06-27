@@ -1,4 +1,6 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
+using static FFXIVClientStructs.FFXIV.Component.GUI.NodeType;
 using static GaugeOMatic.Utility.MemoryHelper;
 
 namespace CustomNodes;
@@ -13,8 +15,8 @@ public unsafe partial class CustomNodeManager
 
         RegisteredNodes.Add(node->NodeID, node);
 
-        node->Type = NodeType.Res;
-        node->NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
+        node->Type = Res;
+        node->NodeFlags = Visible | AnchorLeft | AnchorTop | Enabled;
 
         InitializePosition(node, 0, 0);
 
