@@ -28,6 +28,7 @@ public class LabelTextNode : CustomNode
     {
         Fallback = fallback;
         Node = (AtkResNode*)CreateTextNode(label.Length > 0 ? label : fallback, 20, 52);
+        SetText(label);
         SetTextColor(0xffffffff, 0x000000ff);
         RemoveFlags(SetVisByAlpha);
 

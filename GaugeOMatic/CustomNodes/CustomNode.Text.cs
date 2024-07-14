@@ -10,15 +10,14 @@ public unsafe partial class CustomNodeManager
         var node = CleanAlloc<AtkTextNode>();
         node->Ctor();
 
-        node->SetText(text);
         node->AlignmentFontType = (byte)alignFontType;
         node->FontSize = (byte)fontSize;
         node->TextFlags |= 24;
         node->AtkResNode.Width = (ushort)((fontSize - 3) * (text.Length + 1));
 
-        node->AtkResNode.NodeID = GetFreeId();
+        node->AtkResNode.NodeId = GetFreeId();
 
-        RegisteredNodes.Add(node->AtkResNode.NodeID, (AtkResNode*)node);
+        RegisteredNodes.Add(node->AtkResNode.NodeId, (AtkResNode*)node);
         node->AtkResNode.Type = NodeType.Text;
         node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
         node->AtkResNode.DrawFlags |= 8;

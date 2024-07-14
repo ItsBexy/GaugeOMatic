@@ -115,7 +115,8 @@ public abstract class JobModule : IDisposable
         AddonLifecycle.RegisterListener(PostSetup, AddonOptions.Select(static a => a.Name), SetupHandler);
         AddonLifecycle.RegisterListener(PreDraw, WatchedAddon, DrawHandler);
         AddonLifecycle.RegisterListener(PreFinalize, WatchedAddon, FinalizeHandler);
-        AddonLifecycle.RegisterListener(PostUpdate, WatchedAddon, ReqUpdateHandler);
+        AddonLifecycle.RegisterListener(PreUpdate, WatchedAddon, ReqUpdateHandler);
+        AddonLifecycle.RegisterListener(PreRequestedUpdate, WatchedAddon, ReqUpdateHandler);
     }
 
     public void UnregisterListeners()
@@ -123,7 +124,8 @@ public abstract class JobModule : IDisposable
         AddonLifecycle.UnregisterListener(PostSetup, AddonOptions.Select(static a => a.Name), SetupHandler);
         AddonLifecycle.UnregisterListener(PreDraw, WatchedAddon, DrawHandler);
         AddonLifecycle.UnregisterListener(PreFinalize, WatchedAddon, FinalizeHandler);
-        AddonLifecycle.UnregisterListener(PostUpdate, WatchedAddon, ReqUpdateHandler);
+        AddonLifecycle.UnregisterListener(PreUpdate, WatchedAddon, ReqUpdateHandler);
+        AddonLifecycle.UnregisterListener(PreRequestedUpdate, WatchedAddon, ReqUpdateHandler);
     }
 
     public void SetupHandler(AddonEvent type, AddonArgs args)

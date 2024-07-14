@@ -12,6 +12,9 @@ public unsafe partial class CustomNode : IDisposable
     public AtkResNode* Node;
     public CustomNode[] Children { get; set; }
 
+    public byte* TextBuffer;
+    public int TextBufferLen;
+
     public CustomNode(AtkImageNode* node) : this((AtkResNode*)node) { }
     public CustomNode(AtkNineGridNode* node) : this((AtkResNode*)node) { }
     public CustomNode(AtkTextNode* node) : this((AtkResNode*)node) { }
@@ -71,6 +74,11 @@ public unsafe partial class CustomNode : IDisposable
 
         if (Node != null)
         {
+            if (TextBuffer != null)
+            {
+                System.Runtime.InteropServices.NativeMemory.Free(TextBuffer);
+                TextBufferLen = 0;
+            }
             Node->Destroy(true);
             Node = null;
         }

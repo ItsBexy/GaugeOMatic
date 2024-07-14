@@ -1,12 +1,9 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
-using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -38,26 +35,26 @@ public class WHMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHideAll, ref update);
-        HideWarning(TweakConfigs.WHMHideAll);
+       /* ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHideAll, ref update);
+        HideWarning(TweakConfigs.WHMHideAll);*/
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
 
-    public override unsafe void ApplyTweaks()
+    public override void ApplyTweaks()
     {
-        var healingGauge = (AddonJobHudWHM0*)GameGui.GetAddonByName("JobHudWHM0");
+       /* var healingGauge = (AddonJobHudWHM0*)GameGui.GetAddonByName("JobHudWHM0");
         if (healingGauge != null && healingGauge->GaugeStandard.Container != null)
         {
             var hideAll = TweakConfigs.WHMHideAll;
-            var simple = healingGauge->JobHud.UseSimpleGauge;
+            var simple = healingGauge->AddonJobHud.UseSimpleGauge;
             healingGauge->GaugeStandard.Container->Color.A = (byte)(hideAll || simple ? 0 : 255);
             healingGauge->GaugeSimple.Container->Color.A = (byte)(hideAll || !simple ? 0 : 255);
-        }
+        }*/
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool WHMHideAll;
+   // public bool WHMHideAll;
 }

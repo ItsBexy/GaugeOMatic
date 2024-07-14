@@ -1,12 +1,9 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
-using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,26 +38,26 @@ public class DNCModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHideFeathers, ref update);
-        HideWarning(TweakConfigs.DNCHideFeathers);
+      /*  ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHideFeathers, ref update);
+        HideWarning(TweakConfigs.DNCHideFeathers);*/
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
 
-    public override unsafe void ApplyTweaks()
+    public override void ApplyTweaks()
     {
-        var fourfoldFeathers = (AddonJobHudDNC1*)GameGui.GetAddonByName("JobHudDNC1");
+      /*  var fourfoldFeathers = (AddonJobHudDNC1*)GameGui.GetAddonByName("JobHudDNC1");
         if (fourfoldFeathers != null && fourfoldFeathers->GaugeStandard.Container != null)
         {
             var hideFeathers = TweakConfigs.DNCHideFeathers;
-            var simple1 = fourfoldFeathers->JobHud.UseSimpleGauge;
+            var simple1 = fourfoldFeathers->AddonJobHud.UseSimpleGauge;
             fourfoldFeathers->GaugeStandard.Container->Color.A = (byte)(hideFeathers || simple1 ? 0 : 255);
             fourfoldFeathers->GaugeSimple.Container->Color.A = (byte)(hideFeathers || !simple1 ? 0 : 255);
-        }
+        }*/
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool DNCHideFeathers;
+   // public bool DNCHideFeathers;
 }

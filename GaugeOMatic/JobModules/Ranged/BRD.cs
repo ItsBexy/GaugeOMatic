@@ -54,7 +54,7 @@ public class BRDModule : JobModule
         var songGauge = (AddonJobHudBRD0*)GameGui.GetAddonByName("JobHudBRD0");
         if (songGauge != null && songGauge->GaugeStandard.Container != null)
         {
-            var simple0 = songGauge->JobHud.UseSimpleGauge;
+            var simple0 = ((AddonJobHud*)songGauge)->UseSimpleGauge;
 
             var hideSoulVoice = TweakConfigs.BRDHideSoulVoice;
             songGauge->GaugeStandard.SoulVoiceContainer->Color.A = (byte)(hideSoulVoice || simple0 ? 0 : 255);

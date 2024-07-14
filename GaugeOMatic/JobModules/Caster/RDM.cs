@@ -1,12 +1,12 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
+using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
-using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -39,26 +39,40 @@ public class RDMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHideAll, ref update);
-        HideWarning(TweakConfigs.RDMHideAll);
+        WidgetUI.ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+       // if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
 
+    public bool SwordplayStatePrev;
+    public bool SwordplayStateCurrent;
     public override unsafe void ApplyTweaks()
     {
         var balanceGauge = (AddonJobHudRDM0*)GameGui.GetAddonByName("JobHudRDM0");
-        if (balanceGauge != null && balanceGauge->GaugeStandard.Container != null)
+
+        ApplySwordplayCueTweak(balanceGauge);
+    }
+
+    private unsafe void ApplySwordplayCueTweak(AddonJobHudRDM0* balanceGauge)
+    {
+        SwordplayStatePrev = SwordplayStateCurrent;
+        SwordplayStateCurrent = TweakConfigs.RDM0SwordplayCue &&
+                                Statuses[3875].TryGetStatus(out var buff) &&
+                                buff?.StackCount == 3;
+
+        if (SwordplayStateCurrent)
         {
-            var hideAll = TweakConfigs.RDMHideAll;
-            var simple = balanceGauge->JobHud.UseSimpleGauge;
-            balanceGauge->GaugeStandard.Container->Color.A = (byte)(hideAll || simple ? 0 : 255);
-            balanceGauge->GaugeSimple.Container->Color.A = (byte)(hideAll || !simple ? 0 : 255);
+            if (!SwordplayStatePrev) UIModule.PlaySound(78);
+
+            if (balanceGauge->DataCurrent.BlackMana < 50 || balanceGauge->DataCurrent.WhiteMana < 50)
+            {
+                UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86)->SetValue(3, 0, true);
+            }
         }
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool RDMHideAll;
+    public bool RDM0SwordplayCue;
 }

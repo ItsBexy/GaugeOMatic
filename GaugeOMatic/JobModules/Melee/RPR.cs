@@ -1,12 +1,9 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
-using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,21 +38,21 @@ public class RPRModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHideSoul, ref update);
+       /* ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHideSoul, ref update);
         HideWarning(TweakConfigs.RPRHideSoul);
         ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHideDeath, ref update);
-        HideWarning(TweakConfigs.RPRHideDeath);
+        HideWarning(TweakConfigs.RPRHideDeath);*/
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
 
-    public override unsafe void ApplyTweaks()
+    public override void ApplyTweaks()
     {
-        var soulGauge = (AddonJobHudRRP0*)GameGui.GetAddonByName("JobHudRRP0");
+        /*var soulGauge = (AddonJobHudRRP0*)GameGui.GetAddonByName("JobHudRRP0");
         if (soulGauge != null && soulGauge->GaugeStandard.Container != null)
         {
             var hideSoul = TweakConfigs.RPRHideSoul;
-            var simple0 = soulGauge->JobHud.UseSimpleGauge;
+            var simple0 = soulGauge->AddonJobHud.UseSimpleGauge;
             soulGauge->GaugeStandard.Container->Color.A = (byte)(hideSoul || simple0 ? 0 : 255);
             soulGauge->GaugeSimple.Container->Color.A = (byte)(hideSoul || !simple0 ? 0 : 255);
         }
@@ -64,15 +61,15 @@ public class RPRModule : JobModule
         if (deathGauge != null && deathGauge->GaugeStandard.Container != null)
         {
             var hideDeath = TweakConfigs.RPRHideDeath;
-            var simple1 = deathGauge->JobHud.UseSimpleGauge;
+            var simple1 = deathGauge->AddonJobHud.UseSimpleGauge;
             deathGauge->GaugeStandard.Container->Color.A = (byte)(hideDeath || simple1 ? 0 : 255);
             deathGauge->GaugeSimple.Container->Color.A = (byte)(hideDeath || !simple1 ? 0 : 255);
-        }
+        }*/
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool RPRHideSoul;
-    public bool RPRHideDeath;
+  //  public bool RPRHideSoul;
+  //  public bool RPRHideDeath;
 }

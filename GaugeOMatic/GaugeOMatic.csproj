@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.0.1.8</Version>
+    <Version>0.7.0.0</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -13,6 +13,7 @@
     <IsPackable>false</IsPackable>
     <LangVersion>preview</LangVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="2.1.12" />
+    <PackageReference Update="DalamudPackager" Version="2.1.13" />
   </ItemGroup>
 
 </Project>

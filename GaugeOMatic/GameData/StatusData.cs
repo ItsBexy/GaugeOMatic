@@ -43,7 +43,7 @@ public abstract partial class StatusData
 
             if (statusList != null)
             {
-                var playerId = ClientState.LocalPlayer?.ObjectId;
+                ulong? playerId = ClientState.LocalPlayer?.GameObjectId;
 
                 foreach (var status in statusList.Where(StatusMatch(ID, playerId)))
                 {
@@ -71,7 +71,7 @@ public abstract partial class StatusData
         public bool TryGetStatus()
         {
             var statusList = StatusHolder == StatusHolder.Self ? PlayerStatus : TargetStatus;
-            return statusList != null && (statusList.Any(StatusMatch(ID, ClientState.LocalPlayer?.ObjectId)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
+            return statusList != null && (statusList.Any(StatusMatch(ID, ClientState.LocalPlayer?.GameObjectId)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
         }
 
     }
@@ -82,10 +82,10 @@ public abstract partial class StatusData
 
     public static StatusList? TargetStatus =>
         ClientState.LocalPlayer?.TargetObject?.ObjectKind == ObjectKind.BattleNpc
-            ? ((BattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
+            ? ((IBattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
             : null;
 
-    private static Func<Status, bool> StatusMatch(uint id, uint? playerId) =>
+    private static Func<Status, bool> StatusMatch(uint id, ulong? playerId) =>
         s =>
         {
             if (s.StatusId != id) return false;

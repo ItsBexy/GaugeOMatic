@@ -21,7 +21,7 @@ public unsafe partial class CustomNode
 
     public bool Visible
     {
-        get => Node->IsVisible;
+        get => Node->IsVisible();
         set => Node->ToggleVisibility(value);
     }
 

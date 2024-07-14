@@ -1,12 +1,9 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
-using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -36,26 +33,26 @@ public class PLDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Oath Gauge", ref TweakConfigs.PLDHide0, ref update);
-        HideWarning(TweakConfigs.PLDHide0);
+        /*ToggleControls("Hide Oath Gauge", ref TweakConfigs.PLDHide0, ref update);
+        HideWarning(TweakConfigs.PLDHide0);*/
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
 
-    public override unsafe void ApplyTweaks()
+    public override void ApplyTweaks()
     {
-        var oathGauge = (AddonJobHudPLD0*)GameGui.GetAddonByName("JobHudPLD0");
+       /* var oathGauge = (AddonJobHudPLD0*)GameGui.GetAddonByName("JobHudPLD0");
         if (oathGauge != null && oathGauge->GaugeStandard.Container != null)
         {
             var pldHide0 = TweakConfigs.PLDHide0;
-            var simple0 = oathGauge->JobHud.UseSimpleGauge;
+            var simple0 = oathGauge->AddonJobHud.UseSimpleGauge;
             oathGauge->GaugeStandard.Container->Color.A = (byte)(pldHide0 || simple0 ? 0 : 255);
             oathGauge->GaugeSimple.Container->Color.A = (byte)(pldHide0 || !simple0 ? 0 : 255);
-        }
+        }*/
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool PLDHide0;
+   // public bool PLDHide0;
 }

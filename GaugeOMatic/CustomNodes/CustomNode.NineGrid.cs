@@ -16,12 +16,12 @@ public unsafe partial class CustomNodeManager
             var node = CleanAlloc<AtkNineGridNode>();
 
             node->Ctor();
-            node->PartID = partId;
+            node->PartId = partId;
             node->PartsList = partsList;
 
-            node->AtkResNode.NodeID = GetFreeId();
+            node->AtkResNode.NodeId = GetFreeId();
 
-            RegisteredNodes.Add(node->AtkResNode.NodeID, (AtkResNode*)node);
+            RegisteredNodes.Add(node->AtkResNode.NodeId, (AtkResNode*)node);
 
             node->AtkResNode.Type = NineGrid;
             node->AtkResNode.NodeFlags = Visible | AnchorLeft | AnchorTop | Enabled;

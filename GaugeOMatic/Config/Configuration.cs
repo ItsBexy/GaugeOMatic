@@ -25,9 +25,11 @@ public class Configuration : IPluginConfiguration
     public TrackerConfigs TrackerConfigs { get; set; } = new();
     public TweakConfigs TweakConfigs { get; set; } = new();
 
-    [NonSerialized]
-    internal DalamudPluginInterface? PluginInterface;
+    public Dictionary<uint,string> StatusCollection { get; set; } = new();
 
-    public void Initialize(DalamudPluginInterface pluginInterface) => PluginInterface = pluginInterface;
+    [NonSerialized]
+    internal IDalamudPluginInterface? PluginInterface;
+
+    public void Initialize(IDalamudPluginInterface pluginInterface) => PluginInterface = pluginInterface;
     public void Save() => PluginInterface!.SavePluginConfig(this);
 }

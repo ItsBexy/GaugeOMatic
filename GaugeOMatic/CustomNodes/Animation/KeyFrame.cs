@@ -58,7 +58,7 @@ public unsafe struct KeyFrame
         else if (n.Node->Type == NodeType.NineGrid)
         {
             var nineGridNode = n.Node->GetAsAtkNineGridNode();
-            var part = nineGridNode->PartsList->Parts[nineGridNode->PartID];
+            var part = nineGridNode->PartsList->Parts[nineGridNode->PartId];
             PartCoords = new(part.U, part.V, part.Width, part.Height);
         }
         else PartCoords = null;

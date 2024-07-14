@@ -32,7 +32,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         DisplayName = "Huton Pinwheel",
         Author = "ItsBexy",
         Description = "A recreation of Ninja's Huton Gauge.",
-        WidgetTags = GaugeBar | Replica
+        WidgetTags = GaugeBar | Replica | Exclude
     };
 
     public override CustomPartsList[] PartsLists { get; } = {

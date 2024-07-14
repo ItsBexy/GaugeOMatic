@@ -14,6 +14,15 @@ public unsafe partial class ActionData
 
     public static ExcelSheet<Action>? ActionSheet { get; } = DataManager.Excel.GetSheet<Action>("Action");
 
+    public static bool CheckForAnts(params uint[] ids)
+    {
+        foreach (var id in ids)
+            if (ActionManager->IsActionHighlighted(ActionType.Action, id))
+                return true;
+
+        return false;
+    }
+
     public class ActionRef : ItemRef
     {
         [Flags]

@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
+using GaugeOMatic.GameData;
 using System;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudACN0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBLM0;
@@ -14,9 +15,9 @@ using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudGNB0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudMCH0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudMNK1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudNIN0;
-using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudNIN1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudPLD0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRDM0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRPM0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRRP0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRRP1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSAM0;
@@ -46,25 +47,6 @@ public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
                 GaugeData->ChakraCount,
                 5,
                 GaugeData->ChakraCount >= 5 ? 1 : 0, 1,
-                preview);
-}
-
-[TrackerDisplay(DRG)]
-public sealed unsafe class LotDTracker : JobGaugeTracker<DragonGaugeData>
-{
-    public override string DisplayName => "Life of the Dragon";
-    public override string GaugeAddonName => "JobHudDRG0";
-    public override string TermCount => "Gaze";
-    public override string TermGauge => "Timer";
-
-    public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData == null ?
-            new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->EyeCount,
-                2,
-                GaugeData->LotDTimer / 1000f,
-                GaugeData->LotDMax / 1000f,
-                GaugeData->EyeCount >= 2 ? 1 : 0, 1,
                 preview);
 }
 
@@ -101,24 +83,6 @@ public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
                 GaugeData->NinkiValue,
                 100,
                 GaugeData->NinkiValue >= 50 ? 1 : 0, 1,
-                preview);
-}
-
-[TrackerDisplay(NIN)]
-public sealed unsafe class HutonGaugeTracker : JobGaugeTracker<HutonGaugeData>
-{
-    public override string DisplayName => "Huton Gauge";
-    public override string GaugeAddonName => "JobHudNIN1";
-    public override string TermGauge => "Timer";
-
-    public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData == null ?
-            new(0, 1, 0, 60, 0, 1, preview) :
-            new(GaugeData->TimeLeft > 0 ? 1 : 0,
-                1,
-                GaugeData->TimeLeft / 1000f,
-                60,
-                GaugeData->TimeLeft > 0 ? 1 : 0, 1,
                 preview);
 }
 
@@ -414,16 +378,26 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
     public override string GaugeAddonName => "JobHudDNC0";
     public override string[] StateNames => new[] { "None", "Emboite", "Entrechat", "Jete", "Pirouette" };
 
-    public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null
-            ? new(0, 4, 0, 4, 0, 4, preview)
-            : new(GaugeData->CompletedSteps,
-                  4,
-                  GaugeData->CompletedSteps,
-                  4,
-                  GaugeData->CompletedSteps == 4 ? 0 : GaugeData->Steps[GaugeData->CompletedSteps],
-                  4,
-                  preview);
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        return GaugeAddon == null
+                   ? new(0, 4, 0, 4, 0, 4, preview)
+                   : new(GaugeData->CompletedSteps,
+                         4,
+                         GaugeData->CompletedSteps,
+                         4,
+                         //GaugeData->CompletedSteps == 4 ? 0 : GaugeData->Steps[GaugeData->CompletedSteps],
+                         GaugeData->CompletedSteps switch
+                         {
+                             4 => 0,
+                             3 => GaugeData->Step3,
+                             2 => GaugeData->Step2,
+                             1 => GaugeData->Step1,
+                             _ => GaugeData->Step0
+                         },
+                         4,
+                         preview);
+    }
 }
 
 #endregion
@@ -630,6 +604,39 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
     }
 }
 
+[TrackerDisplay(PCT)]
+public sealed unsafe class CreatureMotifDeadline : JobGaugeTracker<CanvasGaugeData>
+{
+    public override string DisplayName => "Creature Motif Deadline";
+    public override string GaugeAddonName => "JobHudRPM0";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null || GaugeData->CreatureMotif > 0 ? new(0, 3, 0, 120, 0, 1, preview)
+                                                           : new(ActionData.Actions[35347], preview);
+}
+
+[TrackerDisplay(PCT)]
+public sealed unsafe class WeaponMotifDeadline : JobGaugeTracker<CanvasGaugeData>
+{
+    public override string DisplayName => "Weapon Motif Deadline";
+    public override string GaugeAddonName => "JobHudRPM0";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null || GaugeData->WeaponMotif ? new(0, 3, 0, 120, 0, 1, preview)
+            : new(ActionData.Actions[35348], preview);
+}
+
+[TrackerDisplay(PCT)]
+public sealed unsafe class LandscapeMotifDeadline : JobGaugeTracker<CanvasGaugeData>
+{
+    public override string DisplayName => "Landscape Motif Deadline";
+    public override string GaugeAddonName => "JobHudRPM0";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null || GaugeData->LandscapeMotif ? new(0, 3, 0, 120, 0, 1, preview)
+            : new(ActionData.Actions[35349], preview);
+}
+
 #endregion
 
 #region Tank
@@ -647,7 +654,7 @@ public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
                 2,
                 GaugeData->OathValue,
                 100,
-                GaugeData->Prerequisites[0] > 0 ? 1 : 0, 1,
+                GaugeData->TankStance ? 1 : 0, 1,
                 preview);
 }
 
@@ -664,7 +671,7 @@ public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
                 2,
                 GaugeData->BeastValue,
                 100,
-                GaugeData->Prerequisites[2] > 0 ? 1 : 0, 1,
+                GaugeData->TankStance ? 1 : 0, 1,
                 preview);
 }
 
@@ -681,7 +688,7 @@ public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
                 2,
                 GaugeData->BloodValue,
                 GaugeData->BloodMax,
-                GaugeData->TankStance > 0 ? 1 : 0, 1,
+                GaugeData->TankStance ? 1 : 0, 1,
                 preview);
 }
 
@@ -699,7 +706,7 @@ public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeD
                 1,
                 GaugeData->DarksideTimeLeft / 1000f,
                 GaugeData->DarksideTimeMax / 1000f,
-                GaugeData->Prerequisites[2] > 0 ? 1 : 0, 1,
+                GaugeData->DarkArtsActive ? 1 : 0, 1,
                 preview);
 }
 
@@ -735,7 +742,7 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
                 3,
                 GaugeData->Ammo,
                 3,
-                GaugeData->Prerequisites[2] > 0 ? 1 : 0, 1,
+                GaugeData->TankStance ? 1 : 0, 1,
                 preview);
 }
 
@@ -812,7 +819,7 @@ public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
                 1,
                 GaugeData->FaeValue,
                 GaugeData->FaeMax,
-                GaugeData->Prerequisites[2] > 0 ? 1 : 0, 1,
+                GaugeData->FaerieSummoned ? 1 : 0, 1,
                 preview);
 }
 

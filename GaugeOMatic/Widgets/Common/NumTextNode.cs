@@ -32,6 +32,7 @@ public class NumTextNode : CustomNode
                                                                  .Hide();
 
         Node = (AtkResNode*)CreateTextNode(" ", 18, 20);
+        SetText(" ");
         Children = new[] { BgNode };
         RemoveFlags(SetVisByAlpha);
     }

@@ -58,7 +58,7 @@ public partial class CustomNodeManager
     {
         for (uint i = 10000; i < 90000; i++)
         {
-            if (RegisteredNodes.TryGetValue(i, out var node) && node.Value != null && node.Value->NodeID == i) continue;
+            if (RegisteredNodes.TryGetValue(i, out var node) && node.Value != null && node.Value->NodeId == i) continue;
 
             RegisteredNodes.Remove(i);
             return i;

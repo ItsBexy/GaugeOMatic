@@ -100,7 +100,7 @@ public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged
     public abstract string GaugeAddonName { get; }
 
     public AddonJobHud* GaugeAddon => (AddonJobHud*)GameGui.GetAddonByName(GaugeAddonName);
-    public T* GaugeData => (T*)GaugeAddon->DataCurrent;
+    public T* GaugeData => (T*)GaugeAddon->DataCurrentPointer;
 }
 
 [TrackerDisplay(BarsProgress, NoneColor, "Other")]

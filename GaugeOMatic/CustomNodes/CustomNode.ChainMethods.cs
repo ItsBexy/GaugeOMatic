@@ -1,4 +1,5 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static FFXIVClientStructs.FFXIV.Component.GUI.NodeType;
@@ -282,7 +283,22 @@ public unsafe partial class CustomNode
 
     public CustomNode SetText(string text)
     {
-        if (Node != null && Node->Type == Text) ((AtkTextNode*)Node)->SetText(text);
+        if (Node != null && Node->Type == Text)
+        {
+            var strLen = System.Text.Encoding.UTF8.GetByteCount(text); // get length of string as UTF-8 bytes
+
+            if (TextBuffer == null || strLen + 1 > TextBufferLen)
+            {
+                System.Runtime.InteropServices.NativeMemory.Free(TextBuffer);
+                TextBuffer = (byte*)System.Runtime.InteropServices.NativeMemory.Alloc((nuint)(strLen + 1)); // need one extra byte for the null terminator
+                TextBufferLen = strLen + 1;
+            }
+
+            Span<byte> bufferSpan = new(TextBuffer, strLen + 1); // wrap buffer in a span so you can use GetBytes
+            System.Text.Encoding.UTF8.GetBytes(text, bufferSpan); // convert string to UTF-8 and store in your buffer
+            bufferSpan[strLen] = 0; // add null terminator to the end of your string
+            ((AtkTextNode*)Node)->SetText(TextBuffer);
+        }
         return this;
     }
 
@@ -373,7 +389,7 @@ public unsafe partial class CustomNode
     public CustomNode SetPartId(ushort id)
     {
         if (Node->Type == Image) Node->GetAsAtkImageNode()->PartId = id;
-        if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->PartID = id;
+        if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->PartId = id;
         return this;
     }
 
@@ -387,7 +403,7 @@ public unsafe partial class CustomNode
         else if (Node->Type == NineGrid)
         {
             var nineGridNode = Node->GetAsAtkNineGridNode();
-            SetCoords(nineGridNode->PartsList, nineGridNode->PartID, coords);
+            SetCoords(nineGridNode->PartsList, nineGridNode->PartId, coords);
         }
 
         static void SetCoords(AtkUldPartsList* list, uint partId, Vector4 coords)

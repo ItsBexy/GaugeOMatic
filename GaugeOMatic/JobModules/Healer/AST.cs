@@ -1,15 +1,11 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
-using ImGuiNET;
 using System.Collections.Generic;
-using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -37,7 +33,7 @@ public class ASTModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        var fontIndex = FontList.IndexOf(TweakConfigs.ASTCardFont);
+        /*var fontIndex = FontList.IndexOf(TweakConfigs.ASTCardFont);
 
         LabelColumn("Card Font");
 
@@ -46,7 +42,7 @@ public class ASTModule : JobModule
         {
             update |= UpdateFlags.Save;
             TweakConfigs.ASTCardFont = FontList[fontIndex];
-        }
+        }*/
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
@@ -54,9 +50,9 @@ public class ASTModule : JobModule
     public readonly List<FontType> FontList = new() { Axis, TrumpGothic, Jupiter };
     public readonly string[] FontNames = { "Axis", "Trump Gothic", "Jupiter" };
 
-    public override unsafe void ApplyTweaks()
+    public override void ApplyTweaks()
     {
-        var arcanaGauge = (AddonJobHudAST0*)GameGui.GetAddonByName("JobHudAST0");
+       /* var arcanaGauge = (AddonJobHudAST0*)GameGui.GetAddonByName("JobHudAST0");
         if (arcanaGauge != null && arcanaGauge->GaugeStandard.Container != null) ApplyCardFont();
 
         void ApplyCardFont()
@@ -76,10 +72,10 @@ public class ASTModule : JobModule
                 node->FontSize = size;
                 node->AlignmentType = align;
             }
-        }
+        }*/
     }
 }
 public partial class TweakConfigs
 {
-    public FontType ASTCardFont = Axis;
+   // public FontType ASTCardFont = Axis;
 }

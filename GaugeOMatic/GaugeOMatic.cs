@@ -1,6 +1,5 @@
 global using static GaugeOMatic.GaugeOMatic.Service;
 using Dalamud.Interface.Windowing;
-using Dalamud.IoC;
 using Dalamud.Plugin;
 using GaugeOMatic.Config;
 using GaugeOMatic.GameData;
@@ -21,10 +20,10 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     internal static ConfigWindow ConfigWindow { get; set; } = null!;
     internal static PresetWindow PresetWindow { get; set; } = null!;
     private Configuration Configuration { get; set; }
-    private DalamudPluginInterface PluginInterface { get; init; }
+    private IDalamudPluginInterface PluginInterface { get; init; }
     private TrackerManager TrackerManager { get; init; }
 
-    public GaugeOMatic([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface) {
+    public GaugeOMatic(IDalamudPluginInterface pluginInterface) {
         PluginInterface = pluginInterface;
         PluginInterface.Create<Service>();
 

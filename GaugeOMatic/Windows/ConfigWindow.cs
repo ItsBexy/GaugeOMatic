@@ -42,6 +42,8 @@ public partial class ConfigWindow : Window, IDisposable
         //todo: fix this to not be localization reliant
         if (JobChanged && TryParse(JobAbbr, out Job newJob) && newJob <= (Job)21) TrackerManager.Configuration.JobTab = newJob;
 
+       // StatusData.StatusHarvest(Configuration);
+
         ConfigWindowPos = ImGui.GetWindowPos();
         ConfigWindowSize = ImGui.GetWindowSize();
         ImGui.Spacing();
@@ -132,6 +134,7 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(NIN);
         DPSButton(SAM);
         DPSButton(RPR);
+        DPSButton(VPR);
 
         ImGui.TableNextColumn();
 
@@ -149,6 +152,7 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(BLM);
         DPSButton(SMN);
         DPSButton(RDM);
+        DPSButton(PCT);
     }
 
     internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.TabActive);

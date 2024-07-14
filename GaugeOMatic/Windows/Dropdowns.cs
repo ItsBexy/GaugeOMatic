@@ -154,11 +154,11 @@ public class ItemRefMenu : BranchingDropdown
     public ItemRefMenu(Tracker tracker)
     {
         Tracker = tracker;
-        StatusOptions = new(Statuses.Where(s => s.Value.CheckJob(Tracker.JobModule))
+        StatusOptions = new(Statuses.Where(s => !s.Value.HideFromDropdown && s.Value.CheckJob(Tracker.JobModule))
                                     .Select(static s => (MenuOption)s.Value)
                                     .OrderBy(static s => s.Name));
 
-        ActionOptions = new(Actions.Where(a => a.Value.CheckJob(Tracker.JobModule))
+        ActionOptions = new(Actions.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
                                    .Select(static a => (MenuOption)a.Value)
                                    .OrderBy(static a => a.Name));
 

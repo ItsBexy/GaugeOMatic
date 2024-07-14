@@ -21,8 +21,8 @@ public unsafe partial class CustomNodeManager
             node->AtkResNode.Width = customPartsList.AtkUldPartsList->Parts[partId].Width;
             node->AtkResNode.Height = customPartsList.AtkUldPartsList->Parts[partId].Height;
 
-            node->AtkResNode.NodeID = GetFreeId();
-            RegisteredNodes.Add(node->AtkResNode.NodeID, (AtkResNode*)node);
+            node->AtkResNode.NodeId = GetFreeId();
+            RegisteredNodes.Add(node->AtkResNode.NodeId, (AtkResNode*)node);
 
             return node;
         }

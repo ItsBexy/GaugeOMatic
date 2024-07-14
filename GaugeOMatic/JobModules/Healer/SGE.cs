@@ -1,13 +1,9 @@
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
-using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -41,21 +37,21 @@ public class SGEModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Eukrasia", ref TweakConfigs.SGEHideEukrasia, ref update);
+       /* ToggleControls("Hide Eukrasia", ref TweakConfigs.SGEHideEukrasia, ref update);
         HideWarning(TweakConfigs.SGEHideEukrasia);
         ToggleControls("Hide Addersgall Gauge", ref TweakConfigs.SGEHideAddersgall, ref update);
-        HideWarning(TweakConfigs.SGEHideAddersgall);
+        HideWarning(TweakConfigs.SGEHideAddersgall);*/
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
     }
 
-    public override unsafe void ApplyTweaks()
+    public override void ApplyTweaks()
     {
-        var eukrasiaGauge = (AddonJobHudGFF0*)GameGui.GetAddonByName("JobHudGFF0");
+       /* var eukrasiaGauge = (AddonJobHudGFF0*)GameGui.GetAddonByName("JobHudGFF0");
         if (eukrasiaGauge != null && eukrasiaGauge->GaugeStandard.Container != null)
         {
             var hideEukrasia = TweakConfigs.SGEHideEukrasia;
-            var simple0 = eukrasiaGauge->JobHud.UseSimpleGauge;
+            var simple0 = eukrasiaGauge->AddonJobHud.UseSimpleGauge;
             eukrasiaGauge->GaugeStandard.Container->Color.A = (byte)(hideEukrasia || simple0 ? 0 : 255);
             eukrasiaGauge->GaugeSimple.Container->Color.A = (byte)(hideEukrasia || !simple0 ? 0 : 255);
         }
@@ -64,15 +60,15 @@ public class SGEModule : JobModule
         if (addersgallGauge != null && addersgallGauge->GaugeStandard.Container != null)
         {
             var hideAddersgall = TweakConfigs.SGEHideAddersgall;
-            var simple1 = addersgallGauge->JobHud.UseSimpleGauge;
+            var simple1 = addersgallGauge->AddonJobHud.UseSimpleGauge;
             addersgallGauge->GaugeStandard.Container->Color.A = (byte)(hideAddersgall || simple1 ? 0 : 255);
             ((AtkUnitBase*)addersgallGauge)->GetNodeById(25)->Color.A = (byte)(hideAddersgall || !simple1 ? 0 : 255);
-        }
+        }*/
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool SGEHideEukrasia;
-    public bool SGEHideAddersgall;
+  /*  public bool SGEHideEukrasia;
+    public bool SGEHideAddersgall;*/
 }

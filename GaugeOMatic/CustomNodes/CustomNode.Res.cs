@@ -11,9 +11,9 @@ public unsafe partial class CustomNodeManager
     {
         var node = CleanAlloc<AtkResNode>();
         node->Ctor();
-        node->NodeID = GetFreeId();
+        node->NodeId = GetFreeId();
 
-        RegisteredNodes.Add(node->NodeID, node);
+        RegisteredNodes.Add(node->NodeId, node);
 
         node->Type = Res;
         node->NodeFlags = Visible | AnchorLeft | AnchorTop | Enabled;

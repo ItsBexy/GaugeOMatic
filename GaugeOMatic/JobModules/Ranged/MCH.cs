@@ -1,5 +1,4 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
@@ -7,7 +6,6 @@ using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -41,8 +39,8 @@ public class MCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHideAll, ref update);
-        HideWarning(TweakConfigs.MCHHideAll);
+       /* ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHideAll, ref update);
+        HideWarning(TweakConfigs.MCHHideAll);*/
 
         PositionControls("Move Battery Gauge", ref TweakConfigs.MCHBatteryPos, ref update);
 
@@ -54,13 +52,13 @@ public class MCHModule : JobModule
         var heatGauge = (AddonJobHudMCH0*)GameGui.GetAddonByName("JobHudMCH0");
         if (heatGauge != null && heatGauge->GaugeStandard.HeatContainer != null)
         {
-            var simple0 = heatGauge->JobHud.UseSimpleGauge;
+            /*var simple0 = heatGauge->AddonJobHud.UseSimpleGauge;
 
-            var hideAll = TweakConfigs.MCHHideAll;
+            var hideAll = TweakConfigs.MCHHideAll;*/
             var batteryPos = TweakConfigs.MCHBatteryPos;
 
-            ((AtkUnitBase*)heatGauge)->GetNodeById(2)->ToggleVisibility(!hideAll && !simple0);
-            ((AtkUnitBase*)heatGauge)->GetNodeById(33)->ToggleVisibility(!hideAll && simple0);
+           /* ((AtkUnitBase*)heatGauge)->GetNodeById(2)->ToggleVisibility(!hideAll && !simple0);
+            ((AtkUnitBase*)heatGauge)->GetNodeById(33)->ToggleVisibility(!hideAll && simple0);*/
 
             heatGauge->GaugeStandard.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 59);
             heatGauge->GaugeSimple.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 72);
@@ -70,6 +68,6 @@ public class MCHModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool MCHHideAll;
+   // public bool MCHHideAll;
     public Vector2 MCHBatteryPos;
 }

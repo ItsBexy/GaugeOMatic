@@ -34,6 +34,7 @@ public class TrackerManager : IDisposable
             new NINModule(this, TrackerConfigs.NIN),
             new SAMModule(this, TrackerConfigs.SAM),
             new RPRModule(this, TrackerConfigs.RPR),
+            new VPRModule(this, TrackerConfigs.VPR),
 
             new BRDModule(this, TrackerConfigs.BRD),
             new MCHModule(this, TrackerConfigs.MCH),
@@ -41,7 +42,8 @@ public class TrackerManager : IDisposable
 
             new BLMModule(this, TrackerConfigs.BLM),
             new SMNModule(this, TrackerConfigs.SMN),
-            new RDMModule(this, TrackerConfigs.RDM)
+            new RDMModule(this, TrackerConfigs.RDM),
+            new PCTModule(this, TrackerConfigs.PCT)
         };
     }
 
@@ -66,6 +68,7 @@ public class TrackerConfigs
     public TrackerConfig[] NIN { get; set; } = NINDefault.Clone().Disable();
     public TrackerConfig[] SAM { get; set; } = SAMDefault.Clone().Disable();
     public TrackerConfig[] RPR { get; set; } = RPRDefault.Clone().Disable();
+    public TrackerConfig[] VPR { get; set; } = VPRDefault.Clone().Disable();
 
     public TrackerConfig[] BRD { get; set; } = BRDDefault.Clone().Disable();
     public TrackerConfig[] MCH { get; set; } = MCHDefault.Clone().Disable();
@@ -74,4 +77,5 @@ public class TrackerConfigs
     public TrackerConfig[] BLM { get; set; } = BLMDefault.Clone().Disable();
     public TrackerConfig[] SMN { get; set; } = SMNDefault.Clone().Disable();
     public TrackerConfig[] RDM { get; set; } = RDMDefault.Clone().Disable();
+    public TrackerConfig[] PCT { get; set; } = PCTDefault.Clone().Disable();
 }
