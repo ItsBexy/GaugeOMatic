@@ -1,10 +1,13 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -23,7 +26,7 @@ public class PLDModule : JobModule
         new("Oath Gauge", nameof(OathGaugeTracker))
     };
 
-    public PLDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public PLDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudPLD0") { }
 
     public override void Save()
     {
@@ -33,26 +36,26 @@ public class PLDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        /*ToggleControls("Hide Oath Gauge", ref TweakConfigs.PLDHide0, ref update);
-        HideWarning(TweakConfigs.PLDHide0);*/
+        ToggleControls("Hide Oath Gauge", ref TweakConfigs.PLDHide0, ref update);
+        HideWarning(TweakConfigs.PLDHide0);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
-       /* var oathGauge = (AddonJobHudPLD0*)GameGui.GetAddonByName("JobHudPLD0");
+        var oathGauge = (AddonJobHudPLD0*)GameGui.GetAddonByName("JobHudPLD0");
         if (oathGauge != null && oathGauge->GaugeStandard.Container != null)
         {
             var pldHide0 = TweakConfigs.PLDHide0;
-            var simple0 = oathGauge->AddonJobHud.UseSimpleGauge;
+            var simple0 = ((AddonJobHud*)oathGauge)->UseSimpleGauge;
             oathGauge->GaugeStandard.Container->Color.A = (byte)(pldHide0 || simple0 ? 0 : 255);
             oathGauge->GaugeSimple.Container->Color.A = (byte)(pldHide0 || !simple0 ? 0 : 255);
-        }*/
+        }
     }
 }
 
 public partial class TweakConfigs
 {
-   // public bool PLDHide0;
+    public bool PLDHide0;
 }

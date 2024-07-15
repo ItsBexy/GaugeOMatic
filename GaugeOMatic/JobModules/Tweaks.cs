@@ -8,7 +8,7 @@ public class TweakUI
 {
     public static void HideWarning(bool highlight = false)
     {
-        const string helpText = "Hiding job gauge elements means you won't see key information!\nMake sure to set up some widgets to replace your gauge with.";
+        const string helpText = "NOTE: Unlike the game's built-in option to hide the job gauge,\nthis setting will preserve the element onscreen and allow you\nto pin widgets to it.";
 
         ImGui.SameLine();
         ImGui.PushFont(UiBuilder.IconFont);
@@ -24,6 +24,7 @@ public class TweakUI
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public static void Warning(bool highlight,string helpText)
     {
         ImGui.SameLine();

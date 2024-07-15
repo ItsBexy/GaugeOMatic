@@ -1,10 +1,13 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -27,7 +30,7 @@ public class RPRModule : JobModule
         new("Void Shroud", nameof(VoidShroudTracker))
     };
 
-    public RPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public RPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRRP0", "JobHudRRP1") { }
 
     public override void Save()
     {
@@ -38,38 +41,45 @@ public class RPRModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-       /* ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHideSoul, ref update);
-        HideWarning(TweakConfigs.RPRHideSoul);
-        ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHideDeath, ref update);
-        HideWarning(TweakConfigs.RPRHideDeath);*/
+        ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHide0, ref update);
+        HideWarning(TweakConfigs.RPRHide0);
+        ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHide1, ref update);
+        HideWarning(TweakConfigs.RPRHide1);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save))
+        {
+            ApplyTweaks0();
+            ApplyTweaks1();
+        }
     }
 
-    public override void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
-        /*var soulGauge = (AddonJobHudRRP0*)GameGui.GetAddonByName("JobHudRRP0");
+        var soulGauge = (AddonJobHudRRP0*)GameGui.GetAddonByName("JobHudRRP0");
         if (soulGauge != null && soulGauge->GaugeStandard.Container != null)
         {
-            var hideSoul = TweakConfigs.RPRHideSoul;
-            var simple0 = soulGauge->AddonJobHud.UseSimpleGauge;
+            var hideSoul = TweakConfigs.RPRHide0;
+            var simple0 = ((AddonJobHud*)soulGauge)->UseSimpleGauge;
             soulGauge->GaugeStandard.Container->Color.A = (byte)(hideSoul || simple0 ? 0 : 255);
             soulGauge->GaugeSimple.Container->Color.A = (byte)(hideSoul || !simple0 ? 0 : 255);
         }
+    }
 
+    public override unsafe void ApplyTweaks1()
+    {
         var deathGauge = (AddonJobHudRRP1*)GameGui.GetAddonByName("JobHudRRP1");
         if (deathGauge != null && deathGauge->GaugeStandard.Container != null)
         {
-            var hideDeath = TweakConfigs.RPRHideDeath;
-            var simple1 = deathGauge->AddonJobHud.UseSimpleGauge;
+            var hideDeath = TweakConfigs.RPRHide1;
+            var simple1 = ((AddonJobHud*)deathGauge)->UseSimpleGauge;
             deathGauge->GaugeStandard.Container->Color.A = (byte)(hideDeath || simple1 ? 0 : 255);
             deathGauge->GaugeSimple.Container->Color.A = (byte)(hideDeath || !simple1 ? 0 : 255);
-        }*/
+        }
     }
 }
 
 public partial class TweakConfigs
 {
-  //  public bool RPRHideSoul;
-  //  public bool RPRHideDeath;
+    public bool RPRHide0;
+    public bool RPRHide1;
 }

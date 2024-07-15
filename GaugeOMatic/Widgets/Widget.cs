@@ -80,6 +80,8 @@ public abstract unsafe class Widget : IDisposable
     public abstract void ApplyConfigs();
 
     public CustomNode ImageNodeFromPart(int list, ushort partId) => new(CreateImageNode(PartsLists[list], partId));
+    // ReSharper disable once UnusedMember.Global
+    public CustomNode ClippingMaskFromPart(int list, ushort partId) => new(CreateClippingMaskNode(PartsLists[list], partId));
     public CustomNode NineGridFromPart(int list, ushort partId) => new(CreateNineGridNode(PartsLists[list], partId));
     public CustomNode NineGridFromPart(int list, ushort partId, int x, int y, int z, int w) => new CustomNode(CreateNineGridNode(PartsLists[list], partId)).SetNineGridOffset(x, y, z, w);
 

@@ -33,7 +33,7 @@ public class SAMModule : JobModule
         new("Sen Gauge - Ka Seal", nameof(SenGaugeKaTracker))
     };
 
-    public SAMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public SAMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudSAM0", "JobHudSAM1") { }
 
     public override void Save()
     {
@@ -43,33 +43,35 @@ public class SAMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Kenki Gauge", ref TweakConfigs.SAMHideKenki, ref update);
-        HideWarning(TweakConfigs.SAMHideKenki);
+        ToggleControls("Hide Kenki Gauge", ref TweakConfigs.SAMHide0Kenki, ref update);
+        HideWarning(TweakConfigs.SAMHide0Kenki);
 
-        ToggleControls("Hide Meditation Gauge", ref TweakConfigs.SAMHideMeditation, ref update);
-        HideWarning(TweakConfigs.SAMHideMeditation);
+        ToggleControls("Hide Meditation Gauge", ref TweakConfigs.SAMHide0Meditation, ref update);
+        HideWarning(TweakConfigs.SAMHide0Meditation);
 
-       /* ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHideSen, ref update);
-        HideWarning(TweakConfigs.SAMHideSen);*/
-
+        ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHide1, ref update);
+        HideWarning(TweakConfigs.SAMHide1);
 
         Heading("Reposition Seals");
         PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu, ref update);
         PositionControls("Getsu", ref TweakConfigs.SAMSealPosGetsu, ref update);
         PositionControls("Ka", ref TweakConfigs.SAMSealPosKa, ref update);
 
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save))
+        {
+            ApplyTweaks0();
+            ApplyTweaks1();
+        }
     }
 
-    public override unsafe void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
         var kenkiGauge = (AddonJobHudSAM0*)GameGui.GetAddonByName("JobHudSAM0");
         if (kenkiGauge != null && kenkiGauge->GaugeStandard.KenkiContainer != null)
         {
             var simple0 = ((AddonJobHud*)kenkiGauge)->UseSimpleGauge;
-            var hideKenki = TweakConfigs.SAMHideKenki;
-            var hideMeditation = TweakConfigs.SAMHideMeditation;
+            var hideKenki = TweakConfigs.SAMHide0Kenki;
+            var hideMeditation = TweakConfigs.SAMHide0Meditation;
 
             kenkiGauge->GaugeStandard.KenkiContainer->Color.A = (byte)(hideKenki || simple0 ? 0 : 255);
             kenkiGauge->GaugeStandard.MeditationContainer->Color.A = (byte)(hideMeditation || simple0 ? 0 : 255);
@@ -77,13 +79,16 @@ public class SAMModule : JobModule
             kenkiGauge->GaugeSimple.KenkiContainer->Color.A = (byte)(hideKenki || !simple0 ? 0 : 255);
             kenkiGauge->GaugeSimple.MeditationContainer->Color.A = (byte)(hideMeditation || !simple0 ? 0 : 255);
         }
+    }
 
+    public override unsafe void ApplyTweaks1()
+    {
         var senGauge = (AddonJobHudSAM1*)GameGui.GetAddonByName("JobHudSAM1");
+        var hideSen = TweakConfigs.SAMHide1;
+        var simple1 = ((AddonJobHud*)senGauge)->UseSimpleGauge;
+
         if (senGauge != null && senGauge->GaugeStandard.Container != null)
         {
-           // var hideSen = TweakConfigs.SAMHideSen;
-            var simple1 = ((AddonJobHud*)senGauge)->UseSimpleGauge;
-
             var setsuPos = TweakConfigs.SAMSealPosSetsu;
             var getsuPos = TweakConfigs.SAMSealPosGetsu;
             var kaPos = TweakConfigs.SAMSealPosKa;
@@ -100,14 +105,17 @@ public class SAMModule : JobModule
                 senGauge->GaugeSimple.KaNode->SetPositionFloat(kaPos.X + 38, kaPos.Y);
             }
         }
+
+        senGauge->GaugeStandard.Container->ToggleVisibility(!hideSen && !simple1);
+        senGauge->GaugeSimple.Container->Color.A = (byte)(hideSen || !simple1 ? 0 : 255);
     }
 }
 
 public partial class TweakConfigs
 {
-    public bool SAMHideKenki;
-    public bool SAMHideMeditation;
-  //  public bool SAMHideSen;
+    public bool SAMHide0Kenki;
+    public bool SAMHide0Meditation;
+    public bool SAMHide1;
     public Vector2 SAMSealPosSetsu;
     public Vector2 SAMSealPosGetsu;
     public Vector2 SAMSealPosKa;

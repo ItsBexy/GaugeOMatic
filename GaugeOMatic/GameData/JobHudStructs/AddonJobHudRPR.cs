@@ -2,6 +2,7 @@ using FFXIVClientStructs.Attributes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Runtime.InteropServices;
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable All
 
 namespace FFXIVClientStructs.FFXIV.Client.UI;
 

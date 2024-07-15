@@ -9,6 +9,7 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.JobModules.TweakUI;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -22,8 +23,8 @@ public class VPRModule : JobModule
     public override Role Role => Melee;
     public override List<AddonOption> AddonOptions => new()
     {
-        new("JobHudRDB0", "Vipersight"),
         new("JobHudRDB1", "Serpent Offerings Gauge"),
+        new("JobHudRDB0", "Vipersight"),
         new("_ParameterWidget", "Parameter Bar")
     };
 
@@ -32,7 +33,7 @@ public class VPRModule : JobModule
 
     };
 
-    public VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRDB0", "JobHudRDB1") { }
 
     public override void Save()
     {
@@ -42,47 +43,66 @@ public class VPRModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        //ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue, ref update);
-        ToggleControls("Color-Code Vipersight", ref TweakConfigs.VPR0ColorCode, ref update);
+        ToggleControls("Hide Vipersight", ref TweakConfigs.VPRHide0, ref update);
+        HideWarning(TweakConfigs.VPRHide0);
+        ToggleControls("Hide Serpent Offerings Gauge", ref TweakConfigs.VPRHide1, ref update);
+        HideWarning(TweakConfigs.VPRHide1);
 
-        if (TweakConfigs.VPR0ColorCode)
+        ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue, ref update);
+
+        if (!TweakConfigs.VPRHide0)
         {
-            ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear, ref update);
-            ColorPickerRGB("Rear Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank, ref update);
-            ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update);
-        }
+            ToggleControls("Color-Code Vipersight", ref TweakConfigs.VPR0ColorCode, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
-    }
-
-    public override unsafe void ApplyTweaks()
-    {
-      //  var serpentGauge = (AddonJobHudRDB1*)GameGui.GetAddonByName("JobHudRDB1");
-      //  ApplyReawakenCueTweak(serpentGauge);
-
-        var vipersight = (AddonJobHudRDB0*)GameGui.GetAddonByName("JobHudRDB0");
-        ApplyColorCodeTweak(vipersight);
-    }
-
-    //TODO: figure out why the heck this doesn't work??
-    public bool AwakenStatePrev;
-    public bool AwakenStateCurrent;
-    // ReSharper disable once UnusedMember.Local
-    private unsafe void ApplyReawakenCueTweak(AddonJobHudRDB1* serpentGauge)
-    {
-        AwakenStatePrev = AwakenStateCurrent;
-        AwakenStateCurrent = TweakConfigs.VPR1ReawakenCue && Statuses[3671].TryGetStatus();
-
-        if (AwakenStateCurrent)
-        {
-            if (serpentGauge->DataCurrent.GaugeValue < 50)
+            if (TweakConfigs.VPR0ColorCode)
             {
-                serpentGauge->DataCurrent.GaugeMid = 0;
-               var numberData = UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86);
-               numberData->SetValue(9, 0,true);
+                ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear, ref update);
+                ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank, ref update);
+                ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update);
             }
         }
 
+        if (update.HasFlag(UpdateFlags.Save))
+        {
+            ApplyTweaks0();
+            ApplyTweaks1();
+        }
+    }
+
+    public override unsafe void ApplyTweaks0()
+    {
+        var vipersight = (AddonJobHudRDB0*)GameGui.GetAddonByName("JobHudRDB0");
+        if (vipersight != null)
+        {
+            var hide0 = TweakConfigs.VPRHide0;
+            var simple = ((AddonJobHud*)vipersight)->UseSimpleGauge;
+            ((AtkUnitBase*)vipersight)->GetNodeById(2)->Color.A = (byte)(hide0 || simple ? 0 : 255);
+            ((AtkUnitBase*)vipersight)->GetNodeById(10)->Color.A = (byte)(hide0 || !simple ? 0 : 255);
+        }
+
+        ApplyColorCodeTweak(vipersight);
+    }
+
+    public override unsafe void ApplyTweaks1()
+    {
+        var serpentGauge = (AddonJobHudRDB1*)GameGui.GetAddonByName("JobHudRDB1");
+
+
+        if (serpentGauge != null)
+        {
+            var hide1 = TweakConfigs.VPRHide1;
+            var simple = ((AddonJobHud*)serpentGauge)->UseSimpleGauge;
+            ((AtkUnitBase*)serpentGauge)->GetNodeById(13)->Color.A = (byte)(hide1 || simple ? 0 : 255);
+            ((AtkUnitBase*)serpentGauge)->GetNodeById(2)->Color.A = (byte)(hide1 || !simple ? 0 : 255);
+        }
+
+        ApplyReawakenCueTweak(serpentGauge);
+    }
+
+    private unsafe void ApplyReawakenCueTweak(AddonJobHudRDB1* serpentGauge)
+    {
+        if (TweakConfigs.VPR1ReawakenCue && Statuses[3671].TryGetStatus() && serpentGauge->DataCurrent.GaugeValue < 50)
+            UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86)->SetValue(9, 0, true);
     }
 
     private unsafe void ApplyColorCodeTweak(AddonJobHudRDB0* vipersight)
@@ -136,11 +156,9 @@ public class VPRModule : JobModule
         //todo: simplify/combine these two functions
         void UpdateSimpleGlow(AddRGB appliedColor)
         {
-            void UpdateKeyFrame(AtkTimelineAnimation atkTimelineAnimation, int frameId)
-            {
+            void UpdateKeyFrame(AtkTimelineAnimation atkTimelineAnimation, int frameId) =>
                 atkTimelineAnimation.KeyGroups[4].KeyFrames[frameId].Value.NodeTint.AddRGBBitfield =
                     appliedColor.ToBitField();
-            }
 
             var leftGlowSimple = (AtkNineGridNode*)vipersight->GaugeSimple.ViperBlades->LeftBar->UldManager.NodeList[5];
             var leftFrameSimple = (AtkNineGridNode*)vipersight->GaugeSimple.ViperBlades->LeftBar->UldManager.NodeList[4];
@@ -164,10 +182,7 @@ public class VPRModule : JobModule
 
         void RevertSimpleGlow()
         {
-            void UpdateKeyFrame(AtkTimelineAnimation atkTimelineAnimation, int frameId, AddRGB appliedColor)
-            {
-                atkTimelineAnimation.KeyGroups[4].KeyFrames[frameId].Value.NodeTint.AddRGBBitfield = appliedColor.ToBitField();
-            }
+            static void UpdateKeyFrame(AtkTimelineAnimation atkTimelineAnimation, int frameId, AddRGB appliedColor) => atkTimelineAnimation.KeyGroups[4].KeyFrames[frameId].Value.NodeTint.AddRGBBitfield = appliedColor.ToBitField();
 
             var leftGlowSimple = (AtkNineGridNode*)vipersight->GaugeSimple.ViperBlades->LeftBar->UldManager.NodeList[5];
             var leftFrameSimple = (AtkNineGridNode*)vipersight->GaugeSimple.ViperBlades->LeftBar->UldManager.NodeList[4];
@@ -193,6 +208,9 @@ public class VPRModule : JobModule
 
 public partial class TweakConfigs
 {
+    public bool VPRHide0;
+    public bool VPRHide1;
+
     public bool VPR0ColorCode;
     public AddRGB VPR0ColorRear = new(251,-134,31);
     public AddRGB VPR0ColorFlank = new(-150,255,140);

@@ -28,7 +28,7 @@ public class BRDModule : JobModule
         new ("Soul Voice Gauge", nameof(SoulVoiceGaugeTracker))
     };
 
-    public BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudBRD0") { }
 
     public override void Save()
     {
@@ -38,25 +38,35 @@ public class BRDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Soul Voice Gauge", ref TweakConfigs.BRDHideSoulVoice, ref update);
-        HideWarning(TweakConfigs.BRDHideSoulVoice);
+        ToggleControls("Hide Song Gauge", ref TweakConfigs.BRDHide0Song, ref update);
+        HideWarning(TweakConfigs.BRDHide0Song);
 
-        if (!TweakConfigs.BRDHideSoulVoice)
+        if (!TweakConfigs.BRDHide0Song)
         {
-            PositionControls("Move Soul Voice Gauge", ref TweakConfigs.BRDSoulVoicePos, ref update);
+            ToggleControls("Hide Soul Voice Gauge", ref TweakConfigs.BRDHide0SoulVoice, ref update);
+            HideWarning(TweakConfigs.BRDHide0SoulVoice);
+
+            if (!TweakConfigs.BRDHide0SoulVoice)
+            {
+                PositionControls("Move Soul Voice Gauge", ref TweakConfigs.BRDSoulVoicePos, ref update);
+            }
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override unsafe void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
         var songGauge = (AddonJobHudBRD0*)GameGui.GetAddonByName("JobHudBRD0");
         if (songGauge != null && songGauge->GaugeStandard.Container != null)
         {
             var simple0 = ((AddonJobHud*)songGauge)->UseSimpleGauge;
 
-            var hideSoulVoice = TweakConfigs.BRDHideSoulVoice;
+            var hideSong = TweakConfigs.BRDHide0Song;
+            songGauge->GaugeStandard.Container->Color.A = (byte)(hideSong || simple0 ? 0 : 255);
+            songGauge->GaugeSimple.Container->Color.A = (byte)(hideSong || !simple0 ? 0 : 255);
+
+            var hideSoulVoice = TweakConfigs.BRDHide0SoulVoice;
             songGauge->GaugeStandard.SoulVoiceContainer->Color.A = (byte)(hideSoulVoice || simple0 ? 0 : 255);
             songGauge->GaugeSimple.SoulVoiceContainer->Color.A = (byte)(hideSoulVoice || !simple0 ? 0 : 255);
 
@@ -69,6 +79,7 @@ public class BRDModule : JobModule
 
 public partial class TweakConfigs
 {
-    public bool BRDHideSoulVoice;
+    public bool BRDHide0Song;
+    public bool BRDHide0SoulVoice;
     public Vector2 BRDSoulVoicePos;
 }

@@ -1,10 +1,14 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -27,7 +31,7 @@ public class DRKModule : JobModule
         new("Living Shadow", nameof(LivingShadowTracker))
     };
 
-    public DRKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public DRKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudDRK0", "JobHudDRK1") { }
 
     public override void Save()
     {
@@ -37,38 +41,45 @@ public class DRKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-       /* ToggleControls("Hide Blood Gauge", ref TweakConfigs.DRKHide0, ref update);
+        ToggleControls("Hide Blood Gauge", ref TweakConfigs.DRKHide0, ref update);
         HideWarning(TweakConfigs.DRKHide0);
         ToggleControls("Hide Darkside Gauge", ref TweakConfigs.DRKHide1, ref update);
-        HideWarning(TweakConfigs.DRKHide1);*/
+        HideWarning(TweakConfigs.DRKHide1);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save))
+        {
+            ApplyTweaks0();
+            ApplyTweaks1();
+        }
     }
 
-    public override void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
-        /*var bloodGauge = (AddonJobHudDRK0*)GameGui.GetAddonByName("JobHudDRK0");
+        var bloodGauge = (AddonJobHudDRK0*)GameGui.GetAddonByName("JobHudDRK0");
         if (bloodGauge != null && bloodGauge->GaugeStandard.Container != null)
         {
-            var drkHide0 = TweakConfigs.DRKHide0;
-            var simple0 = bloodGauge->AddonJobHud.UseSimpleGauge;
-            bloodGauge->GaugeStandard.Container->Color.A = (byte)(drkHide0 || simple0 ? 0 : 255);
-            bloodGauge->GaugeSimple.Container->Color.A = (byte)(drkHide0 || !simple0 ? 0 : 255);
+            var hide0 = TweakConfigs.DRKHide0;
+            var simple0 = ((AddonJobHud*)bloodGauge)->UseSimpleGauge;
+            bloodGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple0 ? 0 : 255);
+            bloodGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple0 ? 0 : 255);
         }
+    }
 
+    public override unsafe void ApplyTweaks1()
+    {
         var darkSideGauge = (AddonJobHudDRK1*)GameGui.GetAddonByName("JobHudDRK1");
         if (darkSideGauge != null && darkSideGauge->GaugeStandard.Container != null)
         {
-            var drkHide1 = TweakConfigs.DRKHide1;
-            var simple1 = darkSideGauge->AddonJobHud.UseSimpleGauge;
-            darkSideGauge->GaugeStandard.Container->Color.A = (byte)(drkHide1 || simple1 ? 0 : 255);
-            ((AtkUnitBase*)darkSideGauge)->GetNodeById(20)->ToggleVisibility(!drkHide1 && simple1);
-        }*/
+            var hide1 = TweakConfigs.DRKHide1;
+            var simple1 = ((AddonJobHud*)darkSideGauge)->UseSimpleGauge;
+            darkSideGauge->GaugeStandard.Container->Color.A = (byte)(hide1 || simple1 ? 0 : 255);
+            ((AtkUnitBase*)darkSideGauge)->GetNodeById(20)->ToggleVisibility(!hide1 && simple1);
+        }
     }
 }
 
 public partial class TweakConfigs
 {
- /*   public bool DRKHide0;
-    public bool DRKHide1;*/
+    public bool DRKHide0;
+    public bool DRKHide1;
 }

@@ -1,10 +1,13 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -25,7 +28,7 @@ public class WHMModule : JobModule
         new("Blood Lily", nameof(BloodLilyTracker))
     };
 
-    public WHMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public WHMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudWHM0") { }
 
     public override void Save()
     {
@@ -35,26 +38,26 @@ public class WHMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-       /* ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHideAll, ref update);
-        HideWarning(TweakConfigs.WHMHideAll);*/
+        ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHide0, ref update);
+        HideWarning(TweakConfigs.WHMHide0);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
-       /* var healingGauge = (AddonJobHudWHM0*)GameGui.GetAddonByName("JobHudWHM0");
+        var healingGauge = (AddonJobHudWHM0*)GameGui.GetAddonByName("JobHudWHM0");
         if (healingGauge != null && healingGauge->GaugeStandard.Container != null)
         {
-            var hideAll = TweakConfigs.WHMHideAll;
-            var simple = healingGauge->AddonJobHud.UseSimpleGauge;
-            healingGauge->GaugeStandard.Container->Color.A = (byte)(hideAll || simple ? 0 : 255);
-            healingGauge->GaugeSimple.Container->Color.A = (byte)(hideAll || !simple ? 0 : 255);
-        }*/
+            var hide0 = TweakConfigs.WHMHide0;
+            var simple = ((AddonJobHud*)healingGauge)->UseSimpleGauge;
+            healingGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple ? 0 : 255);
+            healingGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple ? 0 : 255);
+        }
     }
 }
 
 public partial class TweakConfigs
 {
-   // public bool WHMHideAll;
+    public bool WHMHide0;
 }

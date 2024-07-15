@@ -8,6 +8,7 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.JobModules.TweakUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -29,7 +30,7 @@ public class RDMModule : JobModule
         new("Balance Crystal", nameof(BalanceCrystalTracker))
     };
 
-    public RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRDM0") { }
 
     public override void Save()
     {
@@ -39,18 +40,27 @@ public class RDMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        WidgetUI.ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0, ref update);
+        HideWarning(TweakConfigs.RDMHide0);
         WidgetUI.ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
 
-       // if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
     public bool SwordplayStatePrev;
     public bool SwordplayStateCurrent;
-    public override unsafe void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
         var balanceGauge = (AddonJobHudRDM0*)GameGui.GetAddonByName("JobHudRDM0");
-
         ApplySwordplayCueTweak(balanceGauge);
+
+        if (balanceGauge != null && balanceGauge->GaugeStandard.Container != null)
+        {
+            var hide0 = TweakConfigs.RDMHide0;
+            var simple = ((AddonJobHud*)balanceGauge)->UseSimpleGauge;
+            balanceGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple ? 0 : 255);
+            balanceGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple ? 0 : 255);
+        }
     }
 
     private unsafe void ApplySwordplayCueTweak(AddonJobHudRDM0* balanceGauge)
@@ -75,4 +85,5 @@ public class RDMModule : JobModule
 public partial class TweakConfigs
 {
     public bool RDM0SwordplayCue;
+    public bool RDMHide0;
 }

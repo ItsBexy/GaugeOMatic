@@ -1,11 +1,12 @@
-using FFXIVClientStructs.FFXIV.Component.GUI;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
-using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
+using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -21,7 +22,7 @@ public class ASTModule : JobModule
         new("_ParameterWidget", "Parameter Bar")
     };
 
-    public ASTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public ASTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudAST0") { }
 
     public override void Save()
     {
@@ -33,49 +34,26 @@ public class ASTModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        /*var fontIndex = FontList.IndexOf(TweakConfigs.ASTCardFont);
+        ToggleControls("Hide Arcana Gauge", ref TweakConfigs.ASTHide0, ref update);
+        HideWarning(TweakConfigs.ASTHide0);
 
-        LabelColumn("Card Font");
-
-        ImGui.SetNextItemWidth(142 * GlobalScale);
-        if (ImGui.Combo("##TweakASTCardFont", ref fontIndex, FontNames, FontNames.Length))
-        {
-            update |= UpdateFlags.Save;
-            TweakConfigs.ASTCardFont = FontList[fontIndex];
-        }*/
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public readonly List<FontType> FontList = new() { Axis, TrumpGothic, Jupiter };
-    public readonly string[] FontNames = { "Axis", "Trump Gothic", "Jupiter" };
-
-    public override void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
-       /* var arcanaGauge = (AddonJobHudAST0*)GameGui.GetAddonByName("JobHudAST0");
-        if (arcanaGauge != null && arcanaGauge->GaugeStandard.Container != null) ApplyCardFont();
-
-        void ApplyCardFont()
+        var arcanaGauge = (AddonJobHudAST0*)GameGui.GetAddonByName("JobHudAST0");
+        if (arcanaGauge != null)
         {
-            var cardFont = TweakConfigs.ASTCardFont;
-            var size = (byte)(cardFont == TrumpGothic ? 18 : 12);
-            var align = cardFont == TrumpGothic ? AlignmentType.Center : AlignmentType.Bottom;
-
-            ApplyFontProps(arcanaGauge->GaugeStandard.CardName);
-            ApplyFontProps(arcanaGauge->GaugeStandard.MinorArcanaName);
-            ApplyFontProps(arcanaGauge->GaugeSimple.CardName->AtkTextNode);
-            ApplyFontProps(arcanaGauge->GaugeSimple.MinorArcanaName->AtkTextNode);
-
-            void ApplyFontProps(AtkTextNode* node)
-            {
-                node->FontType = cardFont;
-                node->FontSize = size;
-                node->AlignmentType = align;
-            }
-        }*/
+            var hide0 = TweakConfigs.ASTHide0;
+            var simple0 = ((AddonJobHud*)arcanaGauge)->UseSimpleGauge;
+            arcanaGauge->GaugeStandard.Container->ToggleVisibility(!hide0 && !simple0);
+            arcanaGauge->GaugeSimple.Container->ToggleVisibility(!hide0 && simple0);
+        }
     }
+
 }
 public partial class TweakConfigs
 {
-   // public FontType ASTCardFont = Axis;
+   public bool ASTHide0;
 }

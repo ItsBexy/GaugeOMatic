@@ -127,10 +127,7 @@ public static class Color
             return new(r,g,b);
         }
 
-        public readonly uint ToBitField()
-        {
-            return ((uint)R + 256u) + (((uint)G + 256u) << 10) + (((uint)B + 256u) << 22);
-        }
+        public readonly uint ToBitField() => (uint)R + 256u + (((uint)G + 256u) << 10) + (((uint)B + 256u) << 22);
     }
 
     public struct ColorSet

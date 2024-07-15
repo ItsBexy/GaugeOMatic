@@ -43,7 +43,7 @@ public abstract partial class StatusData
 
             if (statusList != null)
             {
-                ulong? playerId = ClientState.LocalPlayer?.GameObjectId;
+                var playerId = ClientState.LocalPlayer?.GameObjectId;
 
                 foreach (var status in statusList.Where(StatusMatch(ID, playerId)))
                 {

@@ -1,10 +1,13 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -23,7 +26,7 @@ public class WARModule : JobModule
         new("Beast Gauge", nameof(BeastGaugeTracker))
     };
 
-    public WARModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList) { }
+    public WARModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudWAR0") { }
 
     public override void Save()
     {
@@ -33,26 +36,26 @@ public class WARModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-      /*  ToggleControls("Hide Beast Gauge", ref TweakConfigs.WARHide0, ref update);
-        HideWarning(TweakConfigs.WARHide0);*/
+        ToggleControls("Hide Beast Gauge", ref TweakConfigs.WARHide0, ref update);
+        HideWarning(TweakConfigs.WARHide0);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks();
+        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override void ApplyTweaks()
+    public override unsafe void ApplyTweaks0()
     {
-       /* var beastGauge = (AddonJobHudWAR0*)GameGui.GetAddonByName("JobHudWAR0");
+        var beastGauge = (AddonJobHudWAR0*)GameGui.GetAddonByName("JobHudWAR0");
         if (beastGauge != null && beastGauge->GaugeStandard.Container != null)
         {
             var warHide0 = TweakConfigs.WARHide0;
-            var simple0 = beastGauge->AddonJobHud.UseSimpleGauge;
+            var simple0 = ((AddonJobHud*)beastGauge)->UseSimpleGauge;
             beastGauge->GaugeStandard.Container->Color.A = (byte)(warHide0 || simple0 ? 0 : 255);
             beastGauge->GaugeSimple.BarContainer->Color.A = (byte)(warHide0 || !simple0 ? 0 : 255);
-        }*/
+        }
     }
 }
 
 public partial class TweakConfigs
 {
-  //  public bool WARHide0;
+    public bool WARHide0;
 }
