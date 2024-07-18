@@ -3,6 +3,7 @@ using GaugeOMatic.GameData;
 using System;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudACN0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBLM0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBLM1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudBRD0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudDNC0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudDNC1;
@@ -15,9 +16,13 @@ using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudGNB0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudMCH0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudMNK1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudNIN0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudNIN1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudPLD0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRDB0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRDB1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRDM0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRPM0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRPM1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRRP0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudRRP1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSAM0;
@@ -83,6 +88,27 @@ public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
                 GaugeData->NinkiValue,
                 100,
                 GaugeData->NinkiValue >= 50 ? 1 : 0, 1,
+                preview);
+}
+
+[TrackerDisplay(NIN, ToolText)]
+public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData>
+{
+    public override string DisplayName => "Kazematoi Stacks";
+    public override string GaugeAddonName => "JobHudNIN1v70";
+    public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Kazematoi Stacks\n" +
+                                    "State: Shows whether any stacks remain";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 5, 0, 5, 0, 1, preview) :
+            new(GaugeData->StackCount,
+                5,
+                GaugeData->StackCount,
+                5,
+                GaugeData->StackCount > 0 ? 1 : 0,
+                1,
                 preview);
 }
 
@@ -262,6 +288,70 @@ public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
                 preview);
 }
 
+[TrackerDisplay(VPR, ToolText)]
+public sealed unsafe class RattlingCoilTracker : JobGaugeTracker<VipersightGaugeData>
+{
+    public override string DisplayName => "Rattling Coils";
+    public override string GaugeAddonName => "JobHudRDB0";
+    public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Rattling Coils\n" +
+                                    "State: Shows whether any Coils remain";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 3, 0, 3, 0, 1, preview) :
+            new(GaugeData->CoilStacks,
+                GaugeData->CoilMax,
+                GaugeData->CoilStacks,
+                GaugeData->CoilMax,
+                GaugeData->CoilStacks > 0 ? 1 : 0,
+                1,
+                preview);
+}
+
+[TrackerDisplay(VPR, ToolText)]
+public sealed unsafe class SerpentGaugeTracker : JobGaugeTracker<SerpentOfferingsGaugeData>
+{
+    public override string DisplayName => "Serpent Offerings Gauge";
+    public override string GaugeAddonName => "JobHudRDB1";
+    private const string ToolText = "Counter: Shows Anguine Tribute Stacks\n" +
+                                    "Gauge: Shows Serpent Offerings Gauge value\n" +
+                                    "State: Shows whether gauge can be spent";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 5, 0, 100, 0, 1, preview) :
+            new(GaugeData->TributeStacks,
+                GaugeData->TributeMax,
+                GaugeData->GaugeValue,
+                GaugeData->GaugeMax,
+                GaugeData->GaugeValue >= GaugeData->GaugeMid ? 1 : 0,
+                1,
+                preview);
+}
+
+[TrackerDisplay(VPR, ToolText)]
+public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferingsGaugeData>
+{
+    public override string DisplayName => "Anguine Tribute";
+    public override string GaugeAddonName => "JobHudRDB1";
+    public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Anguine Tribute Stacks\n" +
+                                    "Gauge: Shows Anguine Tribute Timer\n" +
+                                    "State: Shows whether any stacks remain";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 5, 0, 30, 0, 1, preview) :
+            new(GaugeData->TributeStacks,
+                GaugeData->TributeMax,
+                GaugeData->TributeTimeLeft,
+                GaugeData->TributeMaxTime,
+                GaugeData->TributeStacks > 0 ? 1 : 0,
+                1,
+                preview);
+}
+
 #endregion
 
 #region Ranged
@@ -386,15 +476,7 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
                          4,
                          GaugeData->CompletedSteps,
                          4,
-                         //GaugeData->CompletedSteps == 4 ? 0 : GaugeData->Steps[GaugeData->CompletedSteps],
-                         GaugeData->CompletedSteps switch
-                         {
-                             4 => 0,
-                             3 => GaugeData->Step3,
-                             2 => GaugeData->Step2,
-                             1 => GaugeData->Step1,
-                             _ => GaugeData->Step0
-                         },
+                         GaugeData->CompletedSteps == 4 ? 0 : GaugeData->Steps[GaugeData->CompletedSteps],
                          4,
                          preview);
     }
@@ -529,6 +611,27 @@ public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData
     }
 }
 
+[TrackerDisplay(BLM, ToolText)]
+public sealed unsafe class AstralSoulTracker : JobGaugeTracker<AstralGaugeData>
+{
+    public override string DisplayName => "Astral Soul Stacks";
+    public override string GaugeAddonName => "JobHudBLM1";
+    public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Astral Soul Stacks\n" +
+                                    "State: Shows whether stacks are full";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 6, 0, 6, 0, 1, preview) :
+            new(GaugeData->StackCount,
+                6,
+                GaugeData->StackCount,
+                6,
+                GaugeData->StackCount == 6 ? 1 : 0,
+                1,
+                preview);
+}
+
 [TrackerDisplay(SMN)]
 public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<AetherflowSMNGaugeData>
 {
@@ -604,37 +707,70 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
     }
 }
 
-[TrackerDisplay(PCT)]
+[TrackerDisplay(PCT, ToolText)]
 public sealed unsafe class CreatureMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
     public override string DisplayName => "Creature Motif Deadline";
     public override string GaugeAddonName => "JobHudRPM0";
+    private const string ToolText = "Counter: Shows charges (3)\n" +
+                                    "Gauge: Shows total cooldown time (120s)\n" +
+                                    "State: Shows if ready\n\n" +
+                                    "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData->CreatureMotif > 0 ? new(0, 3, 0, 120, 0, 1, preview)
                                                            : new(ActionData.Actions[35347], preview);
 }
 
-[TrackerDisplay(PCT)]
+[TrackerDisplay(PCT, ToolText)]
 public sealed unsafe class WeaponMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
     public override string DisplayName => "Weapon Motif Deadline";
     public override string GaugeAddonName => "JobHudRPM0";
+    private const string ToolText = "Counter: Shows charges (2)\n" +
+                                    "Gauge: Shows total cooldown time (120s)\n" +
+                                    "State: Shows if ready\n\n" +
+                                    "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData->WeaponMotif ? new(0, 3, 0, 120, 0, 1, preview)
+        GaugeAddon == null || GaugeData->WeaponMotif ? new(0, 2, 0, 120, 0, 1, preview)
             : new(ActionData.Actions[35348], preview);
 }
 
-[TrackerDisplay(PCT)]
+[TrackerDisplay(PCT, ToolText)]
 public sealed unsafe class LandscapeMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
     public override string DisplayName => "Landscape Motif Deadline";
     public override string GaugeAddonName => "JobHudRPM0";
+    private const string ToolText = "Gauge: Shows total cooldown time (120s)\n" +
+                                    "State: Shows if ready\n\n" +
+                                    "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData->LandscapeMotif ? new(0, 3, 0, 120, 0, 1, preview)
+        GaugeAddon == null || GaugeData->LandscapeMotif ? new(0, 1, 0, 120, 0, 1, preview)
             : new(ActionData.Actions[35349], preview);
+}
+
+[TrackerDisplay(PCT, ToolText)]
+public sealed unsafe class PaletteGaugeTracker : JobGaugeTracker<PaletteGaugeData>
+{
+    public override string DisplayName => "Palette Gauge";
+    public override string GaugeAddonName => "JobHudRPM1";
+    public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows White Paint Stacks\n" +
+                                    "Gauge: Shows Palette Gauge value\n" +
+                                    "State: Shows whether Black Paint is available";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 5, 0, 5, 0, 1, preview) :
+            new(GaugeData->WhitePaint,
+                5,
+                GaugeData->PaletteValue,
+                GaugeData->PaletteMax,
+                GaugeData->BlackPaint > 0 ? 1 : 0,
+                1,
+                preview);
 }
 
 #endregion

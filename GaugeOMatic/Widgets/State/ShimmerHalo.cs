@@ -35,25 +35,36 @@ public sealed unsafe class ShimmerHalo : StateWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new("ui/uld/gachaeffect03.tex", new Vector4(0, 0, 256, 256))
+        new("ui/uld/gachaeffect03.tex", new Vector4(0, 0, 256, 256), new Vector4(13, 124, 8, 8))
     };
 
     #region Nodes
 
     public CustomNode Halo;
+    public CustomNode Fill;
 
     public override CustomNode BuildRoot()
     {
-        Halo = ImageNodeFromPart(0, 0)
-               .RemoveFlags(SetVisByAlpha)
-               .SetAlpha(0)
-               .SetImageFlag(32)
+        Halo = ClippingMaskFromPart(0, 0)
                .SetOrigin(128, 128)
-               .SetPos(-128, -128);
+               .SetPos(-128, -128)
+               .SetDrawFlags(0xA);
+
+        Fill = ImageNodeFromPart(0, 1)
+               .SetPos(-128, -128)
+               .SetSize(256, 256)
+               .RemoveFlags(SetVisByAlpha)
+               .SetImageFlag(32)
+               .SetDrawFlags(0xA)
+               .SetAlpha(255)
+               .SetImageWrap(2);
+
+        Halo.Node->Priority = 0;
+        Fill.Node->Priority = 0;
 
         BeginRotation();
 
-        return new(CreateResNode(), Halo);
+        return new CustomNode(CreateResNode(), Fill, Halo).SetDrawFlags(0xA);
     }
 
     #endregion
@@ -71,7 +82,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
             Animator += new Tween(Halo,
                                   new(0) { Rotation = startAngle },
                                   new((int)(60000f / rpm)) { Rotation = endAngle })
-                { Repeat = true, Label = "RotationTween" };
+            { Repeat = true, Label = "RotationTween" };
         }
     }
 
@@ -81,24 +92,33 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     #region UpdateFuncs
 
-    public override void PostUpdate() { if (!Halo.Visible) StopRotation(); }
+    public override void PostUpdate()
+    {
+        Fill.SetDrawFlags(0xA);
+        Halo.SetDrawFlags(0xA);
+        if (!Fill.Visible) StopRotation();
+    }
 
     public override void OnFirstRun(int current)
     {
-        Halo.SetMultiply(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
-        Halo.SetAlpha(current > 0).SetVis(current > 0);
+        var color = Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State);
+        Fill.SetRGB(color);
+        Fill.SetAlpha(current > 0).SetVis(current > 0);
     }
 
     public override void Activate(int current)
     {
         var color = Config.ColorList.ElementAtOrDefault(current);
 
-        Halo.Show();
+        Fill.Show();
         Animator -= "ShimmerAlpha";
-        Animator += new Tween(Halo,
-                              new(0) { Alpha = 0, MultRGB = color },
-                              new(200) { Alpha = 255, MultRGB = color })
-                              { Label = "ShimmerAlpha" };
+        Animator += new Tween[]
+        {
+            new(Fill,
+                new (0) { Alpha = 0, RGB = color },
+                new(200) { Alpha = 255, RGB = color }
+                ) { Label = "ShimmerAlpha" },
+        };
 
         BeginRotation();
     }
@@ -106,13 +126,15 @@ public sealed unsafe class ShimmerHalo : StateWidget
     public override void Deactivate(int previous)
     {
         Animator -= "ShimmerAlpha";
-        Animator += new Tween(Halo, Visible[0], Hidden[200]) { Complete = () => Halo.Hide(), Label = "ShimmerAlpha" };
+        Animator += new Tween(Fill, Visible[0], Hidden[200]) { Complete = () => Fill.Hide(), Label = "ShimmerAlpha" };
     }
 
-    public override void StateChange(int current, int previous) =>
-        Animator += new Tween(Halo,
-                              new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
-                              new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) });
+    public override void StateChange(int current, int previous)
+    {
+        Animator += new Tween(Fill,
+                              new(0) { RGB = Config.ColorList.ElementAtOrDefault(previous) },
+                              new(200) { RGB = Config.ColorList.ElementAtOrDefault(current) });
+    }
 
     #endregion
 
@@ -167,9 +189,9 @@ public sealed unsafe class ShimmerHalo : StateWidget
                   .SetScale(Config.Scale)
                   .SetRotation(Config.Angle * 0.0174532925199433f);
 
-        Halo.SetMultiply(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
+        Fill.SetRGB(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
 
-        if (Halo.Visible) { BeginRotation(); }
+        if (Fill.Visible) { BeginRotation(); }
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

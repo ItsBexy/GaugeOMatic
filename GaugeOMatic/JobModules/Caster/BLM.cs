@@ -1,13 +1,14 @@
-using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
-using System.Collections.Generic;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
+using GaugeOMatic.Windows;
+using System;
+using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -39,7 +40,8 @@ public class BLMModule : JobModule
         new("Umbral Ice", nameof(UmbralIceTracker)),
         new("Enochian / Polyglot", nameof(EnochianTracker)),
         new("Umbral Hearts", nameof(UmbralHeartTracker)),
-        new("Paradox", nameof(ParadoxTracker))
+        new("Paradox", nameof(ParadoxTracker)),
+        new("Astral Soul Stacks", nameof(AstralSoulTracker))
     };
 
     public override void TweakUI(ref UpdateFlags update)
@@ -50,36 +52,18 @@ public class BLMModule : JobModule
         HideWarning(TweakConfigs.BLMHide0);
         WidgetUI.ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1, ref update);
         HideWarning(TweakConfigs.BLMHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var elementalGauge = (AddonJobHudBLM0*)GameGui.GetAddonByName("JobHudBLM0");
-        if (elementalGauge != null && elementalGauge->GaugeStandard.Container != null)
-        {
-            var hide0 = TweakConfigs.BLMHide0;
-            var simple = ((AddonJobHud*)elementalGauge)->UseSimpleGauge;
-            elementalGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple ? 0 : 255);
-            elementalGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple ? 0 : 255);
-        }
+        var gauge = (AddonJobHudBLM0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.BLMHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var astralGauge = (AddonJobHudBLM1*)GameGui.GetAddonByName("JobHudBLM1");
-        if (astralGauge != null && astralGauge->GaugeStandard.Container != null)
-        {
-            var hide1 = TweakConfigs.BLMHide1;
-            var simple = ((AddonJobHud*)astralGauge)->UseSimpleGauge;
-            astralGauge->GaugeStandard.Container->Color.A = (byte)(hide1 || simple ? 0 : 255);
-            ((AtkUnitBase*)astralGauge)->GetNodeById(15)->SetAlpha((byte)(hide1 || !simple ? 0 : 255));
-        }
+        var gauge = (AddonJobHudBLM1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.BLMHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(15));
     }
 }
 

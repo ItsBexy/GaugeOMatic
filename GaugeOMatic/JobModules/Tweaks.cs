@@ -1,43 +1,53 @@
 using Dalamud.Interface;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using static Dalamud.Interface.FontAwesomeIcon;
 
 namespace GaugeOMatic.JobModules;
 
-public class TweakUI
+internal static class Tweaks
 {
-    public static void HideWarning(bool highlight = false)
+    public static unsafe void VisibilityTweak(bool hide, bool simple, AtkResNode* standardNode, AtkResNode* simpleNode)
     {
-        const string helpText = "NOTE: Unlike the game's built-in option to hide the job gauge,\nthis setting will preserve the element onscreen and allow you\nto pin widgets to it.";
-
-        ImGui.SameLine();
-        ImGui.PushFont(UiBuilder.IconFont);
-        ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), ExclamationTriangle.ToIconString());
-        ImGui.PopFont();
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.BeginTooltip();
-            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
-            ImGui.TextUnformatted(helpText);
-            ImGui.PopTextWrapPos();
-            ImGui.EndTooltip();
-        }
+        if (standardNode != null) standardNode->SetAlpha((byte)(hide || simple ? 0 : 255));
+        if (simpleNode != null) simpleNode->SetAlpha((byte)(hide || !simple ? 0 : 255));
     }
 
-    // ReSharper disable once UnusedMember.Global
-    public static void Warning(bool highlight,string helpText)
+    public static class TweakUI
     {
-        ImGui.SameLine();
-        ImGui.PushFont(UiBuilder.IconFont);
-        ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), ExclamationTriangle.ToIconString());
-        ImGui.PopFont();
-        if (ImGui.IsItemHovered())
+        public static void HideWarning(bool highlight = false)
         {
-            ImGui.BeginTooltip();
-            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
-            ImGui.TextUnformatted(helpText);
-            ImGui.PopTextWrapPos();
-            ImGui.EndTooltip();
+            const string helpText = "NOTE: Unlike the game's built-in option to hide the job gauge,\nthis setting will preserve the element onscreen and allow you\nto pin widgets to it.";
+
+            ImGui.SameLine();
+            ImGui.PushFont(UiBuilder.IconFont);
+            ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), ExclamationTriangle.ToIconString());
+            ImGui.PopFont();
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+                ImGui.TextUnformatted(helpText);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
+            }
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public static void Warning(bool highlight, string helpText)
+        {
+            ImGui.SameLine();
+            ImGui.PushFont(UiBuilder.IconFont);
+            ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), ExclamationTriangle.ToIconString());
+            ImGui.PopFont();
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+                ImGui.TextUnformatted(helpText);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
+            }
         }
     }
 }

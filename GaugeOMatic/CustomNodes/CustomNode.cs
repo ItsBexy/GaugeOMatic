@@ -18,6 +18,7 @@ public unsafe partial class CustomNode : IDisposable
     public CustomNode(AtkImageNode* node) : this((AtkResNode*)node) { }
     public CustomNode(AtkNineGridNode* node) : this((AtkResNode*)node) { }
     public CustomNode(AtkTextNode* node) : this((AtkResNode*)node) { }
+    public CustomNode(AtkClippingMaskNode* node) : this((AtkResNode*)node) { }
 
     public static implicit operator AtkResNode*(CustomNode c) => c.Node;
     public static implicit operator CustomNode(AtkResNode* a) => new(a);

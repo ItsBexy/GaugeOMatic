@@ -1,3 +1,4 @@
+using System;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
@@ -133,12 +134,16 @@ public class ItemRefMenu : BranchingDropdown
         public string Name;
         public string TrackerType;
         public uint ItemId;
+        public string? ToolText;
 
         public MenuOption(string name, string trackerType, uint itemId = 0)
         {
             Name = name;
             TrackerType = trackerType;
             ItemId = itemId;
+
+            var displayAttr = (TrackerDisplayAttribute?)Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?.GetCustomAttributes(typeof(TrackerDisplayAttribute), true).First() ?? new TrackerDisplayAttribute();
+            ToolText = displayAttr.ToolText;
         }
 
         public static implicit operator MenuOption(ActionRef a) => new(a.Name, nameof(ActionTracker), a.ID);
@@ -195,11 +200,14 @@ public class ItemRefMenu : BranchingDropdown
 
             if (ImGui.IsItemHovered())
             {
+                if (o.ToolText != null)
+                {
+                    ImGui.SetTooltip(o.ToolText);
+                }
                 if (o.TrackerType == nameof(ActionTracker))
                 {
                     var action = (ActionRef)o.ItemId;
                     var oneCharge = action.MaxCharges == 1;
-
 
                     var counterDesc = $"Shows charges ({action.MaxCharges})";
                     var gaugeDesc = $"Shows cooldown time ({action.CooldownLength}s)";

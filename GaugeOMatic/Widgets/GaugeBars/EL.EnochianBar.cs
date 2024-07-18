@@ -9,10 +9,8 @@ using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.EnochianBar.EnochianBarConfig.Quadrants;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -38,14 +36,19 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         MultiCompData = new("EL", "Elemental Gauge Replica", 1)
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
+    public override CustomPartsList[] PartsLists { get; } = { BLM0, CircleMask };
 
     #region Nodes
 
     public CustomNode Contents;
+    public CustomNode Contents2;
     public CustomNode MainContainer;
     public CustomNode DrainContainer;
     public CustomNode GainContainer;
+
+    public CustomNode MainMask;
+    public CustomNode DrainMask;
+    public CustomNode GainMask;
 
     public CustomNode Backplate;
     public CustomNode Lattice;
@@ -58,34 +61,41 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override CustomNode BuildRoot()
     {
+        CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0,-1);
+        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
+
         Lattice = ImageNodeFromPart(0, 8).SetAddRGB(-20).SetMultiply(50).SetImageWrap(1);
         Plate = ImageNodeFromPart(0, 9).SetPos(9, 8).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
         Groove = ImageNodeFromPart(0, 11).SetPos(6, 5).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
 
         Backplate = new(CreateResNode(), Lattice, Plate, Groove);
 
-        Drain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline);
-        Gain = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline);
-        Main = ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline);
+        Drain = FillNode();
+        Gain = FillNode();
+        Main = FillNode();
 
-        DrainContainer = new CustomNode(CreateResNode(), Drain).SetSize(85, 85).SetNodeFlags(Clip);
-        GainContainer = new CustomNode(CreateResNode(), Gain).SetSize(85, 85).SetNodeFlags(Clip);
-        MainContainer = new CustomNode(CreateResNode(), Main).SetSize(85, 85).SetNodeFlags(Clip);
+        DrainMask = MaskNode();
+        GainMask = MaskNode();
+        MainMask = MaskNode();
+
+        DrainContainer = new CustomNode(CreateResNode(), Drain, DrainMask).SetSize(85, 85).SetPos(0,2);
+        GainContainer = new CustomNode(CreateResNode(), Gain, GainMask).SetSize(85, 85).SetPos(0, 2);
+        MainContainer = new CustomNode(CreateResNode(), Main, MainMask).SetSize(85, 85).SetPos(0, 2);
 
         Bar = new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(11, 10).SetSize(86, 86).SetAddRGB(-20).SetMultiply(50);
 
         ClockHand = ImageNodeFromPart(0, 12).SetOrigin(15, 10).DefineTimeline(new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 });
-
-        ClockHand.Node->Priority = 1;
+        ClockHand.Node->SetPriority(1);
 
         ClockHandContainer = new CustomNode(CreateResNode(), ClockHand).SetPos(-6, -2).SetSize(30, 128);
 
         NumTextNode = new();
-        NumTextNode.Node->SetPriority(1);
+        NumTextNode.Node->SetPriority(2);
 
-        Contents = new CustomNode(CreateResNode(), Backplate, Bar, ClockHandContainer).SetSize(128, 124).SetOrigin(8, 8);
+        Contents2 = new CustomNode(CreateResNode(), Backplate, Bar, ClockHandContainer).SetSize(128, 124).SetOrigin(8, 8);
+        Contents = new CustomNode(CreateResNode(),Contents2).SetOrigin(7,8);
 
-        return new(CreateResNode(), NumTextNode, Contents );
+        return new(CreateResNode(), Contents, NumTextNode );
     }
 
     #endregion
@@ -97,7 +107,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     private void ShowBar()
     {
         var scaleX = Config.Direction == 1 ? -1 : 1;
-        Animator += new Tween(Contents,
+        Animator += new Tween(Contents2,
                               new(0) { ScaleX = scaleX * 1.2f, ScaleY = 1.2f, Alpha = 0 },
                               new(150) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 });
     }
@@ -105,7 +115,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     private void HideBar()
     {
         var scaleX = Config.Direction == 1 ? -1 : 1;
-        Animator += new Tween(Contents,
+        Animator += new Tween(Contents2,
                               new(0) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 },
                               new(150) { ScaleX = scaleX * 0.8f, ScaleY = 0.8f, Alpha = 0 });
     }
@@ -173,7 +183,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         base.OnFirstRun(prog);
 
         if (prog > 0) UnDimBar();
-        if (Config.HideEmpty && prog == 0) Contents.SetAlpha(0);
+        if (Config.HideEmpty && prog == 0) Contents2.SetAlpha(0);
     }
 
     #endregion
@@ -182,12 +192,10 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public sealed class EnochianBarConfig : GaugeBarWidgetConfig
     {
-        public enum Quadrants { BR = 0, BL = 1, TL = 2, TR = 3 }
-
         public Vector2 Position;
         public float Scale = 1;
-        public Quadrants Quadrant;
         public int Direction;
+        public float Angle;
 
         public ColorRGB PlateColor = new(100, 100, 100);
         public AddRGB MainColor = new(25, -52, 90);
@@ -218,8 +226,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
             Position = config.Position;
             Scale = config.Scale;
-            Quadrant = config.Quadrant;
             Direction = config.Direction;
+            Angle = config.Angle;
 
             PlateColor = config.PlateColor;
             MainColor = config.MainColor;
@@ -259,52 +267,28 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         WidgetRoot.SetPos(Config.Position + new Vector2(86, 68))
                   .SetScale(Config.Scale);
 
+        Contents.SetRotation(Config.Angle, true);
+
         Backplate.SetMultiply(Config.PlateColor);
 
-        QuadrantAdjust(Config.Quadrant, Config.Direction);
-
-    }
-
-    private void QuadrantAdjust(EnochianBarConfig.Quadrants quad, int direction)
-    {
-        var flip = direction == 1;
-        var flipFactor = flip ? -1 : 1;
-        var angleOffset = flip ? -90 : 0;
-
-        ClockHand.SetScaleX(flipFactor);
-        Lattice.SetScaleX(flipFactor).SetRotation(angleOffset, true);
-        Contents.SetRotation(((float)quad * 90f) + angleOffset, true).SetScaleX(flipFactor);
-
-        Vector2 barPos = quad switch
-        {
-            BL when direction == 0 => new(0, -85),
-            TR when direction == 1 => new(0, -85),
-            TL => new(-85, -85),
-            TR when direction == 0 => new(-85, -1),
-            BL when direction == 1 => new(-85, -1),
-            _ => new(0, -1)
-        };
-
-        Vector2 containerPos = quad switch
-        {
-            BL when direction == 0 => new(0, 86),
-            TR when direction == 1 => new(0, 86),
-            TL => new(85, 86),
-            TR when direction == 0 => new(85, 2),
-            BL when direction == 1 => new(85, 2),
-            _ => new(0, 2)
-        };
-
-        Drain.SetPos(barPos);
-        Gain.SetPos(barPos);
-        Main.SetPos(barPos);
-
-        DrainContainer.SetPos(containerPos);
-        GainContainer.SetPos(containerPos);
-        MainContainer.SetPos(containerPos);
+        DirectionAdjust(Config.Direction);
 
         NumTextNode.ApplyProps(NumTextProps, new Vector2(8, 5));
         NumTextNode.Show().SetAlpha(NumTextProps.Enabled);
+    }
+
+    private void DirectionAdjust(int direction)
+    {
+        var flipFactor = direction == 1 ? -1 : 1;
+        var angle = direction == 1 ? -90 : 0;
+
+        ClockHand.SetScaleX(flipFactor);
+
+        Lattice.SetScaleX(flipFactor)
+               .SetRotation(angle, true);
+
+        Contents2.SetScaleX(flipFactor)
+                .SetRotation(angle, true);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -312,9 +296,9 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        RadioIcons("Quadrant##Quad1", ref Config.Quadrant, new() { TL, TR }, new() { None, None }, ref update);
-        RadioIcons(" ##Quad2", ref Config.Quadrant, new() { BL, BR }, new() { None, None }, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update); 
         RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt }, ref update);
+
 
         Heading("Colors");
         ColorPickerRGB("Plate Tint", ref Config.PlateColor, ref update);

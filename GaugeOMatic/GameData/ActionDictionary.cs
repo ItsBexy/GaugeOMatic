@@ -93,6 +93,7 @@ public partial class ActionData
 
         { 34620, new(34620, VPR, "Dreadwinder",               40, 2 ) },
         { 34623, new(34623, VPR, "Pit of Dread",              40, 2 ) },
+        { 34634, new(34634, VPR, "Death Rattle",              1     ) { ReadyType = Ants }},
         { 34646, new(34646, VPR, "Slither",                   30, 3 ) },
         { 34647, new(34647, VPR, "Serpent's Ire",             120   ) },
 
@@ -133,7 +134,6 @@ public partial class ActionData
         { 25788, new(25788, MCH, "Chain Saw",                 60    ) },
         { 36979, new(36979, MCH, "Double Check",              30, 3 ) },
         { 36980, new(36980, MCH, "Checkmate",                 30, 3 ) },
-
 
         { 15997, new(15997, DNC, "Standard Step",             30    ) },
         { 15998, new(15998, DNC, "Technical Step",            120   ) },
@@ -180,7 +180,6 @@ public partial class ActionData
         { 35347, new(35347, PCT, "Living Muse",               40, 3 ) },
         { 35348, new(35348, PCT, "Steel Muse",                60, 2 ) },
         { 35349, new(35349, PCT, "Scenic Muse",               120   ) },
-
 
         #endregion
 

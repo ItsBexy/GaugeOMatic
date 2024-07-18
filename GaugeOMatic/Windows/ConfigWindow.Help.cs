@@ -12,7 +12,6 @@ public partial class ConfigWindow
 
         ImGui.BeginTabBar("HelpTabs");
 
-
         AboutTab();
         HowToTab();
 
@@ -39,7 +38,6 @@ public partial class ConfigWindow
         {
 
             ImGui.TextWrapped(AboutText);
-
 
 
 
@@ -123,10 +121,8 @@ public partial class ConfigWindow
             IconButtonWithText("Overwrite Current", FontAwesomeIcon.PaintRoller, "dummyOverwrite");
 
 
-
             ImGui.Indent(-30f);
             ImGui.TextWrapped("If the preset contains trackers that are not applicable to the selected job, they'll be greyed out, but you can still use the widget designs.");
-
 
 
             ImGui.Spacing();
@@ -136,7 +132,6 @@ public partial class ConfigWindow
             ImGui.SameLine();
             IconButtonWithText("Save", FontAwesomeIcon.Save, "dummySave");
 
-
             ImGui.TextWrapped("If you've copied a preset from an external source to your clipboard, you can import it by clicking ");
             ImGui.SameLine();
             IconButtonWithText("Import From Clipboard", FontAwesomeIcon.SignInAlt, "dummyImport");
@@ -145,10 +140,7 @@ public partial class ConfigWindow
 
 
 
-
-
             ImGui.EndTabItem();
-
 
         }
     }

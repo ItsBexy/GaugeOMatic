@@ -28,15 +28,15 @@ public partial class ConfigWindow
 
         if (update.HasFlag(Save)) jobModule.Save();
     }
-
+    
     private static void TweakTab(JobModule jobModule, ref UpdateFlags update)
     {
         if (!ImGui.BeginTabItem($"Tweaks##{jobModule.Abbr}TweaksTab")) return;
 
         if (ImGui.BeginTable($"{jobModule.Abbr}TweaksTable", 2, SizingFixedFit))
         {
-            ImGui.TableSetupColumn("Labels", default, 150f);
-            ImGui.TableSetupColumn("Options");
+            ImGui.TableSetupColumn("Labels",ImGuiTableColumnFlags.WidthFixed);
+            ImGui.TableSetupColumn("Options", ImGuiTableColumnFlags.WidthStretch);
 
             WidgetUI.Heading("Job Gauge Tweaks");
 

@@ -1,13 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -38,43 +40,24 @@ public class RPRModule : JobModule
         Configuration.Save();
     }
 
-
     public override void TweakUI(ref UpdateFlags update)
     {
         ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHide0, ref update);
         HideWarning(TweakConfigs.RPRHide0);
         ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHide1, ref update);
         HideWarning(TweakConfigs.RPRHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var soulGauge = (AddonJobHudRRP0*)GameGui.GetAddonByName("JobHudRRP0");
-        if (soulGauge != null && soulGauge->GaugeStandard.Container != null)
-        {
-            var hideSoul = TweakConfigs.RPRHide0;
-            var simple0 = ((AddonJobHud*)soulGauge)->UseSimpleGauge;
-            soulGauge->GaugeStandard.Container->Color.A = (byte)(hideSoul || simple0 ? 0 : 255);
-            soulGauge->GaugeSimple.Container->Color.A = (byte)(hideSoul || !simple0 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudRRP0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.RPRHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var deathGauge = (AddonJobHudRRP1*)GameGui.GetAddonByName("JobHudRRP1");
-        if (deathGauge != null && deathGauge->GaugeStandard.Container != null)
-        {
-            var hideDeath = TweakConfigs.RPRHide1;
-            var simple1 = ((AddonJobHud*)deathGauge)->UseSimpleGauge;
-            deathGauge->GaugeStandard.Container->Color.A = (byte)(hideDeath || simple1 ? 0 : 255);
-            deathGauge->GaugeSimple.Container->Color.A = (byte)(hideDeath || !simple1 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudRRP1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.RPRHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 }
 

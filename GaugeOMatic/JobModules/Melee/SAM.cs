@@ -1,12 +1,14 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -56,58 +58,40 @@ public class SAMModule : JobModule
         PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu, ref update);
         PositionControls("Getsu", ref TweakConfigs.SAMSealPosGetsu, ref update);
         PositionControls("Ka", ref TweakConfigs.SAMSealPosKa, ref update);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var kenkiGauge = (AddonJobHudSAM0*)GameGui.GetAddonByName("JobHudSAM0");
-        if (kenkiGauge != null && kenkiGauge->GaugeStandard.KenkiContainer != null)
-        {
-            var simple0 = ((AddonJobHud*)kenkiGauge)->UseSimpleGauge;
-            var hideKenki = TweakConfigs.SAMHide0Kenki;
-            var hideMeditation = TweakConfigs.SAMHide0Meditation;
+        var gauge = (AddonJobHudSAM0*)gaugeAddon;
 
-            kenkiGauge->GaugeStandard.KenkiContainer->Color.A = (byte)(hideKenki || simple0 ? 0 : 255);
-            kenkiGauge->GaugeStandard.MeditationContainer->Color.A = (byte)(hideMeditation || simple0 ? 0 : 255);
-
-            kenkiGauge->GaugeSimple.KenkiContainer->Color.A = (byte)(hideKenki || !simple0 ? 0 : 255);
-            kenkiGauge->GaugeSimple.MeditationContainer->Color.A = (byte)(hideMeditation || !simple0 ? 0 : 255);
-        }
+        VisibilityTweak(TweakConfigs.SAMHide0Kenki, gauge->UseSimpleGauge, gauge->GaugeStandard.KenkiContainer, gauge->GaugeSimple.KenkiContainer);
+        VisibilityTweak(TweakConfigs.SAMHide0Meditation, gauge->UseSimpleGauge, gauge->GaugeStandard.MeditationContainer, gauge->GaugeSimple.MeditationContainer);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var senGauge = (AddonJobHudSAM1*)GameGui.GetAddonByName("JobHudSAM1");
-        var hideSen = TweakConfigs.SAMHide1;
-        var simple1 = ((AddonJobHud*)senGauge)->UseSimpleGauge;
+        var gauge = (AddonJobHudSAM1*)gaugeAddon;
+        var simple1 = gauge->UseSimpleGauge;
+        VisibilityTweak(TweakConfigs.SAMHide1, simple1, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
 
-        if (senGauge != null && senGauge->GaugeStandard.Container != null)
+        if (gauge != null && gauge->GaugeStandard.Container != null)
         {
             var setsuPos = TweakConfigs.SAMSealPosSetsu;
             var getsuPos = TweakConfigs.SAMSealPosGetsu;
             var kaPos = TweakConfigs.SAMSealPosKa;
             if (!simple1)
             {
-                senGauge->GaugeStandard.SetsuNode->SetPositionFloat(setsuPos.X + 44, setsuPos.Y + 4);
-                senGauge->GaugeStandard.GetsuNode->SetPositionFloat(getsuPos.X, getsuPos.Y + 76);
-                senGauge->GaugeStandard.KaNode->SetPositionFloat(kaPos.X + 90, kaPos.Y + 73);
+                gauge->GaugeStandard.SetsuNode->SetPositionFloat(setsuPos.X + 44, setsuPos.Y + 4);
+                gauge->GaugeStandard.GetsuNode->SetPositionFloat(getsuPos.X, getsuPos.Y + 76);
+                gauge->GaugeStandard.KaNode->SetPositionFloat(kaPos.X + 90, kaPos.Y + 73);
             }
             else
             {
-                senGauge->GaugeSimple.SetsuNode->SetPositionFloat(setsuPos.X + 0, setsuPos.Y);
-                senGauge->GaugeSimple.GetsuNode->SetPositionFloat(getsuPos.X + 19, getsuPos.Y);
-                senGauge->GaugeSimple.KaNode->SetPositionFloat(kaPos.X + 38, kaPos.Y);
+                gauge->GaugeSimple.SetsuNode->SetPositionFloat(setsuPos.X + 0, setsuPos.Y);
+                gauge->GaugeSimple.GetsuNode->SetPositionFloat(getsuPos.X + 19, getsuPos.Y);
+                gauge->GaugeSimple.KaNode->SetPositionFloat(kaPos.X + 38, kaPos.Y);
             }
         }
-
-        senGauge->GaugeStandard.Container->ToggleVisibility(!hideSen && !simple1);
-        senGauge->GaugeSimple.Container->Color.A = (byte)(hideSen || !simple1 ? 0 : 255);
     }
 }
 

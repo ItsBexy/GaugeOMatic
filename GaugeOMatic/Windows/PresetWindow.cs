@@ -93,7 +93,6 @@ public class PresetWindow : Window, IDisposable
         ImGui.SameLine();
         if (ImGui.RadioButton("Job Only", ref filter, 2)) { Configuration.PresetFiltering = 2; Configuration.Save(); }
 
-
         var presetList = new List<Preset>(UIData.PresetList.Where(p => filter == 0||p.Trackers.Any(t => filter switch
         {
             1 => t.JobRoleMatch(module),

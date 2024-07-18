@@ -1,13 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -45,36 +47,18 @@ public class DNCModule : JobModule
 
         ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHide1, ref update);
         HideWarning(TweakConfigs.DNCHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var stepGauge = (AddonJobHudDNC0*)GameGui.GetAddonByName("JobHudDNC0");
-        if (stepGauge != null && stepGauge->GaugeStandard.Container != null)
-        {
-            var hideFeathers = TweakConfigs.DNCHide0;
-            var simple0 = ((AddonJobHud*)stepGauge)->UseSimpleGauge;
-            stepGauge->GaugeStandard.Container->Color.A = (byte)(hideFeathers || simple0 ? 0 : 255);
-            stepGauge->GaugeSimple.Container->Color.A = (byte)(hideFeathers || !simple0 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudDNC0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.DNCHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var fourfoldFeathers = (AddonJobHudDNC1*)GameGui.GetAddonByName("JobHudDNC1");
-        if (fourfoldFeathers != null && fourfoldFeathers->GaugeStandard.Container != null)
-        {
-            var hideFeathers = TweakConfigs.DNCHide1;
-            var simple1 = ((AddonJobHud*)fourfoldFeathers)->UseSimpleGauge;
-            fourfoldFeathers->GaugeStandard.Container->Color.A = (byte)(hideFeathers || simple1 ? 0 : 255);
-            fourfoldFeathers->GaugeSimple.Container->Color.A = (byte)(hideFeathers || !simple1 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudDNC1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.DNCHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 }
 

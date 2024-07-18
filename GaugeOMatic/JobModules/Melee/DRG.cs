@@ -1,13 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -39,20 +41,12 @@ public class DRGModule : JobModule
     {
         ToggleControls("Hide Dragon Gauge", ref TweakConfigs.DRGHide0, ref update);
         HideWarning(TweakConfigs.DRGHide0);
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var dragonGauge = (AddonJobHudDRG0*)GameGui.GetAddonByName("JobHudDRG0");
-        if (dragonGauge != null && dragonGauge->GaugeStandard.Container != null)
-        {
-            var hideAll = TweakConfigs.DRGHide0;
-            var simple = ((AddonJobHud*)dragonGauge)->UseSimpleGauge;
-            dragonGauge->GaugeStandard.Container->Color.A = (byte)(hideAll || simple ? 0 : 255);
-            dragonGauge->GaugeSimple.Container->Color.A = (byte)(hideAll || !simple ? 0 : 255);
-        }
+        var gauge = (AddonJobHudDRG0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.DRGHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 }
 

@@ -1,14 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -25,7 +26,8 @@ public class NINModule : JobModule
     };
 
     public override List<MenuOption> JobGaugeMenu { get; } = new() {
-        new("Ninki Gauge", nameof(NinkiGaugeTracker))
+        new("Ninki Gauge", nameof(NinkiGaugeTracker)),
+        new("Kazematoi Stacks", nameof(KazematoiTracker)),
     };
 
     public NINModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudNIN0", "JobHudNIN1v70") { }
@@ -42,36 +44,18 @@ public class NINModule : JobModule
         HideWarning(TweakConfigs.NINHide0);
         ToggleControls("Hide Kazematoi", ref TweakConfigs.NINHide1, ref update);
         HideWarning(TweakConfigs.NINHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var ninkiGauge = (AddonJobHudNIN0*)GameGui.GetAddonByName("JobHudNIN0");
-        if (ninkiGauge != null && ninkiGauge->GaugeStandard.Container != null)
-        {
-            var hide0 = TweakConfigs.NINHide0;
-            var simple0 = ((AddonJobHud*)ninkiGauge)->UseSimpleGauge;
-            ninkiGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple0 ? 0 : 255);
-            ninkiGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple0 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudNIN0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.NINHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var kazematoiGauge = (AddonJobHudNIN1*)GameGui.GetAddonByName("JobHudNIN1v70");
-        if (kazematoiGauge != null && kazematoiGauge->GaugeStandard.Container != null)
-        {
-            var hide0 = TweakConfigs.NINHide1;
-            var simple0 = ((AddonJobHud*)kazematoiGauge)->UseSimpleGauge;
-            kazematoiGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple0 ? 0 : 255);
-            ((AtkUnitBase*)kazematoiGauge)->GetNodeById(17)->SetAlpha((byte)(hide0 || !simple0 ? 0 : 255));
-        }
+        var gauge = (AddonJobHudNIN1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.NINHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(17));
     }
 }
 

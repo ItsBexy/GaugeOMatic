@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CustomNodes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.CustomNodes.Animation;
@@ -16,6 +17,7 @@ using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 
@@ -37,7 +39,8 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/gatheringcollectable.tex", new Vector4(99, 10, 81, 160) ),
-        new("ui/uld/cursorlocation.tex", new Vector4(0, 0, 128, 128))
+        new("ui/uld/cursorlocation.tex", new Vector4(0, 0, 128, 128)),
+        BarMask
     };
 
     #region Nodes
@@ -47,32 +50,27 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     public CustomNode RightContainer;
     public CustomNode LeftHalf;
     public CustomNode RightHalf;
+    public CustomNode LeftMask;
+    public CustomNode RightMask;
     public CustomNode Halo;
 
     public override CustomNode BuildRoot()
     {
-        LeftHalf = ImageNodeFromPart(0, 0).SetOrigin(80, 80)
-                                          .SetDrawFlags(0xD)
-                                          .SetDrawFlags(0x800000)
-                                          .SetImageFlag(32);
+        LeftHalf = ImageNodeFromPart(0, 0).SetOrigin(80, 80);
+        RightHalf = ImageNodeFromPart(0, 0).SetOrigin(1, 80).SetImageFlag(1);
 
-        LeftContainer = new CustomNode(CreateResNode(), LeftHalf).SetDrawFlags(0x800000)
-                                                                 .SetX(-40)
-                                                                 .SetSize(81, 160)
-                                                                 .SetNodeFlags(NodeFlags.Clip)
-                                                                 .SetDrawFlags(0xD);
+        LeftMask = ClippingMaskFromPart(2, 1).SetScale(-1, 10).SetPos(73, 0).SetOrigin(8, 0);
+        RightMask = ClippingMaskFromPart(2, 1).SetScale(1, 10).SetPos(-7, 0).SetOrigin(8, 0);
 
-        RightHalf = ImageNodeFromPart(0, 0).SetX(0).SetOrigin(1, 80).SetDrawFlags(0xD).SetImageFlag(33);
-        RightContainer = new CustomNode(CreateResNode(), RightHalf).SetX(39)
-                                                                   .SetSize(81, 160)
-                                                                   .SetNodeFlags(NodeFlags.Clip)
-                                                                   .SetDrawFlags(0xD);
+        LeftContainer = new CustomNode(CreateResNode(), LeftHalf, LeftMask).SetX(-40).SetSize(81, 160);
+        RightContainer = new CustomNode(CreateResNode(), RightHalf, RightMask).SetX(40).SetSize(81, 160);
 
-        Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetDrawFlags(0xD);
+        Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetOrigin(40,40);
+
         Halo = ImageNodeFromPart(1, 0).SetOrigin(64, 64).SetPos(-24, 16).SetImageFlag(32).SetAlpha(0);
         NumTextNode = new();
 
-        return new CustomNode(CreateResNode(), Circle, Halo, NumTextNode).SetDrawFlags(0xD).SetOrigin(40, 80);
+        return new CustomNode(CreateResNode(), Circle, Halo, NumTextNode).SetOrigin(40, 80);
     }
 
     #endregion
@@ -113,30 +111,19 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
             if (prevProg > 0 && prog <= 0) OnDecreaseToMin();
         }
 
-        prog = Clamp(prog, 0, 0.996f);
-
-        switch (Config.Direction)
+        prog = Clamp(prog, 0, 0.999f);
+        if (Config.Direction == Erode)
         {
-            case Erode:
-                LeftHalf.SetRotation(-(1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-                RightHalf.SetRotation((1 - prog) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-                break;
-            case CW:
-            {
-                var lProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
-                var rProg = Clamp(prog / 0.5f, 0, 1f);
-                LeftHalf.SetRotation(-(1 - lProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
-                RightHalf.SetRotation(-(1 - rProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-                break;
-            }
-            default:
-            {
-                var rProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
-                var lProg = Clamp(prog / 0.5f, 0, 1f);
-                LeftHalf.SetRotation((1 - lProg) * 180 * 0.998f, true).SetAlpha(prog > 0.01f);
-                RightHalf.SetRotation((1 - rProg) * 180 * 0.998f, true).SetAlpha(prog >= 0.5f);
-                break;
-            }
+            LeftHalf.SetRotation(-(1 - prog) * 180f, true).SetAlpha(prog > 0.01f);
+            RightHalf.SetRotation((1 - prog) * 180f, true).SetAlpha(prog > 0.01f);
+        }
+        else
+        {
+            Circle.SetScaleX(Config.Direction == CW ? 1 : -1);
+            var rProg = Clamp((prog - 0.5f) / 0.5f, 0, 1f);
+            var lProg = Clamp(prog / 0.5f, 0, 1f);
+            LeftHalf.SetRotation((1 - lProg) * 180f, true).SetAlpha(prog > 0.01f);
+            RightHalf.SetRotation((1 - rProg) * 180f, true).SetAlpha(prog >= 0.5f);
         }
 
         Animator.RunTweens();
@@ -159,6 +146,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         public Vector2 Position;
         public float Scale = 1;
         public AddRGB Color = new(200);
+        public bool Dodge = true;
         public CircleStyles Direction = CCW;
         protected override NumTextProps NumTextDefault => new() { Position = new(0, 0), FontSize = 50 };
 
@@ -171,6 +159,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
             Position = config.Position;
             Scale = config.Scale;
             Color = config.Color;
+            Dodge = config.Dodge;
             Direction = config.Direction;
         }
 
@@ -193,6 +182,8 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
         Circle.SetMultiply(40).SetAddRGB(Config.Color, true);
         Halo.SetAddRGB(Config.Color+new AddRGB(30));
+        LeftHalf.SetImageFlag((byte)(Config.Dodge ? 0x20 : 0));
+        RightHalf.SetImageFlag((byte)(Config.Dodge ? 0x21 : 1));
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(38, 80));
     }
@@ -205,6 +196,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         Heading("Color");
         ColorPickerRGBA("Color", ref Config.Color, ref update);
+        RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" }, ref update);
 
         Heading("Behavior");
 

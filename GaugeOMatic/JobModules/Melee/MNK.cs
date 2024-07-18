@@ -1,13 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -42,36 +44,18 @@ public class MNKModule : JobModule
         HideWarning(TweakConfigs.MNKHide0);
         ToggleControls("Hide Chakra Gauge", ref TweakConfigs.MNKHide1, ref update);
         HideWarning(TweakConfigs.MNKHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var beastChakraGauge = (AddonJobHudMNK0*)GameGui.GetAddonByName("JobHudMNK0");
-        if (beastChakraGauge != null && beastChakraGauge->GaugeStandard.Container != null)
-        {
-            var hide1 = TweakConfigs.MNKHide0;
-            var simple1 = ((AddonJobHud*)beastChakraGauge)->UseSimpleGauge;
-            beastChakraGauge->GaugeStandard.Container->ToggleVisibility(!hide1 && !simple1);
-            beastChakraGauge->GaugeSimple.Container->Color.A = (byte)(hide1 || !simple1 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudMNK0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.MNKHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var chakraGauge = (AddonJobHudMNK1*)GameGui.GetAddonByName("JobHudMNK1");
-        if (chakraGauge != null && chakraGauge->GaugeStandard.Container != null)
-        {
-            var hide1 = TweakConfigs.MNKHide1;
-            var simple1 = ((AddonJobHud*)chakraGauge)->UseSimpleGauge;
-            chakraGauge->GaugeStandard.Container->ToggleVisibility(!hide1 && !simple1);
-            chakraGauge->GaugeSimple.Container->Color.A = (byte)(hide1 || !simple1 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudMNK1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.MNKHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 }
 

@@ -1,14 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -45,36 +46,18 @@ public class DRKModule : JobModule
         HideWarning(TweakConfigs.DRKHide0);
         ToggleControls("Hide Darkside Gauge", ref TweakConfigs.DRKHide1, ref update);
         HideWarning(TweakConfigs.DRKHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var bloodGauge = (AddonJobHudDRK0*)GameGui.GetAddonByName("JobHudDRK0");
-        if (bloodGauge != null && bloodGauge->GaugeStandard.Container != null)
-        {
-            var hide0 = TweakConfigs.DRKHide0;
-            var simple0 = ((AddonJobHud*)bloodGauge)->UseSimpleGauge;
-            bloodGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple0 ? 0 : 255);
-            bloodGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple0 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudDRK0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.DRKHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var darkSideGauge = (AddonJobHudDRK1*)GameGui.GetAddonByName("JobHudDRK1");
-        if (darkSideGauge != null && darkSideGauge->GaugeStandard.Container != null)
-        {
-            var hide1 = TweakConfigs.DRKHide1;
-            var simple1 = ((AddonJobHud*)darkSideGauge)->UseSimpleGauge;
-            darkSideGauge->GaugeStandard.Container->Color.A = (byte)(hide1 || simple1 ? 0 : 255);
-            ((AtkUnitBase*)darkSideGauge)->GetNodeById(20)->ToggleVisibility(!hide1 && simple1);
-        }
+        var gauge = (AddonJobHudDRK1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.DRKHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(20));
     }
 }
 

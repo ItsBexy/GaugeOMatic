@@ -1,12 +1,14 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -51,28 +53,19 @@ public class BRDModule : JobModule
                 PositionControls("Move Soul Voice Gauge", ref TweakConfigs.BRDSoulVoicePos, ref update);
             }
         }
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var songGauge = (AddonJobHudBRD0*)GameGui.GetAddonByName("JobHudBRD0");
-        if (songGauge != null && songGauge->GaugeStandard.Container != null)
+        var gauge = (AddonJobHudBRD0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.BRDHide0Song, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
+        VisibilityTweak(TweakConfigs.BRDHide0SoulVoice, gauge->UseSimpleGauge, gauge->GaugeStandard.SoulVoiceContainer, gauge->GaugeSimple.SoulVoiceContainer);
+
+        if (gauge != null && gauge->GaugeStandard.Container != null)
         {
-            var simple0 = ((AddonJobHud*)songGauge)->UseSimpleGauge;
-
-            var hideSong = TweakConfigs.BRDHide0Song;
-            songGauge->GaugeStandard.Container->Color.A = (byte)(hideSong || simple0 ? 0 : 255);
-            songGauge->GaugeSimple.Container->Color.A = (byte)(hideSong || !simple0 ? 0 : 255);
-
-            var hideSoulVoice = TweakConfigs.BRDHide0SoulVoice;
-            songGauge->GaugeStandard.SoulVoiceContainer->Color.A = (byte)(hideSoulVoice || simple0 ? 0 : 255);
-            songGauge->GaugeSimple.SoulVoiceContainer->Color.A = (byte)(hideSoulVoice || !simple0 ? 0 : 255);
-
             var soulVoicePos = TweakConfigs.BRDSoulVoicePos;
-            songGauge->GaugeStandard.SoulVoiceContainer->SetPositionFloat(soulVoicePos.X+16, soulVoicePos.Y+98);
-            songGauge->GaugeSimple.SoulVoiceContainer->SetPositionFloat(soulVoicePos.X + 10, soulVoicePos.Y + 39);
+            gauge->GaugeStandard.SoulVoiceContainer->SetPositionFloat(soulVoicePos.X + 16, soulVoicePos.Y + 98);
+            gauge->GaugeSimple.SoulVoiceContainer->SetPositionFloat(soulVoicePos.X + 10, soulVoicePos.Y + 39);
         }
     }
 }

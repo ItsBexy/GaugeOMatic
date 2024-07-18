@@ -35,28 +35,38 @@ public sealed unsafe class TargetReticle : StateWidget
 
     public override CustomPartsList[] PartsLists { get; } =
     {
-        new("ui/uld/mycrelicwindowsymbol3.tex", new Vector4(0, 0, 450, 450))
+        new("ui/uld/mycrelicwindowsymbol3.tex",
+            new(0, 0, 450, 450),
+            new(216,106,20,20))
     };
 
     #region Nodes
 
     public CustomNode Halo;
+    public CustomNode HaloFill;
+    public CustomNode HaloMask;
     public CustomNode InnerHalo;
+    public CustomNode InnerHaloFill;
+    public CustomNode InnerHaloMask;
 
     public override CustomNode BuildRoot()
     {
-        Halo = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
-                                      .SetAlpha(0)
-                                      .SetImageFlag(32)
-                                      .SetOrigin(225, 225)
-                                      .SetPos(-225, -225);
+        HaloFill = ImageNodeFromPart(0, 1).SetScale(23).SetImageFlag(32);
+        HaloMask = ClippingMaskFromPart(0, 0);
 
-        InnerHalo = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
-                                          .SetAlpha(0)
-                                          .SetImageFlag(32)
-                                          .SetOrigin(225, 225)
-                                          .SetPos(-225, -225)
-                                          .SetScale(0.6f);
+        InnerHaloFill = ImageNodeFromPart(0, 1).SetScale(23).SetImageFlag(32);
+        InnerHaloMask = ClippingMaskFromPart(0, 0);
+
+        Halo = new CustomNode(CreateResNode(),HaloFill, HaloMask).RemoveFlags(SetVisByAlpha)
+                                                                 .SetAlpha(0)
+                                                                 .SetOrigin(225, 225)
+                                                                 .SetPos(-225, -225);
+
+        InnerHalo = new CustomNode(CreateResNode(), InnerHaloFill, InnerHaloMask).RemoveFlags(SetVisByAlpha)
+                                                                  .SetAlpha(0)
+                                                                  .SetOrigin(225, 225)
+                                                                  .SetPos(-225, -225)
+                                                                  .SetScale(0.6f);
 
         BeginRotation();
 

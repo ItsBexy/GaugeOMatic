@@ -8,6 +8,8 @@ using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.Interop;
 using static Dalamud.Game.Addon.Lifecycle.AddonEvent;
 using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.JobData;
@@ -18,6 +20,8 @@ namespace GaugeOMatic.JobModules;
 
 public abstract class JobModule : IDisposable
 {
+    public static unsafe NumberArrayData* JobUiData => UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86);
+
     public abstract Job Job { get; }
     public abstract Job Class { get; }
     public abstract Role Role { get; }
@@ -115,34 +119,29 @@ public abstract class JobModule : IDisposable
 
     public void RegisterListeners()
     {
-        AddonLifecycle.RegisterListener(PostSetup, AddonOptions.Select(static a => a.Name), SetupHandler);
-        AddonLifecycle.RegisterListener(PreDraw, WatchedAddon0, DrawHandler);
+        AddonLifecycle.RegisterListener(PostSetup, WatchedAddon0, SetupHandler);
         AddonLifecycle.RegisterListener(PreFinalize, WatchedAddon0, FinalizeHandler);
+        AddonLifecycle.RegisterListener(PreDraw, AddonOptions.Select(static a => a.Name).ToArray(), DrawHandler);
 
-        AddonLifecycle.RegisterListener(PreUpdate, WatchedAddon0, UpdateHandler0);
-        AddonLifecycle.RegisterListener(PreRequestedUpdate, WatchedAddon0, UpdateHandler0);
+        AddonLifecycle.RegisterListener(PreUpdate, WatchedAddon0, (type, args) => UpdateHandler(type, args, ApplyTweaks0));
+        AddonLifecycle.RegisterListener(PreRequestedUpdate, WatchedAddon0, (type, args) => UpdateHandler(type, args, ApplyTweaks0));
 
         if (WatchedAddon1 != null)
         {
-            AddonLifecycle.RegisterListener(PreUpdate, WatchedAddon1, UpdateHandler1);
-            AddonLifecycle.RegisterListener(PreRequestedUpdate, WatchedAddon1, UpdateHandler1);
+            AddonLifecycle.RegisterListener(PreUpdate, WatchedAddon1, (type, args) => UpdateHandler(type, args, ApplyTweaks1));
+            AddonLifecycle.RegisterListener(PreRequestedUpdate, WatchedAddon1, (type, args) => UpdateHandler(type, args, ApplyTweaks1));
         }
     }
 
     public void UnregisterListeners()
     {
-        AddonLifecycle.UnregisterListener(PostSetup, AddonOptions.Select(static a => a.Name), SetupHandler);
-        AddonLifecycle.UnregisterListener(PreDraw, WatchedAddon0, DrawHandler);
-        AddonLifecycle.UnregisterListener(PreFinalize, WatchedAddon0, FinalizeHandler);
+        var addonNames = AddonOptions.Select(static a => a.Name).ToArray();
 
-        AddonLifecycle.UnregisterListener(PreUpdate, WatchedAddon0, UpdateHandler0);
-        AddonLifecycle.UnregisterListener(PreRequestedUpdate, WatchedAddon0, UpdateHandler0);
-
-        if (WatchedAddon1 != null)
-        {
-            AddonLifecycle.UnregisterListener(PreUpdate, WatchedAddon1, UpdateHandler1);
-            AddonLifecycle.UnregisterListener(PreRequestedUpdate, WatchedAddon1, UpdateHandler1);
-        }
+        AddonLifecycle.UnregisterListener(PostSetup, addonNames);
+        AddonLifecycle.UnregisterListener(PreFinalize, addonNames);
+        AddonLifecycle.UnregisterListener(PreDraw, addonNames);
+        AddonLifecycle.UnregisterListener(PreUpdate, addonNames);
+        AddonLifecycle.UnregisterListener(PreRequestedUpdate, addonNames);
     }
 
     public void SetupHandler(AddonEvent type, AddonArgs args)
@@ -156,18 +155,12 @@ public abstract class JobModule : IDisposable
         DisposeTrackers();
     }
 
-    public void DrawHandler(AddonEvent type, AddonArgs args) => UpdateTrackers();
+    public void DrawHandler(AddonEvent type, AddonArgs args) => UpdateTrackers(args.AddonName);
 
-    public void UpdateHandler0(AddonEvent type, AddonArgs args)
+    public static void UpdateHandler(AddonEvent type, AddonArgs args, Action<IntPtr> applyFunc)
     {
-        try { ApplyTweaks0(); }
-        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({WatchedAddon0}) \n{ex}");}
-    }
-
-    public void UpdateHandler1(AddonEvent type, AddonArgs args)
-    {
-        try { ApplyTweaks1(); }
-        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({WatchedAddon1})\n{ex}"); }
+        try { applyFunc(args.Addon); }
+        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({args.AddonName}) \n{ex}");}
     }
 
     public void BuildWidgets()
@@ -185,9 +178,9 @@ public abstract class JobModule : IDisposable
         foreach (var tracker in TrackerList) tracker.DisposeWidget();
     }
 
-    public void UpdateTrackers()
+    public void UpdateTrackers(string addonName)
     {
-        foreach (var tracker in TrackerList.Where(static t => t.TrackerConfig.Enabled)) tracker.UpdateTracker();
+        foreach (var tracker in TrackerList.Where(t => t.TrackerConfig.AddonName == addonName && t.TrackerConfig.Enabled)) tracker.UpdateTracker();
     }
 
     public void ResetWidgets()
@@ -215,7 +208,7 @@ public abstract class JobModule : IDisposable
 
     public abstract void Save();
     public abstract void TweakUI(ref UpdateFlags update);
-    public virtual void ApplyTweaks0() { }
-    public virtual void ApplyTweaks1() { }
+    public virtual void ApplyTweaks0(IntPtr gaugeAddon) { }
+    public virtual void ApplyTweaks1(IntPtr gaugeAddon) { }
     public abstract List<MenuOption> JobGaugeMenu { get; }
 }

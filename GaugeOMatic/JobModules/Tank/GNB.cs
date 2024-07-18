@@ -1,14 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -40,20 +41,12 @@ public class GNBModule : JobModule
     {
         ToggleControls("Hide Powder Gauge", ref TweakConfigs.GNBHide0, ref update);
         HideWarning(TweakConfigs.GNBHide0);
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var powderGauge = (AddonJobHudGNB0*)GameGui.GetAddonByName("JobHudGNB0");
-        if (powderGauge != null && powderGauge->GaugeStandard.Container != null)
-        {
-            var gnbHide0 = TweakConfigs.GNBHide0;
-            var simple0 = ((AddonJobHud*)powderGauge)->UseSimpleGauge;
-            powderGauge->GaugeStandard.Container->Color.A = (byte)(gnbHide0 || simple0 ? 0 : 255);
-            ((AtkUnitBase*)powderGauge)->GetNodeById(19)->ToggleVisibility(!gnbHide0 && simple0);
-        }
+        var gauge = (AddonJobHudGNB0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.GNBHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(19));
     }
 }
 

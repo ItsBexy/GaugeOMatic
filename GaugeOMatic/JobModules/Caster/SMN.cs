@@ -1,14 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -43,36 +44,18 @@ public class SMNModule : JobModule
         HideWarning(TweakConfigs.SMNHide0);
         ToggleControls("Hide Trance Gauge", ref TweakConfigs.SMNHide1, ref update);
         HideWarning(TweakConfigs.SMNHide1);
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var aetherflowGauge = (AddonJobHudSMN0*)GameGui.GetAddonByName("JobHudSMN0");
-        if (aetherflowGauge != null && aetherflowGauge->GaugeStandard.Stack1 != null)
-        {
-            var hideAetherflow = TweakConfigs.SMNHide0;
-            var simple0 = ((AddonJobHud*)aetherflowGauge)->UseSimpleGauge;
-            ((AtkUnitBase*)aetherflowGauge)->GetNodeById(2)->ToggleVisibility(!hideAetherflow && !simple0);
-            ((AtkUnitBase*)aetherflowGauge)->GetNodeById(11)->ToggleVisibility(!hideAetherflow && simple0);
-        }
+        var gauge = (AddonJobHudSMN0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.SMNHide0, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(11));
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var tranceGauge = (AddonJobHudSMN1*)GameGui.GetAddonByName("JobHudSMN1");
-        if (tranceGauge != null)
-        {
-            var hideTrance = TweakConfigs.SMNHide1;
-            var simple1 = ((AddonJobHud*)tranceGauge)->UseSimpleGauge;
-            tranceGauge->GaugeStandard.Container->ToggleVisibility(!hideTrance && !simple1);
-            ((AtkUnitBase*)tranceGauge)->GetNodeById(82)->ToggleVisibility(!hideTrance && simple1);
-        }
+        var gauge = (AddonJobHudSMN1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.SMNHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(82));
     }
 }
 

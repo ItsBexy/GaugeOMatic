@@ -92,7 +92,7 @@ public abstract partial class StatusData
     { 3855, new(3855, SAM, "Zanshin Ready",            Self,   1, 30 ) },
     { 3856, new(3856, SAM, "Tendo",                    Self,   2, 30 ) },
 
-    { 2586, new(2586, RPR, "Death's Design",           Target, 1, 30 ) },
+    { 2586, new(2586, RPR, "Death's Design",           Target, 1, 60 ) },
     { 2587, new(2587, RPR, "Soul Reaver",              Self,   2, 30 ) },
     { 2588, new(2588, RPR, "Enhanced Gibbet",          Self,   1, 60 ) },
     { 2589, new(2589, RPR, "Enhanced Gallows",         Self,   1, 60 ) },
@@ -136,7 +136,7 @@ public abstract partial class StatusData
 
     { 125,  new(125,  BRD, "Raging Strikes",           Self,   1, 20 ) },
     { 128,  new(128,  BRD, "Barrage",                  Self,   1, 10 ) },
-    { 141,  new(141,  BRD, "Battle Voice",             Self,   1, 15 ) },
+    { 141,  new(141,  BRD, "Battle Voice",             Self,   1, 20 ) },
     { 866,  new(866,  BRD, "The Warden's Paean",       Self,   1, 30 ) },
     { 1200, new(1200, BRD, "Caustic Bite",             Target, 1, 45, seeAlso: new() { 124 } ) },
     { 1201, new(1201, BRD, "Stormbite",                Target, 1, 45, seeAlso: new() { 129 }) },
@@ -147,8 +147,7 @@ public abstract partial class StatusData
     { 2217, new(2217, BRD, "Mage's Ballad",            Self,   1, 5  ) },
     { 2218, new(2218, BRD, "Army's Paeon",             Self,   1, 5  ) },
     { 2692, new(2692, BRD, "Blast Arrow Ready",        Self,   1, 10 ) },
-    { 2722, new(2722, BRD, "Radiant Finale",           Self,   1, 15 ) },
-    { 2964, new(2964, BRD, "Radiant Finale",           Self,   1, 15 ) },
+    { 2964, new(2964, BRD, "Radiant Finale",           Self,   1, 20, seeAlso: new() { 2722 }) },
     { 3002, new(3002, BRD, "Shadowbite Ready",         Self,   1, 30 ) },
     { 3861, new(3861, BRD, "Hawk's Eye",               Self,   1, 30 , seeAlso: new() { 122 }) },
     { 3862, new(3862, BRD, "Resonant Arrow Ready",     Self,   1, 30 ) },
@@ -190,15 +189,15 @@ public abstract partial class StatusData
 
     # region Caster
 
-    { 163,  new(163,  BLM, "Thunder",                  Target, 1, 30 , seeAlso: new() { 161 } ) },
+    { 163,  new(163,  BLM, "Thunder",                  Target, 1, 24 , seeAlso: new() { 161 } ) },
     { 165,  new(165,  BLM, "Firestarter",              Self,   1, 30 ) },
     { 168,  new(168,  BLM, "Manaward",                 Self,   1, 20 ) },
     { 737,  new(737,  BLM, "Ley Lines",                Self,   1, 30 ) },
     { 738,  new(738,  BLM, "Circle of Power",          Self,   1, 5  ) },
-    { 1210, new(1210, BLM, "Thunder IV",               Target, 1, 18 ) },
+    { 1210, new(1210, BLM, "Thunder IV",               Target, 1, 21 ) },
     { 1211, new(1211, BLM, "Triplecast",               Self,   3, 15 ) },
     { 3870, new(3870, BLM, "Thunderhead",              Self,   3, 30 ) },
-    { 3871, new(3871, BLM, "High Thunder",             Self,   3, 30,  seeAlso: new() { 3872 } ) },
+    { 3871, new(3871, BLM, "High Thunder",             Target, 3, 24,  seeAlso: new() { 3872 } ) },
 
     { 304,  new(304,  SMN, "Aetherflow",               Self,   3, 0  ) },
     { 1868, new(1868, SMN, "Everlasting Flight",       Self,   1, 21 ) },
@@ -285,7 +284,6 @@ public abstract partial class StatusData
     { 3834, new(3834, WAR, "Primal Ruination Ready",   Self,   1, 30 ) },
     { 3900, new(3900, WAR, "Primeval Impulse",         Self,   1, 15 ) },
     { 3901, new(3901, WAR, "Wrathful",                 Self,   1, 15 ) },
-
 
     { 742,  new(742,  DRK, "Blood Weapon",             Self,   3, 15 ) },
     { 743,  new(743,  DRK, "Grit",                     Self,   1, 0 ) },
@@ -411,7 +409,6 @@ public abstract partial class StatusData
     { 3897, new(3897, SGE, "Eukrasian Dyskrasia",      Self,   1, 30 ) },
     { 3898, new(3898, SGE, "Philosophia",              Self,   1, 20 ) },
     { 3899, new(3899, SGE, "Eudaimonia",               Self,   1, 20 ) },
-
 
 
     #endregion

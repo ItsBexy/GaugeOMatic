@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 
@@ -60,7 +61,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             new(150, 0, 34, 144)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4[] {
             new(256, 152, 20, 88) // flashing edge
-        })
+        }),
+        CircleMask
     };
 
     #region Nodes
@@ -68,15 +70,16 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     public CustomNode Plate;
     public CustomNode CrystalGlow;
     public CustomNode Tick;
+    public CustomNode PlateMask;
 
     public override CustomNode BuildRoot()
     {
-        Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32).DefineTimeline(PlateTimeline);
+        Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32);
+        PlateMask = ClippingMaskFromPart(2, 1).SetSize(116,416).SetPos(0,-208).DefineTimeline(MaskTimeline);
 
-        Main = new CustomNode(CreateResNode(), Plate).SetNodeFlags(Clip)
-                                                     .SetSize(116, 0)
-                                                     .DefineTimeline(BarTimeline)
-                                                     .SetAlpha(0);
+        Main = new CustomNode(CreateResNode(), Plate, PlateMask).SetSize(116, 0)
+                                                                .DefineTimeline(ContainerTimeline)
+                                                                .SetAlpha(0);
 
         CrystalGlow = ImageNodeFromPart(0, 17).SetPos(28, 3).SetOrigin(30, 30).SetAlpha(0).SetImageFlag(32);
 
@@ -95,18 +98,18 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[]
+    public static KeyFrame[] ContainerTimeline => new KeyFrame[]
     {
-        new(0) { Height = 10, Y = 198, Alpha = 0 },
-        new(20) { Height = 30, Y = 178, Alpha = 255 },
-        new(192) { Height = 202, Y = 6, Alpha = 255 }
+        new(0) { Alpha = 0 },
+        new(20) { Alpha = 255 },
+        new(192) { Alpha = 255 }
     };
 
-    public static KeyFrame[] PlateTimeline => new KeyFrame[]
+    public static KeyFrame[] MaskTimeline => new KeyFrame[]
     {
-        new(0) { Y = -198 },
-        new(20) { Y = -178 },
-        new(192) { Y = -6 }
+        new(0) { Y=-6 },
+        new(20) {Y=-26 },
+        new(192) {Y=-208 }
     };
 
     public KeyFrame[] TickTimeline => new KeyFrame[]
@@ -125,18 +128,20 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     {
         Main.SetProgress(prog);
         Tick.SetProgress(prog);
-        Plate.SetProgress(prog);
+        PlateMask.SetProgress(prog);
     }
 
     public override void PlaceTickMark(float prog)
     {
-        Plate.SetProgress(Main);
+        PlateMask.SetProgress(Main);
+        var yFactor = PlateMask.Y+216;
+
         Tick.SetProgress(Main)
-            .SetScaleY(Clamp(Main.Node->Y switch
+            .SetScaleY(Clamp(yFactor switch
             {
-                <= 80 => PolyCalc(Main.Node->Y, -0.369408145220107d, 0.0761410396507537d, -0.00102457794640973d, 0.0000049971702224042d),
-                <= 163.5f => PolyCalc(Main.Node->Y, 2.9911068686918d, -0.00223868498009971d, -0.000303975874680723d, 0.00000164245988203053d),
-                _ => PolyCalc(Main.Node->Y, -88.9665931925754d, 1.53310683483466d, -0.00854319135223209d, 0.0000156241038226192d)
+                <= 80 => PolyCalc(yFactor, -0.369408145220107d, 0.0761410396507537d, -0.00102457794640973d, 0.0000049971702224042d),
+                <= 163.5f => PolyCalc(yFactor, 2.9911068686918d, -0.00223868498009971d, -0.000303975874680723d, 0.00000164245988203053d),
+                _ => PolyCalc(yFactor, -88.9665931925754d, 1.53310683483466d, -0.00854319135223209d, 0.0000156241038226192d)
             }, 0, 2f));
     }
 

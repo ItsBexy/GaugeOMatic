@@ -254,7 +254,11 @@ public static class ImGuiHelpy
     {
         var w = ImGui.CalcTextSize(text).X;
         var space = ImGui.GetColumnWidth();
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (space - w));
+        if (w > 0)
+        {
+            if (space < w) space = w;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (space - w));
+        }
 
         ImGui.Text(text);
     }

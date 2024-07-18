@@ -4,12 +4,14 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -28,9 +30,10 @@ public class VPRModule : JobModule
         new("_ParameterWidget", "Parameter Bar")
     };
 
-    // ReSharper disable once RedundantEmptyObjectOrCollectionInitializer
     public override List<MenuOption> JobGaugeMenu { get; } = new() {
-
+        new("Rattling Coils", nameof(RattlingCoilTracker)),
+        new("Serpent Offerings Gauge", nameof(SerpentGaugeTracker)),
+        new("Anguine Tribute", nameof(AnguineTributeTracker))
     };
 
     public VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRDB0", "JobHudRDB1") { }
@@ -61,42 +64,20 @@ public class VPRModule : JobModule
                 ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update);
             }
         }
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var vipersight = (AddonJobHudRDB0*)GameGui.GetAddonByName("JobHudRDB0");
-        if (vipersight != null)
-        {
-            var hide0 = TweakConfigs.VPRHide0;
-            var simple = ((AddonJobHud*)vipersight)->UseSimpleGauge;
-            ((AtkUnitBase*)vipersight)->GetNodeById(2)->Color.A = (byte)(hide0 || simple ? 0 : 255);
-            ((AtkUnitBase*)vipersight)->GetNodeById(10)->Color.A = (byte)(hide0 || !simple ? 0 : 255);
-        }
-
-        ApplyColorCodeTweak(vipersight);
+        var gauge = (AddonJobHudRDB0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.VPRHide0, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(10));
+        ApplyColorCodeTweak(gauge);
     }
 
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var serpentGauge = (AddonJobHudRDB1*)GameGui.GetAddonByName("JobHudRDB1");
-
-
-        if (serpentGauge != null)
-        {
-            var hide1 = TweakConfigs.VPRHide1;
-            var simple = ((AddonJobHud*)serpentGauge)->UseSimpleGauge;
-            ((AtkUnitBase*)serpentGauge)->GetNodeById(13)->Color.A = (byte)(hide1 || simple ? 0 : 255);
-            ((AtkUnitBase*)serpentGauge)->GetNodeById(2)->Color.A = (byte)(hide1 || !simple ? 0 : 255);
-        }
-
-        ApplyReawakenCueTweak(serpentGauge);
+        var gauge = (AddonJobHudRDB1*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.VPRHide1, gauge->UseSimpleGauge, gauge->GetNodeById(13), gauge->GetNodeById(2));
+        ApplyReawakenCueTweak(gauge);
     }
 
     private unsafe void ApplyReawakenCueTweak(AddonJobHudRDB1* serpentGauge)

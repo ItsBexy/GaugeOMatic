@@ -371,7 +371,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         WidgetRoot.SetPos(Config.Position + new Vector2(100, 38.5f))
                   .SetScale(Config.Scale);
 
-
         Frame.SetWidth(frameWidth)
              .SetX(frameWidth / -2f)
              .SetOrigin(frameWidth / 2f, 16)

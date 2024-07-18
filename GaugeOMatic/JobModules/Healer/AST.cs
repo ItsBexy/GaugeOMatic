@@ -1,11 +1,13 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -36,23 +38,16 @@ public class ASTModule : JobModule
     {
         ToggleControls("Hide Arcana Gauge", ref TweakConfigs.ASTHide0, ref update);
         HideWarning(TweakConfigs.ASTHide0);
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var arcanaGauge = (AddonJobHudAST0*)GameGui.GetAddonByName("JobHudAST0");
-        if (arcanaGauge != null)
-        {
-            var hide0 = TweakConfigs.ASTHide0;
-            var simple0 = ((AddonJobHud*)arcanaGauge)->UseSimpleGauge;
-            arcanaGauge->GaugeStandard.Container->ToggleVisibility(!hide0 && !simple0);
-            arcanaGauge->GaugeSimple.Container->ToggleVisibility(!hide0 && simple0);
-        }
+        var gauge = (AddonJobHudAST0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.ASTHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
 }
+
 public partial class TweakConfigs
 {
    public bool ASTHide0;

@@ -22,6 +22,7 @@ public class TrackerDisplayAttribute : Attribute
     public FontAwesomeIcon Icon = Question;
     public ColorRGB Color = 0x494949ff;
     public string TypeDesc = "[ Track... ]";
+    public string? ToolText;
 
     public TrackerDisplayAttribute() { }
 
@@ -38,8 +39,17 @@ public class TrackerDisplayAttribute : Attribute
     {
         Icon = Gauge;
         Color = (uint)JobGaugeColor;
-        TypeDesc = "Job Gauge Tracker";
+        TypeDesc = $"{job} Gauge Tracker";
         Job = job;
+    }
+
+    public TrackerDisplayAttribute(Job job, string toolText)
+    {
+        Icon = Gauge;
+        Color = (uint)JobGaugeColor;
+        TypeDesc = $"{job} Gauge Tracker";
+        Job = job;
+        ToolText = toolText;
     }
 }
 
@@ -95,6 +105,7 @@ public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged
 
     public override string TermCount => "Count";
     public override string TermGauge => "Gauge";
+
     public override string[] StateNames { get; } = { "Inactive", "Active" };
 
     public abstract string GaugeAddonName { get; }

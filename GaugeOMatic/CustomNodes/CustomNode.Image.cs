@@ -17,7 +17,7 @@ public unsafe partial class CustomNodeManager
             node->PartId = partId;
 
             node->AtkResNode.Type = NodeType.Image;
-            node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
+            node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled | NodeFlags.EmitsEvents;
             node->AtkResNode.Width = customPartsList.AtkUldPartsList->Parts[partId].Width;
             node->AtkResNode.Height = customPartsList.AtkUldPartsList->Parts[partId].Height;
 
@@ -33,18 +33,18 @@ public unsafe partial class CustomNodeManager
         }
     }
 
-    public static AtkImageNode* CreateClippingMaskNode(CustomPartsList customPartsList, ushort partId)
+    public static AtkClippingMaskNode* CreateClippingMaskNode(CustomPartsList customPartsList, ushort partId)
     {
         try
         {
-            var node = CleanAlloc<AtkImageNode>();
+            var node = CleanAlloc<AtkClippingMaskNode>();
             node->Ctor();
 
             node->PartsList = customPartsList;
             node->PartId = partId;
 
-            node->AtkResNode.Type = NodeType.UnknownNode10;
-            node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled;
+            node->AtkResNode.Type = NodeType.ClippingMask;
+            node->AtkResNode.NodeFlags = NodeFlags.Visible | NodeFlags.AnchorLeft | NodeFlags.AnchorTop | NodeFlags.Enabled | NodeFlags.EmitsEvents;
             node->AtkResNode.Width = customPartsList.AtkUldPartsList->Parts[partId].Width;
             node->AtkResNode.Height = customPartsList.AtkUldPartsList->Parts[partId].Height;
 
@@ -56,7 +56,9 @@ public unsafe partial class CustomNodeManager
         catch (Exception ex)
         {
             Log.Error("Failed to create clipping mask node!\n" + ex.StackTrace);
-            return CreateResNode()->GetAsAtkImageNode();
+            var node = (AtkClippingMaskNode*)CreateResNode();
+            node->Type = NodeType.ClippingMask;
+            return node;
         }
     }
 }

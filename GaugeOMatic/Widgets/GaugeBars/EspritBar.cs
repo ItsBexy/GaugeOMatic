@@ -1,5 +1,4 @@
 using CustomNodes;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
@@ -39,7 +38,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         WidgetTags = GaugeBar
     };
 
-    public override CustomPartsList[] PartsLists { get; } = { DNC1 };
+    public override CustomPartsList[] PartsLists { get; } = { DNC1, CircleMask};
 
     #region Nodes
 
@@ -55,13 +54,16 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public CustomNode MainContainer;
     public CustomNode DrainContainer;
     public CustomNode GainContainer;
+    public CustomNode MainMask;
+    public CustomNode DrainMask;
+    public CustomNode GainMask;
 
     public override CustomNode BuildRoot()
     {
         Fan = BuildFan();
         NumTextNode = new();
         NumTextNode.SetAlpha(0);
-        return new CustomNode(CreateResNode(), Fan, NumTextNode).SetSize(200, 128).SetOrigin(100, 113);
+        return new CustomNode(CreateResNode(), Fan, NumTextNode).SetSize(200, 128).SetOrigin(100, 106);
     }
 
     private CustomNode BuildFan()
@@ -70,7 +72,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         BarContents = BuildBarContents();
         FanClip = ImageNodeFromPart(0, 5).SetPos(76, 90).SetSize(48, 32).SetImageWrap(1).SetOrigin(24, 32);
 
-        return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetOrigin(100, 113).SetAlpha(0);
+        return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetOrigin(100, 106).SetAlpha(0);
     }
 
     private CustomNode BuildBarContents()
@@ -85,25 +87,29 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     private CustomNode BuildFillNodes()
     {
-        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetOrigin(84, 82)
+        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetPos(1,0)
+                                                        .SetOrigin(83, 82)
                                                         .SetRotation(-151, true)
-                                                        .SetDrawFlags(0xC)
                                                         .DefineTimeline(BarTimeline);
 
-        static CustomNode FillContainer(CustomNode node) =>
-            new CustomNode(CreateResNode(), node)
+        CustomNode MaskNode() => ClippingMaskFromPart(1,0).SetPos(-4,-88).SetOrigin(88,176).SetScale(2,1);
+
+        static CustomNode FillContainer(CustomNode fill,CustomNode mask) =>
+            new CustomNode(CreateResNode(), fill, mask)
                 .SetSize(168, 70)
-                .SetNodeFlags(NodeFlags.Clip)
-                .SetDrawFlags(0x200)
                 .SetOrigin(84, 70);
 
         Drain = FillNode();
         Gain = FillNode();
         Main = FillNode();
 
-        MainContainer = FillContainer(Main);
-        DrainContainer = FillContainer(Drain);
-        GainContainer = FillContainer(Gain);
+        DrainMask = MaskNode();
+        GainMask = MaskNode();
+        MainMask = MaskNode();
+
+        MainContainer = FillContainer(Main,MainMask);
+        DrainContainer = FillContainer(Drain,DrainMask);
+        GainContainer = FillContainer(Gain,GainMask);
 
         return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0, 1).SetSize(168, 70).SetOrigin(0,-1);
     }
@@ -191,12 +197,10 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public sealed class EspritBarConfig : GaugeBarWidgetConfig
     {
-
         public Vector2 Position;
         public float Scale = 1;
         public bool ShowPlate = true;
-
-        public int Angle;
+        public float Angle;
         public bool Clockwise = true;
 
         public AddRGB Backdrop = new(0, 0, 0);
@@ -269,22 +273,12 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public override void ApplyConfigs()
     {
         var flipFactor = Config.Clockwise ? 1 : -1;
-        var containerSize = Config.Angle is 0 or 180 ? new Vector2(168, 70) : new(70, 168);
-        var offsetX = Config.Clockwise == (Config.Angle >= 180) ? 168 : 0;
-        var offsetY = Config.Angle is 90 or 180 ? 70 : 0;
-        var textOffset = Config.Angle switch
-        {
-            90 => new Vector2(131, 113),
-            180 => new(100, 164),
-            270 => new(67, 113),
-            _ => new (100, 62)
-        };
 
         WidgetRoot.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Fan.SetScaleX(flipFactor)
-           .SetRotation(Config.Angle);
+           .SetRotation(Config.Angle,true);
 
         FanPlate.SetVis(Config.ShowPlate)
                 .SetMultiply(Config.FrameColor);
@@ -297,17 +291,13 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
         Backdrop.SetAddRGB(Config.Backdrop, true);
 
-        MainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
-        DrainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
-        GainContainer.SetPos(offsetX, offsetY).SetSize(containerSize);
-
-        Main.SetAddRGB(Config.MainColor).SetPos(-offsetX, -offsetY);
-        Drain.SetAddRGB(Config.DrainColor).SetPos(-offsetX, -offsetY);
-        Gain.SetAddRGB(Config.GainColor).SetPos(-offsetX, -offsetY);
+        Main.SetAddRGB(Config.MainColor);
+        Drain.SetAddRGB(Config.DrainColor);
+        Gain.SetAddRGB(Config.GainColor);
 
         HandleMilestone(CalcProg(), true);
 
-        NumTextNode.ApplyProps(Config.NumTextProps, textOffset);
+        NumTextNode.ApplyProps(Config.NumTextProps, new(100, 62));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
@@ -318,7 +308,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         ScaleControls("Scale", ref Config.Scale, ref update);
         ToggleControls("Fan Plate", ref Config.ShowPlate, ref update);
 
-        RadioIcons("Angle", ref Config.Angle, new() { 0, 90, 180, 270 }, new() { ChevronUp, ChevronRight, ChevronDown, ChevronLeft }, ref update);
+        AngleControls("Angle", ref Config.Angle, ref update);
         RadioIcons("Direction", ref Config.Clockwise, new() { true, false }, new() { RedoAlt, UndoAlt }, ref update);
 
         Heading("Colors");

@@ -1,13 +1,14 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -49,29 +50,20 @@ public class MCHModule : JobModule
         if (!TweakConfigs.MCHHide0Battery)
         {
             PositionControls("Move Battery Gauge", ref TweakConfigs.MCHBatteryPos, ref update);
-            if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
         }
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var heatGauge = (AddonJobHudMCH0*)GameGui.GetAddonByName("JobHudMCH0");
-        if (heatGauge != null && heatGauge->GaugeStandard.HeatContainer != null)
+        var gauge = (AddonJobHudMCH0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.MCHHide0Heat, gauge->UseSimpleGauge, gauge->GetNodeById(3), gauge->GetNodeById(34));
+        VisibilityTweak(TweakConfigs.MCHHide0Battery, gauge->UseSimpleGauge, gauge->GetNodeById(17), gauge->GetNodeById(39));
+
+        if (gauge != null && gauge->GaugeStandard.HeatContainer != null)
         {
-            var simple0 = ((AddonJobHud*)heatGauge)->UseSimpleGauge;
-
-            var hideHeat = TweakConfigs.MCHHide0Heat;
-            var hideBattery = TweakConfigs.MCHHide0Battery;
             var batteryPos = TweakConfigs.MCHBatteryPos;
-
-            ((AtkUnitBase*)heatGauge)->GetNodeById(3)->ToggleVisibility(!hideHeat && !simple0);
-            ((AtkUnitBase*)heatGauge)->GetNodeById(34)->ToggleVisibility(!hideHeat && simple0);
-
-            ((AtkUnitBase*)heatGauge)->GetNodeById(17)->ToggleVisibility(!hideBattery && !simple0);
-            ((AtkUnitBase*)heatGauge)->GetNodeById(39)->ToggleVisibility(!hideBattery && simple0);
-
-            heatGauge->GaugeStandard.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 59);
-            heatGauge->GaugeSimple.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 72);
+            gauge->GaugeStandard.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 59);
+            gauge->GaugeSimple.BatteryContainer->SetPositionFloat(batteryPos.X, batteryPos.Y + 72);
         }
     }
 }

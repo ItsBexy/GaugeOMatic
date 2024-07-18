@@ -17,6 +17,17 @@ internal static class CommonParts
 
     #region Instanced (dispose with Widget)
 
+    public static CustomPartsList CircleMask => new("ui/uld/navimap_mask.tex",
+                                                     new(0, 0, 176, 176),
+                                                     new(84, 0, 8, 20));
+
+    public static CustomPartsList SquareMask => new("ui/uld/bgpartsmask.tex", new Vector4(0, 0, 32, 32));
+
+    public static CustomPartsList BarMask => new("ui/uld/fgs_mask.tex",
+                                                 new Vector4(0, 0, 128, 16),
+                                                 new Vector4(0, 0, 16, 16),
+                                                 new Vector4(112, 0, 16, 16));
+
     #region JobHud
 
     #region Melee
@@ -152,7 +163,7 @@ internal static class CommonParts
 
     public static CustomPartsList DNC1 =>
         new("ui/uld/JobHudDNC1.tex",
-            new(0, 0, 168, 76),    // 0  bar
+            new(1, 0, 167, 76),    // 0  bar
             new(1, 77, 166, 74),   // 1  backdrop
             new(168, 0, 48, 108),  // 2  feather
             new(216, 0, 84, 100),  // 3  half fan

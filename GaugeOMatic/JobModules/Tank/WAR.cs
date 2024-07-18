@@ -1,13 +1,15 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
 
@@ -38,20 +40,12 @@ public class WARModule : JobModule
     {
         ToggleControls("Hide Beast Gauge", ref TweakConfigs.WARHide0, ref update);
         HideWarning(TweakConfigs.WARHide0);
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
-    public override unsafe void ApplyTweaks0()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var beastGauge = (AddonJobHudWAR0*)GameGui.GetAddonByName("JobHudWAR0");
-        if (beastGauge != null && beastGauge->GaugeStandard.Container != null)
-        {
-            var warHide0 = TweakConfigs.WARHide0;
-            var simple0 = ((AddonJobHud*)beastGauge)->UseSimpleGauge;
-            beastGauge->GaugeStandard.Container->Color.A = (byte)(warHide0 || simple0 ? 0 : 255);
-            beastGauge->GaugeSimple.BarContainer->Color.A = (byte)(warHide0 || !simple0 ? 0 : 255);
-        }
+        var gauge = (AddonJobHudWAR0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.WARHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.BarContainer);
     }
 }
 

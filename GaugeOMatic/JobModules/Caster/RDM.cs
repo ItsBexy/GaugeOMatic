@@ -2,13 +2,16 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -43,27 +46,19 @@ public class RDMModule : JobModule
         WidgetUI.ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0, ref update);
         HideWarning(TweakConfigs.RDMHide0);
         WidgetUI.ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
-
-        if (update.HasFlag(UpdateFlags.Save)) ApplyTweaks0();
     }
 
     public bool SwordplayStatePrev;
     public bool SwordplayStateCurrent;
-    public override unsafe void ApplyTweaks0()
-    {
-        var balanceGauge = (AddonJobHudRDM0*)GameGui.GetAddonByName("JobHudRDM0");
-        ApplySwordplayCueTweak(balanceGauge);
 
-        if (balanceGauge != null && balanceGauge->GaugeStandard.Container != null)
-        {
-            var hide0 = TweakConfigs.RDMHide0;
-            var simple = ((AddonJobHud*)balanceGauge)->UseSimpleGauge;
-            balanceGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple ? 0 : 255);
-            balanceGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple ? 0 : 255);
-        }
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
+    {
+        var gauge = (AddonJobHudRDM0*)gaugeAddon;
+        ApplySwordplayCueTweak(gauge);
+        VisibilityTweak(TweakConfigs.RDMHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
-    private unsafe void ApplySwordplayCueTweak(AddonJobHudRDM0* balanceGauge)
+    private unsafe void ApplySwordplayCueTweak(AddonJobHudRDM0* gauge)
     {
         SwordplayStatePrev = SwordplayStateCurrent;
         SwordplayStateCurrent = TweakConfigs.RDM0SwordplayCue &&
@@ -73,11 +68,7 @@ public class RDMModule : JobModule
         if (SwordplayStateCurrent)
         {
             if (!SwordplayStatePrev) UIModule.PlaySound(78);
-
-            if (balanceGauge->DataCurrent.BlackMana < 50 || balanceGauge->DataCurrent.WhiteMana < 50)
-            {
-                UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86)->SetValue(3, 0, true);
-            }
+            if (gauge->DataCurrent.BlackMana < 50 || gauge->DataCurrent.WhiteMana < 50) JobUiData->SetValue(3, 0, true);
         }
     }
 }

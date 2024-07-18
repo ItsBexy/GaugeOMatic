@@ -1,15 +1,16 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
+using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
-using static GaugeOMatic.JobModules.TweakUI;
 
 namespace GaugeOMatic.JobModules;
 
@@ -28,7 +29,8 @@ public class PCTModule : JobModule
     public override List<MenuOption> JobGaugeMenu { get; } = new() {
         new("Creature Motif Deadline", nameof(CreatureMotifDeadline)),
         new("Weapon Motif Deadline", nameof(WeaponMotifDeadline)),
-        new("Landscape Motif Deadline", nameof(LandscapeMotifDeadline))
+        new("Landscape Motif Deadline", nameof(LandscapeMotifDeadline)),
+        new("Palette Gauge", nameof(PaletteGaugeTracker))
     };
 
     public PCTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRPM0", "JobHudRPM1") { }
@@ -55,50 +57,35 @@ public class PCTModule : JobModule
             PositionControls("Weapon", ref TweakConfigs.PCT0CanvasPosWeapon, ref update);
             PositionControls("Landscape", ref TweakConfigs.PCT0CanvasPosLandscape, ref update);
         }
-
-        if (update.HasFlag(UpdateFlags.Save))
-        {
-            ApplyTweaks0();
-            ApplyTweaks1();
-        }
     }
 
-    public override unsafe void ApplyTweaks0() {
-        var canvasGauge = (AddonJobHudRPM0*)GameGui.GetAddonByName("JobHudRPM0");
-
-        if (canvasGauge != null)
-        {
-            var hide0 = TweakConfigs.PCTHide0;
-            var simple = ((AddonJobHud*)canvasGauge)->UseSimpleGauge;
-            canvasGauge->GaugeStandard.Container->Color.A = (byte)(hide0 || simple ? 0 : 255);
-            canvasGauge->GaugeSimple.Container->Color.A = (byte)(hide0 || !simple ? 0 : 255);
-
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(3)->SetPositionFloat(TweakConfigs.PCT0CanvasPosCreature.X, TweakConfigs.PCT0CanvasPosCreature.Y);
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(19)->SetPositionFloat(TweakConfigs.PCT0CanvasPosWeapon.X + 102, TweakConfigs.PCT0CanvasPosWeapon.Y);
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(23)->SetPositionFloat(TweakConfigs.PCT0CanvasPosLandscape.X + 204, TweakConfigs.PCT0CanvasPosLandscape.Y);
-
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(28)->SetPositionFloat(TweakConfigs.PCT0CanvasPosCreature.X, TweakConfigs.PCT0CanvasPosCreature.Y);
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(38)->SetPositionFloat(TweakConfigs.PCT0CanvasPosWeapon.X + 78, TweakConfigs.PCT0CanvasPosWeapon.Y);
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(41)->SetPositionFloat(TweakConfigs.PCT0CanvasPosLandscape.X + 156, TweakConfigs.PCT0CanvasPosLandscape.Y);
-
-            var hideEasels = TweakConfigs.PCTHide0Easels;
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(10)->ToggleVisibility(!hideEasels);
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(20)->ToggleVisibility(!hideEasels);
-            ((AtkUnitBase*)canvasGauge)->GetNodeById(24)->ToggleVisibility(!hideEasels);
-        }
-    }
-
-    public override unsafe void ApplyTweaks1()
+    public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
-        var paletteGauge = (AddonJobHudRPM1*)GameGui.GetAddonByName("JobHudRPM1");
+        var gauge = (AddonJobHudRPM0*)gaugeAddon;
+        VisibilityTweak(TweakConfigs.PCTHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
 
-        if (paletteGauge != null)
+        if (gauge != null && gauge->GaugeStandard.Container != null)
         {
-            var hide1 = TweakConfigs.PCTHide1;
-            var simple = ((AddonJobHud*)paletteGauge)->UseSimpleGauge;
-            ((AtkUnitBase*)paletteGauge)->GetNodeById(2)->Color.A = (byte)(hide1 || simple ? 0 : 255);
-            ((AtkUnitBase*)paletteGauge)->GetNodeById(28)->Color.A = (byte)(hide1 || !simple ? 0 : 255);
+            var hideEasels = TweakConfigs.PCTHide0Easels;
+
+            gauge->GetNodeById(3)->SetPositionFloat(TweakConfigs.PCT0CanvasPosCreature.X, TweakConfigs.PCT0CanvasPosCreature.Y);
+            gauge->GetNodeById(19)->SetPositionFloat(TweakConfigs.PCT0CanvasPosWeapon.X + 102, TweakConfigs.PCT0CanvasPosWeapon.Y);
+            gauge->GetNodeById(23)->SetPositionFloat(TweakConfigs.PCT0CanvasPosLandscape.X + 204, TweakConfigs.PCT0CanvasPosLandscape.Y);
+
+            gauge->GetNodeById(28)->SetPositionFloat(TweakConfigs.PCT0CanvasPosCreature.X, TweakConfigs.PCT0CanvasPosCreature.Y);
+            gauge->GetNodeById(38)->SetPositionFloat(TweakConfigs.PCT0CanvasPosWeapon.X + 78, TweakConfigs.PCT0CanvasPosWeapon.Y);
+            gauge->GetNodeById(41)->SetPositionFloat(TweakConfigs.PCT0CanvasPosLandscape.X + 156, TweakConfigs.PCT0CanvasPosLandscape.Y);
+
+            gauge->GetNodeById(10)->ToggleVisibility(!hideEasels);
+            gauge->GetNodeById(20)->ToggleVisibility(!hideEasels);
+            gauge->GetNodeById(24)->ToggleVisibility(!hideEasels);
         }
+    }
+
+    public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
+    {
+        var gauge = (AddonJobHudRPM1*)GameGui.GetAddonByName("JobHudRPM1");
+        VisibilityTweak(TweakConfigs.PCTHide1, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(28));
     }
 }
 
