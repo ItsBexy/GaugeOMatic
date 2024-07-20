@@ -1,5 +1,6 @@
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Widgets.Common;
 internal static class CommonParts

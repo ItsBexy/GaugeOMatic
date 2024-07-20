@@ -117,7 +117,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
             new(Fill,
                 new (0) { Alpha = 0, RGB = color },
                 new(200) { Alpha = 255, RGB = color }
-                ) { Label = "ShimmerAlpha" },
+                ) { Label = "ShimmerAlpha" }
         };
 
         BeginRotation();

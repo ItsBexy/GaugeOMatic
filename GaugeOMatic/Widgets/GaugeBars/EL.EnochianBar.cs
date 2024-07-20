@@ -296,7 +296,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Heading("Layout");
         PositionControls("Position", ref Config.Position, ref update);
         ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update); 
+        AngleControls("Angle", ref Config.Angle, ref update);
         RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt }, ref update);
 
 

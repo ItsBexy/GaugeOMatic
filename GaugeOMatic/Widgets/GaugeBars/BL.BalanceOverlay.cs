@@ -5,17 +5,16 @@ using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static FFXIVClientStructs.FFXIV.Component.GUI.NodeFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.BalanceOverlay;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
-using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 

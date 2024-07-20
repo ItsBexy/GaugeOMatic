@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using CustomNodes;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
@@ -10,6 +8,7 @@ using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleCircle;
@@ -17,7 +16,6 @@ using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
-using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 

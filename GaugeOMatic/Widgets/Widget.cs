@@ -29,6 +29,7 @@ public abstract unsafe class Widget : IDisposable
         WidgetRoot = BuildRoot();
         WidgetRoot.AssembleNodeTree();
         Attach();
+
         ApplyConfigs();
     }
 

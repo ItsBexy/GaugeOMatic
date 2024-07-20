@@ -27,7 +27,7 @@ public class NINModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new() {
         new("Ninki Gauge", nameof(NinkiGaugeTracker)),
-        new("Kazematoi Stacks", nameof(KazematoiTracker)),
+        new("Kazematoi Stacks", nameof(KazematoiTracker))
     };
 
     public NINModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudNIN0", "JobHudNIN1v70") { }

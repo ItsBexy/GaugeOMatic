@@ -28,7 +28,7 @@ public partial class ConfigWindow
 
         if (update.HasFlag(Save)) jobModule.Save();
     }
-    
+
     private static void TweakTab(JobModule jobModule, ref UpdateFlags update)
     {
         if (!ImGui.BeginTabItem($"Tweaks##{jobModule.Abbr}TweaksTab")) return;

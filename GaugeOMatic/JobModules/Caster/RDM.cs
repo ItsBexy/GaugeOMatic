@@ -4,7 +4,6 @@ using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
