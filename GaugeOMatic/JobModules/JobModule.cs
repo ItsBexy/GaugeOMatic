@@ -19,7 +19,6 @@ namespace GaugeOMatic.JobModules;
 
 public abstract class JobModule : IDisposable
 {
-    public bool Built;
     public static unsafe NumberArrayData* JobUiData => UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86);
 
     public abstract Job Job { get; }
@@ -30,8 +29,6 @@ public abstract class JobModule : IDisposable
     public virtual List<AddonOption> AddonOptions => new() { new("_ParameterWidget", "Parameter Bar") };
     public string WatchedAddon0;
     public string? WatchedAddon1;
-    public bool Setup0;
-    public bool Setup1;
 
     public Configuration Configuration;
     public TrackerManager TrackerManager;
@@ -149,23 +146,8 @@ public abstract class JobModule : IDisposable
 
     public void SetupHandler(AddonEvent type, AddonArgs args)
     {
-        if (args.AddonName == WatchedAddon0) { Setup0 = true; }
-        if (args.AddonName == WatchedAddon1) { Setup1 = true; }
-        if (!Built)
-        {
-            if (Setup0 && (WatchedAddon1 == null || Setup1))
-            {
-                foreach (var module in TrackerManager.JobModules.Where(t => t.Job != Job))
-                {
-                    module.Built = false;
-                    module.Setup0 = false;
-                    module.Setup1 = false;
-                    module.DisposeTrackers();
-                }
-                BuildWidgets();
-                Built = true;
-            }
-        }
+        foreach (var module in TrackerManager.JobModules) module.DisposeTrackers();
+        BuildWidgets();
     }
 
     public void FinalizeHandler(AddonEvent type, AddonArgs args)
