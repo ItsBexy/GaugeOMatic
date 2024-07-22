@@ -59,7 +59,7 @@ public sealed unsafe class AddersCounter : CounterWidget
     public List<CustomNode> Frames = new();
     public List<CustomNode> Gems = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         BuildStacks(Max);
@@ -272,12 +272,12 @@ public sealed unsafe class AddersCounter : CounterWidget
     }
 
     private void AllVanish() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 255, AddRGB = 0 },
                               new(200) { Alpha = 0, AddRGB = 100 });
 
     private void AllAppear() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 0, AddRGB = 100 },
                               new(200) { Alpha = 255, AddRGB = 0 });
 
@@ -292,7 +292,7 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { AllAppear(); }}
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { AllAppear(); }}
 
     #endregion
 
@@ -345,7 +345,7 @@ public sealed unsafe class AddersCounter : CounterWidget
     public override void ApplyConfigs()
     {
         var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetRoot.SetPos(Config.Position+new Vector2(-48,-38))
+        WidgetContainer.SetPos(Config.Position+new Vector2(-48,-38))
                   .SetScale(Config.Scale)
                   .SetRotation(widgetAngle, true);
 
@@ -392,7 +392,7 @@ public sealed unsafe class AddersCounter : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) AllAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
         }
 
         CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);

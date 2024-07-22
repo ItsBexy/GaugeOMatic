@@ -1,10 +1,13 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
 using GaugeOMatic.Config;
+using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using ImGuiNET;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
@@ -12,7 +15,6 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Windows.ConfigWindow.GeneralTab;
 using static ImGuiNET.ImGuiCol;
-using static System.Enum;
 
 namespace GaugeOMatic.Windows;
 
@@ -20,6 +22,7 @@ public partial class ConfigWindow : Window, IDisposable
 {
     public TrackerManager TrackerManager;
     public Configuration Configuration;
+    public List<JobModule> JobModules;
 
     public enum GeneralTab { Jobs, Settings, Help }
 
@@ -27,6 +30,7 @@ public partial class ConfigWindow : Window, IDisposable
     {
         TrackerManager = trackerManager;
         Configuration = TrackerManager.Configuration;
+        JobModules = TrackerManager.JobModules;
 
         SizeConstraints = new WindowSizeConstraints
         {
@@ -39,8 +43,7 @@ public partial class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        //todo: fix this to not be localization reliant
-        if (JobChanged && TryParse(JobAbbr, out Job newJob) && newJob <= (Job)21) TrackerManager.Configuration.JobTab = newJob;
+        if (JobChanged && JobModules.Any(static j => j.Job == Current)) Configuration.JobTab = Current;
 
        // StatusData.StatusHarvest(Configuration);
 
@@ -70,7 +73,7 @@ public partial class ConfigWindow : Window, IDisposable
                     break;
                 default:
                 {
-                    var jobModule = TrackerManager.GetActiveModule();
+                    var jobModule = Configuration.GetModuleForTab(JobModules);
                     if (jobModule != null) DrawJobModuleTab(jobModule);
                     break;
                 }

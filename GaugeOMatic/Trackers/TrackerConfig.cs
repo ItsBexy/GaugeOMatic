@@ -21,6 +21,10 @@ public class TrackerConfig
     public WidgetConfig WidgetConfig;
 
     public bool Enabled { get; set; }
+    public bool LimitLevelRange = false;
+    public byte? LevelMin = null;
+    public byte? LevelMax = null;
+    public bool HideOutsideCombatDuty;
 
     [JsonIgnore] public int Index { get; set; }
     [JsonIgnore] public bool Preview { get; set; }
@@ -81,5 +85,11 @@ public class TrackerConfig
     {
         var attr = DisplayAttributes();
         return attr.Job == module.Job || (module.Class != Job.None && attr.Job == module.Class);
+    }
+
+    public TrackerConfig CleanUp()
+    {
+        WidgetConfig = WidgetConfig.CleanUp(WidgetType);
+        return this;
     }
 }

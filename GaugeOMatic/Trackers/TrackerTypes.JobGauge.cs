@@ -37,12 +37,15 @@ namespace GaugeOMatic.Trackers;
 
 #region Melee
 
-[TrackerDisplay(MNK)]
+[TrackerDisplay(MNK, ToolText)]
 public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
 {
     public override string DisplayName => "Chakra Gauge";
     public override string GaugeAddonName => "JobHudMNK1";
     public override string TermCount => "Chakras";
+
+    private const string ToolText = "Counter: Shows Chakra Count\n" +
+                                    "State: Shows if 5 chakras are up";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -55,12 +58,15 @@ public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DRG)]
+[TrackerDisplay(DRG, ToolText)]
 public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeData>
 {
     public override string DisplayName => "Firstminds' Focus";
     public override string GaugeAddonName => "JobHudDRG0";
     public override string TermCount => "Firstminds' Focus";
+
+    private const string ToolText = "Counter: Shows Firstminds' Focus Count\n" +
+                                    "State: Shows if 2 stacks are up";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -73,12 +79,16 @@ public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeD
                 preview);
 }
 
-[TrackerDisplay(NIN)]
+[TrackerDisplay(NIN, ToolText)]
 public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
 {
     public override string DisplayName => "Ninki Gauge";
     public override string GaugeAddonName => "JobHudNIN0";
     public override string TermGauge => "Gauge";
+
+    private const string ToolText = "Counter: Shows spendable Ninki abilities\n" +
+                                    "Gauge: Shows Ninki Value\n" +
+                                    "State: If gauge is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -112,15 +122,18 @@ public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData
                 preview);
 }
 
-[TrackerDisplay(SAM)]
+[TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
     public override string DisplayName => "Kenki Gauge";
     public override string GaugeAddonName => "JobHudSAM0";
+    private const string ToolText = "Counter: Shows maximum spendable Kenki abilities\n" +
+                                    "Gauge: Shows Kenki value\n" +
+                                    "State: Shows if gauge is at least 10";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
-            new(0, 3, 0, 100, 0, 1, preview) :
+            new(0, 10, 0, 100, 0, 1, preview) :
             new((int)Math.Floor(GaugeData->KenkiValue / 10f),
                 10,
                 GaugeData->KenkiValue,
@@ -129,12 +142,14 @@ public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM)]
+[TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
     public override string DisplayName => "";
     public override string GaugeAddonName => "JobHudSAM0";
     public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Meditation stacks\n" +
+                                    "State: Shows if 3 stacks are up";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -147,11 +162,12 @@ public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeDa
                 preview);
 }
 
-[TrackerDisplay(SAM)]
+[TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class SenGaugeSetsuTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Setsu Seal";
     public override string GaugeAddonName => "JobHudSAM1";
+    private const string ToolText = "State: Shows if Setsu is Active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -164,11 +180,12 @@ public sealed unsafe class SenGaugeSetsuTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM)]
+[TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class SenGaugeGetsuTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Getsu Seal";
     public override string GaugeAddonName => "JobHudSAM1";
+    private const string ToolText = "State: Shows if Getsu is Active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -181,11 +198,12 @@ public sealed unsafe class SenGaugeGetsuTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM)]
+[TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Ka Seal";
     public override string GaugeAddonName => "JobHudSAM1";
+    private const string ToolText = "State: Shows if Ka is Active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -198,12 +216,13 @@ public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM)]
+[TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string DisplayName => "Sen Gauge - Seal Count";
     public override string GaugeAddonName => "JobHudSAM1";
     public override string[] StateNames => new[] { "None", "Higanbana", "Tenka Goken", "Midare Setsugekka" };
+    private const string ToolText = "Counter/State: Shows number of seals active";
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -218,11 +237,14 @@ public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
     }
 }
 
-[TrackerDisplay(RPR)]
+[TrackerDisplay(RPR, ToolText)]
 public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
     public override string DisplayName => "Soul Gauge";
     public override string GaugeAddonName => "JobHudRRP0";
+    private const string ToolText = "Counter: Shows spendable Soul Gauge abilities\n" +
+                                    "Gauge: Shows Soul Gauge value\n" +
+                                    "State: Shows if gauge is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -235,11 +257,14 @@ public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
                 preview);
 }
 
-[TrackerDisplay(RPR)]
+[TrackerDisplay(RPR, ToolText)]
 public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
     public override string DisplayName => "Shroud Gauge";
     public override string GaugeAddonName => "JobHudRRP0";
+    private const string ToolText = "Counter: Shows Enshroud uses available\n" +
+                                    "Gauge: Shows Shroud Gauge value\n" +
+                                    "State: Shows if gauge is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -252,12 +277,15 @@ public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
                 preview);
 }
 
-[TrackerDisplay(RPR)]
+[TrackerDisplay(RPR, ToolText)]
 public sealed unsafe class LemureShroudTracker : JobGaugeTracker<DeathGaugeData>
 {
     public override string DisplayName => "Lemure Shroud";
     public override string GaugeAddonName => "JobHudRRP1";
     public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Lemure Shroud stacks\n" +
+                                    "Gauge: Shows Enshroud timer\n" +
+                                    "State: Shows if Enshroud is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -270,12 +298,15 @@ public sealed unsafe class LemureShroudTracker : JobGaugeTracker<DeathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(RPR)]
+[TrackerDisplay(RPR, ToolText)]
 public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
 {
     public override string DisplayName => "Void Shroud";
     public override string GaugeAddonName => "JobHudRRP1";
     public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Void Shroud stacks\n" +
+                                    "Gauge: Shows Enshroud timer\n" +
+                                    "State: Shows if Enshroud is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -356,16 +387,18 @@ public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferi
 
 #region Ranged
 
-[TrackerDisplay(BRD)]
+[TrackerDisplay(BRD, ToolText)]
 public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData>
 {
     public override string DisplayName => "Soul Voice Gauge";
     public override string GaugeAddonName => "JobHudBRD0";
+    private const string ToolText = "Counter/State: Shows if gauge is at least 80\n" +
+                                    "Gauge: Shows gauge value";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
-            new(GaugeData->SoulVoiceValue >= GaugeData->SoulVoiceMinimumNeeded ? 1 : 0,
+            new(GaugeData->SoulVoiceValue >= 80 ? 1 : 0,
                 1,
                 GaugeData->SoulVoiceValue,
                 GaugeData->SoulVoiceMax,
@@ -373,11 +406,14 @@ public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData
                 preview);
 }
 
-[TrackerDisplay(MCH)]
+[TrackerDisplay(MCH, ToolText)]
 public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
 {
     public override string DisplayName => "Heat Gauge";
     public override string GaugeAddonName => "JobHudMCH0";
+    private const string ToolText = "Counter: Shows Hypercharge uses available\n" +
+                                    "Gauge: Shows Heat Gauge value\n" +
+                                    "State: Shows if gauge is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -390,11 +426,13 @@ public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(MCH)]
+[TrackerDisplay(MCH, ToolText)]
 public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
 {
     public override string DisplayName => "Battery Gauge";
     public override string GaugeAddonName => "JobHudMCH0";
+    private const string ToolText = "Gauge: Shows Battery Gauge value\n" +
+                                    "Counter/State: Shows if gauge is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -407,31 +445,35 @@ public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(MCH)]
+[TrackerDisplay(MCH, ToolText)]
 public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
 {
     public override string DisplayName => "Automaton Timer";
     public override string GaugeAddonName => "JobHudMCH0";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Gauge: Shows sSummon time left\n" +
+                                    "Counter/State: Shows if Automaton Queen is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
             new(0, 2, 0, 100, 0, 1, preview) :
             new(GaugeData->SummonActive ? 1 : 0,
                 1,
-                GaugeData->SummonTimeLeft/1000f,
+                GaugeData->SummonTimeLeft / 1000f,
                 12,
                 GaugeData->SummonActive ? 1 : 0,
                 1,
                 preview);
 }
 
-[TrackerDisplay(DNC)]
+[TrackerDisplay(DNC, ToolText)]
 public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
 {
     public override string DisplayName => "Fourfold Feathers";
     public override string GaugeAddonName => "JobHudDNC1";
     public override string TermCount => "Feathers";
+    private const string ToolText = "Counter: Shows Feather count\n" +
+                                    "State: Shows if any feathers are up";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -444,11 +486,14 @@ public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DNC)]
+[TrackerDisplay(DNC, ToolText)]
 public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData>
 {
     public override string DisplayName => "Esprit Gauge";
     public override string GaugeAddonName => "JobHudDNC1";
+    private const string ToolText = "Counter: Shows Sabre Dance uses available\n" +
+                                    "Gauge: Shows Esprit Gauge value\n" +
+                                    "State: Shows if gauge is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -461,12 +506,14 @@ public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData
                 preview);
 }
 
-[TrackerDisplay(DNC)]
+[TrackerDisplay(DNC, ToolText)]
 public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 {
     public override string DisplayName => "Dance Steps";
     public override string GaugeAddonName => "JobHudDNC0";
     public override string[] StateNames => new[] { "None", "Emboite", "Entrechat", "Jete", "Pirouette" };
+    private const string ToolText = "Counter: Shows steps completed\n" +
+                                    "State: Shows current step";
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -486,27 +533,30 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 
 #region Caster
 
-[TrackerDisplay(BLM)]
+[TrackerDisplay(BLM, ToolText)]
 public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Enochian / Polyglot";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Polyglot Stacks";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Counter: Shows Polyglot stacks\n" +
+                                    "Gauge: Shows Enochian timer\n" +
+                                    "State: Shows if Enochian is filling";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
             new(0, 2, 0, 30, 0, 1, preview) :
             new(GaugeData->PolyglotStacks,
                 2,
-                GaugeData->EnochianTimer > 0 ? (GaugeData->EnochianMaxTime - GaugeData->EnochianTimer) / 1000f:0,
+                GaugeData->EnochianTimer > 0 ? (GaugeData->EnochianMaxTime - GaugeData->EnochianTimer) / 1000f : 0,
                 30,
                 GaugeData->EnochianTimer > 0 ? 1 : 0,
                 1,
                 preview);
 }
 
-[TrackerDisplay(BLM)]
+[TrackerDisplay(BLM, ToolText)]
 public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Element Status";
@@ -514,6 +564,9 @@ public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
     public override string TermCount => "Element";
     public override string TermGauge => "Timer";
     public override string[] StateNames => new[] { "None", "Astral Fire", "Umbral Ice" };
+    private const string ToolText = "Counter: Shows element stacks\n" +
+                                    "Gauge: Shows element timer\n" +
+                                    "State: Shows which element is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -527,11 +580,12 @@ public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(BLM)]
+[TrackerDisplay(BLM, ToolText)]
 public sealed unsafe class ParadoxTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Paradox";
     public override string GaugeAddonName => "JobHudBLM0";
+    private const string ToolText = "Counter/State: Shows if Paradox is ready";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -545,12 +599,14 @@ public sealed unsafe class ParadoxTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(BLM)]
+[TrackerDisplay(BLM, ToolText)]
 public sealed unsafe class UmbralHeartTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Umbral Hearts";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Hearts";
+    private const string ToolText = "Counter: Shows Umbral Heart count\n" +
+                                    "State: Shows if any Umbral Hearts are available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -564,36 +620,42 @@ public sealed unsafe class UmbralHeartTracker : JobGaugeTracker<ElementalGaugeDa
                 preview);
 }
 
-[TrackerDisplay(BLM)]
+[TrackerDisplay(BLM, ToolText)]
 public sealed unsafe class AstralFireTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Astral Fire";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Astral Fire Stacks";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Counter: Shows Astral Fire stacks\n" +
+                                    "Gauge: Shows Astral Fire time left\n" +
+                                    "State: Shows if Astral Fire is active";
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
         if (GaugeAddon == null || GaugeData == null) return new(0, 3, 0, 3, 0, 1, preview);
 
         var isFire = GaugeData->ElementStacks > 0;
-        return new(isFire?GaugeData->ElementStacks:0,
+        return new(isFire ? GaugeData->ElementStacks : 0,
                    3,
-                   isFire?GaugeData->ElementTimeLeft / 1000f : 0,
-                   GaugeData->ElementMaxTime/1000f,
+                   isFire ? GaugeData->ElementTimeLeft / 1000f : 0,
+                   GaugeData->ElementMaxTime / 1000f,
                    isFire ? 1 : 0,
                    1,
                    preview);
     }
 }
 
-[TrackerDisplay(BLM)]
+[TrackerDisplay(BLM, ToolText)]
 public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData>
 {
     public override string DisplayName => "Umbral Ice";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Umbral Ice Stacks";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Counter: Shows Umbral Ice stacks\n" +
+                                    "Gauge: Shows Umbral Ice time left\n" +
+                                    "State: Shows if Umbral Ice is active";
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -601,7 +663,7 @@ public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData
             return new(0, 3, 0, 3, 0, 1, preview);
 
         var isIce = GaugeData->ElementStacks < 0;
-        return new(isIce ? -GaugeData->ElementStacks:0,
+        return new(isIce ? -GaugeData->ElementStacks : 0,
                    3,
                    isIce ? GaugeData->ElementTimeLeft / 1000f : 0,
                    GaugeData->ElementMaxTime / 1000f,
@@ -618,7 +680,7 @@ public sealed unsafe class AstralSoulTracker : JobGaugeTracker<AstralGaugeData>
     public override string GaugeAddonName => "JobHudBLM1";
     public override string TermCount => "Stacks";
     private const string ToolText = "Counter: Shows Astral Soul Stacks\n" +
-                                    "State: Shows whether stacks are full";
+                                    "State: Shows whether 6 stacks are up";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -632,12 +694,14 @@ public sealed unsafe class AstralSoulTracker : JobGaugeTracker<AstralGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SMN)]
+[TrackerDisplay(SMN, ToolText)]
 public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<AetherflowSMNGaugeData>
 {
     public override string DisplayName => "Aetherflow Gauge";
     public override string GaugeAddonName => "JobHudSMN0";
     public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Aetherflow stack count\n" +
+                                    "State: Shows if there are any stacks available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -650,12 +714,15 @@ public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay(RDM)]
+[TrackerDisplay(RDM, ToolText)]
 public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "Mana Stacks";
     public override string GaugeAddonName => "JobHudRDM0";
     public override string TermCount => "Mana Stacks";
+    private const string ToolText = "Counter: Shows Mana stack count\n" +
+                                    "Gauge: Shows the lesser of White or Black Mana\n" +
+                                    "State: Shows if both gauges are at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -666,23 +733,29 @@ public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
     }
 }
 
-[TrackerDisplay(RDM)]
+[TrackerDisplay(RDM, ToolText)]
 public sealed unsafe class BlackManaTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "Black Mana";
     public override string GaugeAddonName => "JobHudRDM0";
+    private const string ToolText = "Counter: Shows spendable combos\n" +
+                                    "Gauge: Shows Black Mana\n" +
+                                    "State: Shows if Black Mana is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null
             ? new(0, 2, 0, 100, 0, 1, preview)
-            : new((int)Math.Floor((double)(GaugeData->BlackMana / 50)), 2, GaugeData->BlackMana, 100, GaugeData->BlackMana >= 50 ? 1 : 0, 1, preview);
+            : new((int)Math.Floor((double)(Math.Min(GaugeData->BlackMana, GaugeData->WhiteMana) / 50)), 2, GaugeData->BlackMana, 100, GaugeData->BlackMana >= 50 ? 1 : 0, 1, preview);
 }
 
-[TrackerDisplay(RDM)]
+[TrackerDisplay(RDM, ToolText)]
 public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "White Mana";
     public override string GaugeAddonName => "JobHudRDM0";
+    private const string ToolText = "Counter: Shows spendable combos\n" +
+                                    "Gauge: Shows White Mana\n" +
+                                    "State: Shows if White Mana is at least 50";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null
@@ -690,12 +763,13 @@ public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
             : new((int)Math.Floor((double)(GaugeData->WhiteMana / 50)), 2, GaugeData->WhiteMana, 100, GaugeData->WhiteMana >= 50 ? 1 : 0, 1, preview);
 }
 
-[TrackerDisplay(RDM)]
+[TrackerDisplay(RDM, ToolText)]
 public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeData>
 {
     public override string DisplayName => "Balance Crystal";
     public override string GaugeAddonName => "JobHudRDM0";
     public override string[] StateNames { get; } = { "Neutral", "Black Imbalance", "White Imbalance", "Combo Ready" };
+    private const string ToolText = "State: Shows Combo/Imbalance state";
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -777,11 +851,14 @@ public sealed unsafe class PaletteGaugeTracker : JobGaugeTracker<PaletteGaugeDat
 
 #region Tank
 
-[TrackerDisplay(PLD)]
+[TrackerDisplay(PLD, ToolText)]
 public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
 {
     public override string DisplayName => "Oath Gauge";
     public override string GaugeAddonName => "JobHudPLD0";
+    private const string ToolText = "Counter: Shows spendable Oath Gauge abilities\n" +
+                                    "Gauge: Shows Oath Gauge value\n" +
+                                    "State: Shows if tank stance is on";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -794,11 +871,14 @@ public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(WAR)]
+[TrackerDisplay(WAR, ToolText)]
 public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
 {
     public override string DisplayName => "Beast Gauge";
     public override string GaugeAddonName => "JobHudWAR0";
+    private const string ToolText = "Counter: Shows spendable Beast Gauge abilities\n" +
+                                    "Gauge: Shows Beast Gauge value\n" +
+                                    "State: Shows if tank stance is on";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -811,11 +891,14 @@ public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DRK)]
+[TrackerDisplay(DRK, ToolText)]
 public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
 {
     public override string DisplayName => "Blood Gauge";
     public override string GaugeAddonName => "JobHudDRK0";
+    private const string ToolText = "Counter: Shows spendable Blood Gauge abilities\n" +
+                                    "Gauge: Shows Blood Gauge value\n" +
+                                    "State: Shows if tank stance is on";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -828,12 +911,14 @@ public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DRK)]
+[TrackerDisplay(DRK, ToolText)]
 public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeData>
 {
     public override string DisplayName => "Darkside Gauge";
     public override string GaugeAddonName => "JobHudDRK1";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Gauge: Shows Darkside timer\n" +
+                                    "Counter/State: Shows if Darkside is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -846,12 +931,14 @@ public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeD
                 preview);
 }
 
-[TrackerDisplay(DRK)]
+[TrackerDisplay(DRK, ToolText)]
 public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeData>
 {
     public override string DisplayName => "Living Shadow";
     public override string GaugeAddonName => "JobHudDRK1";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Gauge: Shows Living Shadow timer\n" +
+                                    "Counter/State: Shows if Living Shadow is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -864,12 +951,14 @@ public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeDa
                 preview);
 }
 
-[TrackerDisplay(GNB)]
+[TrackerDisplay(GNB, ToolText)]
 public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 {
     public override string DisplayName => "Powder Gauge";
     public override string GaugeAddonName => "JobHudGNB0";
     public override string TermCount => "Cartridges";
+    private const string ToolText = "Counter: Shows Cartridge Count\n" +
+                                    "State: Shows if Tank Stance is on";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -886,13 +975,16 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 
 #region Healer
 
-[TrackerDisplay(WHM)]
+[TrackerDisplay(WHM, ToolText)]
 public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
 {
     public override string DisplayName => "Lilies";
     public override string GaugeAddonName => "JobHudWHM0";
     public override string TermCount => "Lilies";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Counter: Shows Lilies available\n" +
+                                    "Gauge: Shows Lily timer\n" +
+                                    "State: Shows if Blood Lily is available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -905,13 +997,16 @@ public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
                 preview);
 }
 
-[TrackerDisplay(WHM)]
+[TrackerDisplay(WHM, ToolText)]
 public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
 {
     public override string DisplayName => "Blood Lily";
     public override string GaugeAddonName => "JobHudWHM0";
     public override string TermCount => "Blood Lily";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Counter: Shows Lilies spent\n" +
+                                    "Gauge: Shows Lily timer\n" +
+                                    "State: Shows if Blood Lily is available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -924,12 +1019,14 @@ public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SCH)]
+[TrackerDisplay(SCH, ToolText)]
 public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<AetherflowACNGaugeData>
 {
     public override string DisplayName => "Aetherflow Gauge";
     public override string GaugeAddonName => "JobHudACN0";
     public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Aetherflow stacks\n" +
+                                    "State: Shows if any stacks are available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -942,11 +1039,13 @@ public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay(SCH)]
+[TrackerDisplay(SCH, ToolText)]
 public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
 {
     public override string DisplayName => "Fae Aether";
     public override string GaugeAddonName => "JobHudSCH0";
+    private const string ToolText = "Gauge: Shows Fae Aether value\n" +
+                                    "State: Shows if Faerie is summoned";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -959,11 +1058,13 @@ public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SCH)]
+[TrackerDisplay(SCH, ToolText)]
 public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
 {
     public override string DisplayName => "Seraph Timer";
     public override string GaugeAddonName => "JobHudSCH0";
+    private const string ToolText = "Gauge: Shows Seraph timer\n" +
+                                    "Counter/State: Shows if Seraph is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -976,11 +1077,12 @@ public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SGE)]
+[TrackerDisplay(SGE, ToolText)]
 public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
 {
     public override string DisplayName => "Eukrasia";
     public override string GaugeAddonName => "JobHudGFF0";
+    private const string ToolText = "Counter/State: Shows if Eukrasia is active";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -993,13 +1095,16 @@ public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SGE)]
+[TrackerDisplay(SGE, ToolText)]
 public sealed unsafe class AddersgallTracker : JobGaugeTracker<AddersgallGaugeData>
 {
     public override string DisplayName => "Addersgall Gauge";
     public override string GaugeAddonName => "JobHudGFF1";
     public override string TermCount => "Stacks";
     public override string TermGauge => "Timer";
+    private const string ToolText = "Counter: Shows Addersgall stacks\n" +
+                                    "Gauge: Shows Addersgall timer\n" +
+                                    "State: Shows if any stacks are available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -1008,16 +1113,18 @@ public sealed unsafe class AddersgallTracker : JobGaugeTracker<AddersgallGaugeDa
                 3,
                 GaugeData->AddersgallTimer / 1000f,
                 GaugeData->AddersgallTimerMax / 1000f,
-                GaugeData->Addersgall == 3 ? 1 : 0, 1,
+                GaugeData->Addersgall > 0 ? 1 : 0, 1,
                 preview);
 }
 
-[TrackerDisplay(SGE)]
+[TrackerDisplay(SGE, ToolText)]
 public sealed unsafe class AdderstingTracker : JobGaugeTracker<AddersgallGaugeData>
 {
     public override string DisplayName => "Addersting Counter";
     public override string GaugeAddonName => "JobHudGFF1";
     public override string TermCount => "Stacks";
+    private const string ToolText = "Counter: Shows Addersting stacks\n" +
+                                    "State: Shows if any stacks are available";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?

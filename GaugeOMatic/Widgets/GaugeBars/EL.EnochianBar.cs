@@ -13,6 +13,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
@@ -32,7 +33,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         DisplayName = "Enochian Bar",
         Author = "ItsBexy",
         Description = "A curved bar based on BLM's Enochian timer.",
-        WidgetTags = GaugeBar | MultiComponent | Replica,
+        WidgetTags = GaugeBar | MultiComponent | Replica | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons,
         MultiCompData = new("EL", "Elemental Gauge Replica", 1)
     };
 
@@ -59,7 +61,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public CustomNode ClockHandContainer;
     public CustomNode ClockHand;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0,-1);
         CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
@@ -264,7 +266,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Gain.SetAddRGB(Config.GainColor + colorOffset, true).SetProgress(0);
         Drain.SetAddRGB(Config.DrainColor + colorOffset, true).SetProgress(0);
 
-        WidgetRoot.SetPos(Config.Position + new Vector2(86, 68))
+        WidgetContainer.SetPos(Config.Position + new Vector2(86, 68))
                   .SetScale(Config.Scale);
 
         Contents.SetRotation(Config.Angle, true);

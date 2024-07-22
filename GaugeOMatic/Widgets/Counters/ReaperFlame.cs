@@ -53,7 +53,7 @@ public sealed unsafe class ReaperFlame : CounterWidget
     public List<CustomNode> Halos = new();
     public List<CustomNode> Pulsars = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         Stacks = BuildStacks(Max);
@@ -203,8 +203,8 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
 
         var angle = Config.Angle;
         double x = 0;

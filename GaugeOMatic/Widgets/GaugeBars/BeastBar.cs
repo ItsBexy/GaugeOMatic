@@ -53,7 +53,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
     public CustomNode Glow;
     public LabelTextNode LabelTextNode;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         NumTextNode = new();
         LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
@@ -266,7 +266,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position + new Vector2(-6, 0))
+        WidgetContainer.SetPos(Config.Position + new Vector2(-6, 0))
                   .SetScale(Config.Scale);
 
         Contents.SetRotation(Config.Angle, true);

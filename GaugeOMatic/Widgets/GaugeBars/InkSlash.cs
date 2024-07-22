@@ -67,7 +67,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     public CustomNode Splatter4;
     public CustomNode Splatter5;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Bar = BuildBar().SetOrigin(-45, 25);
         NumTextNode = new();
@@ -274,7 +274,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
     public Vector2 PosAdjust = new(60,-50);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position+PosAdjust);
+        WidgetContainer.SetPos(Config.Position+PosAdjust);
         Bar.SetScale(Config.Scale);
         Tick.SetAddRGB(Config.TickColor);
 

@@ -55,7 +55,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     public CustomNode Whirl;
     public CustomNode ClockHand;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2).SetScale(0.9f).SetOrigin(71, 74).SetAlpha(255);
         ActiveClock = BuildClock();
@@ -266,7 +266,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         ClockHand.SetMultiply(Config.HandColor);

@@ -124,12 +124,14 @@ public partial class ConfigWindow
     {
         if (ImGuiComponents.IconButton($"CopyWidget{hash}", FontAwesomeIcon.Copy))
         {
+            tracker.TrackerConfig.CleanUp();
             WidgetClipType = tracker.WidgetType;
             WidgetClipboard = tracker.WidgetConfig;
             ImGui.SetClipboardText(WidgetClipboard);
         }
 
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Copy Widget Settings");
+
     }
 
     private static void PasteWidgetButton(Tracker tracker, int hash, ref UpdateFlags update)
@@ -159,7 +161,11 @@ public partial class ConfigWindow
     {
         var preview = tracker.TrackerConfig.Preview;
 
-        if (ImGui.Checkbox($"##Preview{hash}", ref preview)) tracker.TrackerConfig.Preview = tracker.Available && preview;
+        if (ImGui.Checkbox($"##Preview{hash}", ref preview))
+        {
+            tracker.TrackerConfig.Preview = tracker.Available && preview;
+            tracker.Widget?.ApplyDisplayRules();
+        }
 
         ImGui.SameLine();
         ImGui.SetNextItemWidth(120f * GlobalScale);

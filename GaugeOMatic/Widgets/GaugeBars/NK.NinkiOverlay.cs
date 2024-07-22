@@ -46,7 +46,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
     public CustomNode Shine;
     public CustomNode Calligraphy;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Main = ImageNodeFromPart(0, 0).SetAlpha(0).SetImageWrap(1).SetImageFlag(32).DefineTimeline(BarTimeline);
         Tick = ImageNodeFromPart(0, 1).SetAlpha(0).SetOrigin(22, 43.5f).SetImageFlag(32).DefineTimeline(TickTimeline);
@@ -176,8 +176,8 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
         Main.SetAddRGB(Config.ScrollColor).DefineTimeline(BarTimeline).SetProgress(CalcProg());
         Tick.SetRGB(Config.TickColor);
         Shine.SetRGB(Config.TickColor);

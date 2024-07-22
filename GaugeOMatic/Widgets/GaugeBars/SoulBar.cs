@@ -60,7 +60,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
     public CustomNode TickLine;
     public CustomNode TickDot;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Frame = NineGridFromPart(0, 11, 5, 5, 5, 5).SetHeight(20).SetOrigin(10, 10);
         Bar = BuildBar();
@@ -377,7 +377,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetOrigin(0, 16f)
                   .SetScale(Config.Scale)
                   .SetRotation(Config.Angle, true);

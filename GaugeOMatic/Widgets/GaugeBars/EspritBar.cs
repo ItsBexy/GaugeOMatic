@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.EspritBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
@@ -35,7 +36,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         DisplayName = "Esprit Bar",
         Author = "ItsBexy",
         Description = "A curved bar based on DNC's Esprit Gauge",
-        WidgetTags = GaugeBar
+        WidgetTags = GaugeBar | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons
     };
 
     public override CustomPartsList[] PartsLists { get; } = { DNC1, CircleMask};
@@ -58,7 +60,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public CustomNode DrainMask;
     public CustomNode GainMask;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Fan = BuildFan();
         NumTextNode = new();
@@ -274,7 +276,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     {
         var flipFactor = Config.Clockwise ? 1 : -1;
 
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Fan.SetScaleX(flipFactor)

@@ -46,6 +46,7 @@ public class NINModule : JobModule
         HideWarning(TweakConfigs.NINHide1);
     }
 
+    // todo: Add Higi color-change tweak to Ninki Gauge
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
         var gauge = (AddonJobHudNIN0*)gaugeAddon;

@@ -45,7 +45,7 @@ public sealed unsafe class FinishIcon : StateWidget
 
     public CustomNode Symbol;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Symbol = ImageNodeFromPart(0, 0).RemoveFlags(SetVisByAlpha)
                                         .SetAlpha(0)
@@ -165,7 +165,7 @@ public sealed unsafe class FinishIcon : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State))

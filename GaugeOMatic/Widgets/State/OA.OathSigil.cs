@@ -46,7 +46,7 @@ public sealed unsafe class OathSigil : StateWidget
     public CustomNode WingR;
     public CustomNode WingL;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Sigil = ImageNodeFromPart(0, 0).SetOrigin(90, 90).SetAlpha(0).SetScale(0).SetY(50).SetImageFlag(32);
         SigilWrapper = new(CreateResNode(), Sigil);
@@ -188,7 +188,7 @@ public sealed unsafe class OathSigil : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position+new Vector2(30.5F, 0))
+        WidgetContainer.SetPos(Config.Position+new Vector2(30.5F, 0))
                   .SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;

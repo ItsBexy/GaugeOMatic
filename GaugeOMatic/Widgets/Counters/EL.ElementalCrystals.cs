@@ -11,7 +11,7 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.ElementalCrystals;
-using static GaugeOMatic.Widgets.ElementalCrystals.ElementalCrystal.BaseColors;
+using static GaugeOMatic.Widgets.ElementalCrystals.ElementalCrystalConfig.BaseColors;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
@@ -46,7 +46,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
     public List<CustomNode> Glows1 = new();
     public List<CustomNode> Glows2 = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         BuildStacks(Max);
@@ -129,7 +129,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     #region Configs
 
-    public class ElementalCrystal : CounterWidgetConfig
+    public class ElementalCrystalConfig : CounterWidgetConfig
     {
         public enum BaseColors { Ice = 3, Fire = 4 }
 
@@ -142,7 +142,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
         public float Angle = -62;
         public float Curve = 18;
 
-        public ElementalCrystal(WidgetConfig widgetConfig)
+        public ElementalCrystalConfig(WidgetConfig widgetConfig)
         {
             var config = widgetConfig.ElementalCrystalCfg;
 
@@ -163,12 +163,12 @@ public sealed unsafe class ElementalCrystals : CounterWidget
             InvertTimer = config.InvertTimer;
         }
 
-        public ElementalCrystal() { }
+        public ElementalCrystalConfig() { }
     }
 
     public override CounterWidgetConfig GetConfig => Config;
 
-    public ElementalCrystal Config;
+    public ElementalCrystalConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -178,7 +178,7 @@ public sealed unsafe class ElementalCrystals : CounterWidget
     {
 
         var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetRoot.SetPos(Config.Position+new Vector2(19, 22))
+        WidgetContainer.SetPos(Config.Position+new Vector2(19, 22))
                   .SetScale(Config.Scale)
                   .SetRotation(widgetAngle, true);
 
@@ -232,5 +232,5 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
 public partial class WidgetConfig
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public ElementalCrystal? ElementalCrystalCfg { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)] public ElementalCrystalConfig? ElementalCrystalCfg { get; set; }
 }

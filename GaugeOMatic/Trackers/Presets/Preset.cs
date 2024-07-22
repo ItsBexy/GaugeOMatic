@@ -36,7 +36,14 @@ public struct Preset
 
     public readonly Preset Clone() => new(ExportStr(), true);
 
-    public readonly string ExportStr() => Zip(SerializeObject(this, JsonSettings));
+    public readonly string ExportStr() => Zip(SerializeObject(CleanUp(), JsonSettings));
+
+    private readonly Preset CleanUp()
+    {
+        for (var i = 0; i < Trackers.Length; i++) Trackers[i] = Trackers[i].CleanUp();
+        return this;
+    }
+
     public static implicit operator string(Preset p) => p.ExportStr();
 
     public static implicit operator Preset(string s) => new(s, true);

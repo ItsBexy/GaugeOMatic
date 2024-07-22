@@ -50,7 +50,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
     public CustomNode Bar;
     public CustomNode Backdrop;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         TabTextNode = new();
         TabTextNode.SetAlpha(0);
@@ -250,7 +250,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Contents.SetRotation(Config.Angle, true);

@@ -42,7 +42,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public CustomNode Backdrop;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Backdrop = ImageNodeFromPart(0, 2).SetImageWrap(1).SetRGBA(Config.Background);
         Drain = ImageNodeFromPart(0, 1).SetWidth(0).SetImageWrap(1).SetRGBA(Config.DrainColor);
@@ -122,10 +122,10 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale.X, Config.Scale.Y * (Config.Mirror ? -1f : 1f));
-        WidgetRoot.Node->Rotation = (float)(Config.Angle * (PI / 180f));
-        WidgetRoot.Node->DrawFlags |= 0xD;
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale.X, Config.Scale.Y * (Config.Mirror ? -1f : 1f));
+        WidgetContainer.Node->Rotation = (float)(Config.Angle * (PI / 180f));
+        WidgetContainer.Node->DrawFlags |= 0xD;
 
         Backdrop.SetRGBA(Config.Background);
         Main.SetRGBA(Config.MainColor).DefineTimeline(BarTimeline);

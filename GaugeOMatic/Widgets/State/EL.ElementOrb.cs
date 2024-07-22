@@ -45,7 +45,7 @@ public sealed unsafe class ElementOrb : StateWidget
     public CustomNode Orb;
     public CustomNode Shine;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Halo = ImageNodeFromPart(0, 17).SetPos(4, 4).
                                         SetScale(2)
@@ -226,8 +226,8 @@ public sealed unsafe class ElementOrb : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
         Crescent.SetRotation(Config.CrescentAngle, true);
 
         var state = Tracker.CurrentData.State;

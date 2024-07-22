@@ -54,7 +54,7 @@ public sealed unsafe class FaerieFrame : StateWidget
     public CustomNode Darts;
     public CustomNode Sparkles;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Wings = ImageNodeFromPart(0, 4).SetPos(5, 1)
                                        .SetOrigin(20, 70)
@@ -318,7 +318,7 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Frame.SetAddRGB(GetAdjustedColor());

@@ -83,7 +83,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
     public CustomNode Shine;
     public CustomNode Streak;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
 
         Frame = BuildFrame();
@@ -401,7 +401,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position + new Vector2(119, 36))
+        WidgetContainer.SetPos(Config.Position + new Vector2(119, 36))
                   .SetScale(Config.Scale);
 
         Contents.SetRotation(Config.Angle, true);

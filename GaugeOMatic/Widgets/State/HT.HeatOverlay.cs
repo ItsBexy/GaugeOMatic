@@ -44,7 +44,7 @@ public sealed unsafe class HeatOverlay : StateWidget
     public CustomNode Smoke2;
     public CustomNode Smoke3;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Smoke1 = ImageNodeFromPart(0, 16).SetPos(-11, -9).SetOrigin(32, 85).SetAlpha(0);
         Smoke2 = ImageNodeFromPart(0, 16).SetPos(71, -26).SetOrigin(32, 85).SetAlpha(0);
@@ -214,7 +214,7 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         GlowWrapper.SetRotation(Config.Angle, true);

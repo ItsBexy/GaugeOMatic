@@ -10,6 +10,7 @@ using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.TargetReticle;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
@@ -30,7 +31,8 @@ public sealed unsafe class TargetReticle : StateWidget
         DisplayName = "Target Reticle",
         Author = "ItsBexy",
         Description = "A revolving reticle that appears while the tracker's condition is met.",
-        WidgetTags = State
+        WidgetTags = State | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons
     };
 
     public override CustomPartsList[] PartsLists { get; } =
@@ -49,7 +51,7 @@ public sealed unsafe class TargetReticle : StateWidget
     public CustomNode InnerHaloFill;
     public CustomNode InnerHaloMask;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         HaloFill = ImageNodeFromPart(0, 1).SetScale(23).SetImageFlag(32);
         HaloMask = ClippingMaskFromPart(0, 0);
@@ -214,7 +216,7 @@ public sealed unsafe class TargetReticle : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale*0.5f)
                   .SetRotation(Config.Angle * 0.0174532925199433f);
 

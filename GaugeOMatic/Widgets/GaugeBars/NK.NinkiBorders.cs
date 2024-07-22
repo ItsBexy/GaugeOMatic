@@ -51,7 +51,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
     public CustomNode Shine;
     public CustomNode Calligraphy;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Main = ImageNodeFromPart(0, 0).SetPos(11, 19)
                                       .SetAlpha(0)
@@ -207,7 +207,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
 
 
         //(ushort)Math.Round((prog * 190f) + 10f)

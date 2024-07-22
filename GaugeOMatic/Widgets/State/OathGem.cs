@@ -40,7 +40,7 @@ public sealed unsafe class OathGem : StateWidget
     public CustomNode Gem;
     public CustomNode Glow;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Gem = ImageNodeFromPart(0, 20).SetPos(34, 34).SetOrigin(34, 34);
         Frame = ImageNodeFromPart(0, 18).SetOrigin(68, 68);
@@ -171,8 +171,8 @@ public sealed unsafe class OathGem : StateWidget
     public AddRGB ColorOffset = new(-53, 11, 54);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;
         if (state > 0)

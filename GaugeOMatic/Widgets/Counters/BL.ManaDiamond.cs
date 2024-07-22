@@ -57,7 +57,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     public List<CustomNode> Glows = new();
     public List<CustomNode> GemContainers = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         SocketPlate = BuildSocketPlate(Max, out var size);
@@ -157,13 +157,13 @@ public sealed unsafe class ManaDiamond : CounterWidget
     }
 
     private void PlateAppear() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                                  new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
                                  new(200) { Scale = Config.Scale, Alpha = 255 })
                                  { Ease = SinInOut };
 
     private void PlateVanish() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                                  new(0) { Scale = Config.Scale, Alpha = 255 },
                                  new(150) { Scale = Config.Scale*0.65f, Alpha = 0 })
                                  { Ease = SinInOut };
@@ -175,7 +175,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count);
-        if (Config.HideEmpty && count == 0) WidgetRoot.Hide();
+        if (Config.HideEmpty && count == 0) WidgetContainer.Hide();
     }
 
     private void PulseAll()
@@ -224,7 +224,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) PlateAppear(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) PlateAppear(); }
 
     #endregion
 
@@ -269,8 +269,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
     public AddRGB ColorOffset = new(-65, 120, 120);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
         StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
     }
 
@@ -287,7 +287,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
         }
 
         RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);

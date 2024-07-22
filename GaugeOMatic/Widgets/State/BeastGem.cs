@@ -40,7 +40,7 @@ public sealed unsafe class BeastGem : StateWidget
     public CustomNode Gem;
     public CustomNode Glow;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Base = ImageNodeFromPart(0, 8).SetOrigin(54, 54);
         Gem = ImageNodeFromPart(0, 9).SetPos(21, 20).SetOrigin(32, 32).SetAlpha(0);
@@ -162,8 +162,8 @@ public sealed unsafe class BeastGem : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;
         Gem.SetAddRGB(Config.GetColor(state) + new AddRGB(21, 103, 103));

@@ -53,7 +53,7 @@ public unsafe class HeatReplica : GaugeBarWidget
     public CustomNode Bar;
     public CustomNode Backdrop;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         TabBg = ImageNodeFromPart(0, 0).SetPos(7, 12).SetImageWrap(1);
         TabFrame = ImageNodeFromPart(0, 9).SetImageWrap(1);
@@ -224,7 +224,7 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
 
         Contents.SetRotation(Config.Angle, true);
         HeatClock.SetRotation(-Config.Angle, true);

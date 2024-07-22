@@ -71,7 +71,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public CustomNode MainOverlay;
     public CustomNode Sparkles;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Bar = BuildBar();
         Plate = ImageNodeFromPart(0, 1).SetPos(-100, -24).SetOrigin(100, 24).RemoveFlags(SetVisByAlpha);
@@ -368,7 +368,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     {
         var frameWidth = Config.Width + 56;
 
-        WidgetRoot.SetPos(Config.Position + new Vector2(100, 38.5f))
+        WidgetContainer.SetPos(Config.Position + new Vector2(100, 38.5f))
                   .SetScale(Config.Scale);
 
         Frame.SetWidth(frameWidth)

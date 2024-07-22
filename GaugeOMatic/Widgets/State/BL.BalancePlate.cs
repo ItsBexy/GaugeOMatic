@@ -57,7 +57,7 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public BalancePlate(Tracker tracker) : base(tracker) => SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(WidgetRoot, Config!.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y, ref Animator));
+    public BalancePlate(Tracker tracker) : base(tracker) => SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(WidgetContainer, Config!.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y, ref Animator));
 
     #region Nodes
 
@@ -68,7 +68,7 @@ public sealed unsafe class BalancePlate : StateWidget
     public CustomNode CrystalGlow;
     public CustomNode Star;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Backdrop = ImageNodeFromPart(0, 7).SetPos(16, 23);
 
@@ -206,7 +206,7 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;
 

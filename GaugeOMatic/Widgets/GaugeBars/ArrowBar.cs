@@ -54,7 +54,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
     public CustomNode Backdrop;
     public LabelTextNode LabelTextNode;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Bar = BuildBar().SetPos(19, 13);
         Frame = NineGridFromPart(0, 0, 13, 38, 13, 56).SetSize(188, 34);
@@ -253,7 +253,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
     public override void ApplyConfigs()
     {
         var frameWidth = Config.Width + 38;
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         BarFrame.SetRotation(Config.Angle * 0.01745329f)

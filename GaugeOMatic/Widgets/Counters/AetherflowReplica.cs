@@ -52,7 +52,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     public CustomNode SocketPlate;
     public CustomNode Gems;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
 
@@ -163,7 +163,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         var downScale = Config.Scale * 0.65f;
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 },
                               new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 })
                                   { Ease = SinInOut };
@@ -173,7 +173,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         var upScale = Config.Scale * 1.65f;
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                                  new(0) { ScaleX = upScale, ScaleY = upScale * flipFactor, Alpha = 0 },
                                  new(200) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 })
                                  { Ease = SinInOut };
@@ -187,12 +187,12 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
         for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count).SetScale(flipFactor, 1);
-        if (Config.HideEmpty && count == 0) WidgetRoot.Hide();
+        if (Config.HideEmpty && count == 0) WidgetContainer.Hide();
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { PlateAppear(); }}
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { PlateAppear(); }}
 
     #endregion
 
@@ -241,7 +241,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     public override void ApplyConfigs()
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale, Config.Scale * flipFactor)
                   .SetRotation(Config.Angle, true)
                   .SetAlpha(Tracker.CurrentData.Count != 0 || !Config.HideEmpty);
@@ -273,7 +273,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
         }
 
         CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);

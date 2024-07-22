@@ -35,14 +35,6 @@ public class TrackerDisplayAttribute : Attribute
         Role = role;
     }
 
-    public TrackerDisplayAttribute(Job job)
-    {
-        Icon = Gauge;
-        Color = (uint)JobGaugeColor;
-        TypeDesc = $"{job} Gauge Tracker";
-        Job = job;
-    }
-
     public TrackerDisplayAttribute(Job job, string toolText)
     {
         Icon = Gauge;

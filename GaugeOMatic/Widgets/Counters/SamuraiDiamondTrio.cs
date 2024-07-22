@@ -43,7 +43,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     public List<CustomNode> Glows2 = new();
     public List<CustomNode> Pulsars = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = 3;
         return new CustomNode(ImageNodeFromPart(0, 10),
@@ -114,13 +114,13 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     }
 
     private void PlateAppear() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
                               new(200) { Scale = Config.Scale, Alpha = 255 })
                               { Ease = SinInOut };
 
     private void PlateVanish() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale, Alpha = 255 },
                               new(150) { Scale = Config.Scale * 0.65f, Alpha = 0 })
                               { Ease = SinInOut };
@@ -135,7 +135,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) PlateAppear(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) PlateAppear(); }
 
     private void PulseAll()
     {
@@ -211,8 +211,8 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
 
         for (var i = 0; i < 3; i++)
         {
@@ -232,7 +232,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && Tracker.CurrentData.Count == 0) PlateVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
         }
 
         RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);

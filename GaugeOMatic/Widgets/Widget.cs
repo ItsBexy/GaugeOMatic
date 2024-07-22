@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static CustomNodes.CustomNodeManager;
+using static Dalamud.Game.ClientState.Conditions.ConditionFlag;
+using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Utility.Color;
 using static Newtonsoft.Json.JsonConvert;
 using static System.Activator;
@@ -23,10 +25,15 @@ public abstract unsafe class Widget : IDisposable
         Tracker = tracker;
         InitConfigs();
 
-        if (WidgetInfo.AllowedAddons?.Contains(Tracker.AddonName) == false) Tracker.AddonName = WidgetInfo.AllowedAddons[0];
+        if (!WidgetInfo.AddonPermitted(Tracker.AddonName))
+        {
+            Tracker.AddonName = Tracker.JobModule.AddonOptions.First(a => WidgetInfo.AddonPermitted(a.Name)).Name;
+        }
+
         Addon = (AtkUnitBase*)GameGui.GetAddonByName(Tracker.AddonName);
 
-        WidgetRoot = BuildRoot();
+        WidgetContainer = BuildContainer();
+        WidgetRoot = new CustomNode(CreateResNode(), WidgetContainer);
         WidgetRoot.AssembleNodeTree();
         Attach();
 
@@ -47,11 +54,13 @@ public abstract unsafe class Widget : IDisposable
 
     public abstract WidgetInfo WidgetInfo { get; }
     public Tracker Tracker { get; set; }
+    public TrackerConfig TrackerConfig => Tracker.TrackerConfig;
     public AtkUnitBase* Addon;
 
     public Animator Animator = new();
+    public CustomNode WidgetContainer;
     public CustomNode WidgetRoot;
-    public virtual CustomNode BuildRoot() => new(CreateResNode());
+    public virtual CustomNode BuildContainer() => new(CreateResNode());
     public virtual CustomPartsList[] PartsLists { get; } = Array.Empty<CustomPartsList>();
 
     public void Dispose()
@@ -87,6 +96,24 @@ public abstract unsafe class Widget : IDisposable
 
     public virtual string? SharedEventGroup => null;
 
+    public bool IsVisible { get; set; } = true;
+
+    public void Hide()
+    {
+        if (!IsVisible) return;
+
+        IsVisible = false;
+        Animator += new Tween(WidgetRoot, WidgetRoot, new(100) { Alpha = 0 });
+    }
+
+    public void Show()
+    {
+        if (IsVisible) return;
+
+        IsVisible = true;
+        Animator += new Tween(WidgetRoot, WidgetRoot, new (100) { Alpha = 255 });
+    }
+
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public struct SharedEventArgs
     {
@@ -103,6 +130,24 @@ public abstract unsafe class Widget : IDisposable
             if (widget!.SharedEvents.TryGetValue(eventLabel, out var action))
                 action.Invoke(args);
     }
+
+    public void ApplyDisplayRules()
+    {
+        bool CheckLevel()
+        {
+            if (!TrackerConfig.LimitLevelRange) return true;
+            if ((TrackerConfig.LevelMin ?? 1) == 1 && (TrackerConfig.LevelMax ?? LevelCap) == LevelCap) return true;
+            var level = ClientState.LocalPlayer?.Level ?? 1;
+            return !(level < TrackerConfig.LevelMin || level > TrackerConfig.LevelMax);
+        }
+
+        bool CheckFlags() => !TrackerConfig.HideOutsideCombatDuty || Condition.Any(InCombat, BoundByDuty, BoundByDuty56, BoundByDuty95, InDeepDungeon);
+
+        if (Tracker.UsePreviewValue || (CheckLevel() && CheckFlags()))
+            Show();
+        else
+            Hide();
+    }
 }
 
 public partial class WidgetConfig // each widget contributes a part to this in its own file
@@ -110,6 +155,21 @@ public partial class WidgetConfig // each widget contributes a part to this in i
     public string? WidgetType { get; set; }
     public static implicit operator string(WidgetConfig w) => SerializeObject(w, Json.JsonSettings);
     public static implicit operator WidgetConfig?(string s) => DeserializeObject<WidgetConfig>(s) ?? null;
+
+    public WidgetConfig CleanUp(string? widgetType)
+    {
+        foreach (var p in
+                 from p in typeof(WidgetConfig).GetProperties()
+                 where p.GetValue(this) != null
+                 let decType = p.PropertyType.DeclaringType?.Name
+                 where decType != null && decType != widgetType select p)
+        {
+            Log.Warning("CRUFT!!");
+            p.SetValue(this, null);
+        }
+
+        return this;
+    }
 }
 
 public abstract class WidgetTypeConfig

@@ -52,7 +52,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
     public CustomNode DragonBgPulse;
     public CustomNode DragonBg1Wrap;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         NumTextNode = new();
 
@@ -314,7 +314,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Backdrop.SetAddRGB(Config.BarBg,true);

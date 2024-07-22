@@ -74,7 +74,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     public CustomNode GainH;
     public CustomNode MainH;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Scroll = BuildScroll();
         CalligraphyFlash1 = ImageNodeFromPart(0, 3).SetPos(23, 29).SetOrigin(98, 28).SetRGBA(new(1, 1, 1, 0));
@@ -311,7 +311,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
 
         var hTimeline = HTimeline;
         var vTimeline = VTimeline;

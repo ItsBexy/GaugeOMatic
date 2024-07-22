@@ -39,7 +39,7 @@ public class PresetWindow : Window, IDisposable
 
     public override void Draw()
     {
-        var module = TrackerManager.GetActiveModule();
+        var module = Configuration.GetModuleForTab(TrackerManager.JobModules);
         if (module != null) DrawPresetWindow(module);
     }
 

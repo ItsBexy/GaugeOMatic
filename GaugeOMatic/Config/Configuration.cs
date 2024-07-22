@@ -32,4 +32,6 @@ public class Configuration : IPluginConfiguration
 
     public void Initialize(IDalamudPluginInterface pluginInterface) => PluginInterface = pluginInterface;
     public void Save() => PluginInterface!.SavePluginConfig(this);
+
+    public JobModule? GetModuleForTab(List<JobModule> jobModules) => jobModules.Find(g => g.Job == JobTab);
 }

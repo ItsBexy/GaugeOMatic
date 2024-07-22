@@ -1,8 +1,8 @@
-using System;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
 using ImGuiNET;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,9 +72,11 @@ public class AddonDropdown : Dropdown<string>
         if (Tracker.WidgetType != null && WidgetList.TryGetValue(Tracker.WidgetType, out var wType))
         {
             var whiteList = wType.AllowedAddons;
+            var blackList = wType.RestrictedAddons;
             foreach (var option in addonOptions)
             {
                 if (whiteList is { Count: > 0 } && !whiteList.Contains(option.Name)) continue;
+                if (blackList is { Count: > 0 } && blackList.Contains(option.Name)) continue;
                 Values.Add(option.Name);
                 DisplayNames.Add(option.DisplayName);
             }
@@ -253,7 +255,7 @@ public class WidgetMenu : BranchingDropdown
 
             if (tags.HasFlag(Exclude)) continue;
             if (tags.HasFlag(HasFixedCount) && currentData.MaxCount != widgetInfo.FixedCount) continue;
-            if (tags.HasFlag(HasAddonRestrictions) && Tracker.JobModule.AddonOptions.All(a => widgetInfo.AllowedAddons?.Contains(a.Name) != true)) continue;
+            if (tags.HasFlag(HasAddonRestrictions) && !Tracker.JobModule.AddonOptions.Any(a => widgetInfo.AllowedAddons?.Contains(a.Name) == true || widgetInfo.RestrictedAddons?.Contains(a.Name) == false)) continue;
 
             AvailableWidgets.Add(widgetType, widgetInfo);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static GaugeOMatic.Widgets.WidgetTags;
 
 namespace GaugeOMatic.Widgets;
 
@@ -28,8 +29,13 @@ public class WidgetInfo
 
     internal static Dictionary<string, string> MultiCompDict = new();
 
-    public int? FixedCount;           // only applicable if tagged with HasFixedMaximum
-    public List<string>? AllowedAddons; // only applicable if tagged with HasAddonRestrictions
+    public int? FixedCount;                // only applicable if tagged with HasFixedMaximum
+    public List<string>? AllowedAddons;    // only applicable if tagged with HasAddonRestrictions
+    public List<string>? RestrictedAddons; // only applicable if tagged with HasAddonRestrictions
+
+    public static List<string> ClipConflictAddons => new() { "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0" };
+
+    public bool AddonPermitted(string aName) => !WidgetTags.HasFlag(HasAddonRestrictions) || (RestrictedAddons?.Contains(aName) != true && AllowedAddons?.Contains(aName) != false);
 
     internal static Dictionary<string, WidgetInfo> WidgetList = new();
 
@@ -51,6 +57,7 @@ public class WidgetInfo
             Log.Verbose($"Added Widget Option: {widgetInfo.DisplayName}");
         }
     }
+
 }
 
 [Flags]

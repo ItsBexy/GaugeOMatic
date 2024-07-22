@@ -45,7 +45,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
     public List<CustomNode> GlowWrappers = new();
     public List<CustomNode> Glows = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         BuildStacks(Max);
@@ -170,7 +170,7 @@ public sealed unsafe class UmbralHearts : CounterWidget
     {
 
         var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetRoot.SetPos(Config.Position+new Vector2(19, 22))
+        WidgetContainer.SetPos(Config.Position+new Vector2(19, 22))
                   .SetScale(Config.Scale)
                   .SetRotation(widgetAngle, true);
 

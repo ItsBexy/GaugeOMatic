@@ -56,7 +56,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     public CustomNode TickWrapper;
     public CustomNode Tick;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Bar = BuildBar();
         Frame = NineGridFromPart(1, 0, 28, 28, 28, 28).SetSize(0, 32);
@@ -293,7 +293,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     public Vector2 PosAdjust = new(0, -32);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position + PosAdjust)
+        WidgetContainer.SetPos(Config.Position + PosAdjust)
                   .SetWidth(Config.Width)
                   .SetScale(Config.Scale);
 

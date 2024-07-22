@@ -49,7 +49,7 @@ public sealed unsafe class DragonScales : CounterWidget
     public List<CustomNode> Glows3 = new();
     public List<CustomNode> Pierces = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         Frame = BuildFrame(Max, out var size);
@@ -189,13 +189,13 @@ public sealed unsafe class DragonScales : CounterWidget
     }
 
     private void FrameAppear() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 0, Scale = Config.Scale * 0.75f },
                               new(150) { Alpha = 255, Scale = Config.Scale })
                               { Ease = SinInOut };
 
     private void FrameVanish() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 255, Scale = Config.Scale },
                               new(50) { Alpha = 200, Scale = Config.Scale * 1.05f },
                               new(200) { Alpha = 0, Scale = Config.Scale * 0.75f })
@@ -206,7 +206,7 @@ public sealed unsafe class DragonScales : CounterWidget
     #region UpdateFuncs
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) FrameVanish(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) FrameAppear(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) FrameAppear(); }
 
     public override void OnFirstRun(int count, int max)
     {
@@ -294,7 +294,7 @@ public sealed unsafe class DragonScales : CounterWidget
     public AddRGB ColorOffset = new(40,100,-11);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale, Math.Abs(Config.Angle) > 90 ? -Config.Scale : Config.Scale)
                   .SetRotation(Config.Angle, true);
 
@@ -316,7 +316,7 @@ public sealed unsafe class DragonScales : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) FrameVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) FrameAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) FrameAppear();
         }
 
         RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);

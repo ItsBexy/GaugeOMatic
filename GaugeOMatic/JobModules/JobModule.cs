@@ -118,10 +118,10 @@ public abstract class JobModule : IDisposable
 
     public void RegisterListeners()
     {
-        AddonLifecycle.RegisterListener(PostSetup, WatchedAddon0, SetupHandler);
-        AddonLifecycle.RegisterListener(PreFinalize, WatchedAddon0, FinalizeHandler);
         AddonLifecycle.RegisterListener(PreDraw, AddonOptions.Select(static a => a.Name).ToArray(), DrawHandler);
 
+        AddonLifecycle.RegisterListener(PostSetup, WatchedAddon0, SetupHandler);
+        AddonLifecycle.RegisterListener(PreFinalize, WatchedAddon0, FinalizeHandler);
         AddonLifecycle.RegisterListener(PreUpdate, WatchedAddon0, (_, args) => UpdateHandler(args, ApplyTweaks0));
         AddonLifecycle.RegisterListener(PreRequestedUpdate, WatchedAddon0, (_, args) => UpdateHandler(args, ApplyTweaks0));
 
@@ -133,6 +133,11 @@ public abstract class JobModule : IDisposable
         }
     }
 
+    public void ApplyDisplayRules()
+    {
+        foreach (var tracker in DrawOrder) tracker.Widget?.ApplyDisplayRules();
+    }
+
     public void UnregisterListeners()
     {
         var addonNames = AddonOptions.Select(static a => a.Name).ToArray();
@@ -142,6 +147,7 @@ public abstract class JobModule : IDisposable
         AddonLifecycle.UnregisterListener(PreDraw, addonNames);
         AddonLifecycle.UnregisterListener(PreUpdate, addonNames);
         AddonLifecycle.UnregisterListener(PreRequestedUpdate, addonNames);
+
     }
 
     public void SetupHandler(AddonEvent type, AddonArgs args)
@@ -166,6 +172,7 @@ public abstract class JobModule : IDisposable
     public void BuildWidgets()
     {
         foreach (var tracker in BuildOrder) tracker.BuildWidget(Configuration, AddonOptions);
+        ApplyDisplayRules();
     }
 
     public void DisposeTrackers()
@@ -193,6 +200,7 @@ public abstract class JobModule : IDisposable
     {
         foreach (var tracker in TrackerList) tracker.Widget?.Detach();
         foreach (var tracker in BuildOrder) tracker.Widget?.Attach();
+        ApplyDisplayRules();
     }
 
     public void RemoveTracker(Tracker tracker)

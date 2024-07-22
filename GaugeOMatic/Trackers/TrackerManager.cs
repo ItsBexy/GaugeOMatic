@@ -1,7 +1,9 @@
+using Dalamud.Game.ClientState.Conditions;
 using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
 using System;
 using System.Collections.Generic;
+using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Trackers.Presets.PluginPresets;
 
 namespace GaugeOMatic.Trackers;
@@ -45,10 +47,20 @@ public class TrackerManager : IDisposable
             new RDMModule(this, TrackerConfigs.RDM),
             new PCTModule(this, TrackerConfigs.PCT)
         };
+
+        Condition.ConditionChange += ApplyDisplayRules;
     }
 
-    public JobModule? GetActiveModule() => JobModules.Find(g => g.Job == Configuration.JobTab);
-    public void Dispose() { foreach (var module in JobModules) module.Dispose(); }
+    private void ApplyDisplayRules(ConditionFlag flag, bool value)
+    {
+       JobModules.Find(static jm => jm.Job == Current || jm.Class == Current)?.ApplyDisplayRules();
+    }
+
+    public void Dispose()
+    {
+        Condition.ConditionChange -= ApplyDisplayRules;
+        foreach (var module in JobModules) module.Dispose();
+    }
 }
 
 public class TrackerConfigs

@@ -7,6 +7,8 @@ using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
+using static GaugeOMatic.GameData.JobData;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
 
 namespace GaugeOMatic.Windows;
@@ -39,6 +41,7 @@ public class TrackerWindow : Window, IDisposable
         if (!Tracker.Available || Widget == null) IsOpen = false;
 
         HeaderTable(ref update);
+
         WidgetOptionTable(widgetConfig, ref update);
 
         if (update.HasFlag(Save)) Configuration.Save();
@@ -67,9 +70,11 @@ public class TrackerWindow : Window, IDisposable
             update |= Reset | Save;
         }
 
+
         PreviewControls();
 
         ImGui.EndTable();
+
     }
 
     public void PreviewControls()
@@ -80,7 +85,11 @@ public class TrackerWindow : Window, IDisposable
         var preview = Tracker.TrackerConfig.Preview;
         var previewValue = Tracker.TrackerConfig.PreviewValue;
         ImGui.TableNextColumn();
-        if (ImGui.Checkbox($"##Preview{Hash}", ref preview)) Tracker.TrackerConfig.Preview = preview;
+        if (ImGui.Checkbox($"##Preview{Hash}", ref preview))
+        {
+            Tracker.TrackerConfig.Preview = preview;
+            Tracker.Widget?.ApplyDisplayRules();
+        }
         ImGui.SameLine();
 
         if (preview)
@@ -96,6 +105,7 @@ public class TrackerWindow : Window, IDisposable
         if (ImGui.BeginTable("TrackerWidgetOptionTable" + Hash, 2, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.PadOuterX))
         {
             ImGui.TableSetupColumn("Labels");
+
 
             ImGuiHelpy.TableSeparator(2);
 
@@ -122,8 +132,51 @@ public class TrackerWindow : Window, IDisposable
 
             Widget?.DrawUI(ref widgetConfig, ref update);
 
+            ImGuiHelpy.TableSeparator(2);
+
+            DisplayRuleTable(ref update);
+
             ImGui.EndTable();
         }
+    }
+
+    private void DisplayRuleTable(ref UpdateFlags update)
+    {
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+        ImGui.TextColored(new(1, 1, 1, 0.3f), "Display Rules");
+        ImGui.TableNextColumn();
+
+        var cond4 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, new() { false, true }, new() { "Anytime", "Combat / Duty Only" }, ref update);
+
+        var cond1 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange, ref update);
+
+        var cond2 = false;
+        var cond3 = false;
+        if (Tracker.TrackerConfig.LimitLevelRange)
+        {
+            var min = Tracker.TrackerConfig.LevelMin ?? 1;
+            var max = Tracker.TrackerConfig.LevelMax ?? LevelCap;
+            cond2 = IntControls("Minimum Level", ref min, 1, max, 1, ref update);
+            cond3 = IntControls("Maximum Level", ref max, min, LevelCap, 1, ref update);
+
+            if (cond2 || cond3)
+            {
+                Tracker.TrackerConfig.LevelMin = min;
+                Tracker.TrackerConfig.LevelMax = max;
+            }
+        }
+        else
+        {
+            if (Tracker.TrackerConfig.LevelMin == 1 && Tracker.TrackerConfig.LevelMax == LevelCap)
+            {
+                Tracker.TrackerConfig.LevelMin = null;
+                Tracker.TrackerConfig.LevelMax = null;
+            }
+        }
+
+
+        if (cond1 || cond2 || cond3 || cond4) Tracker.Widget?.ApplyDisplayRules();
     }
 
     public void Dispose() { }

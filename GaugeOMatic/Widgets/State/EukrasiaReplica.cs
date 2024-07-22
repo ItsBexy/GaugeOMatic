@@ -56,7 +56,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
     public CustomNode[] ElectricNouliths = new CustomNode[4];
     public CustomNode Halo;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         RightHalfInactive = ImageNodeFromPart(0, 2).SetPos(40, 0).SetSize(40, 80).SetImageWrap(3);
         LeftHalfInactive = ImageNodeFromPart(0, 2).SetSize(40, 80).SetImageWrap(3).SetImageFlag(1);
@@ -377,8 +377,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position);
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position);
+        WidgetContainer.SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;
 

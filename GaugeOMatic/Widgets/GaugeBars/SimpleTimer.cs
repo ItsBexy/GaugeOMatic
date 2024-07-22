@@ -30,7 +30,7 @@ public sealed class SimpleTimer : GaugeBarWidget
 
     #region Nodes
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         NumTextNode = new();
         return NumTextNode;

@@ -61,7 +61,7 @@ public sealed unsafe class ChakraBar : CounterWidget
     public List<CustomNode> ActionLines = new();
     public List<CustomNode> ActionLines2 = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = GetMax();
         SocketPlate = BuildSocketPlate(Max, out var size).SetOrigin(size / 2, 29);
@@ -205,13 +205,13 @@ public sealed unsafe class ChakraBar : CounterWidget
         };
 
     private void PlateAppear() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
                               new(200) { Scale = Config.Scale, Alpha = 255 })
                               { Ease = SinInOut };
 
     private void PlateVanish() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale, Alpha = 255 },
                               new(150) { Scale = Config.Scale * 0.65f, Alpha = 0 })
                               { Ease = SinInOut };
@@ -221,12 +221,12 @@ public sealed unsafe class ChakraBar : CounterWidget
     #region UpdateFuncs
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) PlateAppear(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) PlateAppear(); }
 
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < max; i++) Pearls[i].SetAlpha(i < count);
-        if (Config.HideEmpty && count == 0) WidgetRoot.Hide();
+        if (Config.HideEmpty && count == 0) WidgetContainer.Hide();
     }
 
     public bool Pulsing;
@@ -307,7 +307,7 @@ public sealed unsafe class ChakraBar : CounterWidget
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
 
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale)
                   .SetRotation(Config.Angle,true);
         SocketPlate.SetMultiply(Config.FrameColor).SetScale(flipFactor);
@@ -331,7 +331,7 @@ public sealed unsafe class ChakraBar : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) PlateAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
         }
 
         RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);

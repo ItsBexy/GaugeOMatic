@@ -13,6 +13,7 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleCircle;
 using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
@@ -32,7 +33,8 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         DisplayName = "Simple Circle",
         Author = "ItsBexy",
         Description = "It's a circle!",
-        WidgetTags = GaugeBar
+        WidgetTags = GaugeBar | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -52,7 +54,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     public CustomNode RightMask;
     public CustomNode Halo;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         LeftHalf = ImageNodeFromPart(0, 0).SetOrigin(80, 80);
         RightHalf = ImageNodeFromPart(0, 0).SetOrigin(1, 80).SetImageFlag(1);
@@ -177,7 +179,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
         Circle.SetMultiply(40).SetAddRGB(Config.Color, true);
         Halo.SetAddRGB(Config.Color+new AddRGB(30));
         LeftHalf.SetImageFlag((byte)(Config.Dodge ? 0x20 : 0));

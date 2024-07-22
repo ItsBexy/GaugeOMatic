@@ -50,7 +50,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
     public CustomNode Glow;
     public CustomNode Sigil;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Backdrop = ImageNodeFromPart(0, 4).SetPos(0, 36).SetImageWrap(2).SetSize(173, 16);
 
@@ -108,13 +108,13 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
     public void HideBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot, new(0, WidgetRoot), Hidden[time]) { Label ="Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[time]) { Label ="Fade", Ease = SinInOut };
     }
 
     public void ShowBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot, new(0, WidgetRoot), Visible[time]) { Label = "Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[time]) { Label = "Fade", Ease = SinInOut };
     }
 
     #endregion
@@ -242,7 +242,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
     private static AddRGB ColorOffset = new(-84, 122, 75);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         Sword.SetRotation(Config.Angle, true);

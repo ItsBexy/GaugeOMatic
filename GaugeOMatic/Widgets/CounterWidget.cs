@@ -1,8 +1,10 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Diagnostics.CodeAnalysis;
+using CustomNodes;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static CustomNodes.CustomNodeManager;
 
 namespace GaugeOMatic.Widgets;
 
@@ -39,13 +41,15 @@ public abstract class CounterWidget : Widget
 
     public int Max;
     public int GetMax() => GetConfig.AsTimer ? GetConfig.TimerSize : Tracker.GetCurrentData().MaxCount;
-    public void SizeChange()
+    public unsafe void SizeChange()
     {
         Detach();
         WidgetRoot.Dispose();
 
-        WidgetRoot = BuildRoot();
+        WidgetContainer = BuildContainer();
+        WidgetRoot = new CustomNode(CreateResNode(), WidgetContainer);
         WidgetRoot.AssembleNodeTree();
+
         ApplyConfigs();
         FirstRun = true;
 

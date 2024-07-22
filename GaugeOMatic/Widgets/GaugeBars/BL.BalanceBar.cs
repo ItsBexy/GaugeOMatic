@@ -78,7 +78,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     public CustomNode Petal2;
     public CustomNode Petal3;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Drain = ImageNodeFromPart(0, 11).SetScale(1, -1)
                                         .SetSize(26, 0)
@@ -291,7 +291,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         var left = Config.Side == 0;
         var light = Config.BaseColor == 0;
 
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
         BarContainer.SetScale(left?1:-1, 1);

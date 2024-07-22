@@ -43,7 +43,7 @@ public sealed unsafe class BloodGem : StateWidget
     public CustomNode Gem;
     public CustomNode PinkHalo;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Ring = ImageNodeFromPart(0, 0).SetPos(-16, -19)
                                       .SetOrigin(48,44)
@@ -216,8 +216,8 @@ public sealed unsafe class BloodGem : StateWidget
     public AddRGB HaloOffset = new(72,-15,-74);
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position + new Vector2(14));
-        WidgetRoot.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position + new Vector2(14));
+        WidgetContainer.SetScale(Config.Scale);
 
         Ring.SetMultiply(Config.RingColor).SetAlpha(Config.Ring);
 

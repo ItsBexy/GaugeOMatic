@@ -51,7 +51,7 @@ public sealed unsafe class SimpleGem : CounterWidget
     public List<CustomNode> Frames = new();
     public List<CustomNode> Gems = new();
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Max = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
 
@@ -100,12 +100,12 @@ public sealed unsafe class SimpleGem : CounterWidget
     }
 
     private void AllVanish() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 255, AddRGB = 0 },
                               new(200) { Alpha = 0, AddRGB = 100 });
 
     private void AllAppear() =>
-        Animator += new Tween(WidgetRoot,
+        Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 0, AddRGB = 100 },
                               new(200) { Alpha = 255, AddRGB = 0 });
 
@@ -116,12 +116,12 @@ public sealed unsafe class SimpleGem : CounterWidget
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < max; i++) Gems[i].SetAlpha(i < count);
-        if (count == 0 && Config.HideEmpty) WidgetRoot.SetAlpha(0);
+        if (count == 0 && Config.HideEmpty) WidgetContainer.SetAlpha(0);
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetRoot.Alpha < 255) { AllAppear(); }}
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { AllAppear(); }}
 
     #endregion
 
@@ -194,7 +194,7 @@ public sealed unsafe class SimpleGem : CounterWidget
     public override void ApplyConfigs()
     {
         var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale)
                   .SetRotation(widgetAngle, true);
 
@@ -297,7 +297,7 @@ public sealed unsafe class SimpleGem : CounterWidget
         if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
         {
             if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
-            if (!Config.HideEmpty && WidgetRoot.Alpha < 255) AllAppear();
+            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
         }
 
         CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);

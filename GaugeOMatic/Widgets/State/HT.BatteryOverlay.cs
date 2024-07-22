@@ -54,7 +54,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
     public CustomNode Elec5;
     public CustomNode Elec6;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Ring = ImageNodeFromPart(0, 6).SetPos(3, -2).SetOrigin(32, 32).SetAlpha(0);
         Glow = ImageNodeFromPart(0, 8).SetPos(11, 6).SetScale(1.8f).SetOrigin(24, 24).SetImageFlag(32).SetAlpha(0);
@@ -243,7 +243,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
         Contents.SetRotation(Config.Angle, true);
 

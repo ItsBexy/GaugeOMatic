@@ -11,6 +11,7 @@ using static GaugeOMatic.Widgets.BalanceOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
@@ -31,7 +32,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         DisplayName = "Balance Gauge Overlay",
         Author = "ItsBexy",
         Description = "A glowing gauge bar fitted over the Balance Gauge (or a replica of it)",
-        WidgetTags = GaugeBar | MultiComponent,
+        WidgetTags = GaugeBar | MultiComponent | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons,
         MultiCompData = new("BL", "Balance Gauge Replica", 3)
     };
 
@@ -71,7 +73,7 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     public CustomNode Tick;
     public CustomNode PlateMask;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32);
         PlateMask = ClippingMaskFromPart(2, 1).SetSize(116,416).SetPos(0,-208).DefineTimeline(MaskTimeline);
@@ -195,7 +197,7 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position).SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
         Plate.SetAddRGB(Config.Color, true);
         Tick.SetAddRGB(Config.TickColor)
             .DefineTimeline(TickTimeline);

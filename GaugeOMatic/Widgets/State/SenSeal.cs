@@ -51,7 +51,7 @@ public sealed unsafe class SenSeal : StateWidget
     public CustomNode SealPulse;
     public CustomNode KanjiPulse;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         InactiveSeal = ImageNodeFromPart(0, 3);
 
@@ -127,7 +127,7 @@ public sealed unsafe class SenSeal : StateWidget
         {
             ActiveSeal.SetAlpha(255);
             Kanji.SetAlpha(216);
-            WidgetRoot.SetAddRGB(Config.Colors.ElementAtOrDefault(current));
+            WidgetContainer.SetAddRGB(Config.Colors.ElementAtOrDefault(current));
             StartPulse();
         }
     }
@@ -136,8 +136,8 @@ public sealed unsafe class SenSeal : StateWidget
     {
         Animator += new Tween[]
         {
-            new(WidgetRoot,
-                new(0, WidgetRoot),
+            new(WidgetContainer,
+                new(0, WidgetContainer),
                 new(300) { AddRGB = Config.Colors.ElementAtOrDefault(current) }),
 
             new(ActiveSeal,
@@ -181,8 +181,8 @@ public sealed unsafe class SenSeal : StateWidget
     {
         Animator += new Tween[]
         {
-            new(WidgetRoot,
-                new(0, WidgetRoot),
+            new(WidgetContainer,
+                new(0, WidgetContainer),
                 new(300) { AddRGB = Config.Colors.ElementAtOrDefault(0) }),
 
             new(ActiveSeal,
@@ -240,7 +240,7 @@ public sealed unsafe class SenSeal : StateWidget
         };
     }
 
-    public override void StateChange(int current, int previous) => Animator += new Tween(WidgetRoot, new(0,WidgetRoot), new(300){AddRGB = Config.Colors.ElementAtOrDefault(current)});
+    public override void StateChange(int current, int previous) => Animator += new Tween(WidgetContainer, new(0,WidgetContainer), new(300){AddRGB = Config.Colors.ElementAtOrDefault(current)});
 
     #endregion
 
@@ -291,7 +291,7 @@ public sealed unsafe class SenSeal : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale)
                   .SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State));
 

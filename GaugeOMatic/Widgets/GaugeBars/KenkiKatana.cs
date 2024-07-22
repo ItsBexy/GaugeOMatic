@@ -51,7 +51,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     public CustomNode Glow;
     public CustomNode Effects;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Hilt = ImageNodeFromPart(0, 0).SetY(20);
 
@@ -114,8 +114,8 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     public void HideBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot,
-                              new(0, WidgetRoot),
+        Animator += new Tween(WidgetContainer,
+                              new(0, WidgetContainer),
                               Hidden[time])
                               { Label ="Fade", Ease = SinInOut };
     }
@@ -123,8 +123,8 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     public void ShowBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot,
-                              new(0, WidgetRoot),
+        Animator += new Tween(WidgetContainer,
+                              new(0, WidgetContainer),
                               Visible[time])
                               { Label = "Fade", Ease = SinInOut };
     }
@@ -279,7 +279,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     {
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        WidgetRoot.SetPos(Config.Position + new Vector2(-15.5F, -6))
+        WidgetContainer.SetPos(Config.Position + new Vector2(-15.5F, -6))
                   .SetScale(Config.Scale);
 
         Sword.SetRotation(Config.Angle,true)

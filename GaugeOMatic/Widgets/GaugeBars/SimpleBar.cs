@@ -55,7 +55,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
     public CustomNode Backdrop;
     public LabelTextNode LabelTextNode;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Drain = NineGridFromPart(0, 4, 0, 10, 0, 10);
         Gain = NineGridFromPart(0, 3, 0, 10, 0, 10);
@@ -81,14 +81,14 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
     public void HideBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot, new(0, WidgetRoot), Hidden[time]) { Label ="Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[time]) { Label ="Fade", Ease = SinInOut };
 
     }
 
     public void ShowBar(int time)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetRoot, new(0, WidgetRoot), Visible[time]) { Label = "Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[time]) { Label = "Fade", Ease = SinInOut };
     }
 
     #endregion
@@ -202,7 +202,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position + new Vector2(48, 27))
+        WidgetContainer.SetPos(Config.Position + new Vector2(48, 27))
                   .SetScale(Config.Scale);
 
         var flipFactor = Abs(Config.Angle) > 90 ? -1:1;

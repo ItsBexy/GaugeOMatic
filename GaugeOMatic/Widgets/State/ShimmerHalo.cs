@@ -11,6 +11,7 @@ using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ShimmerHalo;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
@@ -31,7 +32,8 @@ public sealed unsafe class ShimmerHalo : StateWidget
         DisplayName = "Shimmering Halo",
         Author = "ItsBexy",
         Description = "A revolving circular aura that appears while the tracker's condition is met.",
-        WidgetTags = State
+        WidgetTags = State | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -43,7 +45,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
     public CustomNode Halo;
     public CustomNode Fill;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         Halo = ClippingMaskFromPart(0, 0)
                .SetOrigin(128, 128)
@@ -185,7 +187,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale)
                   .SetRotation(Config.Angle * 0.0174532925199433f);
 

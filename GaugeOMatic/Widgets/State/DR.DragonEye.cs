@@ -46,7 +46,7 @@ public sealed unsafe class DragonEye : StateWidget
     public CustomNode BlackSpot;
     public CustomNode WhiteGlow;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         EyeFrame = ImageNodeFromPart(0, 10).SetImageWrap(1);
 
@@ -399,7 +399,7 @@ public sealed unsafe class DragonEye : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetRoot.SetPos(Config.Position)
+        WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Mirror ? -Config.Scale : Config.Scale, Config.Scale);
     }
 

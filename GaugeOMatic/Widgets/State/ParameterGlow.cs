@@ -41,7 +41,7 @@ public sealed unsafe class ParameterGlow : StateWidget
     public CustomNode BarGlow;
     public CustomNode BarGlow2;
 
-    public override CustomNode BuildRoot()
+    public override CustomNode BuildContainer()
     {
         BarGlow = NineGridFromPart(0, 0, 9, 9, 9, 9).SetNineGridBlend(2);
         BarGlow2 = NineGridFromPart(0, 0, 9, 9, 9, 9).SetNineGridBlend(2).SetOrigin(80, 10);
@@ -67,10 +67,10 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     public override void OnFirstRun(int current)
     {
-        if (Tracker.CurrentData.State > 0) WidgetRoot.SetAlpha(255);
+        if (Tracker.CurrentData.State > 0) WidgetContainer.SetAlpha(255);
     }
-    public override void Activate(int current) => Animator += new Tween(WidgetRoot, Hidden[0], Visible[250]);
-    public override void Deactivate(int previous) => Animator += new Tween(WidgetRoot, Visible[0], Hidden[250]);
+    public override void Activate(int current) => Animator += new Tween(WidgetContainer, Hidden[0], Visible[250]);
+    public override void Deactivate(int previous) => Animator += new Tween(WidgetContainer, Visible[0], Hidden[250]);
     public override void StateChange(int current, int previous) { }
 
     #endregion
@@ -110,7 +110,7 @@ public sealed unsafe class ParameterGlow : StateWidget
     private void PlaceOnBar()
     {
         var barNode = Addon->GetNodeById(Config.Bar == 1u ? 4u : 3u);
-        WidgetRoot.SetPos(barNode->X, barNode->Y);
+        WidgetContainer.SetPos(barNode->X, barNode->Y);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
