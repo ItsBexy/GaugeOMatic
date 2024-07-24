@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 using static Dalamud.Utility.Util;
 using static GaugeOMatic.Utility.Json;
@@ -13,12 +14,20 @@ public struct Preset
 
     [JsonIgnore] public bool BuiltIn = false;
 
-    public Preset(string importStr, bool zipped = false)
+    public Preset(string? importStr, bool zipped = false)
     {
         if (zipped) importStr = Unzip(importStr);
-        var import = DeserializeObject<Preset>(importStr, JsonSettings);
-        Name = import.Name.Length == 0 ? "New Preset" : import.Name;
-        Trackers = import.Trackers;
+        if (importStr == null)
+        {
+            Name = "New Preset";
+            Trackers = Array.Empty<TrackerConfig>();
+        }
+        else
+        {
+            var import = DeserializeObject<Preset>(importStr, JsonSettings);
+            Name = import.Name.Length == 0 ? "New Preset" : import.Name;
+            Trackers = import.Trackers;
+        }
     }
 
     public Preset(TrackerConfig[] trackers, string name = "New Preset")
@@ -50,7 +59,18 @@ public struct Preset
     public static implicit operator TrackerConfig[](Preset p) => p.Trackers;
 
     public static string Zip(string s) => ToBase64String(CompressString(s));
-    public static string Unzip(string s) => DecompressString(FromBase64String(s));
+    public static string? Unzip(string? s)
+    {
+        try
+        {
+            return s == null ? null : DecompressString(FromBase64String(s));
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Error decompressing preset string:\n{s}\n{ex.StackTrace}");
+            return null;
+        }
+    }
 
     public readonly Preset Disable()
     {

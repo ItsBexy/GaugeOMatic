@@ -145,7 +145,7 @@ public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 [TrackerDisplay(SAM, ToolText)]
 public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
-    public override string DisplayName => "";
+    public override string DisplayName => "Meditation Gauge";
     public override string GaugeAddonName => "JobHudSAM0";
     public override string TermCount => "Stacks";
     private const string ToolText = "Counter: Shows Meditation stacks\n" +
