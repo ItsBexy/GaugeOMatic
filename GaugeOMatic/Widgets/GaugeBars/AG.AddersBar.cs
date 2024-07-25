@@ -120,47 +120,50 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
+    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
 
-    public void CollapseBar(int kf1, int kf2)
+    public override void HideBar(bool instant = false)
     {
         var frameWidth = Config.Width + 56;
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 250, 350 };
 
         Animator -= "Expand";
         Animator += new Tween[] {
             new(BarFrame,
-                new(0) { Y = 0 },
-                new(kf1) { Y = 1 },
-                new(kf2) { Y = 10 })
+                new(kf[0]) { Y = 0 },
+                new(kf[1]) { Y = 1 },
+                new(kf[2]) { Y = 10 })
                 { Ease = SinInOut, Label = "Collapse" },
 
             new(Frame,
-                new(0) { X = frameWidth / -2f, Width = frameWidth, AddRGB = 0, Alpha = 255 },
-                new(kf1) { X = -28, Width = 56, AddRGB = 50, Alpha = 255 },
-                new(kf2) { X = -28, Width = 56, AddRGB = 255, Alpha = 0 })
+                new(kf[0]) { X = frameWidth / -2f, Width = frameWidth, AddRGB = 0, Alpha = 255 },
+                new(kf[1]) { X = -28, Width = 56, AddRGB = 50, Alpha = 255 },
+                new(kf[2]) { X = -28, Width = 56, AddRGB = 255, Alpha = 0 })
                 { Ease = SinInOut, Label = "Collapse" },
 
             new(Plate,
-                new(0) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 },
-                new(kf1) { Alpha = 255, AddRGB = 255, ScaleY = 0, ScaleX = 0.1f, Y = -20 },
-                new(kf2) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 })
+                new(kf[0]) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 },
+                new(kf[1]) { Alpha = 255, AddRGB = 255, ScaleY = 0, ScaleX = 0.1f, Y = -20 },
+                new(kf[2]) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 })
                 { Ease = SinInOut, Label = "Collapse" },
 
             new(Bar,
-                new(0) { ScaleX = Config.Mirror ? -1 : 1, Alpha = 255 },
-                new(kf1) { ScaleX = 0, Alpha = 128 },
-                new(kf2) { ScaleX = 0, Alpha = 128 })
+                new(kf[0]) { ScaleX = Config.Mirror ? -1 : 1, Alpha = 255 },
+                new(kf[1]) { ScaleX = 0, Alpha = 128 },
+                new(kf[2]) { ScaleX = 0, Alpha = 128 })
                 { Ease = SinInOut, Label = "Collapse" },
 
-            new(Sparkles, Visible[0], new((int)(kf1 * 0.6f)) { Alpha = 0 }) { Label = "Collapse" },
-            new(LabelTextNode, Visible[0], Hidden[kf1]) { Label = "Collapse" },
-            new(NumTextNode, Visible[0], Hidden[kf2]) { Label = "Collapse" }
+            new(Sparkles, Visible[kf[0]], new((int)(kf[1] * 0.6f)) { Alpha = 0 }) { Label = "Collapse" },
+            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]) { Label = "Collapse" },
+            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]) { Label = "Collapse" }
         };
     }
 
-    public void ExpandBar(int kf1, int kf2)
+    public override void RevealBar(bool instant = false)
     {
         var frameWidth = Config.Width + 56;
+
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 100, 350 };
 
         Animator -= "Collapse";
         BarFrame.SetY(0);
@@ -168,23 +171,23 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
-                new(kf1) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
-                new(kf2) { Alpha = 255, X = frameWidth / -2f, Width = frameWidth, AddRGB = 0 })
+                new(kf[0]) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
+                new(kf[1]) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
+                new(kf[2]) { Alpha = 255, X = frameWidth / -2f, Width = frameWidth, AddRGB = 0 })
                 { Ease = SinInOut, Label = "Expand" },
             new(Plate,
-                new(0) { Alpha = 0, AddRGB = 200, ScaleY = 0, ScaleX = 0, Y = -20 },
-                new(kf1) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 },
-                new(kf2) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 })
+                new(kf[0]) { Alpha = 0, AddRGB = 200, ScaleY = 0, ScaleX = 0, Y = -20 },
+                new(kf[1]) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 },
+                new(kf[2]) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 })
                 { Ease = SinInOut, Label = "Expand" },
             new(Bar,
-                new(0) { Alpha = 0, ScaleX = 0 },
-                new(kf1) { Alpha = 128, ScaleX = 0 },
-                new(kf2) { Alpha = 255, ScaleX = Config.Mirror ? -1 : 1 })
+                new(kf[0]) { Alpha = 0, ScaleX = 0 },
+                new(kf[1]) { Alpha = 128, ScaleX = 0 },
+                new(kf[2]) { Alpha = 255, ScaleX = Config.Mirror ? -1 : 1 })
                 { Ease = SinInOut, Label = "Expand" },
-            new(Sparkles, Hidden[0], Hidden[200], Visible[kf2]) { Label = "Expand" },
-            new(LabelTextNode, Hidden[0], Hidden[kf1], Visible[kf2]) { Label = "Expand" },
-            new(NumTextNode, Hidden[0], Hidden[kf1], Visible[kf2]) { Label = "Expand" }
+            new(Sparkles, Hidden[kf[0]], Hidden[200], Visible[kf[2]]) { Label = "Expand" },
+            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "Expand" },
+            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "Expand" }
         };
     }
 
@@ -193,7 +196,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Animator += new Tween(sparkleNodes[0],
                                  Visible[0],
                                  new(300) { Alpha = 204 },
-                                 Visible[600]) { Repeat = true };
+                                 Visible[600])
+        { Repeat = true };
 
         for (var i = 1; i <= 5; i++) sparkleNodes[i].SetImageFlag(32).SetImageWrap(2);
 
@@ -240,17 +244,13 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) CollapseBar(250, 350); }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ExpandBar(100, 350); }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
-    public override void OnFirstRun(float prog)
-    {
-        base.OnFirstRun(prog);
-        if (prog <= 0 && Config.HideEmpty) CollapseBar(0, 0);
-    }
-
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         MainOverlay.SetWidth(Main.Width);
 
@@ -272,7 +272,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
                                   new(0) { AddRGB = Config.PulseColor2 + colorAdjust },
                                   new(800) { AddRGB = Config.PulseColor + colorAdjust },
                                   new(1600) { AddRGB = Config.PulseColor2 + colorAdjust })
-                                  { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
+        { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
 
     protected override void StopMilestoneAnim()
@@ -443,7 +443,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck(Config.HideEmpty);
+
+        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -459,15 +460,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
-
-    private void CollapseCheck(bool collapse)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (collapse) CollapseBar(250, 350);
-            else ExpandBar(100, 350);
-        }
-    }
 
     #endregion
 }

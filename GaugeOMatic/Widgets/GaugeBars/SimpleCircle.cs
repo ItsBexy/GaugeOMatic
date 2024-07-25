@@ -132,8 +132,14 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     public override void OnIncrease(float prog, float prevProg) => HaloPulse();
 
     public override void OnDecreaseToMin() => HaloPulse();
-
     public override void OnIncreaseFromMin() => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
+    public override void OnDecreaseFromMax() => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
+    public override void OnIncreaseToMax()
+    {
+        Animator += new Tween(Circle, new(0) { Alpha = Circle.Alpha }, Hidden[150]);
+        HaloPulse();
+    }
+
 
     #endregion
 

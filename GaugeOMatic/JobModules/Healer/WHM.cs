@@ -40,8 +40,9 @@ public class WHMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Healing Gauge");
         ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHide0, ref update);
-        HideWarning(TweakConfigs.WHMHide0);
+        HideInfo(TweakConfigs.WHMHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

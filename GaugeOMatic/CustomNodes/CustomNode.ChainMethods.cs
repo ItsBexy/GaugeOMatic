@@ -1,6 +1,9 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Text;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static FFXIVClientStructs.FFXIV.Component.GUI.NodeType;
 using static GaugeOMatic.Utility.Color;
@@ -285,17 +288,17 @@ public unsafe partial class CustomNode
     {
         if (Node != null && Node->Type == Text)
         {
-            var strLen = System.Text.Encoding.UTF8.GetByteCount(text); // get length of string as UTF-8 bytes
+            var strLen = Encoding.UTF8.GetByteCount(text); // get length of string as UTF-8 bytes
 
             if (TextBuffer == null || strLen + 1 > TextBufferLen)
             {
-                System.Runtime.InteropServices.NativeMemory.Free(TextBuffer);
-                TextBuffer = (byte*)System.Runtime.InteropServices.NativeMemory.Alloc((nuint)(strLen + 1)); // need one extra byte for the null terminator
+                NativeMemory.Free(TextBuffer);
+                TextBuffer = (byte*)NativeMemory.Alloc((nuint)(strLen + 1)); // need one extra byte for the null terminator
                 TextBufferLen = strLen + 1;
             }
 
             Span<byte> bufferSpan = new(TextBuffer, strLen + 1); // wrap buffer in a span so you can use GetBytes
-            System.Text.Encoding.UTF8.GetBytes(text, bufferSpan); // convert string to UTF-8 and store in your buffer
+            Encoding.UTF8.GetBytes(text, bufferSpan); // convert string to UTF-8 and store in your buffer
             bufferSpan[strLen] = 0; // add null terminator to the end of your string
             ((AtkTextNode*)Node)->SetText(TextBuffer);
         }
@@ -414,6 +417,37 @@ public unsafe partial class CustomNode
             list->Parts[partId].Height = (ushort)Floor(coords.W);
         }
 
+        return this;
+    }
+
+    public CustomNode SetKeyFrameAddRGB(AddRGB add, int a, int kg, int kf)
+    {
+        if (Node != null && Node->Timeline != null)
+        {
+            var resource = Node->Timeline->Resource;
+            if (resource != null && resource->AnimationCount > a)
+            {
+                var animation = resource->Animations[a];
+                if (animation.KeyGroups.Length > kg)
+                {
+                    var keyGroup = animation.KeyGroups[kg];
+                    if (keyGroup.KeyFrameCount > kf) keyGroup.KeyFrames[kf].Value.NodeTint.AddRGBBitfield = add.ToBitField();
+                }
+            }
+        }
+
+        return this;
+    }
+
+    public CustomNode SetKeyFrameAddRGB(AddRGB add, params (int a, int kg, int kf)[] keyFrameTuples)
+    {
+        foreach (var tup in keyFrameTuples) SetKeyFrameAddRGB(add, tup.a, tup.kg, tup.kf);
+        return this;
+    }
+
+    public CustomNode Warning(string str)
+    {
+        GaugeOMatic.GaugeOMatic.Service.Log.Warning($"{str}\n{new StackTrace()}");
         return this;
     }
 }

@@ -152,6 +152,7 @@ public abstract class JobModule : IDisposable
 
     public void SetupHandler(AddonEvent type, AddonArgs args)
     {
+        Configuration.JobTab = Current;
         foreach (var module in TrackerManager.JobModules) module.DisposeTrackers();
         BuildWidgets();
     }

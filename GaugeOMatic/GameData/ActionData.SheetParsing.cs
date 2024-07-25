@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Role;
 using Action = Lumina.Excel.GeneratedSheets.Action;
+
 // ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.GameData;

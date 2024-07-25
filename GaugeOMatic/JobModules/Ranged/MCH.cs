@@ -42,10 +42,11 @@ public class MCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Heat Gauge");
         ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHide0Heat, ref update);
-        HideWarning(TweakConfigs.MCHHide0Heat);
+        HideInfo(TweakConfigs.MCHHide0Heat);
         ToggleControls("Hide Battery Gauge", ref TweakConfigs.MCHHide0Battery, ref update);
-        HideWarning(TweakConfigs.MCHHide0Battery);
+        HideInfo(TweakConfigs.MCHHide0Battery);
 
         if (!TweakConfigs.MCHHide0Battery)
         {

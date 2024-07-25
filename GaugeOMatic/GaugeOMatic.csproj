@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.7.0.6</Version>
+    <Version>0.7.0.7</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -33,6 +33,12 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Include="C:\Users\rebec\Source\Repos\GaugeOMatic\GaugeOMatic\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TextureAssets\huton.tex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

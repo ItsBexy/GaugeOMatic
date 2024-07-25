@@ -42,10 +42,13 @@ public class RPRModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Soul Gauge");
         ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHide0, ref update);
-        HideWarning(TweakConfigs.RPRHide0);
+        HideInfo(TweakConfigs.RPRHide0);
+
+        Heading("Death Gauge");
         ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHide1, ref update);
-        HideWarning(TweakConfigs.RPRHide1);
+        HideInfo(TweakConfigs.RPRHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

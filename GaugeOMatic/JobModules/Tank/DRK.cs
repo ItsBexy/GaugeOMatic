@@ -42,10 +42,13 @@ public class DRKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Blood Gauge");
         ToggleControls("Hide Blood Gauge", ref TweakConfigs.DRKHide0, ref update);
-        HideWarning(TweakConfigs.DRKHide0);
+        HideInfo(TweakConfigs.DRKHide0);
+
+        Heading("Darkside Gauge");
         ToggleControls("Hide Darkside Gauge", ref TweakConfigs.DRKHide1, ref update);
-        HideWarning(TweakConfigs.DRKHide1);
+        HideInfo(TweakConfigs.DRKHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

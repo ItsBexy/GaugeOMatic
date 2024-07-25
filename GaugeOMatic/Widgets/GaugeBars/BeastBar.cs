@@ -79,45 +79,48 @@ public sealed unsafe class BeastBar : GaugeBarWidget
     public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 6.2818f },
     new(1) { Width = 172 }};
 
-    public void CollapseBar(int kf1, int kf2)
+    public override void HideBar(bool instant = false)
     {
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 70, 140 };
+
         Animator -= "Expand";
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 },
-                new(kf1) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
-                new(kf2) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 }) { Label = "Collapse" },
+                new(kf[0]) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 },
+                new(kf[1]) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
+                new(kf[2]) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 }) { Label = "Collapse" },
             new(Bar,
-                new(0) { ScaleY = 1, Alpha = 255 },
-                new(kf1) { ScaleY = 0.2727273F, Alpha = 0 })
+                new(kf[0]) { ScaleY = 1, Alpha = 255 },
+                new(kf[1]) { ScaleY = 0.2727273F, Alpha = 0 })
                 { Label = "Collapse" },
             new(LabelTextNode,
-                Visible[0],
-                Hidden[kf1])
+                Visible[kf[0]],
+                Hidden[kf[1]])
                 { Label = "Collapse" }
         };
     }
 
-    public void ExpandBar(int kf1, int kf2)
+    public override void RevealBar(bool instant = false)
     {
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 70, 140 };
         Animator -= "Collapse";
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 },
-                new(kf1) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
-                new(kf2) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 })
+                new(kf[0]) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 },
+                new(kf[1]) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
+                new(kf[2]) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 })
                 { Label ="Expand" },
             new(Bar,
-                new(0) { ScaleY = 0.2727273F, Alpha = 0 },
-                new(kf1) { ScaleY = 0.2727273F, Alpha = 0 },
-                new(kf2) { ScaleY = 1, Alpha = 255 })
+                new(kf[0]) { ScaleY = 0.2727273F, Alpha = 0 },
+                new(kf[1]) { ScaleY = 0.2727273F, Alpha = 0 },
+                new(kf[2]) { ScaleY = 1, Alpha = 255 })
                 { Label ="Expand" },
             new(LabelTextNode,
-                Hidden[0],
-                Hidden[kf1],
-                Visible[kf2])
+                Hidden[kf[0]],
+                Hidden[kf[1]],
+                Visible[kf[2]])
                 { Label ="Expand" }
         };
     }
@@ -126,27 +129,14 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin()
-    {
-        if (Config.HideEmpty)
-            CollapseBar(70, 140);
-    }
-
     public override void OnIncrease(float prog, float prevProg) { }
     public override void OnDecrease(float prog, float prevProg) { }
 
-    public override void OnIncreaseFromMin()
-    {
-        if (Config.HideEmpty)
-            ExpandBar(70, 140);
-    }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnFirstRun(float prog)
-    {
-        base.OnFirstRun(prog);
-        if (prog <= 0 && Config.HideEmpty)
-            CollapseBar(0, 0);
-    }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     protected override void StartMilestoneAnim()
     {
@@ -178,7 +168,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                               Hidden[325]);
     }
 
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
@@ -321,8 +311,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update))
-            CollapseCheck(Config.HideEmpty);
+        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -339,17 +328,6 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new List<FontAwesomeIcon> { ArrowRight, ArrowLeft };
-
-    private void CollapseCheck(bool collapse)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (collapse)
-                CollapseBar(70, 140);
-            else
-                ExpandBar(70, 140);
-        }
-    }
 
     #endregion
 }

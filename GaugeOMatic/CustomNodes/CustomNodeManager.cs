@@ -31,6 +31,7 @@ public unsafe partial class CustomNodeManager
             if (lastChildNode == newChildNode) return;
 
             LinkSiblings(lastChildNode, newChildNode);
+            newChildNode->ParentNode = parentNode;
         }
         catch (Exception ex) { Log.Error(ex + ""); }
     }

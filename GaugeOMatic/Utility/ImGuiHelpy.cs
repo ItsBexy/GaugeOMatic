@@ -1,5 +1,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 using System;
 using System.Numerics;
@@ -53,7 +54,7 @@ public static class ImGuiHelpy
 
     public static bool IconButton(string label, FontAwesomeIcon icon, float minWidth = 15f, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null)
     {
-        minWidth *= Dalamud.Interface.Utility.ImGuiHelpers.GlobalScale;
+        minWidth *= ImGuiHelpers.GlobalScale;
         var iconText = icon.ToIconString();
         defaultColor ??= GetStyleColorUsableVec4(Button);
         activeColor ??= GetStyleColorUsableVec4(ButtonActive);
@@ -212,7 +213,7 @@ public static class ImGuiHelpy
 
     public static bool IconButtonWithText(string text, FontAwesomeIcon icon, string id, float? width = null, ColorRGB? color = null)
     {
-        width *= Dalamud.Interface.Utility.ImGuiHelpers.GlobalScale;
+        width *= ImGuiHelpers.GlobalScale;
         var pushed = 0;
         if (color.HasValue)
         {
@@ -224,14 +225,14 @@ public static class ImGuiHelpy
 
         var iconStr = icon.ToIconString();
         var iconStrSize = ImGui.CalcTextSize(iconStr);
-        var adjust = ((16 * Dalamud.Interface.Utility.ImGuiHelpers.GlobalScale) - iconStrSize.X) / 2;
+        var adjust = ((16 * ImGuiHelpers.GlobalScale) - iconStrSize.X) / 2;
 
         ImGui.PopFont();
 
         var textSize = ImGui.CalcTextSize(text);
         var windowDrawList = ImGui.GetWindowDrawList();
         var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var num = 3f * Dalamud.Interface.Utility.ImGuiHelpers.GlobalScale;
+        var num = 3f * ImGuiHelpers.GlobalScale;
 
         var x = Math.Max(width ?? 0, (float)(iconStrSize.X + (double)textSize.X + (ImGui.GetStyle().FramePadding.X * 2.0)) + num);
         var textAdjust = (x - textSize.X - iconStrSize.X) / 2;

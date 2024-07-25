@@ -40,10 +40,13 @@ public class SMNModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Aetherflow Gauge");
         ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SMNHide0, ref update);
-        HideWarning(TweakConfigs.SMNHide0);
+        HideInfo(TweakConfigs.SMNHide0);
+
+        Heading("Trance Gauge");
         ToggleControls("Hide Trance Gauge", ref TweakConfigs.SMNHide1, ref update);
-        HideWarning(TweakConfigs.SMNHide1);
+        HideInfo(TweakConfigs.SMNHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

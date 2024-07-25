@@ -1,3 +1,4 @@
+using CustomNodes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
@@ -42,10 +43,13 @@ public class SCHModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Aetherflow Gauge");
         ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SCHHide0, ref update);
-        HideWarning(TweakConfigs.SCHHide0);
+        HideInfo(TweakConfigs.SCHHide0);
+
+        Heading("Faerie Gauge");
         ToggleControls("Hide Faerie Gauge", ref TweakConfigs.SCHHide1, ref update);
-        HideWarning(TweakConfigs.SCHHide1);
+        HideInfo(TweakConfigs.SCHHide1);
         //todo: update this tweak to allow showing the Dissipation timer instead
         ToggleControls("Hide Fae Aether value while faerie-less", ref TweakConfigs.SCHDissHideText, ref update);
     }
@@ -53,7 +57,8 @@ public class SCHModule : JobModule
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
         var gauge = (AddonJobHudACN0*)gaugeAddon;
-        VisibilityTweak(TweakConfigs.SCHHide0, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(7));
+        var gaugeIndex = (AddonIndex)gaugeAddon;
+        VisibilityTweak(TweakConfigs.SCHHide0, gauge->UseSimpleGauge, gaugeIndex[2u], gaugeIndex[7u]);
     }
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)

@@ -1,9 +1,11 @@
 using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Utility;
+using Lumina.Data.Files;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using static FFXIVClientStructs.FFXIV.Client.Graphics.Kernel.Texture;
 
 namespace CustomNodes;
 
@@ -30,22 +32,54 @@ public unsafe partial class CustomNodeManager
             Count = Coordinates.Length;
 
             TexturePath = texturePath;
-            Asset = CreateAsset(TexturePath, NextPLId++);
+            Asset = CreateAsset(TexturePath);
             Texture = Asset->AtkTexture;
 
-            AtkUldPartsList = CreateAtkUldPartsList(Coordinates, Asset, NextAssetId++);
+            AtkUldPartsList = CreateAtkUldPartsList(Coordinates, Asset);
         }
 
-        private static AtkUldAsset* CreateAsset(string texturePath, uint assetID)
+        public CustomPartsList(AtkUldAsset* asset, params Vector4[] coords)
+        {
+            Coordinates = coords;
+            Count = Coordinates.Length;
+
+            TexturePath = "";
+            Asset = asset;
+            Texture = Asset->AtkTexture;
+
+            AtkUldPartsList = CreateAtkUldPartsList(Coordinates, Asset);
+        }
+
+        public static AtkUldAsset* CreateAsset(string texturePath)
         {
             var atkAsset = (AtkUldAsset*)MemoryHelper.Alloc((ulong)sizeof(AtkUldAsset));
             atkAsset->AtkTexture.Ctor();
-            atkAsset->Id = assetID;
+            atkAsset->Id = NextAssetId++;
             atkAsset->AtkTexture.LoadTexture(texturePath, 2);
             return atkAsset;
         }
 
-        private static AtkUldPartsList* CreateAtkUldPartsList(IReadOnlyList<Vector4> coords, AtkUldAsset* asset, uint id)
+        public static AtkUldAsset* AssetFromFile(string filePath)
+        {
+            var data = DataManager.GameData.GetFileFromDisk<TexFile>(filePath);
+
+            fixed (byte* dataPtr = data.TextureBuffer.RawData)
+            {
+                var newTexture = CreateTexture2D(data.TextureBuffer.Width, data.TextureBuffer.Height, (byte)data.Header.MipCount, (uint)data.Header.Format, 0u, 0u);
+                newTexture->InitializeContents(dataPtr);
+
+                var atkAsset = (AtkUldAsset*)MemoryHelper.Alloc((ulong)sizeof(AtkUldAsset));
+                atkAsset->AtkTexture.Ctor();
+                atkAsset->Id = NextAssetId++;
+
+                atkAsset->AtkTexture.TextureType = TextureType.KernelTexture;
+                atkAsset->AtkTexture.KernelTexture = newTexture;
+
+                return atkAsset;
+            }
+        }
+
+        private static AtkUldPartsList* CreateAtkUldPartsList(IReadOnlyList<Vector4> coords, AtkUldAsset* asset)
         {
             var count = coords.Count;
 
@@ -62,7 +96,7 @@ public unsafe partial class CustomNodeManager
                 atkParts[i].UldAsset = asset;
             }
 
-            atkUldPartsList->Id = id;
+            atkUldPartsList->Id = NextPLId++;
             atkUldPartsList->PartCount = (uint)count;
             atkUldPartsList->Parts = atkParts;
 

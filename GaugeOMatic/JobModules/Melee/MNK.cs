@@ -40,10 +40,13 @@ public class MNKModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Beast Chakra Gauge");
         ToggleControls("Hide Beast Chakra Gauge", ref TweakConfigs.MNKHide0, ref update);
-        HideWarning(TweakConfigs.MNKHide0);
+        HideInfo(TweakConfigs.MNKHide0);
+
+        Heading("Chakra Gauge");
         ToggleControls("Hide Chakra Gauge", ref TweakConfigs.MNKHide1, ref update);
-        HideWarning(TweakConfigs.MNKHide1);
+        HideInfo(TweakConfigs.MNKHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

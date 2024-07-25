@@ -17,7 +17,6 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -119,64 +118,66 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
     public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 152 }};
 
-    public void HideBar()
+    public override void HideBar(bool instant = false)
     {
+
+
         Animator -= "Fade";
         Animator += new Tween[]
         {
             new(FrameTop,
                 new(0){ X=23, Y=44, ScaleX=1, AddRGB=-4, PartId=2 },
-                new(40){X=51,Y=45,ScaleX=1,AddRGB=-14,PartId=2},
-                new(165){X=30,Y=52,ScaleX=1.2f,AddRGB=-42,PartId=2},
-                new(199.9f){X=40,Y=54,ScaleX=1,AddRGB=-50,PartId=2},
-                new(201.1f){X=20,Y=64,ScaleX=1,AddRGB=0,PartId=13},
-                new(450){X=44,Y=64,ScaleX=1,AddRGB=0,PartId=13})
+                new(instant?0:40){X=51,Y=45,ScaleX=1,AddRGB=-14,PartId=2},
+                new(instant?0:165){X=30,Y=52,ScaleX=1.2f,AddRGB=-42,PartId=2},
+                new(instant?0:199.9f){X=40,Y=54,ScaleX=1,AddRGB=-50,PartId=2},
+                new(instant?0:201.1f){X=20,Y=64,ScaleX=1,AddRGB=0,PartId=13},
+                new(instant?0:450){X=44,Y=64,ScaleX=1,AddRGB=0,PartId=13})
                 {Label = "Fade"},
 
             new(FrameBottom,
                 new(0){X=23,Y=84,ScaleX=1,AddRGB=0,PartId=11},
-                new(40){X=51,Y=75,ScaleX=1,AddRGB=0,PartId=11},
-                new(165){X=30,Y=75,ScaleX=1.2f,AddRGB=0,PartId=11},
-                new(215){X=40,Y=70,ScaleX=1,AddRGB=0,PartId=11},
-                new(234.9f){X=40,Y=64,ScaleX=1,AddRGB=17,PartId=11},
-                new(235){X=40,Y=64,ScaleX=1,AddRGB=17,PartId=12},
-                new(310){X=30,Y=64,ScaleX=1,AddRGB=new(0,20,20),PartId=12},
-                new(450){X=30,Y=64,ScaleX=1,AddRGB=new(10,20,20),PartId=12},
-                new(525){X=30,Y=64,ScaleX=1,AddRGB=0,PartId=12})
+                new(instant?0:40){X=51,Y=75,ScaleX=1,AddRGB=0,PartId=11},
+                new(instant?0:165){X=30,Y=75,ScaleX=1.2f,AddRGB=0,PartId=11},
+                new(instant?0:215){X=40,Y=70,ScaleX=1,AddRGB=0,PartId=11},
+                new(instant?0:234.9f){X=40,Y=64,ScaleX=1,AddRGB=17,PartId=11},
+                new(instant?0:235){X=40,Y=64,ScaleX=1,AddRGB=17,PartId=12},
+                new(instant?0:310){X=30,Y=64,ScaleX=1,AddRGB=new(0,20,20),PartId=12},
+                new(instant?0:450){X=30,Y=64,ScaleX=1,AddRGB=new(10,20,20),PartId=12},
+                new(instant?0:525){X=30,Y=64,ScaleX=1,AddRGB=0,PartId=12})
                 {Label = "Fade"},
 
             new(Bar,
                 Visible[0],
-                Hidden[40])
+                Hidden[instant?0:40])
                 {Label = "Fade"}
         };
     }
 
-    public void ShowBar()
+    public override void RevealBar(bool instant = false)
     {
         Animator -= "Fade";
         Animator += new Tween[]
         {
             new(FrameTop,
                 new(0){X=44,Y=64,ScaleY=1,Alpha=255,PartId=13},
-                new(50){X=12,Y=56,ScaleY=2,Alpha=0,PartId=13},
-                new(99.9f){X=-9,Y=52,ScaleY=1,Alpha=255,PartId=13},
-                new(100.1f){X=-9,Y=52,ScaleY=1,Alpha=255,PartId=2},
-                new(200){X=23,Y=44,ScaleY=1,Alpha=255,PartId=2})
+                new(instant?0:50){X=12,Y=56,ScaleY=2,Alpha=0,PartId=13},
+                new(instant?0:99.9f){X=-9,Y=52,ScaleY=1,Alpha=255,PartId=13},
+                new(instant?0:100.1f){X=-9,Y=52,ScaleY=1,Alpha=255,PartId=2},
+                new(instant?0:200){X=23,Y=44,ScaleY=1,Alpha=255,PartId=2})
                 {Label = "Fade"},
 
             new(FrameBottom,
                 new(0){X=23,Y=64,PartId=12},
-                new(50){X=16,Y=64,PartId=12},
-                new(99.9f){X=-9,Y=75,PartId=12},
-                new(100.1f){X=-9,Y=75,PartId=11},
-                new(200){X=23,Y=84,PartId=11})
+                new(instant?0:50){X=16,Y=64,PartId=12},
+                new(instant?0:99.9f){X=-9,Y=75,PartId=12},
+                new(instant?0:100.1f){X=-9,Y=75,PartId=11},
+                new(instant?0:200){X=23,Y=84,PartId=11})
                 {Label = "Fade"},
 
             new(Bar,
                 Hidden[0],
-                Hidden[100],
-                Visible[200])
+                Hidden[instant?0:100],
+                Visible[instant?0:200])
                 {Label = "Fade"}
         };
     }
@@ -186,8 +187,10 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
     #region UpdateFuncs
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ShowBar(); }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     protected override void StartMilestoneAnim()
     {
@@ -368,7 +371,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) HideCheck(Config.HideEmpty);
+        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -376,15 +379,6 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.DragonSpearCfg = Config;
-    }
-
-    private void HideCheck(bool hide)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (hide) HideBar();
-            else ShowBar();
-        }
     }
 
     #endregion

@@ -1,10 +1,11 @@
-using System;
-using System.Collections.Generic;
 using Dalamud.Configuration;
 using Dalamud.Plugin;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Trackers.Presets;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Windows.ConfigWindow;
 using static GaugeOMatic.Windows.ConfigWindow.GeneralTab;
@@ -16,8 +17,8 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
 
-    public GeneralTab GeneralTab { get; set; } = Jobs;
-    public Job JobTab { get; set; }
+    [JsonIgnore] public GeneralTab GeneralTab { get; set; } = Jobs;
+    [JsonIgnore] public Job JobTab { get; set; } = Current;
 
     public List<Preset> SavedPresets { get; set; } = new();
     public int PresetFiltering { get; set; } = 2;

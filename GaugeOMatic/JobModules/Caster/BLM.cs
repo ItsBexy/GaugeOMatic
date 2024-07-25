@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -48,10 +48,13 @@ public class BLMModule : JobModule
     {
         // todo: "recolor MP bar by element" tweak
 
-        WidgetUI.ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHide0, ref update);
-        HideWarning(TweakConfigs.BLMHide0);
-        WidgetUI.ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1, ref update);
-        HideWarning(TweakConfigs.BLMHide1);
+        Heading("Elemental Gauge");
+        ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHide0, ref update);
+        HideInfo(TweakConfigs.BLMHide0);
+
+        Heading("Astral Gauge");
+        ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1, ref update);
+        HideInfo(TweakConfigs.BLMHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

@@ -1,6 +1,5 @@
 using Dalamud.Interface;
 using GaugeOMatic.JobModules;
-using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System;
 using static GaugeOMatic.Utility.ImGuiHelpy;
@@ -37,8 +36,6 @@ public partial class ConfigWindow
         {
             ImGui.TableSetupColumn("Labels",ImGuiTableColumnFlags.WidthFixed);
             ImGui.TableSetupColumn("Options", ImGuiTableColumnFlags.WidthStretch);
-
-            WidgetUI.Heading("Job Gauge Tweaks");
 
             jobModule.TweakUI(ref update);
 

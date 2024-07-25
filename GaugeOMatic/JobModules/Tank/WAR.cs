@@ -38,8 +38,9 @@ public class WARModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Beast Gauge");
         ToggleControls("Hide Beast Gauge", ref TweakConfigs.WARHide0, ref update);
-        HideWarning(TweakConfigs.WARHide0);
+        HideInfo(TweakConfigs.WARHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

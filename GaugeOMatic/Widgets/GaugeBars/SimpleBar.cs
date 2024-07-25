@@ -78,32 +78,28 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 13 }, new(1) { Width = Config.Width }};
 
-    public void HideBar(int time)
+    public override void HideBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[time]) { Label ="Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant?0:250]) { Label ="Fade", Ease = SinInOut };
 
     }
 
-    public void ShowBar(int time)
+    public override void RevealBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[time]) { Label = "Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
     }
 
     #endregion
 
     #region UpdateFuncs
 
-    public override void OnFirstRun(float prog)
-    {
-        base.OnFirstRun(prog);
-        if (prog <= 0 && Config.HideEmpty) HideBar(0);
-    }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(250); }
-
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ShowBar(250); }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     protected override void StartMilestoneAnim()
     {
@@ -124,7 +120,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         Main.SetAddRGB(Config.MainColor);
     }
 
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
@@ -258,7 +254,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update)) HideCheck(Config.HideEmpty);
+        HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -267,15 +263,6 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.SimpleBarCfg = Config;
-    }
-
-    private void HideCheck(bool hide)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (hide) HideBar(250);
-            else ShowBar(250);
-        }
     }
 
     #endregion

@@ -40,13 +40,14 @@ public class BRDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Song Gauge");
         ToggleControls("Hide Song Gauge", ref TweakConfigs.BRDHide0Song, ref update);
-        HideWarning(TweakConfigs.BRDHide0Song);
+        HideInfo(TweakConfigs.BRDHide0Song);
 
         if (!TweakConfigs.BRDHide0Song)
         {
             ToggleControls("Hide Soul Voice Gauge", ref TweakConfigs.BRDHide0SoulVoice, ref update);
-            HideWarning(TweakConfigs.BRDHide0SoulVoice);
+            HideInfo(TweakConfigs.BRDHide0SoulVoice);
 
             if (!TweakConfigs.BRDHide0SoulVoice)
             {

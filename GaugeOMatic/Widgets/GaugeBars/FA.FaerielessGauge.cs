@@ -8,6 +8,7 @@ using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.FaerieLess;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
@@ -15,7 +16,6 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
-using static GaugeOMatic.Widgets.Common.CommonParts;
 
 #pragma warning disable CS8618
 

@@ -1,10 +1,10 @@
+using CustomNodes;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System.Diagnostics.CodeAnalysis;
-using CustomNodes;
+using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
-using static CustomNodes.CustomNodeManager;
 
 namespace GaugeOMatic.Widgets;
 

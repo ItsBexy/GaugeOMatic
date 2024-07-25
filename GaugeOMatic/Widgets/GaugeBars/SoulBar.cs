@@ -121,7 +121,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
-    public void CollapseBar(int kf1, int kf2, int kf3)
+    public override void HideBar(bool instant = false)
     {
         Animator -= "Expand";
         var bgWidth = Config.Width + 2;
@@ -129,41 +129,43 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 250, 350,450 };
+
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 },
-                new(kf1) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                new(kf2) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                new(kf3) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
+                new(kf[0]) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 },
+                new(kf[1]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf[2]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf[3]) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
                 { Ease = SinInOut, Label = "Collapse" },
             new(Corners,
-                new(0) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 },
-                new(kf1) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                new(kf2) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                new(kf3 + (kf3 > 0 ? 150 : 0)) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
+                new(kf[0]) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 },
+                new(kf[1]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf[2]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf[3] + (kf[3] > 0 ? 150 : 0)) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
                 { Ease = SinInOut, Label = "Collapse" },
             new(Bar,
-                new(0) { ScaleX = flipFactor, Alpha = 255 },
-                new(kf1) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                new(kf2) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 })
+                new(kf[0]) { ScaleX = flipFactor, Alpha = 255 },
+                new(kf[1]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf[2]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 })
                 { Ease = SinInOut, Label = "Collapse" },
             new(MidMarkers,
-                new(0) { Alpha = 255, X = MidMarkerX() },
-                new(kf1) { Alpha = 0, X = -4 })
+                new(kf[0]) { Alpha = 255, X = MidMarkerX() },
+                new(kf[1]) { Alpha = 0, X = -4 })
                 { Ease = SinInOut, Label = "Collapse" },
             new(LabelTextNode,
-                Visible[0],
-                Hidden[kf2])
+                Visible[kf[0]],
+                Hidden[kf[2]])
                 { Ease = SinInOut, Label = "Collapse" },
             new(NumTextNode,
-                Visible[0],
-                Hidden[kf2])
+                Visible[kf[0]],
+                Hidden[kf[2]])
                 { Ease = SinInOut, Label = "Collapse" }
         };
     }
 
-    public void ExpandBar(int kf1, int kf2, int kf3)
+    public override void RevealBar(bool instant = false)
     {
         Animator -= "Collapse";
         var frameWidth = Config.Width + 10;
@@ -171,38 +173,40 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 100, 170, 400 };
+
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
-                new(kf1) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                new(kf2) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                new(kf3) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 })
+                new(kf[0]) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
+                new(kf[1]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf[2]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf[3]) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 })
                 { Ease = SinInOut, Label = "Expand" },
             new(Corners,
-                new(0) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
-                new(kf1) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
-                new(kf2) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
-                new(kf3) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 })
+                new(kf[0]) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
+                new(kf[1]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
+                new(kf[2]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
+                new(kf[3]) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 })
                 { Ease = SinInOut, Label = "Expand" },
             new(Bar,
-                new(0) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                new(kf1) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                new(kf2) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
-                new(kf3) { ScaleX = flipFactor, Alpha = 255 })
+                new(kf[0]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf[1]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf[2]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
+                new(kf[3]) { ScaleX = flipFactor, Alpha = 255 })
                 { Ease = SinInOut, Label = "Expand" },
             new(MidMarkers,
-                new(0) { Alpha = 0, X = -4 },
-                new(kf2) { Alpha = 0, X = -4 },
-                new(kf3) { Alpha = 255, X = MidMarkerX() })
+                new(kf[0]) { Alpha = 0, X = -4 },
+                new(kf[2]) { Alpha = 0, X = -4 },
+                new(kf[3]) { Alpha = 255, X = MidMarkerX() })
                 { Ease = SinInOut, Label = "Expand" },
             new(LabelTextNode,
-                Hidden[0],
-                Visible[kf2])
+                Hidden[kf[0]],
+                Visible[kf[2]])
                 { Ease = SinInOut, Label = "Expand" },
             new(NumTextNode,
-                Hidden[0],
-                Visible[kf2])
+                Hidden[kf[0]],
+                Visible[kf[2]])
                 { Ease = SinInOut, Label = "Expand" }
         };
 
@@ -215,20 +219,30 @@ public sealed unsafe class SoulBar : GaugeBarWidget
     public override void OnDecreaseToMin()
     {
         TickMark.SetAlpha(0);
-        if (Config.HideEmpty) CollapseBar(250, 350, 450);
+        if (Config.HideEmpty) HideBar();
     }
 
     public override void OnIncreaseFromMin()
     {
         TickMark.SetAlpha(255);
-        if (Config.HideEmpty) ExpandBar(100, 170, 400);
+        if (Config.HideEmpty) RevealBar();
+    }
+
+    public override void OnIncreaseToMax() {
+        TickMark.SetAlpha(0);
+        if (Config.HideFull) HideBar();
+    }
+
+    public override void OnDecreaseFromMax()
+    {
+        TickMark.SetAlpha(255);
+        if (Config.HideFull) RevealBar();
     }
 
     public override void OnFirstRun(float prog)
     {
-        base.OnFirstRun(prog);
         TickMark.SetAlpha(prog > 0);
-        if (prog <= 0 && Config.HideEmpty) CollapseBar(0, 0, 0);
+        base.OnFirstRun(prog);
     }
 
     protected override void StartMilestoneAnim()
@@ -268,7 +282,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public override void PlaceTickMark(float prog) => TickMark.SetX(Main.Width + prog + 1);
 
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
@@ -474,7 +488,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck(Config.HideEmpty);
+        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -490,15 +504,6 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
         new() { ArrowRight, ArrowLeft };
-
-    private void CollapseCheck(bool collapse)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (collapse) CollapseBar(250, 350, 450);
-            else ExpandBar(100, 170, 400);
-        }
-    }
 
     #endregion
 }

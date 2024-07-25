@@ -85,62 +85,64 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
 
-    public void CollapseBar(int kf1, int kf2)
+    public override void HideBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 250, 350 };
 
         Animator += new Tween[]{
             new (Frame,
-                 new(0) { X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Alpha = 255, Height = 34 },
-                 new(kf1) { X = halfWidth - 19, Width = 68, AddRGB = 50, Alpha = 255, Height = 34 },
-                 new(kf2) { X = halfWidth - 19, Width = 68, AddRGB = 255, Alpha = 0, Height = 26 })
+                 new(kf[0]) { X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Alpha = 255, Height = 34 },
+                 new(kf[1]) { X = halfWidth - 19, Width = 68, AddRGB = 50, Alpha = 255, Height = 34 },
+                 new(kf[2]) { X = halfWidth - 19, Width = 68, AddRGB = 255, Alpha = 0, Height = 26 })
                 { Ease = SinInOut },
 
             new(Bar,
-                new(0) { X = -halfWidth, Alpha = 255, ScaleX = 1, ScaleY = 1 },
-                new(kf1) { X = -halfWidth + 19, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
-                new(kf2) { X = -halfWidth + 19, Alpha = 128, ScaleX = 30f / Config.Width, ScaleY = 0 })
+                new(kf[0]) { X = -halfWidth, Alpha = 255, ScaleX = 1, ScaleY = 1 },
+                new(kf[1]) { X = -halfWidth + 19, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
+                new(kf[2]) { X = -halfWidth + 19, Alpha = 128, ScaleX = 30f / Config.Width, ScaleY = 0 })
                 { Ease = SinInOut },
 
             new(BarFrame,
-                new(0) { Y = 0 },
-                new(kf1) { Y = 0 },
-                new(kf2) { Y = 4 })
+                new(kf[0]) { Y = 0 },
+                new(kf[1]) { Y = 0 },
+                new(kf[2]) { Y = 4 })
                 { Ease = SinInOut },
 
-            new(LabelTextNode, Visible[0], Hidden[kf1]),
-            new(NumTextNode, Visible[0], Hidden[kf2])
+            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]),
+            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]])
         };
 
         Bar.SetOrigin(Config.Width, 4);
     }
 
-    public void ExpandBar(int kf1, int kf2)
+    public override void RevealBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 50, 150 };
 
         Animator += new Tween[]
         {
             new(Frame,
-                new(0) { Alpha = 0, X = -halfWidth - 69, Width = 68, AddRGB = new(200), Height = 26 },
-                new(kf1) { Alpha = 255, X = -halfWidth - 69, Width = 68, AddRGB = new(255), Height = 34 },
-                new(kf2) { Alpha = 255, X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Height = 34 })
+                new(kf[0]) { Alpha = 0, X = -halfWidth - 69, Width = 68, AddRGB = new(200), Height = 26 },
+                new(kf[1]) { Alpha = 255, X = -halfWidth - 69, Width = 68, AddRGB = new(255), Height = 34 },
+                new(kf[2]) { Alpha = 255, X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Height = 34 })
                 { Ease = SinInOut },
 
             new(Bar,
-                new(0) { X = -halfWidth - 50, Alpha = 0, ScaleX = 30f / Config.Width, ScaleY = 0 },
-                new(kf1) { X = -halfWidth - 50, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
-                new(kf2) { X = -halfWidth, Alpha = 255, ScaleX = 1, ScaleY = 1 })
+                new(kf[0]) { X = -halfWidth - 50, Alpha = 0, ScaleX = 30f / Config.Width, ScaleY = 0 },
+                new(kf[1]) { X = -halfWidth - 50, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
+                new(kf[2]) { X = -halfWidth, Alpha = 255, ScaleX = 1, ScaleY = 1 })
                 { Ease = SinInOut },
 
             new(BarFrame,
-                new(0) { Y = 4 },
-                new(kf1) { Y = 0 },
-                new(kf2) { Y = 0 })
+                new(kf[0]) { Y = 4 },
+                new(kf[1]) { Y = 0 },
+                new(kf[2]) { Y = 0 })
                 { Ease = SinInOut },
 
-            new(LabelTextNode, Hidden[0], Hidden[kf1], Visible[kf2]),
-            new(NumTextNode, Hidden[0], Hidden[kf1], Visible[kf2])
+            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]),
+            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]])
         };
 
         Bar.SetOrigin(0, 4);
@@ -166,14 +168,11 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) CollapseBar(250, 350); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ExpandBar(100, 350); }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnFirstRun(float prog)
-    {
-        base.OnFirstRun(prog);
-        if (prog == 0 && Config.HideEmpty) CollapseBar(0, 0);
-    }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     public override void PlaceTickMark(float prog)
     {
@@ -181,7 +180,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
             .SetVis(prog > 0);
     }
 
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
@@ -307,22 +306,13 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck();
+        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
         LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.ArrowBarCfg = Config;
-    }
-
-    private void CollapseCheck()
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (Config.HideEmpty) CollapseBar(250, 350);
-            else ExpandBar(50, 150);
-        }
     }
 
     #endregion

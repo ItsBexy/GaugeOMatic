@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
+using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -42,9 +42,10 @@ public class RDMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        WidgetUI.ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0, ref update);
-        HideWarning(TweakConfigs.RDMHide0);
-        WidgetUI.ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
+        Heading("Balance Gauge");
+        ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0, ref update);
+        HideInfo(TweakConfigs.RDMHide0);
+        ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
     }
 
     public bool SwordplayStatePrev;

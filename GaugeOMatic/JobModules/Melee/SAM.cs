@@ -45,14 +45,16 @@ public class SAMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        ToggleControls("Hide Kenki Gauge", ref TweakConfigs.SAMHide0Kenki, ref update);
-        HideWarning(TweakConfigs.SAMHide0Kenki);
+        Heading("Kenki Gauge");
+        ToggleControls("Hide Kenki Bar", ref TweakConfigs.SAMHide0Kenki, ref update);
+        HideInfo(TweakConfigs.SAMHide0Kenki);
 
-        ToggleControls("Hide Meditation Gauge", ref TweakConfigs.SAMHide0Meditation, ref update);
-        HideWarning(TweakConfigs.SAMHide0Meditation);
+        ToggleControls("Hide Meditation Stacks", ref TweakConfigs.SAMHide0Meditation, ref update);
+        HideInfo(TweakConfigs.SAMHide0Meditation);
 
+        Heading("Sen Gauge");
         ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHide1, ref update);
-        HideWarning(TweakConfigs.SAMHide1);
+        HideInfo(TweakConfigs.SAMHide1);
 
         Heading("Reposition Seals");
         PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu, ref update);

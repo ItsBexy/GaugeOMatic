@@ -67,6 +67,16 @@ internal static class CommonParts
             new(174, 409, 38, 42)   // 29 glow2
         );
 
+    public static CustomPartsList NIN1 =>
+        new("ui/uld/JobHudNIN1.tex",
+            new(0, 0, 138, 102),   // 0 backdrop (inactive)
+            new(0, 102, 138, 102), // 1 backdrop (active)
+            new(0, 204, 46, 78),   // 2 kunai
+            new(46, 204, 46, 78),  // 3 kunai (glowing)
+            new(92, 204, 46, 78),  // 4 kunai slot
+            new(106, 39, 7, 7)     // 5 lil grey square
+        );
+
     public static CustomPartsList SAM0 =>
         new("ui/uld/JobHudSAM0.tex",
             new(0, 0, 116, 50),     // 0 hilt

@@ -39,8 +39,9 @@ public class GNBModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Powder Gauge");
         ToggleControls("Hide Powder Gauge", ref TweakConfigs.GNBHide0, ref update);
-        HideWarning(TweakConfigs.GNBHide0);
+        HideInfo(TweakConfigs.GNBHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

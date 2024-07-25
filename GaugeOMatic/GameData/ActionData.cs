@@ -1,6 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
-using System;
 using Lumina.Excel;
+using System;
 using static GaugeOMatic.GameData.ActionData.ActionRef.ReadyTypes;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.StatusData;

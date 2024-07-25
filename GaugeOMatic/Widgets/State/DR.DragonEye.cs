@@ -421,7 +421,7 @@ public sealed unsafe class DragonEye : StateWidget
             var label = $"{Tracker.StateNames[i]}";
             var eyeState = Config.EyeStates[i];
          //   if (ColorPickerRGB(label, ref color, ref update)) Config.ColorList[i] = color;
-            if (RadioControls($"{label}##appearance{i}", ref eyeState, EyeStateList, EyeStateNames, ref update)) Config.EyeStates[i] = eyeState;
+            if (RadioControls<DragonEyeConfig.EyeState>($"{label}##appearance{i}", ref eyeState, EyeStateList, EyeStateNames, ref update)) Config.EyeStates[i] = eyeState;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

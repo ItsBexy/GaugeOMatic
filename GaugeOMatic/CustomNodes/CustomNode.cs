@@ -1,7 +1,7 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using static CustomNodes.CustomNodeManager;
 
 namespace CustomNodes;
@@ -28,9 +28,40 @@ public unsafe partial class CustomNode : IDisposable
         get
         {
             if (i < Children.Length) return Children[i];
-            var ex = new StackTrace();
-            Log.Warning("No child node found at index " + i + "\n" + ex);
-            return this;
+
+            try
+            {
+                AtkComponentNode* comp;
+                AtkUldManager uld;
+
+                return Node == null ? Warning("Node is null and has no children") :
+                           (comp = Node->GetAsAtkComponentNode()) == null || (uld = comp->Component->UldManager).NodeListSize < i ?
+                               Warning($"No Child node found at index {i}") :
+                               uld.NodeList[i];
+            }
+            catch (Exception)
+            {
+                return Warning($"Error retrieving child node at index {i}");
+            }
+        }
+    }
+
+    public CustomNode this[uint id]
+    {
+        get
+        {
+            try
+            {
+                AtkComponentNode* comp;
+                if (Node == null) return Warning("Node is null and has no children");
+                if ((comp = Node->GetAsAtkComponentNode()) == null) return Warning($"No Child node found with ID {id}");
+
+                return comp->Component->UldManager.SearchNodeById(id);
+            }
+            catch (Exception)
+            {
+                return Warning($"Error retrieving child node with ID {id}");
+            }
         }
     }
 
@@ -77,7 +108,7 @@ public unsafe partial class CustomNode : IDisposable
         {
             if (TextBuffer != null)
             {
-                System.Runtime.InteropServices.NativeMemory.Free(TextBuffer);
+                NativeMemory.Free(TextBuffer);
                 TextBufferLen = 0;
             }
             Node->Destroy(true);

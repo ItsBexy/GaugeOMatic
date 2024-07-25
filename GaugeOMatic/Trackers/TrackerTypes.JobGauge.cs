@@ -107,18 +107,19 @@ public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData
     public override string DisplayName => "Kazematoi Stacks";
     public override string GaugeAddonName => "JobHudNIN1v70";
     public override string TermCount => "Stacks";
+    public override string[] StateNames => new[] { "Inactive", "Active", "Full" };
     private const string ToolText = "Counter: Shows Kazematoi Stacks\n" +
                                     "State: Shows whether any stacks remain";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
-            new(0, 5, 0, 5, 0, 1, preview) :
+            new(0, 5, 0, 5, 0, 2, preview) :
             new(GaugeData->StackCount,
                 5,
                 GaugeData->StackCount,
                 5,
-                GaugeData->StackCount > 0 ? 1 : 0,
-                1,
+                GaugeData->StackCount == 5 ? 2 : GaugeData->StackCount > 0 ? 1 : 0,
+                2,
                 preview);
 }
 
@@ -546,9 +547,9 @@ public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
-            new(0, 2, 0, 30, 0, 1, preview) :
+            new(0, 3, 0, 30, 0, 1, preview) :
             new(GaugeData->PolyglotStacks,
-                2,
+                3,
                 GaugeData->EnochianTimer > 0 ? (GaugeData->EnochianMaxTime - GaugeData->EnochianTimer) / 1000f : 0,
                 30,
                 GaugeData->EnochianTimer > 0 ? 1 : 0,
@@ -768,7 +769,7 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
 {
     public override string DisplayName => "Balance Crystal";
     public override string GaugeAddonName => "JobHudRDM0";
-    public override string[] StateNames { get; } = { "Neutral", "Black Imbalance", "White Imbalance", "Combo Ready" };
+    public override string[] StateNames { get; } = { "Neutral", "Excess Black", "Excess White", "Combo Ready" };
     private const string ToolText = "State: Shows Combo/Imbalance state";
 
     public override TrackerData GetCurrentData(float? preview = null)
@@ -776,6 +777,7 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
         if (GaugeAddon == null) return new(0, 1, 0, 1, 0, 3, preview);
 
         var crystalState = ((AddonJobHudRDM0*)GaugeAddon)->GaugeStandard.CrystalState;
+
         var combo = crystalState == 3 ? 1 : 0;
         return new(combo, 1, combo, 1, crystalState, 3, preview);
     }

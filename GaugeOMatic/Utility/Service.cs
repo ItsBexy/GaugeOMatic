@@ -17,6 +17,7 @@ public sealed partial class GaugeOMatic
         [PluginService] internal static IAddonLifecycle AddonLifecycle { get; private set; }
         [PluginService] internal static IClientState ClientState { get; private set; }
 
+
         [PluginService] internal static IGameConfig GameConfig { get; private set; }
         [PluginService] internal static IGameInteropProvider GameInteropProvider { get; private set; }
         [PluginService] internal static ICommandManager CommandManager { get; private set; }

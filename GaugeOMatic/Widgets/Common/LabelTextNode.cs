@@ -14,7 +14,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
-using FontType = FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 
 namespace GaugeOMatic.Widgets;
 

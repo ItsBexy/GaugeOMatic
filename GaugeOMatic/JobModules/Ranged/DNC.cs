@@ -42,11 +42,13 @@ public class DNCModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Step Gauge");
         ToggleControls("Hide Step Gauge", ref TweakConfigs.DNCHide0, ref update);
-        HideWarning(TweakConfigs.DNCHide0);
+        HideInfo(TweakConfigs.DNCHide0);
 
+        Heading("Fourfold Feathers");
         ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHide1, ref update);
-        HideWarning(TweakConfigs.DNCHide1);
+        HideInfo(TweakConfigs.DNCHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

@@ -253,7 +253,7 @@ public abstract partial class StatusData
     { 1175, new(1175, PLD, "Passage of Arms",          Self,   1, 18 ) },
     { 1362, new(1362, PLD, "Divine Veil",              Self,   1, 30 ) },
     { 1368, new(1368, PLD, "Requiescat",               Self,   4, 30 ) },
-    { 1902, new(1902, PLD, "Sword Oath",               Self,   3, 30 ) },
+    { 1902, new(1902, PLD, "Atonement Ready",          Self,   1, 30 ) },
     { 2673, new(2673, PLD, "Divine Might",             Self,   1, 30 ) },
     { 2674, new(2674, PLD, "Sheltron",                 Self,   1, 8,  seeAlso: new() { 728, 1856 }) },
     { 2675, new(2675, PLD, "Knight's Resolve",         Self,   1, 4  ) },
@@ -409,7 +409,6 @@ public abstract partial class StatusData
     { 3897, new(3897, SGE, "Eukrasian Dyskrasia",      Self,   1, 30 ) },
     { 3898, new(3898, SGE, "Philosophia",              Self,   1, 20 ) },
     { 3899, new(3899, SGE, "Eudaimonia",               Self,   1, 20 ) },
-
 
     #endregion
     };

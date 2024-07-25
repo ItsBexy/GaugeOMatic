@@ -39,8 +39,9 @@ public class DRGModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Dragon Gauge");
         ToggleControls("Hide Dragon Gauge", ref TweakConfigs.DRGHide0, ref update);
-        HideWarning(TweakConfigs.DRGHide0);
+        HideInfo(TweakConfigs.DRGHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

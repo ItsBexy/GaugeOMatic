@@ -43,10 +43,13 @@ public class PCTModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Palette Gauge");
         ToggleControls("Hide Palette Gauge", ref TweakConfigs.PCTHide1, ref update);
-        HideWarning(TweakConfigs.PCTHide1);
+        HideInfo(TweakConfigs.PCTHide1);
+
+        Heading("Canvases");
         ToggleControls("Hide Canvases", ref TweakConfigs.PCTHide0, ref update);
-        HideWarning(TweakConfigs.PCTHide0);
+        HideInfo(TweakConfigs.PCTHide0);
 
         if (!TweakConfigs.PCTHide0)
         {

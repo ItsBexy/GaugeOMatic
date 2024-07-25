@@ -106,7 +106,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 }};
 
-    private void ShowBar()
+    public override void RevealBar(bool instant = false)
     {
         var scaleX = Config.Direction == 1 ? -1 : 1;
         Animator += new Tween(Contents2,
@@ -114,8 +114,9 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                               new(150) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 });
     }
 
-    private void HideBar()
+    public override void HideBar(bool instant = false)
     {
+        Contents2.SetAlpha(0);
         var scaleX = Config.Direction == 1 ? -1 : 1;
         Animator += new Tween(Contents2,
                               new(0) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 },
@@ -148,10 +149,17 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         if (prog > 0 && !Activated) { UnDimBar(); }
     }
 
+    public override void OnDecreaseToMin()
+    {
+        Animator -= "Activate";
+        if (Config.DimEmpty) DimBar();
+        if (Config.HideEmpty) HideBar();
+    }
+
     public override void OnIncreaseFromMin()
     {
         if (Config.DimEmpty) UnDimBar();
-        if (Config.HideEmpty) ShowBar();
+        if (Config.HideEmpty) RevealBar();
     }
 
     public bool Activated;
@@ -164,12 +172,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Activated = true;
     }
 
-    public override void OnDecreaseToMin()
-    {
-        Animator -= "Activate";
-        if (Config.DimEmpty) DimBar();
-        if (Config.HideEmpty) HideBar();
-    }
+
 
     private void DimBar()
     {
@@ -183,9 +186,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public override void OnFirstRun(float prog)
     {
         base.OnFirstRun(prog);
-
         if (prog > 0) UnDimBar();
-        if (Config.HideEmpty && prog == 0) Contents2.SetAlpha(0);
     }
 
     #endregion
@@ -241,6 +242,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             DimEmpty = config.DimEmpty;
 
             LabelText = config.LabelText;
+
+            HideFull = false; //todo: maybe implement later but ugh
         }
 
         public EnochianBarConfig() { }
@@ -323,6 +326,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             Config.DimEmpty = emptyBehavior[0];
             Config.HideEmpty = emptyBehavior[1];
             Config.HideHand = emptyBehavior[2];
+            Config.HideFull = false;
         }
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
@@ -345,7 +349,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
         {
             if (hideEmpty) HideBar();
-            else ShowBar();
+            else RevealBar();
         }
     }
 

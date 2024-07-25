@@ -109,8 +109,8 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     private void PlaceOnBar()
     {
-        var barNode = Addon->GetNodeById(Config.Bar == 1u ? 4u : 3u);
-        WidgetContainer.SetPos(barNode->X, barNode->Y);
+        var barNode = ((AddonIndex)Addon)[Config.Bar == 1u ? 4u : 3u];
+        WidgetContainer.SetPos(barNode.X, barNode.Y);
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

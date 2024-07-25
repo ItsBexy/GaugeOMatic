@@ -101,8 +101,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
     public override void HideStack(int i)
     {
-        if (Gems[i].Node->Color.A == 0) return;
-        Glows2[i].Hide();
+        for (var j = i; j < Max; j++) Glows2[j].Hide();
 
         Animator += new Tween[] {
             new(Gems[i],

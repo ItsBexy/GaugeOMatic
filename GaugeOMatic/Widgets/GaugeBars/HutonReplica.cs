@@ -3,12 +3,15 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.GaugeOMatic;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.HutonReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
@@ -32,17 +35,17 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         DisplayName = "Huton Pinwheel",
         Author = "ItsBexy",
         Description = "A recreation of Ninja's Huton Gauge.",
-        WidgetTags = GaugeBar | Replica | Exclude
+        WidgetTags = GaugeBar | Replica
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new ("ui/uld/JobHudNIN1.tex",
-             new(0, 0, 60, 76),
-             new(60, 0, 112, 112),
-             new(0, 76, 60, 60),
-             new(60, 112, 72, 80),
-             new(132, 112, 40, 40),
-             new(0, 192, 144, 144))
+        new (CustomPartsList.AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\huton.tex")),
+             new(0, 0, 120, 152),
+             new(120, 0, 224, 224),
+             new(0, 152, 120, 120),
+             new(120, 224, 144, 160),
+             new(264, 224, 80, 80),
+             new(0, 384, 288, 288))
     };
 
     #region Nodes
@@ -57,36 +60,68 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override CustomNode BuildContainer()
     {
-        EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2).SetScale(0.9f).SetOrigin(71, 74).SetAlpha(255);
+        EmptyPinwheel = ImageNodeFromPart(0, 5).SetPos(-2, -2)
+                                               .SetScale(0.9f)
+                                               .SetOrigin(142, 148)
+                                               .SetAlpha(255);
+
         ActiveClock = BuildClock();
         NumTextNode = new();
-        NumTextNode.Hide();
-        Puff = ImageNodeFromPart(0, 4).SetPos(-2, -2).SetScale(0.6666667f).SetSize(144, 144).SetOrigin(72, 72).SetAlpha(0);
+        NumTextNode.Hide().SetScale(2);
+        Puff = ImageNodeFromPart(0, 4).SetPos(-4, -4)
+                                      .SetScale(0.6666667f)
+                                      .SetSize(288, 288)
+                                      .SetOrigin(144, 144)
+                                      .SetAlpha(0)
+                                      .SetImageWrap(2);
 
-        return new CustomNode(CreateResNode(), EmptyPinwheel, ActiveClock, NumTextNode, Puff).SetSize(150, 150).SetOrigin(75, 75);
+        return new CustomNode(CreateResNode(), EmptyPinwheel, ActiveClock, NumTextNode, Puff).SetSize(300, 300).SetOrigin(150, 150);
     }
 
     public CustomNode BuildClock()
     {
         Blades = BuildBlades();
-        Shuriken = ImageNodeFromPart(0, 2).SetPos(50, 50).SetSize(60, 60).SetOrigin(30, 30).Hide();
-        Whirl = ImageNodeFromPart(0, 1).SetPos(23, 25).SetScale(0.5f).SetSize(112, 112).SetOrigin(56, 56)
-                                                       .SetRotation((float)PI).SetAlpha(0).SetImageFlag(32);
+        Shuriken = ImageNodeFromPart(0, 2).SetPos(100, 100)
+                                          .SetSize(120, 120)
+                                          .SetOrigin(60, 60)
+                                          .Hide();
 
-        return new CustomNode(CreateResNode(), Blades, Shuriken, Whirl).SetPos(-10, -10).SetScale(0.9f).SetSize(160, 160).SetOrigin(80, 80);
+        Whirl = ImageNodeFromPart(0, 1).SetPos(46, 50)
+                                       .SetSize(224, 224)
+                                       .SetOrigin(112, 112)
+                                       .SetRotation((float)PI)
+                                       .SetAlpha(0)
+                                       .SetImageFlag(32);
+
+        return new CustomNode(CreateResNode(), Blades, Shuriken, Whirl).SetPos(-10, -10)
+                                                                       .SetScale(0.9f)
+                                                                       .SetSize(160, 160)
+                                                                       .SetOrigin(80, 80);
     }
 
     public CustomNode BuildBlades()
     {
-        ClockHand = ImageNodeFromPart(0, 3).SetPos(44, 12)
-                                           .SetSize(72, 80)
-                                           .SetOrigin(36, 73)
+        ClockHand = ImageNodeFromPart(0, 3).SetPos(88, 24)
+                                           .SetSize(144, 160)
+                                           .SetOrigin(72, 146)
                                            .Hide();
 
-        return new CustomNode(CreateResNode(), BuildBlade(0), BuildBlade(1), BuildBlade(2), BuildBlade(3), BuildBlade(4), BuildBlade(5), ClockHand).SetPos(0, -6).SetSize(160, 160).SetOrigin(79, 87);
+        var blades = new List<CustomNode>();
+        for (var i = 0; i < 6; i++) blades.Add(BuildBlade(i));
+
+        blades.Add(ClockHand);
+
+        return new CustomNode(CreateResNode(), blades.ToArray()).SetPos(0, -12)
+                                                                .SetSize(320, 320)
+                                                                .SetOrigin(158, 174);
     }
 
-    public CustomNode BuildBlade(int i) => ImageNodeFromPart(0, 0).SetPos(64, 15).SetSize(60, 76).SetOrigin(16, 72).SetRotation((1.0471975511966f * i) - 0.0698131700797732f).SetAlpha(0);
+    public CustomNode BuildBlade(int i) =>
+        ImageNodeFromPart(0, 0).SetPos(128, 30)
+                               .SetSize(120, 152)
+                               .SetOrigin(32, 144)
+                               .SetRotation((1.0471975511966f * i) - 0.0698131700797732f)
+                               .SetAlpha(0);
 
     #endregion
 
@@ -126,6 +161,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                 new(275) { Rotation = 5.654867f, AddRGB = new(0, 38, 58) },
                 new(385) { Rotation = 6.283185f, AddRGB = new(0, 0, 0) })
         };
+
 
     private void ShowBlade(int i, AddRGB add, ColorRGB mult) =>
         Animator += new Tween(Blades[i % 6],
@@ -266,12 +302,12 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position-new Vector2(75))
+                  .SetScale(Config.Scale/2f);
 
         ClockHand.SetMultiply(Config.HandColor);
 
-        NumTextNode.ApplyProps(Config.NumTextProps, new(69, 72));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(86, 144));
     }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)

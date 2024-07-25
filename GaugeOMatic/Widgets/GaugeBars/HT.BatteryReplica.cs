@@ -151,7 +151,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     public override string SharedEventGroup => "HeatGauge";
 
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         Main.SetAlpha(Main.Width > 20);
 
@@ -305,6 +305,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
             ColorPickerRGBA("Drain", ref Config.DrainColorBlue, ref update);
         }
 
+        //todo: maybe implement Hide Controls?
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 

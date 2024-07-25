@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.MiscMath;
 using static System.DateTime;
 using static System.TimeSpan;
-using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 
 namespace GaugeOMatic.CustomNodes.Animation;
 

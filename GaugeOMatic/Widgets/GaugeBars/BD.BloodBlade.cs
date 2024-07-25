@@ -17,7 +17,6 @@ using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -105,25 +104,27 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
     public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 173 }};
 
-    public void HideBar(int time)
+    public override void HideBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[time]) { Label ="Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label ="Fade", Ease = SinInOut };
     }
 
-    public void ShowBar(int time)
+    public override void RevealBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[time]) { Label = "Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant?0:250]) { Label = "Fade", Ease = SinInOut };
     }
 
     #endregion
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(250); }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ShowBar(250); }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     protected override void StartMilestoneAnim()
     {
@@ -289,7 +290,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
 
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update)) HideCheck(Config.HideEmpty);
+        HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
@@ -298,15 +299,6 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.BloodBladeCfg = Config;
-    }
-
-    private void HideCheck(bool hide)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (hide) HideBar(250);
-            else ShowBar(250);
-        }
     }
 
     #endregion

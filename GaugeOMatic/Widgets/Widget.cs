@@ -143,7 +143,7 @@ public abstract unsafe class Widget : IDisposable
 
         bool CheckFlags() => !TrackerConfig.HideOutsideCombatDuty || Condition.Any(InCombat, BoundByDuty, BoundByDuty56, BoundByDuty95, InDeepDungeon);
 
-        if (Tracker.UsePreviewValue || (CheckLevel() && CheckFlags()))
+        if (!ClientState.IsPvP && (Tracker.UsePreviewValue || (CheckLevel() && CheckFlags())))
             Show();
         else
             Hide();
@@ -162,11 +162,9 @@ public partial class WidgetConfig // each widget contributes a part to this in i
                  from p in typeof(WidgetConfig).GetProperties()
                  where p.GetValue(this) != null
                  let decType = p.PropertyType.DeclaringType?.Name
-                 where decType != null && decType != widgetType select p)
-        {
-            Log.Warning("CRUFT!!");
+                 where decType != null && decType != widgetType
+                 select p)
             p.SetValue(this, null);
-        }
 
         return this;
     }

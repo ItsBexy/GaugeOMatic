@@ -168,98 +168,91 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 { Ease = SinInOut }
         };
 
-    public void CollapseBar(int kf1, int kf2)
+    public override void HideBar(bool instant = false)
     {
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 150, 350 };
+
         Animator -= "Expand";
         Animator += new Tween[]
         {
             new(FrameR,
-                new(0) { Height = 120, Y = 0 },
-                new(kf1) { Height = 96, Y = 12 },
-                new(kf2) { Height = 96, Y = 12 })
+                new(kf[0]) { Height = 120, Y = 0 },
+                new(kf[1]) { Height = 96, Y = 12 },
+                new(kf[2]) { Height = 96, Y = 12 })
                 { Ease = SinInOut, Label = "Collapse" },
             new(FrameL,
-                new(0) { Height = 120, Y = 0 },
-                new(kf1) { Height = 96, Y = 12 },
-                new(kf2) { Height = 96, Y = 12 })
+                new(kf[0]) { Height = 120, Y = 0 },
+                new(kf[1]) { Height = 96, Y = 12 },
+                new(kf[2]) { Height = 96, Y = 12 })
                 { Ease = SinInOut, Label = "Collapse" },
             new(Bar,
-                Visible[0],
-                Hidden[kf1 / 2])
+                Visible[kf[0]],
+                Hidden[kf[1] / 2])
                 { Ease = SinInOut, Label = "Collapse" },
             new(Frame,
-                new(0) { AddRGB = 0, Alpha = 255, ScaleX = 1 },
-                new(kf1) { AddRGB = 120, Alpha = 255, ScaleX = 1 },
-                new(kf2) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f }),
+                new(kf[0]) { AddRGB = 0, Alpha = 255, ScaleX = 1 },
+                new(kf[1]) { AddRGB = 120, Alpha = 255, ScaleX = 1 },
+                new(kf[2]) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f }),
             new(LabelTextNode,
-                Visible[0],
-                Hidden[kf1])
-                {Label = "Collapse" }
-        };
+                Visible[kf[0]],
+                Hidden[kf[1]])
+                {Label = "Collapse" },
+            new(TickMark, Visible[kf[0]], Hidden[kf[1]])
+};
 
-        if (kf2 > 0) Twinkle();
+        if (kf[2] > 0) Twinkle();
     }
 
-    public void ExpandBar(int kf1, int kf2)
+    public override void RevealBar(bool instant = false)
     {
+        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 100, 350 };
+
         Animator -= "Collapse";
         Animator += new Tween[]
         {
             new(FrameR,
-                new(0) { Height = 94, Y = 13 },
-                new(kf1) { Height = 120, Y = 0 },
-                new(kf2) { Height = 120, Y = 0 })
+                new(kf[0]) { Height = 94, Y = 13 },
+                new(kf[1]) { Height = 120, Y = 0 },
+                new(kf[2]) { Height = 120, Y = 0 })
                 { Ease = SinInOut, Label = "Expand" },
             new(FrameL,
-                new(0) { Height = 94, Y = 13 },
-                new(kf1) { Height = 120, Y = 0 },
-                new(kf2) { Height = 120, Y = 0 })
+                new(kf[0]) { Height = 94, Y = 13 },
+                new(kf[1]) { Height = 120, Y = 0 },
+                new(kf[2]) { Height = 120, Y = 0 })
                 { Ease = SinInOut, Label = "Expand" },
             new(Bar,
-                Hidden[0],
-                Hidden[kf1],
-                Visible[kf2])
+                Hidden[kf[0]],
+                Hidden[kf[1]],
+                Visible[kf[2]])
                 { Ease = SinInOut, Label = "Expand" },
             new(Frame,
-                new(0) { AddRGB = 200, Alpha = 0, ScaleX = 0.8f },
-                new(kf1) { AddRGB = 80, Alpha = 255, ScaleX = 1 },
-                new(kf2) { AddRGB = 0, Alpha = 255, ScaleX = 1 })
+                new(kf[0]) { AddRGB = 200, Alpha = 0, ScaleX = 0.8f },
+                new(kf[1]) { AddRGB = 80, Alpha = 255, ScaleX = 1 },
+                new(kf[2]) { AddRGB = 0, Alpha = 255, ScaleX = 1 })
                 { Ease = SinInOut, Label = "Expand" },
             new(LabelTextNode,
-                Hidden[0],
-                Hidden[kf1],
-                Visible[kf2])
-                {Label = "Expand" }
-        };
+                Hidden[kf[0]],
+                Hidden[kf[1]],
+                Visible[kf[2]])
+                {Label = "Expand" },
+            new(TickMark, Hidden[kf[0]], Visible[kf[1]])
+};
 
-        if (kf2 > 0) Twinkle();
+        if (kf[2] > 0) Twinkle();
     }
 
     #endregion
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin()
-    {
-        Animator += new Tween(TickMark, Visible[0], Hidden[150]);
-        if (Config.HideEmpty) CollapseBar(150, 350);
-    }
-
     public override void OnIncrease(float prog, float prevProg) { if (Config.TwinkleInc) Twinkle(); }
     public override void OnDecrease(float prog, float prevProg) { if (Config.TwinkleDec) Twinkle(); }
 
-    public override void OnIncreaseFromMin()
-    {
-        Animator += new Tween(TickMark, Hidden[0], Visible[150]);
-        if (Config.HideEmpty) ExpandBar(100, 350);
-    }
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
 
-    public override void OnFirstRun(float prog)
-    {
-        base.OnFirstRun(prog);
-        TickMark.SetAlpha((byte)(prog > 0 ? Config.TickmarkColor.A : 0));
-        if (prog <= 0 && Config.HideEmpty) CollapseBar(0, 0);
-    }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     protected override void StartMilestoneAnim()
     {
@@ -307,7 +300,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
         TickMark.SetX(Main.Width - 19);
     }
 
-    public override void PostUpdate(float prog, float prevProg)
+    public override void PostUpdate(float prog)
     {
         if (Tracker.CurrentData.HasLabelOverride) LabelTextNode.SetLabelText(Tracker.CurrentData.LabelOverride ?? " ");
     }
@@ -496,7 +489,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Collapse Empty", ref Config.HideEmpty, ref update)) CollapseCheck(Config.HideEmpty);
+        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
 
 
@@ -521,15 +514,6 @@ public sealed unsafe class OathBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
-
-    private void CollapseCheck(bool collapse)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (collapse) CollapseBar(150, 350);
-            else ExpandBar(100, 350);
-        }
-    }
 
     #endregion
 }

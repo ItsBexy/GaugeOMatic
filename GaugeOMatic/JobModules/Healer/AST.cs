@@ -36,8 +36,9 @@ public class ASTModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Arcana Gauge");
         ToggleControls("Hide Arcana Gauge", ref TweakConfigs.ASTHide0, ref update);
-        HideWarning(TweakConfigs.ASTHide0);
+        HideInfo(TweakConfigs.ASTHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

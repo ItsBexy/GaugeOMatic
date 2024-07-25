@@ -19,7 +19,6 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -64,7 +63,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     {
         Fan = BuildFan();
         NumTextNode = new();
-        NumTextNode.SetAlpha(0);
+        NumTextNode.SetAlpha(255);
         return new CustomNode(CreateResNode(), Fan, NumTextNode).SetSize(200, 128).SetOrigin(100, 106);
     }
 
@@ -74,7 +73,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         BarContents = BuildBarContents();
         FanClip = ImageNodeFromPart(0, 5).SetPos(76, 90).SetSize(48, 32).SetImageWrap(1).SetOrigin(24, 32);
 
-        return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetOrigin(100, 106).SetAlpha(0);
+        return new CustomNode(CreateResNode(), FanPlate, BarContents, FanClip).SetOrigin(100, 106).SetAlpha(255);
     }
 
     private CustomNode BuildBarContents()
@@ -138,60 +137,64 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         MainContainer.SetAddRGB(0);
     }
 
-    private void ShowBar()
+    public override void RevealBar(bool instant = false)
     {
         Animator -= "Hide";
-        Animator += new Tween[]
+        if (instant)
         {
-            new(Fan,
-                new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
-                new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
-                { Ease = SinInOut, Label = "Show" },
-            new(NumTextNode,
-                Hidden[0],
-                Visible[180])
-                { Ease = SinInOut, Label = "Show" }
-        };
+            Fan.SetAlpha(255);
+            NumTextNode.SetAlpha(255);
+        }
+        else
+        {
+            Animator += new Tween[]
+            {
+                new(Fan,
+                    new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
+                    new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
+                    { Ease = SinInOut, Label = "Show" },
+                new(NumTextNode,
+                    Hidden[0],
+                    Visible[180])
+                    { Ease = SinInOut, Label = "Show" }
+            };
+
+        }
     }
 
-    private void HideBar()
+    public override void HideBar(bool instant = false)
     {
         Animator -= "Show";
-        Animator += new Tween[]
-        {
-            new(Fan,
-                new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
-                new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
-                { Ease = SinInOut, Label ="Hide" },
-            new(NumTextNode,
-                Visible[0],
-                Hidden[120])
-                { Ease = SinInOut, Label = "Hide" }
-        };
-    }
-
-    #endregion
-
-    #region UpdateFuncs
-
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) ShowBar(); }
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
-
-    public override void OnFirstRun(float prog)
-    {
-        base.OnFirstRun(prog);
-
-        if (Config.HideEmpty && prog == 0)
+        if (instant)
         {
             Fan.SetAlpha(0);
             NumTextNode.SetAlpha(0);
         }
         else
         {
-            Fan.SetAlpha(255);
-            NumTextNode.SetAlpha(255);
+            Animator += new Tween[]
+            {
+                new(Fan,
+                    new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
+                    new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
+                    { Ease = SinInOut, Label ="Hide" },
+                new(NumTextNode,
+                    Visible[0],
+                    Hidden[120])
+                    { Ease = SinInOut, Label = "Hide" }
+            };
         }
     }
+
+    #endregion
+
+    #region UpdateFuncs
+
+    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
+
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
+    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     #endregion
 
@@ -331,22 +334,14 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
         SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update)) HideCheck(Config.HideEmpty);
+        HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.EspritBarCfg = Config;
-    }
-
-    public void HideCheck(bool hideEmpty)
-    {
-        if (Tracker.CurrentData.GaugeValue == 0 || (Config.Invert && Abs(Tracker.CurrentData.GaugeValue - Tracker.CurrentData.MaxGauge) < 0.01f))
-        {
-            if (hideEmpty) HideBar();
-            else ShowBar();
-        }
     }
 
     #endregion

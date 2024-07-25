@@ -1,7 +1,10 @@
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using Newtonsoft.Json;
 using static Dalamud.Interface.FontAwesomeIcon;
+using static GaugeOMatic.GaugeOMatic;
+using static GaugeOMatic.Utility.Color;
 
 namespace GaugeOMatic.JobModules;
 
@@ -15,13 +18,13 @@ internal static class Tweaks
 
     public static class TweakUI
     {
-        public static void HideWarning(bool highlight = false)
+        public static void HideInfo(bool highlight = false)
         {
-            const string helpText = "NOTE: Unlike the game's built-in option to hide the job gauge,\nthis setting will preserve the element onscreen and allow you\nto pin widgets to it.";
+            const string helpText = "Unlike the game's built-in option to hide the job gauge,\nthis setting will preserve the element onscreen and allow you\nto pin widgets to it.";
 
             ImGui.SameLine();
             ImGui.PushFont(UiBuilder.IconFont);
-            ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), ExclamationTriangle.ToIconString());
+            ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), InfoCircle.ToIconString());
             ImGui.PopFont();
             if (ImGui.IsItemHovered())
             {
@@ -50,4 +53,12 @@ internal static class Tweaks
             }
         }
     }
+
+}
+
+public partial class TweakConfigs
+{
+    [JsonIgnore] public bool Preview = false;
+    [JsonIgnore] public bool ShowPreviews => Preview && ConfigWindow.IsOpen;
+    [JsonIgnore] public AddRGB? TestColor;
 }

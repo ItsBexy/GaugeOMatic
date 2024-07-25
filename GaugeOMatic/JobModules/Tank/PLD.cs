@@ -38,8 +38,9 @@ public class PLDModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Oath Gauge");
         ToggleControls("Hide Oath Gauge", ref TweakConfigs.PLDHide0, ref update);
-        HideWarning(TweakConfigs.PLDHide0);
+        HideInfo(TweakConfigs.PLDHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

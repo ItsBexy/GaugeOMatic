@@ -15,6 +15,7 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     // ReSharper disable once UnusedMember.Global
     public static string Name => "Gauge-O-Matic";
     private const string CommandName = "/gomatic";
+    internal static string PluginDirPath = null!;
 
     internal static WindowSystem WindowSystem = new("Gauge-O-Matic");
     internal static ConfigWindow ConfigWindow { get; set; } = null!;
@@ -26,6 +27,7 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     public GaugeOMatic(IDalamudPluginInterface pluginInterface) {
         PluginInterface = pluginInterface;
         PluginInterface.Create<Service>();
+        PluginDirPath = PluginInterface.AssemblyLocation.DirectoryName!;
 
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(PluginInterface);

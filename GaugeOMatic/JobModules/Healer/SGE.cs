@@ -42,10 +42,13 @@ public class SGEModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
+        Heading("Eukrasia");
         ToggleControls("Hide Eukrasia", ref TweakConfigs.SGEHide0, ref update);
-        HideWarning(TweakConfigs.SGEHide0);
+        HideInfo(TweakConfigs.SGEHide0);
+
+        Heading("Addersgall Gauge");
         ToggleControls("Hide Addersgall Gauge", ref TweakConfigs.SGEHide1, ref update);
-        HideWarning(TweakConfigs.SGEHide1);
+        HideInfo(TweakConfigs.SGEHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
