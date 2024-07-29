@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -44,11 +43,9 @@ public class SGEModule : JobModule
     {
         Heading("Eukrasia");
         ToggleControls("Hide Eukrasia", ref TweakConfigs.SGEHide0, ref update);
-        HideInfo(TweakConfigs.SGEHide0);
 
         Heading("Addersgall Gauge");
         ToggleControls("Hide Addersgall Gauge", ref TweakConfigs.SGEHide1, ref update);
-        HideInfo(TweakConfigs.SGEHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

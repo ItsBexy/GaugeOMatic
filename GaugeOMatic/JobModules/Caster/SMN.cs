@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -42,11 +41,9 @@ public class SMNModule : JobModule
     {
         Heading("Aetherflow Gauge");
         ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SMNHide0, ref update);
-        HideInfo(TweakConfigs.SMNHide0);
 
         Heading("Trance Gauge");
         ToggleControls("Hide Trance Gauge", ref TweakConfigs.SMNHide1, ref update);
-        HideInfo(TweakConfigs.SMNHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

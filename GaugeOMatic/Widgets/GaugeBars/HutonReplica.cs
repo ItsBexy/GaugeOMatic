@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static CustomNodes.CustomNodeManager.CustomPartsList;
 
 #pragma warning disable CS8618
 
@@ -39,7 +40,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
-        new (CustomPartsList.AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\huton.tex")),
+        new (AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\huton.tex")),
              new(0, 0, 120, 152),
              new(120, 0, 224, 224),
              new(0, 152, 120, 120),

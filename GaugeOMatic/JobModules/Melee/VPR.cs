@@ -12,7 +12,6 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -49,16 +48,13 @@ public class VPRModule : JobModule
     }
 
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override unsafe void TweakUI(ref UpdateFlags update)
     {
-
         Heading("Vipersight");
         ToggleControls("Hide Vipersight", ref TweakConfigs.VPRHide0, ref update);
-        HideInfo(TweakConfigs.VPRHide0);
-
         if (!TweakConfigs.VPRHide0)
         {
-            LabelColumn("Color-Code Vipersight");
+           /* LabelColumn("Color-Code Vipersight");
             if (ImGui.Checkbox("##BoolColor-Code Vipersight", ref TweakConfigs.VPR0ColorCode)) update |= UpdateFlags.Save;
             if (TweakConfigs.VPR0ColorCode)
             {
@@ -79,12 +75,11 @@ public class VPRModule : JobModule
                 ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update);
                 if (ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
 
-            }
+            }*/
         }
 
         Heading("Serpent Offerings Gauge");
         ToggleControls("Hide Serpent Offerings Gauge", ref TweakConfigs.VPRHide1, ref update);
-        HideInfo(TweakConfigs.VPRHide1);
 
         ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue, ref update);
     }
@@ -94,7 +89,7 @@ public class VPRModule : JobModule
         var gauge = (AddonJobHudRDB0*)gaugeAddon;
         var gaugeIndex = (AddonIndex)gaugeAddon;
         VisibilityTweak(TweakConfigs.VPRHide0, gauge->UseSimpleGauge, gaugeIndex[2u], gaugeIndex[10u]);
-        ApplyColorCodeTweak(gauge);
+      //  ApplyColorCodeTweak(gauge);
     }
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
@@ -144,7 +139,7 @@ public class VPRModule : JobModule
         {
             var appliedColor = Statuses[1250].TryGetStatus()
                                    ? neutral
-                                   : ActionManager->GetAdjustedActionId(34607)
+                                   : ActionManager->GetAdjustedActionId(34609)
                                        switch // check what state the Dread Fangs button is in
                                        {
                                            34611 => flank, // flank positional finishers are up

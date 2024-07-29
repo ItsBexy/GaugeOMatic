@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Diagnostics;
 
 // ReSharper disable UnusedMember.Global
 
@@ -25,9 +24,9 @@ public sealed unsafe class AddonIndex
             {
                 return AtkUnitBase->GetNodeById(id);
             }
-            catch
+            catch (Exception ex)
             {
-                Log.Warning($"Error retrieving child node width ID {id}\n{new StackTrace()}");
+                Log.Warning($"Error retrieving child node width ID {id}\n{ex}");
                 return new();
             }
         }
@@ -41,9 +40,9 @@ public sealed unsafe class AddonIndex
             {
                 return new(NodeListSize > i ? NodeList[i] : null);
             }
-            catch
+            catch (Exception ex)
             {
-                Log.Warning($"Error retrieving child node at index {i}\n{new StackTrace()}");
+                Log.Warning($"Error retrieving child node at index {i}\n{ex}");
                 return new();
             }
         }

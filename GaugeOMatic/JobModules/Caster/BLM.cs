@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -50,17 +49,15 @@ public class BLMModule : JobModule
 
         Heading("Elemental Gauge");
         ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHide0, ref update);
-        HideInfo(TweakConfigs.BLMHide0);
 
         Heading("Astral Gauge");
         ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1, ref update);
-        HideInfo(TweakConfigs.BLMHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
         var gauge = (AddonJobHudBLM0*)gaugeAddon;
-        VisibilityTweak(TweakConfigs.BLMHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
+        VisibilityTweak(TweakConfigs.BLMHide0, ((AddonJobHud*)gauge)->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
     }
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)

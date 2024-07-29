@@ -11,7 +11,6 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -47,7 +46,6 @@ public class NINModule : JobModule
     {
         Heading("Ninki Gauge");
         ToggleControls("Hide Ninki Gauge", ref TweakConfigs.NINHide0, ref update);
-        HideInfo(TweakConfigs.NINHide0);
 
         LabelColumn("Change color under Higi");
         if (ImGui.Checkbox("##BoolChange color under Higi", ref TweakConfigs.NIN0HigiRecolor)) update |= UpdateFlags.Save;
@@ -76,7 +74,6 @@ public class NINModule : JobModule
 
         Heading("Kazematoi");
         ToggleControls("Hide Kazematoi", ref TweakConfigs.NINHide1, ref update);
-        HideInfo(TweakConfigs.NINHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

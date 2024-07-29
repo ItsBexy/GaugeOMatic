@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -42,7 +41,6 @@ public class WHMModule : JobModule
     {
         Heading("Healing Gauge");
         ToggleControls("Hide Healing Gauge", ref TweakConfigs.WHMHide0, ref update);
-        HideInfo(TweakConfigs.WHMHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

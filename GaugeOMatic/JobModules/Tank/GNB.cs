@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -41,7 +40,6 @@ public class GNBModule : JobModule
     {
         Heading("Powder Gauge");
         ToggleControls("Hide Powder Gauge", ref TweakConfigs.GNBHide0, ref update);
-        HideInfo(TweakConfigs.GNBHide0);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

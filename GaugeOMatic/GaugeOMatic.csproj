@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.7.0.7</Version>
+    <Version>0.7.0.8</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -37,6 +37,18 @@
 
   <ItemGroup>
     <None Update="TextureAssets\huton.tex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TextureAssets\SimpleGems.tex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TextureAssets\SimpleGemsBlack.tex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TextureAssets\SimpleGemsSilver.tex">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="TextureAssets\simpleGemUI.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

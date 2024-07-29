@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -45,11 +44,9 @@ public class SCHModule : JobModule
     {
         Heading("Aetherflow Gauge");
         ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SCHHide0, ref update);
-        HideInfo(TweakConfigs.SCHHide0);
 
         Heading("Faerie Gauge");
         ToggleControls("Hide Faerie Gauge", ref TweakConfigs.SCHHide1, ref update);
-        HideInfo(TweakConfigs.SCHHide1);
         //todo: update this tweak to allow showing the Dissipation timer instead
         ToggleControls("Hide Fae Aether value while faerie-less", ref TweakConfigs.SCHDissHideText, ref update);
     }

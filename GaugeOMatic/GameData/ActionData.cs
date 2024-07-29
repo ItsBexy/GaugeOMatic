@@ -28,8 +28,9 @@ public unsafe partial class ActionData
         [Flags]
         public enum ReadyTypes
         {
-            Ants = 0x01,
-            StatusEffect = 0x02
+            Ants = 0x1,
+            StatusEffect = 0x2,
+            ActionChange = 0x4
         }
 
         public int MaxCharges;
@@ -38,6 +39,7 @@ public unsafe partial class ActionData
         public StatusRef? ReadyStatus;
         public bool HasUpgrades;
         public uint GetID => HasUpgrades ? ActionManager->GetAdjustedActionId(ID): ID;
+        public uint? BaseActionID = null;
 
         public ActionRef(uint id, Job job, string name, float cooldownLength, int maxCharges = 1 )
         {
@@ -68,9 +70,15 @@ public unsafe partial class ActionData
 
         public bool IsReady()
         {
-            return GetCurrentCharges() != 0 &&
-                   !(ReadyType.HasFlag(Ants) && !ActionManager->IsActionHighlighted(ActionType.Action, GetID)) &&
-                   !(ReadyType.HasFlag(StatusEffect) && !(ReadyStatus?.TryGetStatus() ?? false));
+            var chargeCheck = GetCurrentCharges() != 0;
+
+            var highlightCheck = !ReadyType.HasFlag(Ants) || ActionManager->IsActionHighlighted(ActionType.Action, GetID);
+
+            var statusCheck = !ReadyType.HasFlag(StatusEffect) || (ReadyStatus?.TryGetStatus() ?? false);
+
+            var changeCheck = !ReadyType.HasFlag(ActionChange) || (BaseActionID != null && ActionManager->GetAdjustedActionId(BaseActionID.Value) == ID);
+
+            return chargeCheck && highlightCheck && statusCheck && changeCheck;
         }
 
         public int GetMaxCharges()

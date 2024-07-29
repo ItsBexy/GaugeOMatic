@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -44,7 +43,6 @@ public class RDMModule : JobModule
     {
         Heading("Balance Gauge");
         ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0, ref update);
-        HideInfo(TweakConfigs.RDMHide0);
         ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
     }
 

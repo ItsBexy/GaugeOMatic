@@ -91,9 +91,10 @@ public partial class ActionData
         { 24381, new(24381, RPR, "Soul Scythe",               30, 2 ) },
         { 24380, new(24380, RPR, "Soul Slice",                30, 2 ) },
 
-        { 34620, new(34620, VPR, "Dreadwinder",               40, 2 ) },
-        { 34623, new(34623, VPR, "Pit of Dread",              40, 2 ) },
+        { 34620, new(34620, VPR, "Vicewinder",                40, 2 ) },
+        { 34623, new(34623, VPR, "Vicepit",                   40, 2 ) },
         { 34634, new(34634, VPR, "Death Rattle",              1     ) { ReadyType = Ants }},
+        { 34635, new(34635, VPR, "Last Lash",                 1     ) { ReadyType = Ants }},
         { 34646, new(34646, VPR, "Slither",                   30, 3 ) },
         { 34647, new(34647, VPR, "Serpent's Ire",             120   ) },
 

@@ -3,11 +3,12 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using ImGuiNET;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -44,11 +45,9 @@ public class RPRModule : JobModule
     {
         Heading("Soul Gauge");
         ToggleControls("Hide Soul Gauge", ref TweakConfigs.RPRHide0, ref update);
-        HideInfo(TweakConfigs.RPRHide0);
 
         Heading("Death Gauge");
         ToggleControls("Hide Death Gauge", ref TweakConfigs.RPRHide1, ref update);
-        HideInfo(TweakConfigs.RPRHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

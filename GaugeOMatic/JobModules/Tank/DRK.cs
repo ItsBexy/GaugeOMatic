@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -44,11 +43,9 @@ public class DRKModule : JobModule
     {
         Heading("Blood Gauge");
         ToggleControls("Hide Blood Gauge", ref TweakConfigs.DRKHide0, ref update);
-        HideInfo(TweakConfigs.DRKHide0);
 
         Heading("Darkside Gauge");
         ToggleControls("Hide Darkside Gauge", ref TweakConfigs.DRKHide1, ref update);
-        HideInfo(TweakConfigs.DRKHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

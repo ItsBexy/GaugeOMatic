@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -47,14 +46,11 @@ public class SAMModule : JobModule
     {
         Heading("Kenki Gauge");
         ToggleControls("Hide Kenki Bar", ref TweakConfigs.SAMHide0Kenki, ref update);
-        HideInfo(TweakConfigs.SAMHide0Kenki);
 
         ToggleControls("Hide Meditation Stacks", ref TweakConfigs.SAMHide0Meditation, ref update);
-        HideInfo(TweakConfigs.SAMHide0Meditation);
 
         Heading("Sen Gauge");
         ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHide1, ref update);
-        HideInfo(TweakConfigs.SAMHide1);
 
         Heading("Reposition Seals");
         PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu, ref update);

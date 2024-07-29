@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -44,9 +43,7 @@ public class MCHModule : JobModule
     {
         Heading("Heat Gauge");
         ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHide0Heat, ref update);
-        HideInfo(TweakConfigs.MCHHide0Heat);
         ToggleControls("Hide Battery Gauge", ref TweakConfigs.MCHHide0Battery, ref update);
-        HideInfo(TweakConfigs.MCHHide0Battery);
 
         if (!TweakConfigs.MCHHide0Battery)
         {

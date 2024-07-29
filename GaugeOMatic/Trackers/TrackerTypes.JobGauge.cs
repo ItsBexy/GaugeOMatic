@@ -330,7 +330,7 @@ public sealed unsafe class RattlingCoilTracker : JobGaugeTracker<VipersightGauge
                                     "State: Shows whether any Coils remain";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null ?
+        1 == 1 || GaugeAddon == null ?
             new(0, 3, 0, 3, 0, 1, preview) :
             new(GaugeData->CoilStacks,
                 GaugeData->CoilMax,
@@ -351,7 +351,7 @@ public sealed unsafe class SerpentGaugeTracker : JobGaugeTracker<SerpentOffering
                                     "State: Shows whether gauge can be spent";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null ?
+        1 == 1 || GaugeAddon == null ?
             new(0, 5, 0, 100, 0, 1, preview) :
             new(GaugeData->TributeStacks,
                 GaugeData->TributeMax,
@@ -373,7 +373,7 @@ public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferi
                                     "State: Shows whether any stacks remain";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null ?
+        1 == 1 || GaugeAddon == null ?
             new(0, 5, 0, 30, 0, 1, preview) :
             new(GaugeData->TributeStacks,
                 GaugeData->TributeMax,

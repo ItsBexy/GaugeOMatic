@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -42,12 +41,10 @@ public class BRDModule : JobModule
     {
         Heading("Song Gauge");
         ToggleControls("Hide Song Gauge", ref TweakConfigs.BRDHide0Song, ref update);
-        HideInfo(TweakConfigs.BRDHide0Song);
 
         if (!TweakConfigs.BRDHide0Song)
         {
             ToggleControls("Hide Soul Voice Gauge", ref TweakConfigs.BRDHide0SoulVoice, ref update);
-            HideInfo(TweakConfigs.BRDHide0SoulVoice);
 
             if (!TweakConfigs.BRDHide0SoulVoice)
             {
