@@ -420,7 +420,7 @@ public unsafe partial class CustomNode
         return this;
     }
 
-    public CustomNode SetKeyFrameAddRGB(AddRGB add, int a, int kg, int kf)
+    public CustomNode SetKeyFrameAddRGB(AddRGB add, int a, int kf)
     {
         if (Node != null && Node->Timeline != null)
         {
@@ -428,9 +428,9 @@ public unsafe partial class CustomNode
             if (resource != null && resource->AnimationCount > a)
             {
                 var animation = resource->Animations[a];
-                if (animation.KeyGroups.Length > kg)
+                if (animation.KeyGroups.Length > 4)
                 {
-                    var keyGroup = animation.KeyGroups[kg];
+                    var keyGroup = animation.KeyGroups[4];
                     if (keyGroup.KeyFrameCount > kf) keyGroup.KeyFrames[kf].Value.NodeTint.AddRGBBitfield = add.ToBitField();
                 }
             }
@@ -439,9 +439,9 @@ public unsafe partial class CustomNode
         return this;
     }
 
-    public CustomNode SetKeyFrameAddRGB(AddRGB add, params (int a, int kg, int kf)[] keyFrameTuples)
+    public CustomNode SetKeyFrameAddRGB(AddRGB add, params (int a, int kf)[] keyFrameTuples)
     {
-        foreach (var tup in keyFrameTuples) SetKeyFrameAddRGB(add, tup.a, tup.kg, tup.kf);
+        foreach (var tup in keyFrameTuples) SetKeyFrameAddRGB(add, tup.a, tup.kf);
         return this;
     }
 

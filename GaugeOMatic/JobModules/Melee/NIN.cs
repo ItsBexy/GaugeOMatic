@@ -107,34 +107,34 @@ public class NINModule : JobModule
             var fillColorV = TweakConfigs.NIN0HigiColor1 + new AddRGB(100);
             var scrollColor = TweakConfigs.NIN0HigiColor2;
 
-            hGaugeNode.SetKeyFrameAddRGB(fillColorH, (1, 4, 1), (2, 4, 0));
+            hGaugeNode.SetKeyFrameAddRGB(fillColorH, (1, 1), (2,0));
             vGaugeNode.SetAddRGB(fillColorV);
 
-            scrollNode.SetKeyFrameAddRGB(scrollColor, (0, 4, 0), (1, 4, 0), (1, 4, 2), (2, 4, 0), (2, 4, 2));
-            scrollNode.SetKeyFrameAddRGB(scrollColor + new AddRGB(100, 0, 0), 1, 4, 1);
-            scrollNode.SetKeyFrameAddRGB(scrollColor + new AddRGB(30, 0, 20), 2, 4, 1);
+            scrollNode.SetKeyFrameAddRGB(scrollColor, (0, 0), (1, 0), (1, 2), (2, 0), (2, 2));
+            scrollNode.SetKeyFrameAddRGB(scrollColor + new AddRGB(100, 0, 0), 1, 1);
+            scrollNode.SetKeyFrameAddRGB(scrollColor + new AddRGB(30, 0, 20), 2, 1);
             scrollNode.SetAddRGB(scrollColor);
 
             if (gauge->DataCurrent.NinkiValue >= 50) simpleBarFill.SetAddRGB(TweakConfigs.NIN0HigiColor3);
 
-            simpleBarFill.SetKeyFrameAddRGB(TweakConfigs.NIN0HigiColor3, (1, 4, 0));
+            simpleBarFill.SetKeyFrameAddRGB(TweakConfigs.NIN0HigiColor3, (1, 0));
             simpleFrame.SetAddRGB(TweakConfigs.NIN0HigiColor4);
             borderTop.SetAddRGB(TweakConfigs.NIN0HigiColor1);
             borderBottom.SetAddRGB(TweakConfigs.NIN0HigiColor1);
         }
         else
         {
-            hGaugeNode.SetKeyFrameAddRGB(new(200, -20, -250), (1, 4, 1), (2, 4, 0));
+            hGaugeNode.SetKeyFrameAddRGB(new(200, -20, -250), (1, 1), (2, 0));
             vGaugeNode.SetAddRGB(150, 20, -100);
 
-            scrollNode.SetKeyFrameAddRGB(new(0), (0, 4, 0), (1, 4, 0), (1, 4, 2), (2, 4, 0), (2, 4, 2));
-            scrollNode.SetKeyFrameAddRGB(new(100, 0, 0), 1, 4, 1);
-            scrollNode.SetKeyFrameAddRGB(new(30, 0, 20), 2, 4, 1);
+            scrollNode.SetKeyFrameAddRGB(new(0), (0, 0), (1, 0), (1, 2), (2, 0), (2, 2));
+            scrollNode.SetKeyFrameAddRGB(new(100, 0, 0), 1, 1);
+            scrollNode.SetKeyFrameAddRGB(new(30, 0, 20), 2, 1);
             scrollNode.SetAddRGB(0);
 
             if (gauge->DataCurrent.NinkiValue >= 50) simpleBarFill.SetAddRGB(150, 0, 0);
 
-            simpleBarFill.SetKeyFrameAddRGB(new(150, 0, 0), (1, 04, 0));
+            simpleBarFill.SetKeyFrameAddRGB(new(150, 0, 0), (1, 0));
             simpleFrame.SetAddRGB(0);
             borderTop.SetAddRGB(100, -50, -120);
             borderBottom.SetAddRGB(100, -50, -120);
