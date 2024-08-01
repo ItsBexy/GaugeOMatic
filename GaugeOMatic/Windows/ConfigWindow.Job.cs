@@ -1,15 +1,19 @@
 using Dalamud.Interface;
 using GaugeOMatic.JobModules;
 using ImGuiNET;
-using System;
+using System.Collections.Generic;
+using static GaugeOMatic.GameData.JobData;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.ImGuiHelpy;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static ImGuiNET.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 
 public partial class ConfigWindow
 {
+    public static JobModule? GetModuleForTab(Job jobTab, List<JobModule> jobModules) => jobModules.Find(g => g.Job == jobTab);
+
     public static void DrawJobModuleTab(JobModule jobModule)
     {
         UpdateFlags update = 0;
@@ -78,5 +82,3 @@ public partial class ConfigWindow
     internal static string? WidgetClipType = null;
 }
 
-[Flags]
-public enum UpdateFlags { Save = 0x1, Reset = 0x2, SoftReset = 0x4, Rebuild = 0x8 }

@@ -1,16 +1,16 @@
+using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 
 #pragma warning disable CS8618
 

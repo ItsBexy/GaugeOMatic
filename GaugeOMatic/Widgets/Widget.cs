@@ -3,7 +3,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
-using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +13,7 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Utility.Color;
 using static Newtonsoft.Json.JsonConvert;
 using static System.Activator;
+using static GaugeOMatic.Trackers.Tracker;
 
 namespace GaugeOMatic.Widgets;
 

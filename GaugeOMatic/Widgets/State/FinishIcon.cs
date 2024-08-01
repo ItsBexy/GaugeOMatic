@@ -1,11 +1,10 @@
-using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
-using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
+using GaugeOMatic.Trackers;
+using Newtonsoft.Json;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -13,8 +12,10 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.FinishIcon;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using System.ComponentModel;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -123,9 +124,9 @@ public sealed unsafe class FinishIcon : StateWidget
     public class FinishIconConfig
     {
         public Vector2 Position = new(0);
-        public float Scale = 1;
+        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> Colors = new();
-        public float Speed = 11.5f;
+        [DefaultValue(11.5f)] public float Speed = 11.5f;
         public bool Tech;
 
         public FinishIconConfig(WidgetConfig widgetConfig)

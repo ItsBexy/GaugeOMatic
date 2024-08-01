@@ -1,7 +1,6 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
@@ -14,8 +13,9 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -115,7 +115,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.FaerieLessCfg == null && Tracker.RefType == RefType.Action) Config.Invert = true;
+        if (Tracker.WidgetConfig.FaerieLessCfg == null && ShouldInvertByDefault) Config.Invert = true;
     }
 
     public override void ResetConfigs() => Config = new();

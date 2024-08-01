@@ -1,20 +1,22 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.SamuraiDiamondTrio;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -116,13 +118,13 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
                               new(200) { Scale = Config.Scale, Alpha = 255 })
-                              { Ease = SinInOut };
+        { Ease = SinInOut };
 
     private void PlateVanish() =>
         Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale, Alpha = 255 },
                               new(150) { Scale = Config.Scale * 0.65f, Alpha = 0 })
-                              { Ease = SinInOut };
+        { Ease = SinInOut };
 
     #endregion
 
@@ -144,7 +146,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                                   new(0) { Alpha = 0, Scale = 0f },
                                   new(230) { Alpha = 200, Scale = 1 },
                                   new(1125) { Alpha = 0, Scale = 1.3f })
-                                  { Repeat = true, Label = "Pulse" };
+            { Repeat = true, Label = "Pulse" };
     }
 
     private void StopPulseAll()
@@ -154,7 +156,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
             Animator += new Tween(Glows2[i],
                                   new(0) { Alpha = Glows2[i].Alpha, Scale = Glows2[i].ScaleX },
                                   new(500) { Alpha = 0, Scale = 1.3f })
-                                  { Repeat = false, Label = "Pulse" };
+            { Repeat = false, Label = "Pulse" };
     }
 
     public bool CheckPulse(int i) => i > 0 && (Config.Pulse == Always || (Config.Pulse == AtMax && i == 3));
@@ -175,7 +177,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     public class SamuraiDiamondConfig : CounterWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB GemColor = new(0, 0, 0);
         public bool HideEmpty;
         public CounterPulse Pulse = AtMax;

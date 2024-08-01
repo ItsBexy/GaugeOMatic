@@ -1,21 +1,22 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.DragonScales;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -254,7 +255,7 @@ public sealed unsafe class DragonScales : CounterWidget
     public class DragonScalesConfig : CounterWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1f;
+        [DefaultValue(1f)] public float Scale = 1f;
         public float Angle;
         public AddRGB ScaleColor = new(-40,-100,11);
         public ColorRGB FrameColor = new(100);

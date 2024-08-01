@@ -1,19 +1,21 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.ManaDiamond;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -233,7 +235,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
     public class ManaDiamondConfig : CounterWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1f;
+        [DefaultValue(1f)] public float Scale = 1f;
         public AddRGB GemColor = new(65, -120, -120);
         public bool HideEmpty;
         public CounterPulse Pulse = AtMax;

@@ -1,19 +1,20 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.OathGem;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -44,7 +45,8 @@ public sealed unsafe class OathGem : StateWidget
     {
         Gem = ImageNodeFromPart(0, 20).SetPos(34, 34).SetOrigin(34, 34);
         Frame = ImageNodeFromPart(0, 18).SetOrigin(68, 68);
-        Glow = ImageNodeFromPart(0, 21).SetPos(35, 34).SetImageFlag(32).SetScale(1.5f, 1.4f).SetOrigin(34, 34)
+        Glow = ImageNodeFromPart(0, 21).SetPos(35, 34)
+            .SetImageFlag(32).SetScale(1.5f, 1.4f).SetOrigin(34, 34)
                                        .SetAlpha(0);
 
         return new(CreateResNode(), Gem, Frame, Glow);
@@ -125,7 +127,7 @@ public sealed unsafe class OathGem : StateWidget
     public class OathGemConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> Colors = new();
         public ColorRGB FrameColor = new(100, 100, 100);
 
@@ -202,8 +204,7 @@ public sealed unsafe class OathGem : StateWidget
                 Config.Colors[i] = color;
         }
 
-        if (update.HasFlag(Save))
-            ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.OathGemCfg = Config;
     }
 

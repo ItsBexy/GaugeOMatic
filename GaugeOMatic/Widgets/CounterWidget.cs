@@ -1,10 +1,11 @@
 using CustomNodes;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
 
 namespace GaugeOMatic.Widgets;
 
@@ -14,7 +15,7 @@ public abstract class CounterWidgetConfig : WidgetTypeConfig
 
     public bool AsTimer;
     public bool InvertTimer;
-    public int TimerSize = 10;
+    [DefaultValue(10)] public int TimerSize = 10;
 }
 
 [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]

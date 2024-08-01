@@ -1,14 +1,16 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BloodBlade;
 using static GaugeOMatic.Widgets.Common.CommonParts;
@@ -168,9 +170,9 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
     public sealed class BloodBladeConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
-        public bool Ring = true;
+        [DefaultValue(true)] public bool Ring = true;
 
         public AddRGB BGColor = new(0, 0, 0, 229);
         public ColorRGB FrameColor = new(100, 100, 100);
@@ -234,7 +236,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         if (Tracker.WidgetConfig.BloodBladeCfg == null)
         {
             Config.MilestoneType = Above;
-            if (Tracker.RefType == RefType.Action) Config.Invert = true;
+            if (ShouldInvertByDefault) Config.Invert = true;
         }
     }
 
@@ -297,7 +299,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
      //   LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BloodBladeCfg = Config;
     }
 

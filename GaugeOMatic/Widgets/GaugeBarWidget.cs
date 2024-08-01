@@ -1,10 +1,16 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
+using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using System;
+using System.ComponentModel;
+using Newtonsoft.Json;
+using static GaugeOMatic.GameData.ActionFlags;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static Newtonsoft.Json.DefaultValueHandling;
+
 // ReSharper disable VirtualMemberCallInConstructor
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -18,7 +24,8 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
     {
         NumTextProps = NumTextDefault;
 
-        if (config == null) return;
+        if (config == null) { return; }
+
         HideEmpty = config.HideEmpty;
         HideFull = config.HideFull;
         Invert = config.Invert;
@@ -33,15 +40,15 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
     public bool HideEmpty;
     public bool HideFull;
     public bool Invert;
-    public int AnimationLength = 250;
+    [DefaultValue(250)] public int AnimationLength = 250;
     public NumTextProps NumTextProps;
     public bool SplitCharges;
-    public MilestoneType MilestoneType;
-    public float Milestone = 0.5f;
+    [JsonProperty(DefaultValueHandling = Include)] public MilestoneType MilestoneType;
+    [DefaultValue(0.5f)] public float Milestone = 0.5f;
 
     public static bool MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone, ref UpdateFlags update)
     {
-        var r = RadioControls(label, ref milestoneType, new() { None, Above, Below }, new() { "Never", "Above Threshold", "Below Threshold" }, ref update);
+        var r = RadioControls(label, ref milestoneType, new() { MilestoneType.None, Above, Below }, new() { "Never", "Above Threshold", "Below Threshold" }, ref update);
         var p = milestoneType > 0 && PercentControls("Threshold", ref milestone, ref update);
 
         return r || p;
@@ -142,6 +149,9 @@ public abstract class GaugeBarWidget : Widget
     private float PreviousGauge => Tracker.PreviousData.GaugeValue;
     public float CurrentGauge => Tracker.CurrentData.GaugeValue;
     public float MaxGauge => Tracker.CurrentData.MaxGauge;
+
+    public bool ShouldInvertByDefault => Tracker.RefType == RefType.Action &&
+                                         !ActionRef.ActionData[Tracker.ItemRef?.ID??0].HasFlag(RequiresStatus | ComboBonus);
 
     public override void Update()
     {

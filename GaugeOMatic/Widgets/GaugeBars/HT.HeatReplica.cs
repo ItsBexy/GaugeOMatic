@@ -1,13 +1,15 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -158,11 +160,11 @@ public unsafe class HeatReplica : GaugeBarWidget
     public sealed class HeatReplicaConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public float Width = 148;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(148)] public float Width = 148;
         public float Angle;
 
-        public ushort BaseColor = 12;
+        [DefaultValue(12)] public ushort BaseColor = 12;
         public AddRGB BackdropColor;
 
         public AddRGB MainColorOrange = new(91, 52,-27);
@@ -217,7 +219,7 @@ public unsafe class HeatReplica : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.HeatReplicaCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.HeatReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();
@@ -282,7 +284,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.HeatReplicaCfg = Config;
     }
 

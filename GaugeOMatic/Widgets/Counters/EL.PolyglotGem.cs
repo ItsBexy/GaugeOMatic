@@ -1,9 +1,9 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
@@ -14,8 +14,9 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.PolyglotGem;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -221,10 +222,10 @@ public sealed unsafe class PolyglotGem : CounterWidget
     public class PolyglotGemConfig : CounterWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public AddRGB GemColor = new (27, -78, 50);
-        public AddRGB GlowColor = new (76, -128, 127);
-        public float Spacing = 26;
+        [DefaultValue(1f)] public float Scale = 1;
+        public AddRGB GemColor = new(27, -78, 50);
+        public AddRGB GlowColor = new(76, -128, 127);
+        [DefaultValue(26f)] public float Spacing = 26;
         public float Angle;
         public float Curve;
         public ColorRGB FrameColor = new(100);
@@ -267,7 +268,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
     public override void ApplyConfigs()
     {
-        var widgetAngle = Config.Angle+(Config.Curve/2f);
+        var widgetAngle = Config.Angle + (Config.Curve / 2f);
         WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale)
                   .SetRotation(widgetAngle, true);
@@ -288,7 +289,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
             var combinedAngle = gemAngle + widgetAngle;
 
-            Frames[i].SetScaleY(Abs(combinedAngle) > 90?-1:1);
+            Frames[i].SetScaleY(Abs(combinedAngle) > 90 ? -1 : 1);
 
             float scaleX = combinedAngle is <= -53 or >= 128 ? -1 : 1;
             float scaleY = combinedAngle is <= -128 or >= 53 ? -1 : 1;

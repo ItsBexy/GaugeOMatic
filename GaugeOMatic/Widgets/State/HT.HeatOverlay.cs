@@ -1,19 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.HeatOverlay;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -170,8 +172,8 @@ public sealed unsafe class HeatOverlay : StateWidget
     public class HeatOverlayConfig
     {
         public Vector2 Position = new(0, 0);
-        public float Scale = 1;
-        public float Width = 148;
+        [DefaultValue(1)] public float Scale = 1;
+        [DefaultValue(148)] public float Width = 148;
         public List<AddRGB> Colors = new();
         public float Angle;
 

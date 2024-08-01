@@ -1,19 +1,21 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.NinkiOverlay;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -134,7 +136,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
     public sealed class NinkiOverlayConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB ScrollColor = new(80, 30, -70, 90);
         public ColorRGB TickColor = new(255, 164, 93);
         protected override NumTextProps NumTextDefault => new(enabled:   true,
@@ -169,7 +171,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.NinkiOverlayCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.NinkiOverlayCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();

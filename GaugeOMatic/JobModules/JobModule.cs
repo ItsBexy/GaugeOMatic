@@ -3,6 +3,7 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Config;
+using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
@@ -10,9 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Dalamud.Game.Addon.Lifecycle.AddonEvent;
-using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.JobData;
-using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
 namespace GaugeOMatic.JobModules;
@@ -76,7 +76,7 @@ public abstract class JobModule : IDisposable
                 trackerConfig.AddonName = "_ParameterWidget";
             }
             trackerConfig.Index = trackerList.Count;
-            var newtracker = Tracker.Create(this, trackerConfig);
+            var newtracker = Create(this, trackerConfig);
             if (newtracker != null) trackerList.Add(newtracker);
         }
 
@@ -167,7 +167,7 @@ public abstract class JobModule : IDisposable
     public static void UpdateHandler(AddonArgs args, Action<IntPtr> applyFunc)
     {
         try { applyFunc(args.Addon); }
-        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({args.AddonName}) \n{ex}");}
+        catch (Exception) { Log.Error($"Couldn't apply tweaks! ({args.AddonName})");}
     }
 
     public void BuildWidgets()

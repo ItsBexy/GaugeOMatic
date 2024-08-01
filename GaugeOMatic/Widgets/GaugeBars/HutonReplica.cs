@@ -1,13 +1,14 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.CustomPartsList;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -17,9 +18,9 @@ using static GaugeOMatic.Widgets.HutonReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
-using static CustomNodes.CustomNodeManager.CustomPartsList;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -256,7 +257,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     public sealed class HutonReplicaConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public bool Smooth;
         public ColorRGB ActiveColor = new(100);
         public ColorRGB FadeColor = new(0x32, 0x32, 0x64);
@@ -296,7 +297,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.HutonReplicaCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.HutonReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();

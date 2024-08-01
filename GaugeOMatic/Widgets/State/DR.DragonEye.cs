@@ -1,11 +1,13 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.Common.CommonParts;
@@ -14,7 +16,7 @@ using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig;
 using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig.EyeState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
+
 // ReSharper disable All
 
 #pragma warning disable CS8618
@@ -354,7 +356,7 @@ public sealed unsafe class DragonEye : StateWidget
         public enum EyeState {Closed, HalfOpen, Open}
 
         public Vector2 Position = new(83, 89);
-        public float Scale = 1;
+        [DefaultValue(1)] public float Scale = 1;
         public bool Mirror;
         public List<ColorRGB> ColorList = new();
         public List<EyeState> EyeStates = new();

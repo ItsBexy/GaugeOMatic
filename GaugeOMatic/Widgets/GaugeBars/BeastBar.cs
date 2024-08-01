@@ -2,9 +2,9 @@ using CustomNodes;
 using Dalamud.Interface;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -12,6 +12,7 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BeastBar;
 using static GaugeOMatic.Widgets.Common.CommonParts;
@@ -180,7 +181,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
     public sealed class BeastBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
 
         public AddRGB BGColor = new(0, 0, 0);
@@ -247,8 +248,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         if (Tracker.WidgetConfig.BeastBarCfg == null)
         {
             Config.MilestoneType = Above;
-            if (Tracker.RefType == RefType.Action)
-                Config.Invert = true;
+            if (ShouldInvertByDefault) Config.Invert = true;
         }
     }
 

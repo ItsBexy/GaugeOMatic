@@ -2,10 +2,10 @@ using CustomNodes;
 using Dalamud.Interface.Textures.TextureWraps;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using ImGuiNET;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
@@ -20,6 +20,8 @@ using static GaugeOMatic.Widgets.SimpleGem.SimpleGemConfig.GemShapes;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -134,7 +136,7 @@ public sealed unsafe class SimpleGem : CounterWidget
                      .SetOrigin(32, 32)
                      .SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i*40, 0).SetOrigin(32, 32));
+            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i * 40, 0).SetOrigin(32, 32));
         }
     }
 
@@ -180,7 +182,7 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { AllAppear(); }}
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { AllAppear(); } }
 
     #endregion
 
@@ -221,14 +223,14 @@ public sealed unsafe class SimpleGem : CounterWidget
         }
 
         public Vector2 Position;
-        public float Scale = 1;
-        public AddRGB GemColor = new(120, 30,-40);
+        [DefaultValue(1f)] public float Scale = 1;
+        public AddRGB GemColor = new(120, 30, -40);
         public GemShapes GemShape;
         public FrameBases FrameBase;
-        public float Spacing = 20;
+        [DefaultValue(20f)] public float Spacing = 20;
         public float Angle;
-        public float GemAngle;
         public float Curve;
+        public float GemAngle;
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
 
@@ -270,9 +272,9 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override void ApplyConfigs()
     {
-        var widgetAngle = Config.Angle+(Config.Curve/2f);
+        var widgetAngle = Config.Angle + (Config.Curve / 2f);
         WidgetContainer.SetPos(Config.Position - new Vector2(16))
-                  .SetScale(Config.Scale/2f)
+                  .SetScale(Config.Scale / 2f)
                   .SetRotation(widgetAngle, true);
 
         var posAngle = 0f;
@@ -354,14 +356,14 @@ public sealed unsafe class SimpleGem : CounterWidget
             _ => new(1, -1)
         };
     }
-    private static void GemSelect(IDalamudTextureWrap spriteSheet, ref GemShapes currentShape, int col, int row, GemShapes shape, ref UpdateFlags update )
+    private static void GemSelect(IDalamudTextureWrap spriteSheet, ref GemShapes currentShape, int col, int row, GemShapes shape, ref UpdateFlags update)
     {
         if (currentShape == shape) col++;
-        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new Vector2(col / 4f, row / 9f), new((col+1) / 4f,(row+1) / 9f));
+        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new Vector2(col / 4f, row / 9f), new((col + 1) / 4f, (row + 1) / 9f));
         if (ImGui.IsItemClicked())
         {
             currentShape = shape;
-            update |= UpdateFlags.Save;
+            update |= Save;
         }
 
         if (ImGui.IsItemHovered())
@@ -372,7 +374,6 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-
         Heading("Layout");
 
         var spriteSheet = TextureProvider.GetFromFile(Path.Combine(PluginDirPath, @"TextureAssets\SimpleGemUI.png")).GetWrapOrDefault();
@@ -446,7 +447,7 @@ public sealed unsafe class SimpleGem : CounterWidget
 
         CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.SimpleGemCfg = Config;
     }
 

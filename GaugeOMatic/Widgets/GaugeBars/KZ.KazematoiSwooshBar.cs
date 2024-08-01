@@ -1,20 +1,23 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.KazematoiSwooshBar;
 using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 
@@ -33,7 +36,8 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         DisplayName = "Kazematoi Bar",
         Author = "ItsBexy",
         Description = "A bar based on the backdrop of NIN's Kazematoi",
-        WidgetTags = GaugeBar | MultiComponent,
+        WidgetTags = GaugeBar | MultiComponent | HasAddonRestrictions,
+        RestrictedAddons = ClipConflictAddons,
         MultiCompData = new("KZ", "Kazematoi Replica", 2)
     };
 
@@ -289,7 +293,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
     public sealed class KazematoiSwooshBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position = new(0);
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
         public bool Mirror;
         public AddRGB MainColor = new(64, 0, 128);
@@ -338,15 +342,14 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.KazematoiSwooshBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.KazematoiSwooshBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-         .SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
 
         Contents.SetRotation(Config.Angle, true).SetScaleX(Config.Mirror ? -1 : 1);
 
@@ -357,7 +360,6 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         GreyBackdrop.SetAddRGB(Config.BgEmptyColor);
 
         TickMark.SetRGB(Config.TickColor);
-
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(65, 53));
         LabelTextNode.ApplyProps(Config.LabelTextProps, new(-43,100));
@@ -391,7 +393,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
         LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.KazematoiSwooshBarCfg = Config;
     }
 

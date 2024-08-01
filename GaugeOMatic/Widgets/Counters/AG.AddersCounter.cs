@@ -1,9 +1,9 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -12,8 +12,9 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersCounter;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -302,12 +303,12 @@ public sealed unsafe class AddersCounter : CounterWidget
     public class AddersCounterConfig : CounterWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB GemColor = new(-10, 49, 82);
         public AddRGB FXColor = new(-200, -100, 255);
-        public float Spacing = 30;
-        public float Angle;
-        public float Curve;
+        [DefaultValue(30f)] public float Spacing = 30;
+         public float Angle;
+         public float Curve;
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
 
@@ -340,7 +341,6 @@ public sealed unsafe class AddersCounter : CounterWidget
     public AddersCounterConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
-
     public override void ResetConfigs() => Config = new();
 
     public override void ApplyConfigs()

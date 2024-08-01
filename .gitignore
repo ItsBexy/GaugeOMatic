@@ -15,3 +15,4 @@ bin/
 /GaugeOMatic/GameData/StatusData.StatusHarvest.cs
 /GaugeOMatic/Widgets/Counters/KZ.KazematoiKunai.cs
 /GaugeOMatic/Widgets/State/ShimmerHaloV2.cs
+/GaugeOMatic/Windows/ConfigWindow.Settings.cs

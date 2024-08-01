@@ -6,8 +6,6 @@ using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static GaugeOMatic.GameData.ActionData;
-using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.GaugeOMatic;
 using static System.Activator;
 
@@ -29,6 +27,8 @@ public abstract partial class Tracker : IDisposable
     public AddonDropdown AddonDropdown = null!;
     public ItemRefMenu ItemRefMenu = null!;
     public ItemRef? ItemRef;
+
+    public abstract uint GameIcon { get; }
 
     public string AddonName
     {
@@ -81,7 +81,7 @@ public abstract partial class Tracker : IDisposable
 
     public void CreateWindow(Widget widget, Configuration configuration)
     {
-        Window = new(this, widget, configuration, $"{TrackerConfig.DisplayAttributes().TypeDesc}: {DisplayName}##{GetHashCode()}");
+        Window = new(this, widget, configuration, $"{DisplayName}##{GetHashCode()}");
         WindowSystem.AddWindow(Window);
     }
 
@@ -135,4 +135,7 @@ public abstract partial class Tracker : IDisposable
 
         return tracker;
     }
+
+    [Flags]
+    public enum UpdateFlags { Save = 0x1, Reset = 0x2, SoftReset = 0x4, Rebuild = 0x8 }
 }

@@ -2,9 +2,9 @@ using CustomNodes;
 using Dalamud.Interface;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -12,6 +12,7 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.LabelTextProps;
@@ -312,10 +313,10 @@ public sealed unsafe class OathBar : GaugeBarWidget
     public sealed class OathBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public float Width = 166;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(166)] public float Width = 166;
         public float Angle;
-        public bool ShowFiligree = true;
+        [DefaultValue(true)] public bool ShowFiligree = true;
 
         public AddRGB BGColor = new(0, 0, 0, 229);
         public ColorRGB FrameColor = new(100, 100, 100);
@@ -386,7 +387,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
         if (Tracker.WidgetConfig.OathBarCfg == null)
         {
             Config.MilestoneType = Above;
-            if (Tracker.RefType == RefType.Action) Config.Invert = true;
+            if (ShouldInvertByDefault) Config.Invert = true;
         }
     }
 

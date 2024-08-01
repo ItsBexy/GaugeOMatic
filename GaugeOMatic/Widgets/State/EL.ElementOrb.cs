@@ -1,20 +1,21 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.ElementOrb;
 using static GaugeOMatic.Widgets.ElementOrb.ElementOrbConfig.OrbBase;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -156,7 +157,7 @@ public sealed unsafe class ElementOrb : StateWidget
         public enum OrbBase { Grey = 24, Blue = 1, Red = 2 }
 
         public float CrescentAngle;
-        public float Scale = 1;
+        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> HaloColors = new();
         public List<AddRGB> OrbModifiers = new();
         public List<AddRGB> OrbPulses = new();

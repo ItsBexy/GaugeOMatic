@@ -1,8 +1,8 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
@@ -10,6 +10,8 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonSpear;
@@ -243,8 +245,8 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
     public sealed class DragonSpearConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public bool ShowDragon = true;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(true)] public bool ShowDragon = true;
 
         public AddRGB DragonBg = new(0, 50, 180);
         public AddRGB DragonLineArt = new(-60, -20, 80);
@@ -309,7 +311,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         if (Tracker.WidgetConfig.DragonSpearCfg == null)
         {
             Config.HideEmpty = true;
-            if (Tracker.RefType == RefType.Action) Config.Invert = true;
+            if (ShouldInvertByDefault) Config.Invert = true;
         }
     }
 
@@ -377,7 +379,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.DragonSpearCfg = Config;
     }
 

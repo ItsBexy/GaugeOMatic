@@ -1,9 +1,9 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -14,8 +14,9 @@ using static GaugeOMatic.Widgets.ElementalCrystals;
 using static GaugeOMatic.Widgets.ElementalCrystals.ElementalCrystalConfig.BaseColors;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -134,11 +135,11 @@ public sealed unsafe class ElementalCrystals : CounterWidget
         public enum BaseColors { Ice = 3, Fire = 4 }
 
         public Vector2 Position = new(19, 22);
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public BaseColors BaseColor = Ice;
         public AddRGB CrystalColor = new(0);
         public AddRGB GlowColor = new(0);
-        public float Spacing = 20;
+        [DefaultValue(20f)] public float Spacing = 20;
         public float Angle = -62;
         public float Curve = 18;
 

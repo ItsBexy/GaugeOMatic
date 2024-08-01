@@ -1,8 +1,8 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -12,8 +12,9 @@ using static GaugeOMatic.Widgets.NinkiReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -251,8 +252,8 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     public sealed class NinkiReplicaConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public float Midpoint = 0.5f;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(0.5f)] public float Midpoint = 0.5f;
         public AddRGB BarColorLow = new(0, -70, 100);
         public AddRGB BarColorHigh = new(200, -90, -150);
         public AddRGB BarColorHigh2 = new(150, 20, -100);
@@ -304,7 +305,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.NinkiReplicaCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.NinkiReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();

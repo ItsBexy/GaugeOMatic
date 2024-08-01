@@ -12,6 +12,7 @@ using System.Linq;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Widgets.WidgetInfo;
+using static GaugeOMatic.Windows.ConfigWindow;
 
 namespace GaugeOMatic.Windows;
 
@@ -39,7 +40,7 @@ public class PresetWindow : Window, IDisposable
 
     public override void Draw()
     {
-        var module = Configuration.GetModuleForTab(TrackerManager.JobModules);
+        var module = GetModuleForTab(Configuration.JobTab, TrackerManager.JobModules);
         if (module != null) DrawPresetWindow(module);
     }
 
@@ -162,21 +163,24 @@ public class PresetWindow : Window, IDisposable
 
             foreach (var trackerConfig in selectedPreset.Trackers)
             {
-                var attr = trackerConfig.DisplayAttributes();
-
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
                 AddTrackerButton(trackerConfig);
                 ImGui.SameLine();
 
-                ImGuiHelpy.WriteIcon(attr.Icon, attr.TypeDesc, attr.Color);
+                ImGuiHelpy.DrawGameIcon(trackerConfig.GameIcon, 22f);
+
+               // ImGuiHelpy.WriteIcon(attr.Icon, attr.TypeDesc, attr.Color);
 
                 ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayName ?? "");
                 ImGui.TableNextColumn();
                 CopyWidgetButton(trackerConfig);
-                ImGui.SameLine();
-                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-                ImGui.Text($"{WidgetList[trackerConfig.WidgetType!]?.DisplayName ?? ""}");
+
+                if (trackerConfig.WidgetType != null)
+                {
+                    ImGui.SameLine();
+                    ImGui.Text($"{WidgetList[trackerConfig.WidgetType].DisplayName}");
+                }
             }
 
             ImGui.EndTable();
@@ -198,9 +202,9 @@ public class PresetWindow : Window, IDisposable
         {
             if (ImGuiComponents.IconButton($"CopyWidget{trackerConfig.GetHashCode()}", Copy))
             {
-                ConfigWindow.WidgetClipType = trackerConfig.WidgetType;
-                ConfigWindow.WidgetClipboard = trackerConfig.WidgetConfig;
-                ImGui.SetClipboardText(ConfigWindow.WidgetClipboard);
+                WidgetClipType = trackerConfig.WidgetType;
+                WidgetClipboard = trackerConfig.WidgetConfig;
+                ImGui.SetClipboardText(WidgetClipboard);
             }
 
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Copy Widget Settings");

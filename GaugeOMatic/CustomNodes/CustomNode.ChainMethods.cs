@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -20,18 +19,24 @@ public unsafe partial class CustomNode
 {
     public CustomNode AddFlags(CustomNodeFlags f)
     {
+        if (Node == null) return this;
+
         Flags |= f;
         return this;
     }
 
     public CustomNode RemoveFlags(CustomNodeFlags f)
     {
+        if (Node == null) return this;
+
         Flags &= ~f;
         return this;
     }
 
     public CustomNode SetFlags(CustomNodeFlags f)
     {
+        if (Node == null) return this;
+
         Flags = f;
         return this;
     }
@@ -41,6 +46,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetVis(bool show)
     {
+        if (Node == null) return this;
+
         Node->ToggleVisibility(show);
         return this;
     }
@@ -50,6 +57,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetPos(float x, float y)
     {
+        if (Node == null) return this;
+
         Node->SetPositionFloat(x, y);
         return this;
     }
@@ -60,12 +69,16 @@ public unsafe partial class CustomNode
 
     public CustomNode SetX(float x)
     {
+        if (Node == null) return this;
+
         Node->SetPositionFloat(x, Node->Y);
         return this;
     }
 
     public CustomNode SetY(float y)
     {
+        if (Node == null) return this;
+
         Node->SetPositionFloat(Node->X, y);
         return this;
     }
@@ -100,6 +113,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetScale(float s)
     {
+        if (Node == null) return this;
+
         Node->SetScale(s, s);
         Node->DrawFlags |= 0xD;
         return this;
@@ -113,6 +128,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetScaleX(float x)
     {
+        if (Node == null) return this;
+
         Node->ScaleX = x;
         Node->DrawFlags |= 0xD;
         return this;
@@ -120,6 +137,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetScaleY(float y)
     {
+        if (Node == null) return this;
+
         Node->ScaleY = y;
         Node->DrawFlags |= 0xD;
         return this;
@@ -127,6 +146,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetOrigin(Vector2 origin)
     {
+        if (Node == null) return this;
+
         Node->OriginX = origin.X;
         Node->OriginY = origin.Y;
         Node->DrawFlags |= 0xD;
@@ -137,6 +158,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetRotation(float angle, bool deg = false)
     {
+        if (Node == null) return this;
+
         if (deg) angle *= 0.0174532925199433f;
 
         Node->Rotation = angle;
@@ -152,6 +175,8 @@ public unsafe partial class CustomNode
     public CustomNode SetRGB(Vector4 vec4) => SetRGB(new Vector3(vec4.X, vec4.Y, vec4.Z));
     public CustomNode SetRGB(Vector3 vec3)
     {
+        if (Node == null) return this;
+
         Node->Color.R = (byte)(vec3.X * 255);
         Node->Color.G = (byte)(vec3.Y * 255);
         Node->Color.B = (byte)(vec3.Z * 255);
@@ -160,6 +185,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetRGBA(Vector4 vec4)
     {
+        if (Node == null) return this;
+
         Node->Color.R = (byte)(vec4.X * 255);
         Node->Color.G = (byte)(vec4.Y * 255);
         Node->Color.B = (byte)(vec4.Z * 255);
@@ -169,6 +196,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetRGBA(byte r, byte g, byte b, byte? a = null)
     {
+        if (Node == null) return this;
+
         Node->Color.R = r;
         Node->Color.G = g;
         Node->Color.B = b;
@@ -178,6 +207,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetAlpha(byte a)
     {
+        if (Node == null) return this;
+
         Node->Color.A = a;
         if (Flags.HasFlag(SetVisByAlpha)) SetVis(a > 0);
         return this;
@@ -185,6 +216,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetAlpha(float a)
     {
+        if (Node == null) return this;
+
         Node->Color.A = (byte)(a > 1 ? a : a * 255);
         if (Flags.HasFlag(SetVisByAlpha)) SetVis(a > 0);
         return this;
@@ -192,6 +225,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetAlpha(bool b)
     {
+        if (Node == null) return this;
+
         Node->Color.A = (byte)(b ? 255 : 0);
         if (Flags.HasFlag(SetVisByAlpha)) SetVis(b);
         return this;
@@ -199,6 +234,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetAddRGB(AddRGB add, bool alpha = false)
     {
+        if (Node == null) return this;
+
         Node->AddRed = add.R;
         Node->AddGreen = add.G;
         Node->AddBlue = add.B;
@@ -212,6 +249,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetAddRGB(short r, short g, short b, byte? a = null)
     {
+        if (Node == null) return this;
+
         Node->AddRed = r;
         Node->AddGreen = g;
         Node->AddBlue = b;
@@ -220,11 +259,13 @@ public unsafe partial class CustomNode
             Node->Color.A = a.Value;
             if (Flags.HasFlag(SetVisByAlpha)) SetVis(a.Value > 0);
         }
+
         return this;
     }
 
     public CustomNode SetAddRGB(short all)
     {
+        if (Node == null) return this;
         Node->AddRed = all;
         Node->AddGreen = all;
         Node->AddBlue = all;
@@ -233,6 +274,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetMultiply(Vector3 m)
     {
+        if (Node == null) return this;
         Node->MultiplyRed = (byte)(m.X * 255f);
         Node->MultiplyGreen = (byte)(m.Y * 255f);
         Node->MultiplyBlue = (byte)(m.Z * 255f);
@@ -241,6 +283,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetMultiply(byte r, byte g, byte b)
     {
+        if (Node == null) return this;
         Node->MultiplyRed = r;
         Node->MultiplyGreen = g;
         Node->MultiplyBlue = b;
@@ -249,6 +292,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetMultiply(byte all)
     {
+        if (Node == null) return this;
         Node->MultiplyRed = all;
         Node->MultiplyGreen = all;
         Node->MultiplyBlue = all;
@@ -277,13 +321,13 @@ public unsafe partial class CustomNode
 
     public CustomNode SetImageFlag(byte flags)
     {
-        if (Node->Type == Image) Node->GetAsAtkImageNode()->Flags = flags;
+        if (Node != null && Node->Type == Image) Node->GetAsAtkImageNode()->Flags = flags;
         return this;
     }
 
     public CustomNode SetImageWrap(byte wrap)
     {
-        if (Node->Type == Image) Node->GetAsAtkImageNode()->WrapMode = wrap;
+        if (Node != null && Node->Type == Image) Node->GetAsAtkImageNode()->WrapMode = wrap;
         return this;
     }
 
@@ -310,7 +354,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetTextColor(ColorRGB color, ColorRGB edgeColor)
     {
-        if (Node->Type == Text)
+        if (Node != null && Node->Type == Text)
         {
             var textNode = (AtkTextNode*)Node;
             textNode->TextColor = color;
@@ -322,7 +366,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetTextSize(byte size)
     {
-        if (Node->Type == Text)
+        if (Node != null && Node->Type == Text)
         {
             var textNode = (AtkTextNode*)Node;
             textNode->FontSize = (byte)Clamp((int)size, 1, 200);
@@ -351,6 +395,8 @@ public unsafe partial class CustomNode
 
     public Vector2 GetTextDrawSize()
     {
+        if (Node == null) return new(0, 0);
+
         if (Node->Type == Text)
         {
             ushort w = 0;
@@ -364,7 +410,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetNineGridOffset(Vector4 coords)
     {
-        if (Node->Type != NineGrid) return this;
+        if (Node == null || Node->Type != NineGrid) return this;
         Node->GetAsAtkNineGridNode()->TopOffset = (short)coords.X;
         Node->GetAsAtkNineGridNode()->RightOffset = (short)coords.Y;
         Node->GetAsAtkNineGridNode()->BottomOffset = (short)coords.Z;
@@ -376,12 +422,16 @@ public unsafe partial class CustomNode
 
     public CustomNode SetNineGridBlend(uint b)
     {
+        if (Node == null) return this;
+
         if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->BlendMode = b;
         return this;
     }
 
     public CustomNode SetPartsList(AtkUldPartsList* partsList)
     {
+        if (Node == null) return this;
+
         if (Node->Type == Image) Node->GetAsAtkImageNode()->PartsList = partsList;
         else if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->PartsList = partsList;
         else if (Node->Type == ClippingMask) ((AtkClippingMaskNode*)Node)->PartsList = partsList;
@@ -395,6 +445,8 @@ public unsafe partial class CustomNode
 
     public CustomNode SetPartId(ushort id)
     {
+        if (Node == null) return this;
+
         if (Node->Type == Image) Node->GetAsAtkImageNode()->PartId = id;
         if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->PartId = id;
         if (Node->Type == ClippingMask) ((AtkClippingMaskNode*)Node)->PartId = id;
@@ -473,7 +525,7 @@ public unsafe partial class CustomNode
 
     public CustomNode Warning(string str)
     {
-        Service.Log.Warning($"{str}\n{new StackTrace()}");
+        Service.Log.Warning($"{str}");
         return this;
     }
 }

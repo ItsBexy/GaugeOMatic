@@ -3,10 +3,10 @@ using GaugeOMatic.Widgets;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
-using static GaugeOMatic.GameData.ActionData;
+using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.GameData.StatusRef;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace GaugeOMatic.Trackers;
@@ -25,6 +25,13 @@ public class TrackerConfig
     public byte? LevelMin = null;
     public byte? LevelMax = null;
     public bool HideOutsideCombatDuty;
+    [JsonIgnore] public uint GameIcon =>
+        TrackerType switch
+        {
+            nameof(StatusTracker) when StatusData.TryGetValue(ItemId, out var statusRef) => (uint)statusRef.Icon!,
+            nameof(ActionTracker) when ActionData.TryGetValue(ItemId, out var actionRef) => (uint)actionRef.Icon!,
+            _ => DisplayAttributes().GameIcon
+        };
 
     [JsonIgnore] public int Index { get; set; }
     [JsonIgnore] public bool Preview { get; set; }
@@ -37,8 +44,8 @@ public class TrackerConfig
     }
 
     [JsonIgnore] public string? GetDisplayName => TrackerType switch {
-        nameof(StatusTracker) => Statuses.TryGetValue(ItemId, out var statusRef) ? statusRef.Name : null,
-        nameof(ActionTracker) => Actions.TryGetValue(ItemId, out var actionRef) ? actionRef.Name : null,
+        nameof(StatusTracker) => StatusData.TryGetValue(ItemId, out var statusRef) ? statusRef.Name : null,
+        nameof(ActionTracker) => ActionData.TryGetValue(ItemId, out var actionRef) ? actionRef.Name : null,
         _ => DefaultName
     };
 
@@ -60,13 +67,13 @@ public class TrackerConfig
     {
         var displayAttr = (TrackerDisplayAttribute?)Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?.GetCustomAttributes(typeof(TrackerDisplayAttribute), true).First() ?? new TrackerDisplayAttribute();
 
-        if (TrackerType == nameof(StatusTracker) && Statuses.TryGetValue(ItemId, out var statusRef))
+        if (TrackerType == nameof(StatusTracker) && StatusData.TryGetValue(ItemId, out var statusRef))
         {
             displayAttr.Job = statusRef.Job;
             displayAttr.Role = statusRef.Role;
         }
 
-        if (TrackerType == nameof(ActionTracker) && Actions.TryGetValue(ItemId, out var actionRef))
+        if (TrackerType == nameof(ActionTracker) && ActionData.TryGetValue(ItemId, out var actionRef))
         {
             displayAttr.Job = actionRef.Job;
             displayAttr.Role = actionRef.Role;

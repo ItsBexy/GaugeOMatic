@@ -3,12 +3,14 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
+using static FFXIVClientStructs.FFXIV.Client.UI.UIModule;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -62,12 +64,12 @@ public class RDMModule : JobModule
     {
         SwordplayStatePrev = SwordplayStateCurrent;
         SwordplayStateCurrent = TweakConfigs.RDM0SwordplayCue &&
-                                Statuses[3875].TryGetStatus(out var buff) &&
+                                StatusData[3875].TryGetStatus(out var buff) &&
                                 buff?.StackCount == 3;
 
         if (SwordplayStateCurrent)
         {
-            if (!SwordplayStatePrev) UIModule.PlaySound(78);
+            if (!SwordplayStatePrev) PlaySound(78);
             if (gauge->DataCurrent.BlackMana < 50 || gauge->DataCurrent.WhiteMana < 50) JobUiData->SetValue(3, 0, true);
         }
     }

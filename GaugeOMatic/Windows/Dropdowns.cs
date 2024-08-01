@@ -1,3 +1,4 @@
+using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
@@ -8,12 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
-using static GaugeOMatic.GameData.ActionData;
-using static GaugeOMatic.GameData.ActionData.ActionRef.ReadyTypes;
+using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
-using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
+using static System.StringComparison;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -99,7 +102,7 @@ public abstract class BranchingDropdown
     {
         var i = 0;
 
-        if (IsOpen) ImGui.PushStyleColor(ImGuiCol.Button, ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.ButtonHovered));
+        if (IsOpen) ImGui.PushStyleColor(ImGuiCol.Button, ImGuiHelpy.GetStyleColorVec4(ImGuiCol.ButtonHovered));
 
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
@@ -136,7 +139,7 @@ public class ItemRefMenu : BranchingDropdown
         public string Name;
         public string TrackerType;
         public uint ItemId;
-        public string? ToolText;
+        public TrackerDisplayAttribute? DisplayAttr;
 
         public MenuOption(string name, string trackerType, uint itemId = 0)
         {
@@ -144,12 +147,32 @@ public class ItemRefMenu : BranchingDropdown
             TrackerType = trackerType;
             ItemId = itemId;
 
-            var displayAttr = (TrackerDisplayAttribute?)Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?.GetCustomAttributes(typeof(TrackerDisplayAttribute), true).First() ?? new TrackerDisplayAttribute();
-            ToolText = displayAttr.ToolText;
+            DisplayAttr = (TrackerDisplayAttribute?)Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?
+                              .GetCustomAttributes(typeof(TrackerDisplayAttribute), true)
+                              .First();
         }
 
-        public static implicit operator MenuOption(ActionRef a) => new(a.Name, nameof(ActionTracker), a.ID);
+        public static implicit operator MenuOption(ActionRef a) => new(a.NameChain, nameof(ActionTracker), a.ID);
         public static implicit operator MenuOption(StatusRef s) => new(s.Name, nameof(StatusTracker), s.ID);
+
+        public readonly void DrawTooltip()
+        {
+            switch (TrackerType)
+            {
+                case nameof(ActionTracker):
+                    ((ActionRef)ItemId).DrawTooltip();
+                    break;
+                case nameof(StatusTracker):
+                    ((StatusRef)ItemId).DrawTooltip();
+                    break;
+                case nameof(ParameterTracker):
+                    ((ParamRef)ItemId).DrawTooltip();
+                    break;
+                default:
+                    DisplayAttr?.DrawTooltip(Name);
+                    break;
+            }
+        }
     }
 
     public List<MenuOption> StatusOptions { get; init; }
@@ -161,13 +184,13 @@ public class ItemRefMenu : BranchingDropdown
     public ItemRefMenu(Tracker tracker)
     {
         Tracker = tracker;
-        StatusOptions = new(Statuses.Where(s => !s.Value.HideFromDropdown && s.Value.CheckJob(Tracker.JobModule))
-                                    .Select(static s => (MenuOption)s.Value)
-                                    .OrderBy(static s => s.Name));
+        StatusOptions = new(StatusData.Where(s => !s.Value.HideFromDropdown && s.Value.CheckJob(Tracker.JobModule))
+                                     .Select(static s => (MenuOption)s.Value)
+                                     .OrderBy(static s => s.Name));
 
-        ActionOptions = new(Actions.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
-                                   .Select(static a => (MenuOption)a.Value)
-                                   .OrderBy(static a => a.Name));
+        ActionOptions = new List<MenuOption>(ActionData.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
+                                                      .Select(static a => (MenuOption)a.Value)
+                                                      .OrderBy(static a => a.Name));
 
         ParamOptions = new()
         {
@@ -176,57 +199,53 @@ public class ItemRefMenu : BranchingDropdown
             new("Castbar", nameof(ParameterTracker), (uint)Castbar)
         };
 
-        SubMenus = new()
+        SubMenus = new List<(string label, List<MenuOption> options)>
         {
             ("Status Effects", StatusOptions),
             ("Actions", ActionOptions),
             ("Other", ParamOptions)
         };
 
-        if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Insert(2,("Job Gauge", Tracker.JobModule.JobGaugeMenu));
+        if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Insert(2, ("Job Gauge", Tracker.JobModule.JobGaugeMenu));
     }
+
+    public static string StatusSearchString = "";
+    public static string ActionSearchString = "";
 
     public override void DrawSubMenu(int i, ref UpdateFlags update)
     {
         var (label, options) = SubMenus[i];
+        if (!options.Any()) return;
+
         if (!ImGui.BeginMenu($"{label}##{Hash}{label}Menu")) return;
 
-        foreach (var o in options)
+        if (label == "Actions")
+        {
+            ImGui.SetNextItemWidth(200f);
+            ImGui.InputTextWithHint("##ActionSearch","Search...", ref ActionSearchString,64);
+        } else if (label == "Status Effects")
+        {
+            ImGui.SetNextItemWidth(200f);
+            ImGui.InputTextWithHint("##StatusSearch", "Search...", ref StatusSearchString, 64);
+        }
+
+        Func<MenuOption, bool> filter = label switch
+        {
+            "Actions" when ActionSearchString != "" => static o => o.Name.Contains(ActionSearchString, CurrentCultureIgnoreCase),
+            "Status Effects" when StatusSearchString != "" => static o => o.Name.Contains(StatusSearchString, CurrentCultureIgnoreCase),
+            _ => static _ => true
+        };
+
+        foreach (var o in options.Where(filter))
         {
             if (ImGui.MenuItem($"{o.Name}##{Hash}Status{o.ItemId}"))
             {
                 Tracker.TrackerConfig.ItemId = o.ItemId;
                 Tracker.TrackerConfig.TrackerType = o.TrackerType;
-                update |= UpdateFlags.Reset | UpdateFlags.Save | UpdateFlags.Rebuild;
+                update |= Reset | Save | Rebuild;
             }
 
-            if (ImGui.IsItemHovered())
-            {
-                if (o.ToolText != null)
-                {
-                    ImGui.SetTooltip(o.ToolText);
-                }
-                if (o.TrackerType == nameof(ActionTracker))
-                {
-                    var action = (ActionRef)o.ItemId;
-                    var oneCharge = action.MaxCharges == 1;
-
-                    var counterDesc = $"Shows charges ({action.MaxCharges})";
-                    var gaugeDesc = $"Shows cooldown time ({action.CooldownLength}s)";
-                    var stateDesc = $"Shows {(action.ReadyType.HasFlag(Ants) ? "if highlighted" : "if ready")}";
-
-                    var toolText = oneCharge ? $"Gauge: {gaugeDesc}\nCounter/State: {stateDesc}" :
-                                               $"Counter: {counterDesc}\nGauge: {gaugeDesc}\nState: {stateDesc}" ;
-
-                    ImGui.SetTooltip(toolText);
-                } else if (o.TrackerType == nameof(StatusTracker))
-                {
-                    var status = (StatusRef)o.ItemId;
-                    ImGui.SetTooltip($"Counter: Shows stacks ({status.MaxStacks})\n" +
-                                     $"Gauge: Shows time remaining ({status.MaxTime}s)\n" +
-                                     "State: Shows if active");
-                }
-            }
+            if (ImGui.IsItemHovered()) o.DrawTooltip();
         }
 
         ImGui.EndMenu();
@@ -284,7 +303,7 @@ public class WidgetMenu : BranchingDropdown
                 foreach (var w in widgets.Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
                 {
                     Tracker.WidgetType = w.Key;
-                    update |= UpdateFlags.Reset | UpdateFlags.Save;
+                    update |= Reset | Save;
                 }
 
                 ImGui.EndMenu();
@@ -307,7 +326,7 @@ public class WidgetMenu : BranchingDropdown
                                                .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
                     {
                         Tracker.WidgetType = w.Key;
-                        update |= UpdateFlags.Reset | UpdateFlags.Save;
+                        update |= Reset | Save;
                     }
 
                     ImGui.EndMenu();

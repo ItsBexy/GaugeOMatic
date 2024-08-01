@@ -5,9 +5,10 @@ using ImGuiNET;
 using System;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
-using static GaugeOMatic.Windows.UpdateFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -28,8 +29,9 @@ public partial class ConfigWindow
 
         ImGui.TableNextColumn();
 
-        var displayProps = tracker.TrackerConfig.DisplayAttributes();
-        WriteIcon(displayProps.Icon, displayProps.TypeDesc, displayProps.Color);
+        DrawGameIcon(tracker.GameIcon, 22f, tracker.TrackerConfig.Enabled);
+
+        if (ImGui.IsItemHovered()) tracker.DrawTooltip();
 
         tracker.ItemRefMenu.Draw("[ Track... ]", 180f, ref update);
 
@@ -97,7 +99,7 @@ public partial class ConfigWindow
             if (!tracker.Available) IconButtonDisabled($"Settings{hash}", FontAwesomeIcon.Cog);
             else if (ImGuiComponents.IconButton($"Settings{hash}", FontAwesomeIcon.Cog) && tracker.Window != null)
             {
-                tracker.Window.PositionCondition = ImGuiCond.Appearing;
+                tracker.Window.PositionCondition = ImGuiCond.FirstUseEver;
                 tracker.Window.IsOpen = !tracker.Window.IsOpen;
                 tracker.Window.Position = FindWindowPosition(tracker, index);
             }
@@ -116,7 +118,8 @@ public partial class ConfigWindow
         var spanX = maxX - minX;
 
         var x = lastIndex == 0 ? minX : ((float)index / lastIndex * spanX) + minX;
-        var y = Math.Clamp(ConfigWindowPos.Y + ConfigWindowSize.Y, 0, workSize.Y - 250f);
+        var sizeY = tracker.Window?.Size?.Y ?? workSize.Y/2f;
+        var y = Math.Clamp(ConfigWindowPos.Y + ConfigWindowSize.Y, 0, workSize.Y - sizeY);
         return new(x, y);
     }
 

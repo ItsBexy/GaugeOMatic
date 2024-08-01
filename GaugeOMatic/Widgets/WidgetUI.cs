@@ -1,16 +1,17 @@
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using GaugeOMatic.Windows;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static ImGuiNET.ImGuiCol;
+using static ImGuiNET.ImGuiColorEditFlags;
 
 namespace GaugeOMatic.Widgets;
 
@@ -30,7 +31,7 @@ internal static class WidgetUI
         LabelColumn(label);
 
         if (ImGui.Checkbox($"##Bool{label}", ref b)) {
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;
@@ -46,7 +47,7 @@ internal static class WidgetUI
             var b = bools[i];
             if (ImGui.Checkbox($"{boolNames[i]}##Bool{i}{label}", ref b))
             {
-                update |= UpdateFlags.Save;
+                update |= Save;
                 bools[i] = b;
                 ret = true;
             }
@@ -60,7 +61,7 @@ internal static class WidgetUI
 
         if (IntInputDrag(label, ref i, min, max, step))
         {
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;
@@ -83,7 +84,7 @@ internal static class WidgetUI
 
         if (FloatInputDrag(label, ref f, min, max, step, format: format))
         {
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;
@@ -96,7 +97,7 @@ internal static class WidgetUI
         {
             while (angle < -180) angle += 360;
             while (angle > 180) angle -= 360;
-            update |= UpdateFlags.Save;
+            update |= Save;
         }
     }
 
@@ -121,7 +122,7 @@ internal static class WidgetUI
         var i = options.IndexOf(val);
         if (ImGui.Combo($"##{label}", ref i, optionNames.ToArray(), optionNames.Count))
         {
-            update |= UpdateFlags.Save;
+            update |= Save;
             val = options[i];
         }
     }
@@ -133,13 +134,13 @@ internal static class WidgetUI
         ImGui.SetNextItemWidth(142f * GlobalScale);
         if (ImGui.InputTextWithHint($"##{label}", hintText, ref str, 40u))
         {
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;
     }
 
-    public const ImGuiColorEditFlags PickerFlags = ImGuiColorEditFlags.DisplayHex | ImGuiColorEditFlags.AlphaBar;
+    public const ImGuiColorEditFlags PickerFlags = DisplayHex | AlphaBar;
 
     public static bool ColorPickerRGBA(string label, ref Vector4 v4, ref UpdateFlags update)
     {
@@ -149,7 +150,7 @@ internal static class WidgetUI
 
         if (ImGui.ColorEdit4($"##{label}RGBA", ref v4, PickerFlags))
         {
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;
@@ -163,7 +164,7 @@ internal static class WidgetUI
 
         if (ImGui.ColorEdit3($"##{label}RGB", ref v3, PickerFlags))
         {
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;
@@ -202,14 +203,14 @@ internal static class WidgetUI
 
         ImGui.SetNextItemWidth(92f * GlobalScale);
 
-        if (ImGui.ColorEdit4($"##{label}RGB", ref baseColor, PickerFlags)) update |= UpdateFlags.Save;
+        if (ImGui.ColorEdit4($"##{label}RGB", ref baseColor, PickerFlags)) update |= Save;
         SameLineSquished();
-        if (ImGui.ColorEdit3($"##{label}AddRGB", ref add, PickerFlags | ImGuiColorEditFlags.NoInputs)) update |= UpdateFlags.Save;
+        if (ImGui.ColorEdit3($"##{label}AddRGB", ref add, PickerFlags | NoInputs)) update |= Save;
         SameLineSquished();
-        if (ImGui.ColorEdit3($"##{label}MultiplyRGB", ref multiply, PickerFlags | ImGuiColorEditFlags.NoInputs)) update |= UpdateFlags.Save;
+        if (ImGui.ColorEdit3($"##{label}MultiplyRGB", ref multiply, PickerFlags | NoInputs)) update |= Save;
 
 
-        if (update.HasFlag(UpdateFlags.Save))
+        if (update.HasFlag(Save))
         {
             colorSet = new(baseColor, add, multiply);
             return true;
@@ -231,7 +232,7 @@ internal static class WidgetUI
             if (ImGui.RadioButton($"{name}##{label}{option}", val is not null && val.Equals(option)))
             {
                 val = option;
-                update |= UpdateFlags.Save;
+                update |= Save;
                 ret = true;
             }
         }
@@ -243,8 +244,8 @@ internal static class WidgetUI
     {
         LabelColumn(label);
 
-        var buttonColor = GetStyleColorUsableVec4(Button);
-        var activeColor = GetStyleColorUsableVec4(ButtonActive);
+        var buttonColor = GetStyleColorVec4(Button);
+        var activeColor = GetStyleColorVec4(ButtonActive);
 
         var ret = false;
         for (var i = 0; i < options.Count; i++)
@@ -256,7 +257,7 @@ internal static class WidgetUI
 
             if (IconButton($"{label}{option}{i}", icon, 16f, val is not null && val.Equals(option) ? activeColor : buttonColor)) {
                 val = option;
-                update |= UpdateFlags.Save;
+                update |= Save;
                 ret = true;
             }
         }
@@ -264,11 +265,11 @@ internal static class WidgetUI
         return ret;
     }
 
-    public static bool PositionControls(string label, ref Vector2 pos, ref UpdateFlags update) => ControlXY(label, ref pos, -2560, 2560, 1, ref update, new() { ChevronLeft, ChevronRight, ChevronUp, ChevronDown });
+    public static bool PositionControls(string label, ref Vector2 pos, ref UpdateFlags update) => ControlXY(label, ref pos, -2560, 2560, 1, ref update, new() { FontAwesomeIcon.ChevronLeft, FontAwesomeIcon.ChevronRight, FontAwesomeIcon.ChevronUp, FontAwesomeIcon.ChevronDown });
     public static bool ScaleControls(string label, ref Vector2 scale, ref UpdateFlags update) => ControlXY(label, ref scale, 0, 10, 0.05f, ref update);
     public static bool ScaleControls(string label, ref float scale, ref UpdateFlags update) => FloatControls(label, ref scale, 0, 10, 0.05f, ref update);
 
-    private static bool IntInputDrag(string label, ref int val, int min, int max, int step = 1, FontAwesomeIcon icon1 = Minus, FontAwesomeIcon icon2 = Plus)
+    private static bool IntInputDrag(string label, ref int val, int min, int max, int step = 1, FontAwesomeIcon icon1 = FontAwesomeIcon.Minus, FontAwesomeIcon icon2 = FontAwesomeIcon.Plus)
     {
         ImGui.SetNextItemWidth(90f * GlobalScale);
         var input1 = ImGui.DragInt($"##{label}Drag", ref val, step, min, max);
@@ -291,8 +292,8 @@ internal static class WidgetUI
     }
 
     public static bool FloatInputDrag(
-        string label, ref float val, float min, float max, float step = 0.05f, FontAwesomeIcon icon1 = Minus,
-        FontAwesomeIcon icon2 = Plus, string format = "%.2f")
+        string label, ref float val, float min, float max, float step = 0.05f, FontAwesomeIcon icon1 = FontAwesomeIcon.Minus,
+        FontAwesomeIcon icon2 = FontAwesomeIcon.Plus, string format = "%.2f")
     {
         ImGui.SetNextItemWidth(90f * GlobalScale);
 
@@ -317,13 +318,13 @@ internal static class WidgetUI
         var x = xy.X;
         var y = xy.Y;
 
-        var inputX = FloatInputDrag($"{label}X", ref x, min, max, step, icons?[0] ?? Minus, icons?[1] ?? Plus);
-        var inputY = FloatInputDrag($"{label}Y", ref y, min, max, step, icons?[2] ?? Minus, icons?[3] ?? Plus);
+        var inputX = FloatInputDrag($"{label}X", ref x, min, max, step, icons?[0] ?? FontAwesomeIcon.Minus, icons?[1] ?? FontAwesomeIcon.Plus);
+        var inputY = FloatInputDrag($"{label}Y", ref y, min, max, step, icons?[2] ?? FontAwesomeIcon.Minus, icons?[3] ?? FontAwesomeIcon.Plus);
 
         if (inputX || inputY)
         {
             xy = new(x, y);
-            update |= UpdateFlags.Save;
+            update |= Save;
             return true;
         }
         return false;

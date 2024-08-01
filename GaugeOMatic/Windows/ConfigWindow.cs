@@ -9,12 +9,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Windows.ConfigWindow.GeneralTab;
 using static ImGuiNET.ImGuiCol;
+using static ImGuiNET.ImGuiTableColumnFlags;
+using static ImGuiNET.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -24,6 +27,7 @@ public partial class ConfigWindow : Window, IDisposable
     public Configuration Configuration;
     public List<JobModule> JobModules;
 
+    // ReSharper disable once UnusedMember.Global
     public enum GeneralTab { Jobs, Settings, Help }
 
     public ConfigWindow(TrackerManager trackerManager) : base("Gauge-O-Matic")
@@ -45,18 +49,16 @@ public partial class ConfigWindow : Window, IDisposable
     {
         if (JobChanged && JobModules.Any(static j => j.Job == Current)) Configuration.JobTab = Current;
 
-       // StatusData.StatusHarvest(Configuration);
-
         ConfigWindowPos = ImGui.GetWindowPos();
         ConfigWindowSize = ImGui.GetWindowSize();
         ImGui.Spacing();
         ImGui.Spacing();
 
-        if (ImGui.BeginTable("LayoutTable", 3, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.BordersInnerV))
+        if (ImGui.BeginTable("LayoutTable", 3, SizingFixedFit | BordersInnerV))
         {
-            ImGui.TableSetupColumn("VertTabBar", ImGuiTableColumnFlags.WidthFixed, 40f * GlobalScale);
-            ImGui.TableSetupColumn("VertTabBar2", ImGuiTableColumnFlags.WidthFixed, 40f * GlobalScale);
-            ImGui.TableSetupColumn("body", ImGuiTableColumnFlags.WidthFixed, 1200f * GlobalScale);
+            ImGui.TableSetupColumn("VertTabBar", WidthFixed, 40f * GlobalScale);
+            ImGui.TableSetupColumn("VertTabBar2", WidthFixed, 40f * GlobalScale);
+            ImGui.TableSetupColumn("body", WidthFixed, 1200f * GlobalScale);
 
             VerticalTabBar();
 
@@ -65,15 +67,12 @@ public partial class ConfigWindow : Window, IDisposable
 
             switch (Configuration.GeneralTab)
             {
-                case Settings:
-                    ImGui.Text("WELCOME TO THE SETTINGS TAB");
-                    break;
                 case Help:
                     DrawHelpTab();
                     break;
                 default:
                 {
-                    var jobModule = Configuration.GetModuleForTab(JobModules);
+                    var jobModule = GetModuleForTab(Configuration.JobTab, JobModules);
                     if (jobModule != null) DrawJobModuleTab(jobModule);
                     break;
                 }
@@ -85,12 +84,11 @@ public partial class ConfigWindow : Window, IDisposable
 
     private void VerticalTabBar()
     {
-        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab)
+        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab, string? textOverride = null)
         {
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
-
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
-            if (ImGui.Button($"{job}      "))
+            if (ImGui.Button($"{textOverride ?? job.ToString()}      "))
             {
                 Configuration.JobTab = job;
                 Configuration.GeneralTab = Jobs;
@@ -99,7 +97,7 @@ public partial class ConfigWindow : Window, IDisposable
             ImGui.PopStyleColor(3);
         }
 
-        void GeneralButton(string label, FontAwesomeIcon icon, GeneralTab genTab, string toolTip)
+        void GeneralButton(string label, FontAwesomeIcon icon, GeneralTab genTab, string tooltip)
         {
             var active = Configuration.GeneralTab == genTab;
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
@@ -110,7 +108,7 @@ public partial class ConfigWindow : Window, IDisposable
             }
             ImGui.PopStyleColor(3);
 
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip(toolTip);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip(tooltip);
         }
 
         void TankButton(Job job) => VerticalTabButton(job, (ColorRGB)0x026999ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x052657ff);
@@ -120,8 +118,8 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
-       // GeneralButton("Settings", FontAwesomeIcon.Cog, Settings, "General Settings");
-        GeneralButton("Help", FontAwesomeIcon.Question, Help, "Help");
+        // GeneralButton("Settings", Cog, Settings, "General Settings");
+        GeneralButton("Help", Question, Help, "Help");
 
         ImGui.Spacing();
         ImGui.Spacing();
@@ -138,6 +136,12 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(SAM);
         DPSButton(RPR);
         DPSButton(VPR);
+
+        ImGui.Spacing();
+        ImGui.Spacing();
+
+        // VerticalTabButton(CRP, (ColorRGB)0x6a5d53ff, (ColorRGB)0x887e71ff, (ColorRGB)0x2e2523ff, "DoH");
+        // VerticalTabButton(MIN, (ColorRGB)0x6a5d53ff, (ColorRGB)0x887e71ff, (ColorRGB)0x2e2523ff, "DoL");
 
         ImGui.TableNextColumn();
 
@@ -156,11 +160,13 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(SMN);
         DPSButton(RDM);
         DPSButton(PCT);
+
+        // VerticalTabButton(BLU, (ColorRGB)0x026999ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x052657ff);
     }
 
-    internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.TabActive);
-    internal static Vector4 Tab = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.Tab);
-    internal static Vector4 TabHovered = ImGuiHelpy.GetStyleColorUsableVec4(ImGuiCol.TabHovered);
+    internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.TabActive);
+    internal static Vector4 Tab = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.Tab);
+    internal static Vector4 TabHovered = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.TabHovered);
 
     internal static Vector2 ConfigWindowSize;
     internal static Vector2 ConfigWindowPos;

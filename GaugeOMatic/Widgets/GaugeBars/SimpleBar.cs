@@ -1,8 +1,8 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -17,6 +17,8 @@ using static GaugeOMatic.Widgets.SimpleBar;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -132,8 +134,8 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
     public sealed class SimpleBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public float Width = 160;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(160)] public float Width = 160;
         public float Angle;
 
         public AddRGB BGColor = new(0, 0, 0, 229);
@@ -191,7 +193,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.SimpleBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.SimpleBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();
@@ -261,7 +263,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
         LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.SimpleBarCfg = Config;
     }
 

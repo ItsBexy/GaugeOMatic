@@ -1,14 +1,15 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -196,7 +197,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public sealed class EnochianBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public int Direction;
         public float Angle;
 
@@ -206,8 +207,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         public AddRGB DrainColor = "0x661D5EFF";
 
         public bool Smooth;
-        public bool HideHand = true;
-        public bool DimEmpty = true;
+        [DefaultValue(true)] public bool HideHand = true;
+        [DefaultValue(true)] public bool DimEmpty = true;
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), new(0), Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled:   false,
@@ -256,7 +257,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.EnochianBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.EnochianBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();

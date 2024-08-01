@@ -2,9 +2,9 @@ using CustomNodes;
 using Dalamud.Interface;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
@@ -13,6 +13,7 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -291,8 +292,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public sealed class AddersBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public float Width = 144;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(144)] public float Width = 144;
         public float Angle;
         public bool ShowPlate;
 
@@ -359,7 +360,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.AddersBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.AddersBarCfg == null && ShouldInvertByDefault) Config.Invert = true;
     }
 
     public override void ResetConfigs() => Config = new();

@@ -1,8 +1,8 @@
 using CustomNodes;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using GaugeOMatic.Windows;
 using ImGuiNET;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -11,9 +11,11 @@ using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static Newtonsoft.Json.DefaultValueHandling;
 
 namespace GaugeOMatic.Widgets;
 
@@ -62,13 +64,13 @@ public struct LabelTextProps
     internal static List<string> FontNames = new() { "Axis", "Miedinger Med", "Trump Gothic", "Jupiter" };
 
     public string Text;
-    public bool Enabled = false;
-    public Vector2 Position;
+    [JsonProperty(DefaultValueHandling = Include)] public bool Enabled = false;
+    [JsonProperty(DefaultValueHandling = Include)] public Vector2 Position;
     public ColorRGB Color = new(255, 255, 255);
     public ColorRGB EdgeColor = new(0, 0, 0);
-    public FontType Font = Miedinger;
-    public byte FontSize = 18;
-    public AlignmentType Align = Center;
+    [JsonProperty(DefaultValueHandling = Include)] public FontType Font = Miedinger;
+    [JsonProperty(DefaultValueHandling = Include)] public byte FontSize = 18;
+    [JsonProperty(DefaultValueHandling = Include)] public AlignmentType Align = Center;
 
     public LabelTextProps(string text, bool enabled, Vector2 position, ColorRGB color, ColorRGB edgeColor, FontType font, byte fontSize, AlignmentType align)
     {

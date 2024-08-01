@@ -66,7 +66,7 @@ public partial class ConfigWindow
             ImGui.Text("Status Effects - Retrieves the time remaining or number of stacks.");
 
             WriteIcon(FontAwesomeIcon.FistRaised, null, 0xaa372dff);
-            ImGui.Text("Actions - Retrieves the cooldown time or the number of charges available.");
+            ImGui.Text("Actions - Retrieves the recast time or the number of charges available.");
 
             WriteIcon(FontAwesomeIcon.Gauge, null, 0x2b455cff);
             ImGui.Text("Job Gauge - Retrieves unique data options per job gauge.");

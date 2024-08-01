@@ -1,8 +1,6 @@
 using GaugeOMatic.GameData;
 using System;
-using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
-using static GaugeOMatic.GameData.StatusData;
 
 namespace GaugeOMatic.Trackers;
 
@@ -23,24 +21,12 @@ public abstract partial class Tracker
         public bool HasLabelOverride = false;
         public string? LabelOverride = null;
 
-        public TrackerData(ActionRef a, float? preview = null)
-        {
-            MaxCount = a.GetMaxCharges();
-            Count = preview != null ? (int)(preview * MaxCount) :
-                                      MaxCount > 1 ? a.GetCurrentCharges() :
-                                      a.IsReady() ? 1 : 0;
-
-            MaxGauge = a.GetCooldownTotal();
-            GaugeValue = preview == null ? a.GetCooldownRemaining(MaxGauge) : (float)(preview * MaxGauge);
-
-            MaxState = 1;
-            State = preview == null? a.IsReady() ? 1 : 0 : (int)Math.Round(preview.Value);
-        }
+        public TrackerData(ActionRef a, float? preview = null) => this = a.GetTrackerData(preview);
 
         public TrackerData(StatusRef s, float? preview = null)
         {
             MaxCount = s.MaxStacks;
-            MaxGauge = s.MaxTime;
+            MaxGauge = Math.Max(0.0001f, s.MaxTime);
             MaxState = 1;
 
             if (preview != null)
@@ -53,7 +39,7 @@ public abstract partial class Tracker
             {
                 State = 1;
                 Count = status is { StackCount: > 0 } ? status.StackCount : 1;
-                GaugeValue = Math.Abs(status?.RemainingTime ?? 0f);
+                GaugeValue = s.MaxTime == 0 ? MaxGauge : Math.Abs(status?.RemainingTime ?? 0f);
             }
         }
 
@@ -86,7 +72,7 @@ public abstract partial class Tracker
                         MaxGauge = ClientState.LocalPlayer.TotalCastTime;
                         GaugeValue = ClientState.LocalPlayer.CurrentCastTime;
 
-                        LabelOverride = ActionSheet?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
+                        LabelOverride = Sheets.ActionSheet?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
 
                     } else if (preview != null)
                     {

@@ -1,21 +1,22 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalanceBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -229,7 +230,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     public sealed class BalanceBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB MainColor = new(0);
         public AddRGB GainColor = new(100, -20, -20);
         public AddRGB DrainColor = new(255, -100, -100);
@@ -237,7 +238,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         public uint Side;
         public uint BaseColor;
         public bool PetalInc;
-        public bool PetalDec = true;
+        [DefaultValue(true)] public bool PetalDec = true;
         public AddRGB PetalColor = new(124, -125, -125);
         protected override NumTextProps NumTextDefault => new(enabled:   true,
                                                               position:  new(0),
@@ -281,7 +282,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.BalanceBarCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.BalanceBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();

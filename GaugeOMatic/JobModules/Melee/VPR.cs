@@ -1,18 +1,19 @@
 using CustomNodes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using static GaugeOMatic.GameData.ActionData;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.GameData.StatusData;
+using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -118,9 +119,17 @@ public class VPRModule : JobModule
 
     private unsafe void ApplyReawakenCueTweak(AddonJobHudRDB1* serpentGauge)
     {
-        if (TweakConfigs.VPR1ReawakenCue && Statuses[3671].TryGetStatus() && serpentGauge->DataCurrent.GaugeValue < 50)
+        if (TweakConfigs.VPR1ReawakenCue && ((StatusRef)3671).TryGetStatus() && serpentGauge->DataCurrent.GaugeValue < 50)
             UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86)->SetValue(9, 0, true);
     }
+
+    private static ActionRef ReavingFangs => 34609;
+    private static ActionRef FlankAction1 = 34610;
+    private static ActionRef FlankAction2 = 34611;
+    private static ActionRef HindAction1 = 34612;
+    private static ActionRef HindAction2 = 34613;
+    private static bool FlankAnts => FlankAction1.HasAnts() || FlankAction2.HasAnts();
+    private static bool HindAnts => HindAction1.HasAnts() || HindAction2.HasAnts();
 
     private unsafe void ApplyColorCodeTweak(AddonJobHudRDB0* vipersight)
     {
@@ -145,19 +154,18 @@ public class VPRModule : JobModule
                 }
                 else
                 {
-                    appliedColor = (!TweakConfigs.VPR0ColorAll && vipersight->DataCurrent.ComboStep < 2) || Statuses[1250].TryGetStatus()
+                    appliedColor = (!TweakConfigs.VPR0ColorAll && vipersight->DataCurrent.ComboStep < 2) || StatusData[1250].TryGetStatus()
                                        ? neutral
-                                       : ActionManager->GetAdjustedActionId(34609)
+                                       : ReavingFangs.GetAdjustedId()
                                            switch // check what state the Dread Fangs button is in
                                            {
                                                34611 => flank, // flank positional finishers are up
                                                34613 => rear,  // rear positional finishers are up
-                                               34609 when CheckForAnts(34610, 34611) => flank, // swiftskin is up, a flank positional has ants
-                                               34609 when CheckForAnts(34612, 34613) => rear, // swiftskin is up, a rear positional has ants
+                                               34609 when FlankAnts => flank, // swiftskin is up, a flank positional has ants
+                                               34609 when HindAnts => rear, // swiftskin is up, a rear positional has ants
                                                _ => neutral
                                            };
                 }
-
 
                 RecolorStandard(appliedColor);
                 RecolorSimple(appliedColor);
@@ -219,7 +227,6 @@ public class VPRModule : JobModule
                                .SetKeyFrameAddRGB(new(0, 50, 255), 3, 1);
         }
     }
-
 
 }
 

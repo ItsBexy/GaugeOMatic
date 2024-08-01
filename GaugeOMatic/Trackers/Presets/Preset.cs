@@ -24,9 +24,19 @@ public struct Preset
         }
         else
         {
-            var import = DeserializeObject<Preset>(importStr, JsonSettings);
-            Name = import.Name.Length == 0 ? "New Preset" : import.Name;
-            Trackers = import.Trackers;
+            try
+            {
+                var import = DeserializeObject<Preset>(importStr, JsonSettings);
+                Name = import.Name.Length == 0 ? "New Preset" : import.Name;
+                Trackers = import.Trackers;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error deserializing Preset!\n{ex}");
+                Name = "New Preset";
+                Trackers = Array.Empty<TrackerConfig>();
+            }
         }
     }
 

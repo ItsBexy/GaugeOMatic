@@ -1,9 +1,11 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Utility;
+using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System;
 using System.Numerics;
+using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static ImGuiNET.ImGuiCol;
 // ReSharper disable UnusedMethodReturnValue.Global
@@ -22,6 +24,20 @@ public static class ImGuiHelpy
         {
             ImGuiCol = col;
             Color = color;
+        }
+    }
+
+    public static void MulticolorText(params (Vector4 col, string str)[] stringTuples)
+    {
+        var y = ImGui.GetCursorPosY();
+        for (var i = 0; i < stringTuples.Length; i++)
+        {
+            if (i > 0) { SameLineSquished(); }
+
+            ImGui.SetCursorPosY(y);
+
+            var stringTuple = stringTuples[i];
+            ImGui.TextColored(stringTuple.col, stringTuple.str);
         }
     }
 
@@ -54,11 +70,11 @@ public static class ImGuiHelpy
 
     public static bool IconButton(string label, FontAwesomeIcon icon, float minWidth = 15f, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null)
     {
-        minWidth *= ImGuiHelpers.GlobalScale;
+        minWidth *= GlobalScale;
         var iconText = icon.ToIconString();
-        defaultColor ??= GetStyleColorUsableVec4(Button);
-        activeColor ??= GetStyleColorUsableVec4(ButtonActive);
-        hoveredColor ??= GetStyleColorUsableVec4(ButtonHovered);
+        defaultColor ??= GetStyleColorVec4(Button);
+        activeColor ??= GetStyleColorVec4(ButtonActive);
+        hoveredColor ??= GetStyleColorVec4(ButtonHovered);
         var count = 0;
         if (defaultColor.HasValue)
         {
@@ -114,11 +130,7 @@ public static class ImGuiHelpy
         return flag;
     }
 
-    public static unsafe Vector4 GetStyleColorUsableVec4(ImGuiCol idx)
-    {
-        var colPtr = ImGui.GetStyleColorVec4(idx);
-        return new(colPtr->X, colPtr->Y, colPtr->Z, colPtr->W);
-    }
+    public static unsafe Vector4 GetStyleColorVec4(ImGuiCol idx) => *ImGui.GetStyleColorVec4(idx);
 
     public static void TableSeparator(int n)
     {
@@ -137,7 +149,7 @@ public static class ImGuiHelpy
     public static void SameLineSquished()
     {
         ImGui.SameLine();
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() - 5f);
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() - ((ImGui.GetFontSize() / -6f) + 7f));
     }
 
     public static void SameLineWrappable(float max)
@@ -162,7 +174,7 @@ public static class ImGuiHelpy
         ImGui.Text(icon.ToIconString());
         ImGui.PopFont();
         if (gottaPop) ImGui.PopStyleColor();
-        if (iconHoverText != null && ImGui.IsItemHovered()) ToolTip(iconHoverText);
+        if (iconHoverText != null && ImGui.IsItemHovered()) Tooltip(iconHoverText);
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
 
@@ -193,7 +205,7 @@ public static class ImGuiHelpy
             ImGui.PushStyleColor(Text, (Vector4)textColor);
             gottaPop = true;
         }
-        if (iconHoverText != null && ImGui.IsItemHovered()) ToolTip(iconHoverText);
+        if (iconHoverText != null && ImGui.IsItemHovered()) Tooltip(iconHoverText);
 
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
@@ -202,18 +214,18 @@ public static class ImGuiHelpy
         if (gottaPop) { ImGui.PopStyleColor(); }
     }
 
-    public static void ToolTip(string toolTipText)
+    public static void Tooltip(string tooltipText)
     {
         ImGui.BeginTooltip();
         ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
-        ImGui.TextUnformatted(toolTipText);
+        ImGui.TextUnformatted(tooltipText);
         ImGui.PopTextWrapPos();
         ImGui.EndTooltip();
     }
 
     public static bool IconButtonWithText(string text, FontAwesomeIcon icon, string id, float? width = null, ColorRGB? color = null)
     {
-        width *= ImGuiHelpers.GlobalScale;
+        width *= GlobalScale;
         var pushed = 0;
         if (color.HasValue)
         {
@@ -225,14 +237,14 @@ public static class ImGuiHelpy
 
         var iconStr = icon.ToIconString();
         var iconStrSize = ImGui.CalcTextSize(iconStr);
-        var adjust = ((16 * ImGuiHelpers.GlobalScale) - iconStrSize.X) / 2;
+        var adjust = ((16 * GlobalScale) - iconStrSize.X) / 2;
 
         ImGui.PopFont();
 
         var textSize = ImGui.CalcTextSize(text);
         var windowDrawList = ImGui.GetWindowDrawList();
         var cursorScreenPos = ImGui.GetCursorScreenPos();
-        var num = 3f * ImGuiHelpers.GlobalScale;
+        var num = 3f * GlobalScale;
 
         var x = Math.Max(width ?? 0, (float)(iconStrSize.X + (double)textSize.X + (ImGui.GetStyle().FramePadding.X * 2.0)) + num);
         var textAdjust = (x - textSize.X - iconStrSize.X) / 2;
@@ -272,4 +284,44 @@ public static class ImGuiHelpy
 
         ImGui.TextColored(color, text);
     }
+
+    public static void DrawGameIcon(uint trackerGameIcon, float height, bool active=true)
+    {
+        var startPos = ImGui.GetCursorPosX();
+
+        TextureProvider.GetFromGameIcon(new GameIconLookup(trackerGameIcon)).TryGetWrap(out var tex, out _);
+
+        if (tex != null)
+        {
+            var adjustedHeight = height * GlobalScale;
+            var width = tex.Width / (float)tex.Height * adjustedHeight;
+
+            var margin = (adjustedHeight - width) / 2f;
+
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + margin);
+            ImGui.Image(tex.ImGuiHandle, new(width, adjustedHeight),new(0),new(1),new(1,1,1,active?1:0.3f));
+            ImGui.SameLine();
+        }
+
+        ImGui.SetCursorPosX(startPos+(30*GlobalScale));
+    }
+
+    public static IDalamudTextureWrap? GetGameIconTexture(uint? id)
+    {
+        if (id == null) return null;
+        try
+        {
+            return TextureProvider.GetFromGameIcon(new GameIconLookup(id.Value))
+                                  .TryGetWrap(out var texture, out _) ? texture : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    public static Vector4 Plain => GetStyleColorVec4(Text);
+    public static Vector4 Disabled => GetStyleColorVec4(TextDisabled);
+    public static readonly Vector4 Yellow = new(1, 1, 0, 1);
+    public static readonly Vector4 Orange = new(1, 0.5f, 0, 1);
 }

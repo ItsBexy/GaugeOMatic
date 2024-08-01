@@ -1,8 +1,8 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -10,6 +10,7 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.EspritBar;
@@ -203,10 +204,10 @@ public sealed unsafe class EspritBar : GaugeBarWidget
     public sealed class EspritBarConfig : GaugeBarWidgetConfig
     {
         public Vector2 Position;
-        public float Scale = 1;
-        public bool ShowPlate = true;
+        [DefaultValue(1f)] public float Scale = 1;
+        [DefaultValue(true)] public bool ShowPlate = true;
         public float Angle;
-        public bool Clockwise = true;
+        [DefaultValue(true)] public bool Clockwise = true;
 
         public AddRGB Backdrop = new(0, 0, 0);
         public ColorRGB FrameColor = new(100, 100, 100);
@@ -266,10 +267,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         if (Tracker.WidgetConfig.EspritBarCfg == null)
         {
             Config.MilestoneType = Above;
-            if (Tracker.RefType == RefType.Action)
-            {
-                Config.Invert = true;
-            }
+            if (ShouldInvertByDefault) Config.Invert = true;
         }
     }
 

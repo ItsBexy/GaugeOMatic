@@ -1,12 +1,13 @@
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -150,10 +151,10 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         public enum CircleStyles { CW, CCW, Erode }
 
         public Vector2 Position;
-        public float Scale = 1;
+        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB Color = new(200);
-        public bool Dodge = true;
-        public CircleStyles Direction = CCW;
+        [DefaultValue(true)] public bool Dodge = true;
+        [DefaultValue(CCW)] public CircleStyles Direction = CCW;
         protected override NumTextProps NumTextDefault => new() { Position = new(0, 0), FontSize = 50 };
 
         public SimpleCircleConfig(WidgetConfig widgetConfig) : base(widgetConfig.SimpleCircleCfg)
@@ -178,7 +179,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     public override void InitConfigs()
     {
         Config = new(Tracker.WidgetConfig);
-        if (Tracker.WidgetConfig.SimpleCircleCfg == null && Tracker.RefType == RefType.Action) { Config.Invert = true; }
+        if (Tracker.WidgetConfig.SimpleCircleCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
     public override void ResetConfigs() => Config = new();

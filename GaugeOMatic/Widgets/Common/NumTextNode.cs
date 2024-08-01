@@ -3,8 +3,8 @@ using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets.Common;
-using GaugeOMatic.Windows;
 using ImGuiNET;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -12,8 +12,11 @@ using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static Newtonsoft.Json.DefaultValueHandling;
 
 namespace GaugeOMatic.Widgets;
 
@@ -113,18 +116,18 @@ public struct NumTextProps
     internal static List<FontType> FontList = new() { Axis, MiedingerMed, Miedinger, TrumpGothic, Jupiter };
     internal static List<string> FontNames = new() { "Axis", "Miedinger Med", "Miedinger", "Trump Gothic", "Jupiter" };
 
-    public bool Enabled;
-    public Vector2 Position;
+    [JsonProperty(DefaultValueHandling = Include)] public bool Enabled;
+    [JsonProperty(DefaultValueHandling = Include)] public Vector2 Position;
     public ColorRGB Color = new(255);
     public ColorRGB EdgeColor = new(0);
-    public bool ShowBg = false;
+    [JsonProperty(DefaultValueHandling = Include)] public bool ShowBg = false;
     public AddRGB BgColor = new(0, 0, 0);
     public byte FontSize = 18;
-    public bool Invert = false;
-    public bool ShowZero = false;
-    public int Precision = 0;
-    public FontType Font = MiedingerMed;
-    public AlignmentType Align = Center;
+    [JsonProperty(DefaultValueHandling = Include)] public bool Invert = false;
+    [JsonProperty(DefaultValueHandling = Include)] public bool ShowZero = false;
+    [JsonProperty(DefaultValueHandling = Include)] public int Precision = 0;
+    [JsonProperty(DefaultValueHandling = Include)] public FontType Font = MiedingerMed;
+    [JsonProperty(DefaultValueHandling = Include)] public AlignmentType Align = Center;
 
     public NumTextProps(bool enabled, Vector2 position, ColorRGB color, ColorRGB edgeColor, bool showBg, AddRGB bgColor, FontType font, byte fontSize, AlignmentType align, bool invert, int precision = 0, bool showZero = false)
     {
@@ -172,7 +175,7 @@ public struct NumTextProps
         if (ImGui.Checkbox($"##{label}Enabled", ref enabled))
         {
             numTextProps.Enabled = enabled;
-            update |= UpdateFlags.Save;
+            update |= Save;
         }
 
         if (treeNode)
@@ -193,6 +196,6 @@ public struct NumTextProps
             ImGui.TreePop();
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) configVal = numTextProps;
+        if (update.HasFlag(Save)) configVal = numTextProps;
     }
 }

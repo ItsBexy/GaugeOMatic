@@ -1,11 +1,10 @@
-using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
-using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
+using GaugeOMatic.Trackers;
+using Newtonsoft.Json;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -14,8 +13,10 @@ using static GaugeOMatic.Widgets.ShimmerHalo;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.UpdateFlags;
 using static System.Math;
+using static GaugeOMatic.Trackers.Tracker;
+using System.ComponentModel;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -148,7 +149,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
         public Vector2 Scale = new(1);
         public float Angle;
         public List<ColorRGB> ColorList = new();
-        public float Speed = 20f;
+        [DefaultValue(20f)] public float Speed = 20f;
 
         public ShimmerHaloConfig(WidgetConfig widgetConfig)
         {

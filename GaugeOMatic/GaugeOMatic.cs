@@ -2,11 +2,11 @@ global using static GaugeOMatic.GaugeOMatic.Service;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using GaugeOMatic.Config;
-using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
+using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.Widgets.Common.CommonParts;
+using static GaugeOMatic.Widgets.WidgetInfo;
 
 namespace GaugeOMatic;
 
@@ -35,8 +35,8 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
         PluginInterface.UiBuilder.Draw += DrawWindows;
         PluginInterface.UiBuilder.OpenConfigUi += OpenConfigWindow;
 
-        WidgetInfo.BuildWidgetList();
-        ActionData.SetupHooks();
+        BuildWidgetList();
+        PopulateActions();
 
         TrackerManager = new(Configuration);
 
