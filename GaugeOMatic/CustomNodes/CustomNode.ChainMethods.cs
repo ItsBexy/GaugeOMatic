@@ -1,13 +1,16 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static FFXIVClientStructs.FFXIV.Component.GUI.NodeType;
+using static GaugeOMatic.GaugeOMatic;
 using static GaugeOMatic.Utility.Color;
 using static System.Math;
+
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -182,7 +185,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetAlpha(float a)
     {
-        Node->Color.A = (byte)(a > 1?a:a*255);
+        Node->Color.A = (byte)(a > 1 ? a : a * 255);
         if (Flags.HasFlag(SetVisByAlpha)) SetVis(a > 0);
         return this;
     }
@@ -381,6 +384,7 @@ public unsafe partial class CustomNode
     {
         if (Node->Type == Image) Node->GetAsAtkImageNode()->PartsList = partsList;
         else if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->PartsList = partsList;
+        else if (Node->Type == ClippingMask) ((AtkClippingMaskNode*)Node)->PartsList = partsList;
 
         return this;
     }
@@ -393,6 +397,7 @@ public unsafe partial class CustomNode
     {
         if (Node->Type == Image) Node->GetAsAtkImageNode()->PartId = id;
         if (Node->Type == NineGrid) Node->GetAsAtkNineGridNode()->PartId = id;
+        if (Node->Type == ClippingMask) ((AtkClippingMaskNode*)Node)->PartId = id;
         return this;
     }
 
@@ -408,6 +413,11 @@ public unsafe partial class CustomNode
             var nineGridNode = Node->GetAsAtkNineGridNode();
             SetCoords(nineGridNode->PartsList, nineGridNode->PartId, coords);
         }
+        else if (Node->Type == NineGrid)
+        {
+            var clipNode = (AtkClippingMaskNode*)Node;
+            SetCoords(clipNode->PartsList, clipNode->PartId, coords);
+        }
 
         static void SetCoords(AtkUldPartsList* list, uint partId, Vector4 coords)
         {
@@ -420,34 +430,50 @@ public unsafe partial class CustomNode
         return this;
     }
 
-    public CustomNode SetKeyFrameAddRGB(AddRGB add, int a, int kf)
+    public CustomNode SetKeyFrameAddRGB(AddRGB add, int a, params int[] keyFrames)
     {
-        if (Node != null && Node->Timeline != null)
+        if (Node == null ||
+            Node->Timeline == null ||
+            Node->Timeline->Resource == null ||
+            Node->Timeline->Resource->AnimationCount <= a) return this;
+
+        var keyGroup = Node->Timeline->Resource->Animations[a].KeyGroups[4];
+        var count = keyGroup.KeyFrameCount;
+
+        if (keyFrames.Length == 0)
         {
-            var resource = Node->Timeline->Resource;
-            if (resource != null && resource->AnimationCount > a)
-            {
-                var animation = resource->Animations[a];
-                if (animation.KeyGroups.Length > 4)
-                {
-                    var keyGroup = animation.KeyGroups[4];
-                    if (keyGroup.KeyFrameCount > kf) keyGroup.KeyFrames[kf].Value.NodeTint.AddRGBBitfield = add.ToBitField();
-                }
-            }
+            keyFrames = new int[count];
+            for (var i = 0; i < count; i++) keyFrames[i] = i;
+        }
+
+        foreach (var kf in keyFrames.Where(k => count > k))
+            keyGroup.KeyFrames[kf].Value.NodeTint.AddRGBBitfield = add.ToBitField();
+
+        return this;
+    }
+
+    public CustomNode SetKeyFrameAddRGB(AddRGB add, params (int a, int kf)[] animKeyFrameTuples)
+    {
+        if (Node == null ||
+            Node->Timeline == null ||
+            Node->Timeline->Resource == null) return this;
+
+        foreach (var a in animKeyFrameTuples.Select(static t => t.a).Distinct())
+        {
+            if (Node->Timeline->Resource->AnimationCount <= a) continue;
+
+            var keyGroup = Node->Timeline->Resource->Animations[a].KeyGroups[4];
+            var count = keyGroup.KeyFrameCount;
+            foreach (var t in animKeyFrameTuples.Where(t => a == t.a && count > t.kf))
+                keyGroup.KeyFrames[t.kf].Value.NodeTint.AddRGBBitfield = add.ToBitField();
         }
 
         return this;
     }
 
-    public CustomNode SetKeyFrameAddRGB(AddRGB add, params (int a, int kf)[] keyFrameTuples)
-    {
-        foreach (var tup in keyFrameTuples) SetKeyFrameAddRGB(add, tup.a, tup.kf);
-        return this;
-    }
-
     public CustomNode Warning(string str)
     {
-        GaugeOMatic.GaugeOMatic.Service.Log.Warning($"{str}\n{new StackTrace()}");
+        Service.Log.Warning($"{str}\n{new StackTrace()}");
         return this;
     }
 }

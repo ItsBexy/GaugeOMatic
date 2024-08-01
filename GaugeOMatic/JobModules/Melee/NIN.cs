@@ -107,13 +107,13 @@ public class NINModule : JobModule
             var fillColorV = TweakConfigs.NIN0HigiColor1 + new AddRGB(100);
             var scrollColor = TweakConfigs.NIN0HigiColor2;
 
-            hGaugeNode.SetKeyFrameAddRGB(fillColorH, (1, 1), (2,0));
+            hGaugeNode.SetKeyFrameAddRGB(fillColorH, (1, 1), (2, 0));
             vGaugeNode.SetAddRGB(fillColorV);
 
-            scrollNode.SetKeyFrameAddRGB(scrollColor, (0, 0), (1, 0), (1, 2), (2, 0), (2, 2));
-            scrollNode.SetKeyFrameAddRGB(scrollColor + new AddRGB(100, 0, 0), 1, 1);
-            scrollNode.SetKeyFrameAddRGB(scrollColor + new AddRGB(30, 0, 20), 2, 1);
-            scrollNode.SetAddRGB(scrollColor);
+            scrollNode.SetKeyFrameAddRGB(scrollColor, (0, 0), (1, 0), (1, 2), (2, 0), (2, 2))
+                      .SetKeyFrameAddRGB(scrollColor + new AddRGB(100, 0, 0), 1, 1)
+                      .SetKeyFrameAddRGB(scrollColor + new AddRGB(30, 0, 20), 2, 1)
+                      .SetAddRGB(scrollColor);
 
             if (gauge->DataCurrent.NinkiValue >= 50) simpleBarFill.SetAddRGB(TweakConfigs.NIN0HigiColor3);
 
@@ -127,14 +127,14 @@ public class NINModule : JobModule
             hGaugeNode.SetKeyFrameAddRGB(new(200, -20, -250), (1, 1), (2, 0));
             vGaugeNode.SetAddRGB(150, 20, -100);
 
-            scrollNode.SetKeyFrameAddRGB(new(0), (0, 0), (1, 0), (1, 2), (2, 0), (2, 2));
-            scrollNode.SetKeyFrameAddRGB(new(100, 0, 0), 1, 1);
-            scrollNode.SetKeyFrameAddRGB(new(30, 0, 20), 2, 1);
-            scrollNode.SetAddRGB(0);
+            scrollNode.SetKeyFrameAddRGB(new(0), (0, 0), (1, 0), (1, 2), (2, 0), (2, 2))
+                      .SetKeyFrameAddRGB(new(100, 0, 0), 1, 1)
+                      .SetKeyFrameAddRGB(new(30, 0, 20), 2, 1)
+                      .SetAddRGB(0);
 
             if (gauge->DataCurrent.NinkiValue >= 50) simpleBarFill.SetAddRGB(150, 0, 0);
 
-            simpleBarFill.SetKeyFrameAddRGB(new(150, 0, 0), (1, 0));
+            simpleBarFill.SetKeyFrameAddRGB(new(150, 0, 0), 1, 0);
             simpleFrame.SetAddRGB(0);
             borderTop.SetAddRGB(100, -50, -120);
             borderBottom.SetAddRGB(100, -50, -120);

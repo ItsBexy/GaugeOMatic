@@ -171,37 +171,37 @@ public class VPRModule : JobModule
 
         void RecolorStandard(AddRGB color)
         {
-            gaugeIndex[7u, 5u].SetKeyFrameAddRGB(color + new AddRGB(-255, 0, 0), (0, 0), (1, 0), (2, 0));
-            gaugeIndex[7u, 4u].SetKeyFrameAddRGB(color + new AddRGB(-255, 0, 0), (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5))
-                              .SetKeyFrameAddRGB(color + new AddRGB(-255, 0, 0), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5))
-                              .SetKeyFrameAddRGB(color + new AddRGB(-255, 0, 0), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5));
-            gaugeIndex[7u, 3u].SetKeyFrameAddRGB(color, (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6))
-                              .SetKeyFrameAddRGB(color, (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6))
-                              .SetKeyFrameAddRGB(color, (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6));
+            var offset = new AddRGB(-255, 0, 0);
+            gaugeIndex[7u, 5u].SetKeyFrameAddRGB(color + offset, (0, 0), (1, 0), (2, 0));
+            gaugeIndex[7u, 4u].SetKeyFrameAddRGB(color + offset, 0)
+                              .SetKeyFrameAddRGB(color + offset, 1)
+                              .SetKeyFrameAddRGB(color + offset, 2);
+            gaugeIndex[7u, 3u].SetKeyFrameAddRGB(color, 0)
+                              .SetKeyFrameAddRGB(color, 1)
+                              .SetKeyFrameAddRGB(color, 2);
 
         }
 
         void RevertStandard()
         {
-            gaugeIndex[7u, 5u].SetKeyFrameAddRGB(new(200, 200, 50), (0, 0))
-                              .SetKeyFrameAddRGB(new(0, 0, 0), (1, 0))
-                              .SetKeyFrameAddRGB(new(-255, 150, 255), (2, 0));
+            gaugeIndex[7u, 5u].SetKeyFrameAddRGB(new(200, 200, 50), 0, 0)
+                              .SetKeyFrameAddRGB(new(0, 0, 0), 1, 0)
+                              .SetKeyFrameAddRGB(new(-255, 150, 255), 2, 0);
 
-            gaugeIndex[7u, 4u].SetKeyFrameAddRGB(new(200, 200, 50), (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5))
-                              .SetKeyFrameAddRGB(new(0, 0, 0), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5))
-                              .SetKeyFrameAddRGB(new(-255, 150, 255), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5));
+            gaugeIndex[7u, 4u].SetKeyFrameAddRGB(new(200, 200, 50), 0)
+                              .SetKeyFrameAddRGB(new(0, 0, 0), 1)
+                              .SetKeyFrameAddRGB(new(-255, 150, 255), 2);
 
-            gaugeIndex[7u, 3u].SetKeyFrameAddRGB(new(200,200,50), (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6))
-                              .SetKeyFrameAddRGB(new(200, -50, -150), (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6))
-                              .SetKeyFrameAddRGB(new(-255, 100, 200), (2, 0), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6));
-
+            gaugeIndex[7u, 3u].SetKeyFrameAddRGB(new(200, 200, 50), 0)
+                              .SetKeyFrameAddRGB(new(200, -50, -150), 1)
+                              .SetKeyFrameAddRGB(new(-255, 100, 200), 2);
         }
 
         void RecolorSimple(AddRGB color)
         {
-            gaugeIndex[16u, 3u].SetKeyFrameAddRGB(color, (0, 0), (0, 1), (0, 2))
-                               .SetKeyFrameAddRGB(color, (1, 0), (1, 1), (1, 2))
-                               .SetKeyFrameAddRGB(color, (2, 0), (2, 1), (2, 2));
+            gaugeIndex[16u, 3u].SetKeyFrameAddRGB(color, 0)
+                               .SetKeyFrameAddRGB(color, 1)
+                               .SetKeyFrameAddRGB(color, 2);
 
             gaugeIndex[16u, 4u].SetKeyFrameAddRGB(color, 1, 1)
                                .SetKeyFrameAddRGB(color, 2, 1)
@@ -210,9 +210,9 @@ public class VPRModule : JobModule
 
         void RevertSimple()
         {
-            gaugeIndex[16u, 3u].SetKeyFrameAddRGB(new(0, -200, -200), (0, 0), (0, 1), (0, 2))
-                               .SetKeyFrameAddRGB(new(-200, -200, 0), (1, 0), (1, 1), (1, 2))
-                               .SetKeyFrameAddRGB(new(-200, -200, 0), (2, 0), (2, 1), (2, 2));
+            gaugeIndex[16u, 3u].SetKeyFrameAddRGB(new(0, -200, -200), 0)
+                               .SetKeyFrameAddRGB(new(-200, -200, 0), 1)
+                               .SetKeyFrameAddRGB(new(-200, -200, 0), 2);
 
             gaugeIndex[16u, 4u].SetKeyFrameAddRGB(new(255, 0, 0), 1, 1)
                                .SetKeyFrameAddRGB(new(0, 50, 255), 2, 1)
