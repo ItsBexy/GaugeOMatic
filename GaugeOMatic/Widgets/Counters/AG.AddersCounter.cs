@@ -288,6 +288,7 @@ public sealed unsafe class AddersCounter : CounterWidget
     public override void OnFirstRun(int count, int max)
     {
         for (var i = 0; i < max; i++) Stacks[i][1].SetAlpha(i < count);
+        if (Config.HideEmpty && count == 0) WidgetContainer.SetAlpha(0).SetAddRGB(100);
     }
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }

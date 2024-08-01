@@ -163,13 +163,11 @@ public abstract class GaugeBarWidget : Widget
             if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
             if (prog > 0 && prevProg <= 0) OnIncreaseFromMin();
             if (prog >= 1 && prevProg < 1) OnIncreaseToMax();
-        }
-
-        if (prevProg > prog)
+        } else if (prevProg > prog)
         {
             if (prevProg - prog >= DrainTolerance) OnDecrease(prog, prevProg);
-            if (prevProg > 0 && prog <= 0) OnDecreaseToMin();
             if (prevProg >= 1 && prog < 1) OnDecreaseFromMax();
+            if (prevProg > 0 && prog <= 0) OnDecreaseToMin();
         }
 
         Animator.RunTweens();

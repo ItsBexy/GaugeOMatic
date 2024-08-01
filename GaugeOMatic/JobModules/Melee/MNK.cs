@@ -8,6 +8,7 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
 
@@ -45,6 +46,7 @@ public class MNKModule : JobModule
         if (!TweakConfigs.MNKHide0)
         {
             ToggleControls("Reverse Order", ref TweakConfigs.MNK0Reverse, ref update);
+            Info("Reverses the order of the Beast Chakras. Useful if you\nprefer to arrange your combo buttons from right to left.");
         }
 
         Heading("Chakra Gauge");

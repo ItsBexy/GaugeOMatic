@@ -11,6 +11,7 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -47,18 +48,17 @@ public class NINModule : JobModule
         Heading("Ninki Gauge");
         ToggleControls("Hide Ninki Gauge", ref TweakConfigs.NINHide0, ref update);
 
-        LabelColumn("Change color under Higi");
+        LabelColumn("Higi Indicator");
         if (ImGui.Checkbox("##BoolChange color under Higi", ref TweakConfigs.NIN0HigiRecolor)) update |= UpdateFlags.Save;
         if (TweakConfigs.NIN0HigiRecolor)
         {
+            Info("Changes the color of the gauge while the Higi buff is active.");
+
             ImGui.SameLine();
             ImGui.Text("Test");
             ImGui.SameLine();
             if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview)) update |= UpdateFlags.Save;
-        }
 
-        if (TweakConfigs.NIN0HigiRecolor)
-        {
             var gauge0 = (AddonJobHudNIN0*)GameGui.GetAddonByName("JobHudNIN0");
             if (gauge0 != null && gauge0->UseSimpleGauge)
             {

@@ -129,7 +129,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 250, 350,450 };
+        var kf = instant ? new[] { 0, 0, 0, 0 } : new[] { 0, 250, 350,450 };
 
         Animator += new Tween[]
         {

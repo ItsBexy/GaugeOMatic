@@ -3,8 +3,6 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.Game;
-using ImGuiNET;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;

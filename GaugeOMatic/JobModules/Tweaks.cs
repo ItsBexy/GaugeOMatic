@@ -16,15 +16,13 @@ internal static class Tweaks
         if (simpleNode != null) simpleNode->SetAlpha((byte)(hide || !simple ? 0 : 255));
     }
 
-    // ReSharper disable once UnusedType.Global
     public static class TweakUI
     {
-        // ReSharper disable once UnusedMember.Global
-        public static void Warning(bool highlight, string helpText)
+        public static void Info(string helpText)
         {
             ImGui.SameLine();
             ImGui.PushFont(UiBuilder.IconFont);
-            ImGui.TextColored(highlight ? new(0.9f, 0.71f, 0, 1) : new(1, 1, 1, 0.3f), ExclamationTriangle.ToIconString());
+            ImGui.TextDisabled(QuestionCircle.ToIconString());
             ImGui.PopFont();
             if (ImGui.IsItemHovered())
             {

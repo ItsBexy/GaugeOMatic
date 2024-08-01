@@ -1,15 +1,13 @@
 using CustomNodes;
-using Dalamud.Interface;
+using Dalamud.Interface.Textures.TextureWraps;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
+using ImGuiNET;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using Dalamud.Interface.Textures.TextureWraps;
-using Dalamud.Plugin.Services;
-using ImGuiNET;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.CustomPartsList;
 using static GaugeOMatic.GaugeOMatic;

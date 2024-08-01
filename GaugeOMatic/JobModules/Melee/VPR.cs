@@ -12,6 +12,7 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusData;
 using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.ItemRefMenu;
@@ -48,25 +49,30 @@ public class VPRModule : JobModule
         Configuration.Save();
     }
 
-
-    public override unsafe void TweakUI(ref UpdateFlags update)
+    public override void TweakUI(ref UpdateFlags update)
     {
         Heading("Vipersight");
         ToggleControls("Hide Vipersight", ref TweakConfigs.VPRHide0, ref update);
         if (!TweakConfigs.VPRHide0)
         {
-            LabelColumn("Color-Code Vipersight");
+            ToggleControls("Mirror Highlights", ref TweakConfigs.VPR0Mirror, ref update);
+            Info("Reverses the left/right position of the gauge highlights.\n" +
+                 "Useful if you keep your Steel Fangs button on the right-hand side.");
+
+            LabelColumn("Color-Code Highlights");
+
             if (ImGui.Checkbox("##BoolColor-Code Vipersight", ref TweakConfigs.VPR0ColorCode)) update |= UpdateFlags.Save;
+            Info("Changes the gauge's highlight color to indicate your next positional.");
+
             if (TweakConfigs.VPR0ColorCode)
             {
                 ImGui.SameLine();
                 ImGui.Text("Test");
                 ImGui.SameLine();
                 if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview)) update |= UpdateFlags.Save;
-            }
 
-            if (TweakConfigs.VPR0ColorCode)
-            {
+                RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, new() { false, true }, new() { "3rd Step Only", "All Steps" }, ref update, true);
+
                 ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank, ref update);
                 if (ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
 
@@ -83,6 +89,7 @@ public class VPRModule : JobModule
         ToggleControls("Hide Serpent Offerings Gauge", ref TweakConfigs.VPRHide1, ref update);
 
         ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue, ref update);
+        Info("Cues the gauge to become highlighted after pressing\nSerpent's Ire and gaining Ready to Reawaken");
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
@@ -91,6 +98,14 @@ public class VPRModule : JobModule
         var gaugeIndex = (AddonIndex)gaugeAddon;
         VisibilityTweak(TweakConfigs.VPRHide0, gauge->UseSimpleGauge, gaugeIndex[2u], gaugeIndex[10u]);
         ApplyColorCodeTweak(gauge);
+
+        gaugeIndex[2u].SetOrigin(167,0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
+        gaugeIndex[9u].SetOrigin(52, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
+        gaugeIndex[3u].SetOrigin(38, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
+
+        gaugeIndex[16u].SetOrigin(97, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
+        gaugeIndex[18u].SetX(TweakConfigs.VPR0Mirror?-194:0).SetScaleX(TweakConfigs.VPR0Mirror ? 1 : -1);
+
     }
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
@@ -130,18 +145,15 @@ public class VPRModule : JobModule
                 }
                 else
                 {
-                    appliedColor = Statuses[1250].TryGetStatus()
+                    appliedColor = (!TweakConfigs.VPR0ColorAll && vipersight->DataCurrent.ComboStep < 2) || Statuses[1250].TryGetStatus()
                                        ? neutral
                                        : ActionManager->GetAdjustedActionId(34609)
                                            switch // check what state the Dread Fangs button is in
                                            {
                                                34611 => flank, // flank positional finishers are up
                                                34613 => rear,  // rear positional finishers are up
-                                               34609 when CheckForAnts(
-                                                   34610,
-                                                   34611) => flank, // swiftskin is up, a flank positional has ants
-                                               34609 when CheckForAnts(
-                                                   34612, 34613) => rear, // swiftskin is up, a rear positional has ants
+                                               34609 when CheckForAnts(34610, 34611) => flank, // swiftskin is up, a flank positional has ants
+                                               34609 when CheckForAnts(34612, 34613) => rear, // swiftskin is up, a rear positional has ants
                                                _ => neutral
                                            };
                 }
@@ -219,6 +231,8 @@ public partial class TweakConfigs
     public AddRGB VPR0ColorRear = new(251, -134, 31);
     public AddRGB VPR0ColorFlank = new(-150, 255, 140);
     public AddRGB VPR0ColorNeutral = new(255, 180, 80);
+    public bool VPR0ColorAll = true;
+    public bool VPR0Mirror;
 
     public bool VPRHide1;
     public bool VPR1ReawakenCue;

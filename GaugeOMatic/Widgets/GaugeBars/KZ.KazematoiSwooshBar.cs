@@ -161,8 +161,8 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
     public static KeyFrame[] Fill2Timeline =>
         new KeyFrame[]
         {
-            new(0) { Alpha = 0, ScaleY = 0.7F, ScaleX = 0 },
-            new(29) { Alpha = 0, ScaleY = 0.7f, ScaleX = 0 },
+            new(0) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
+            new(29) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
             new(30) { Alpha = 255, ScaleY = 0.7f, ScaleX = 0.05F },
             new(40) { Alpha = 255, ScaleY = 0.7F, ScaleX = 0.23F },
             new(50) { Alpha = 255, ScaleY = 0.85F, ScaleX = 1 },
@@ -189,14 +189,13 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
     public static KeyFrame[] Fill4Timeline =>
         new KeyFrame[]
         {
-            new(0) { Alpha = 0, ScaleY = 1/128f, ScaleX = 1/128f },
-            new(78) { Alpha = 0, ScaleY = 1/128f, ScaleX = 1/128f },
-            new(79) { Alpha = 255, ScaleY = 1/128f, ScaleX = 2/128f },
-            new(80) { Alpha = 255, ScaleY = 70/128f, ScaleX = 2/128f },
-            new(85) { Alpha = 255, ScaleY = 70/128f, ScaleX = 15/128f },
-            new(90) { Alpha = 255, ScaleY = 85/128f, ScaleX = 40/128f },
+            new(0) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
+            new(79) { Alpha = 255, ScaleY = 0, ScaleX = 0 },
+            new(80) { Alpha = 255, ScaleY = 0.55F, ScaleX = 0.02F },
+            new(85) { Alpha = 255, ScaleY = 0.55F, ScaleX = 0.1F },
+            new(90) { Alpha = 255, ScaleY = 0.67F, ScaleX = 0.31F },
             new(95) { Alpha = 255, ScaleY = 0.82F, ScaleX = 0.44F },
-            new(100) { Alpha = 255, ScaleY = 120/128f, ScaleX = 128/128f }
+            new(100) { Alpha = 255, ScaleY = 0.94F, ScaleX = 1f }
         };
 
     public static KeyFrame[] BgTimeline =>
@@ -387,7 +386,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         ToggleControls("Invert Fill", ref Config.Invert, ref update);
         HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
 
-        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+       // MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
 
         NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
         LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
