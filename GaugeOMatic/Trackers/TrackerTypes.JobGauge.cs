@@ -31,18 +31,15 @@ using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSCH0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSMN0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudWAR0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudWHM0;
-using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 
 namespace GaugeOMatic.Trackers;
 
 #region Melee
 
-[TrackerDisplay(MNK, null, "Shows Chakra Count", "Shows if 5 chakras are up")]
+[TrackerDisplay("Chakra Gauge", MNK, null, "Shows Chakra Count", "Shows if 5 chakras are up")]
 public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
 {
-    public override Job Job => MNK;
-    public override string DisplayName => "Chakra Gauge";
     public override string GaugeAddonName => "JobHudMNK1";
     public override string TermCount => "Chakras";
 
@@ -57,11 +54,9 @@ public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DRG,null, "Shows Firstminds' Focus Count", "Shows if 2 stacks are up")]
+[TrackerDisplay("Firstminds' Focus", DRG, null, "Shows Firstminds' Focus Count", "Shows if 2 stacks are up")]
 public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeData>
 {
-    public override Job Job => DRG;
-    public override string DisplayName => "Firstminds' Focus";
     public override string GaugeAddonName => "JobHudDRG0";
     public override string TermCount => "Firstminds' Focus";
 
@@ -76,11 +71,9 @@ public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeD
                 preview);
 }
 
-[TrackerDisplay(NIN, "Shows Ninki Value", "Shows spendable Ninki abilities", "Shows if gauge is at least 50")]
+[TrackerDisplay("Ninki Gauge", NIN, "Shows Ninki Value", "Shows spendable Ninki abilities", "Shows if gauge is at least 50")]
 public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
 {
-    public override Job Job => NIN;
-    public override string DisplayName => "Ninki Gauge";
     public override string GaugeAddonName => "JobHudNIN0";
     public override string TermGauge => "Gauge";
 
@@ -95,11 +88,9 @@ public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
                 preview);
 }
 
-[TrackerDisplay(NIN, null, "Shows Kazematoi Stacks", "Shows Inactive/Active/Full")]
+[TrackerDisplay("Kazematoi Stacks", NIN, null, "Shows Kazematoi Stacks", "Shows Inactive/Active/Full")]
 public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData>
 {
-    public override Job Job => NIN;
-    public override string DisplayName => "Kazematoi Stacks";
     public override string GaugeAddonName => "JobHudNIN1v70";
     public override string TermCount => "Stacks";
     public override string[] StateNames => new[] { "Inactive", "Active", "Full" };
@@ -116,11 +107,9 @@ public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData
                 preview);
 }
 
-[TrackerDisplay(SAM, "Shows Kenki value", "Shows maximum spendable Kenki abilities", "Shows if gauge is at least 10")]
+[TrackerDisplay("Kenki Gauge", SAM, "Shows Kenki value", "Shows maximum spendable Kenki abilities", "Shows if gauge is at least 10")]
 public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
-    public override Job Job => SAM;
-    public override string DisplayName => "Kenki Gauge";
     public override string GaugeAddonName => "JobHudSAM0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -134,11 +123,9 @@ public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM, null, "Shows Meditation stacks", "Shows if 3 stacks are up")]
+[TrackerDisplay("Meditation Gauge", SAM, null, "Shows Meditation stacks", "Shows if 3 stacks are up")]
 public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeData>
 {
-    public override Job Job => SAM;
-    public override string DisplayName => "Meditation Gauge";
     public override string GaugeAddonName => "JobHudSAM0";
     public override string TermCount => "Stacks";
 
@@ -153,11 +140,9 @@ public sealed unsafe class MeditationGaugeTracker : JobGaugeTracker<KenkiGaugeDa
                 preview);
 }
 
-[TrackerDisplay(SAM, null, null, "Shows if Setsu is Active")]
+[TrackerDisplay("Setsu Seal", SAM, null, null, "Shows if Setsu is Active")]
 public sealed unsafe class SenGaugeSetsuTracker : JobGaugeTracker<SenGaugeData>
 {
-    public override Job Job => SAM;
-    public override string DisplayName => "Sen Gauge - Setsu Seal";
     public override string GaugeAddonName => "JobHudSAM1";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -171,11 +156,9 @@ public sealed unsafe class SenGaugeSetsuTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM, null, null, "Shows if Getsu is Active")]
+[TrackerDisplay("Getsu Seal", SAM, null, null, "Shows if Getsu is Active")]
 public sealed unsafe class SenGaugeGetsuTracker : JobGaugeTracker<SenGaugeData>
 {
-    public override Job Job => SAM;
-    public override string DisplayName => "Sen Gauge - Getsu Seal";
     public override string GaugeAddonName => "JobHudSAM1";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -189,11 +172,9 @@ public sealed unsafe class SenGaugeGetsuTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM, null, null, " Shows if Ka is Active")]
+[TrackerDisplay("Ka Seal", SAM, null, null, " Shows if Ka is Active")]
 public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
 {
-    public override Job Job => SAM;
-    public override string DisplayName => "Sen Gauge - Ka Seal";
     public override string GaugeAddonName => "JobHudSAM1";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -207,11 +188,9 @@ public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SAM, null, "Shows number of seals active")]
+[TrackerDisplay("Seal Count", SAM, null, "Shows number of seals active")]
 public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
 {
-    public override Job Job => SAM;
-    public override string DisplayName => "Sen Gauge - Seal Count";
     public override string GaugeAddonName => "JobHudSAM1";
     public override string[] StateNames => new[] { "None", "Higanbana", "Tenka Goken", "Midare Setsugekka" };
 
@@ -228,11 +207,9 @@ public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
     }
 }
 
-[TrackerDisplay(RPR, "Shows Soul Gauge value", "Shows spendable Soul Gauge abilities", "Shows if gauge is at least 50")]
+[TrackerDisplay("Soul Gauge", RPR, "Shows Soul Gauge value", "Shows spendable Soul Gauge abilities", "Shows if gauge is at least 50")]
 public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
-    public override Job Job => RPR;
-    public override string DisplayName => "Soul Gauge";
     public override string GaugeAddonName => "JobHudRRP0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -246,11 +223,9 @@ public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
                 preview);
 }
 
-[TrackerDisplay(RPR, "Shows Shroud Gauge value", "Shows Enshroud uses available", "Shows if gauge is at least 50")]
+[TrackerDisplay("Shroud Gauge", RPR, "Shows Shroud Gauge value", "Shows Enshroud uses available", "Shows if gauge is at least 50")]
 public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
-    public override Job Job => RPR;
-    public override string DisplayName => "Shroud Gauge";
     public override string GaugeAddonName => "JobHudRRP0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -264,11 +239,9 @@ public sealed unsafe class ShroudGaugeTracker : JobGaugeTracker<SoulGaugeData>
                 preview);
 }
 
-[TrackerDisplay(RPR, "Shows Enshroud timer", "Shows Lemure Shroud stacks", "Shows if Enshroud is active")]
+[TrackerDisplay("Lemure Shroud", RPR, "Shows Enshroud timer", "Shows Lemure Shroud stacks", "Shows if Enshroud is active")]
 public sealed unsafe class LemureShroudTracker : JobGaugeTracker<DeathGaugeData>
 {
-    public override Job Job => RPR;
-    public override string DisplayName => "Lemure Shroud";
     public override string GaugeAddonName => "JobHudRRP1";
     public override string TermCount => "Stacks";
 
@@ -283,11 +256,9 @@ public sealed unsafe class LemureShroudTracker : JobGaugeTracker<DeathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(RPR, "Shows Enshroud timer", "Shows Void Shroud stacks", "Shows if Enshroud is active")]
+[TrackerDisplay("Void Shroud", RPR, "Shows Enshroud timer", "Shows Void Shroud stacks", "Shows if Enshroud is active")]
 public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
 {
-    public override Job Job => RPR;
-    public override string DisplayName => "Void Shroud";
     public override string GaugeAddonName => "JobHudRRP1";
     public override string TermCount => "Stacks";
 
@@ -302,11 +273,9 @@ public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(VPR, null, "Shows Rattling Coils", "Shows whether any Coils remain")]
+[TrackerDisplay("Rattling Coils", VPR, null, "Shows Rattling Coils", "Shows whether any Coils remain")]
 public sealed unsafe class RattlingCoilTracker : JobGaugeTracker<VipersightGaugeData>
 {
-    public override Job Job => VPR;
-    public override string DisplayName => "Rattling Coils";
     public override string GaugeAddonName => "JobHudRDB0";
     public override string TermCount => "Stacks";
 
@@ -322,11 +291,9 @@ public sealed unsafe class RattlingCoilTracker : JobGaugeTracker<VipersightGauge
                 preview);
 }
 
-[TrackerDisplay(VPR, "Shows Serpent Offerings Gauge value", "Shows Anguine Tribute Stacks", "Shows whether gauge can be spent")]
+[TrackerDisplay("Serpent Offerings Gauge", VPR, "Shows Serpent Offerings Gauge value", "Shows Anguine Tribute Stacks", "Shows whether gauge can be spent")]
 public sealed unsafe class SerpentGaugeTracker : JobGaugeTracker<SerpentOfferingsGaugeData>
 {
-    public override Job Job => VPR;
-    public override string DisplayName => "Serpent Offerings Gauge";
     public override string GaugeAddonName => "JobHudRDB1";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -341,11 +308,10 @@ public sealed unsafe class SerpentGaugeTracker : JobGaugeTracker<SerpentOffering
                 preview);
 }
 
-[TrackerDisplay(VPR, "Shows Anguine Tribute Timer", "Shows Anguine Tribute Stacks", "Shows whether any stacks remain")]
+[TrackerDisplay("Anguine Tribute", VPR, "Shows Anguine Tribute Timer", "Shows Anguine Tribute Stacks", "Shows whether any stacks remain")]
 public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferingsGaugeData>
 {
-    public override Job Job => VPR;
-    public override string DisplayName => "Anguine Tribute";
+
     public override string GaugeAddonName => "JobHudRDB1";
     public override string TermCount => "Stacks";
 
@@ -365,11 +331,9 @@ public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferi
 
 #region Ranged
 
-[TrackerDisplay(BRD, "Shows gauge value", null, "Shows if gauge is at least 80")]
+[TrackerDisplay("Soul Voice Gauge", BRD, "Shows gauge value", null, "Shows if gauge is at least 80")]
 public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData>
 {
-    public override Job Job => BRD;
-    public override string DisplayName => "Soul Voice Gauge";
     public override string GaugeAddonName => "JobHudBRD0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -383,11 +347,11 @@ public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData
                 preview);
 }
 
-[TrackerDisplay(MCH, "Shows Heat Gauge value", "Shows Hypercharge uses available", "Shows if gauge is at least 50")]
+[TrackerDisplay("Heat Gauge", MCH, "Shows Heat Gauge value", "Shows Hypercharge uses available", "Shows if gauge is at least 50")]
 public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
 {
-    public override Job Job => MCH;
-    public override string DisplayName => "Heat Gauge";
+
+
     public override string GaugeAddonName => "JobHudMCH0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -401,11 +365,10 @@ public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(MCH, "Shows Battery Gauge value", null, "Shows if gauge is at least 50")]
+[TrackerDisplay("Battery Gauge", MCH, "Shows Battery Gauge value", null, "Shows if gauge is at least 50")]
 public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
 {
-    public override Job Job => MCH;
-    public override string DisplayName => "Battery Gauge";
+
     public override string GaugeAddonName => "JobHudMCH0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -419,11 +382,10 @@ public sealed unsafe class BatteryGaugeTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(MCH, "Shows Summon time left", null, "Shows if Automaton Queen is active")]
+[TrackerDisplay("Automaton Timer", MCH, "Shows Summon time left", null, "Shows if Automaton Queen is active")]
 public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
 {
-    public override Job Job => MCH;
-    public override string DisplayName => "Automaton Timer";
+
     public override string GaugeAddonName => "JobHudMCH0";
     public override string TermGauge => "Timer";
 
@@ -439,11 +401,10 @@ public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DNC, null, "Shows Feather count", "Shows if any feathers are up")]
+[TrackerDisplay("Fourfold Feathers", DNC, null, "Shows Feather count", "Shows if any feathers are up")]
 public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
 {
-    public override Job Job => DNC;
-    public override string DisplayName => "Fourfold Feathers";
+
     public override string GaugeAddonName => "JobHudDNC1";
     public override string TermCount => "Feathers";
 
@@ -458,11 +419,10 @@ public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DNC, "Shows Esprit Gauge value", "Shows Sabre Dance uses available", "Shows if gauge is at least 50")]
+[TrackerDisplay("Esprit Gauge", DNC, "Shows Esprit Gauge value", "Shows Sabre Dance uses available", "Shows if gauge is at least 50")]
 public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData>
 {
-    public override Job Job => DNC;
-    public override string DisplayName => "Esprit Gauge";
+
     public override string GaugeAddonName => "JobHudDNC1";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -476,11 +436,10 @@ public sealed unsafe class EspritGaugeTracker : JobGaugeTracker<FeatherGaugeData
                 preview);
 }
 
-[TrackerDisplay(DNC, null, "Shows steps completed", "Shows current step")]
+[TrackerDisplay("Dance Steps", DNC, null, "Shows steps completed", "Shows current step")]
 public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 {
-    public override Job Job => DNC;
-    public override string DisplayName => "Dance Steps";
+
     public override string GaugeAddonName => "JobHudDNC0";
     public override string[] StateNames => new[] { "None", "Emboite", "Entrechat", "Jete", "Pirouette" };
 
@@ -502,11 +461,10 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 
 #region Caster
 
-[TrackerDisplay(BLM, "Shows Enochian timer", "Shows Polyglot stacks", "Shows if Enochian is filling")]
+[TrackerDisplay("Enochian / Polyglot", BLM, "Shows Enochian timer", "Shows Polyglot stacks", "Shows if Enochian is filling")]
 public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Enochian / Polyglot";
+
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Polyglot Stacks";
     public override string TermGauge => "Timer";
@@ -523,11 +481,10 @@ public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(BLM, "Shows element timer", "Shows element stacks", "Shows which element is active")]
+[TrackerDisplay("Element Status", BLM, "Shows element timer", "Shows element stacks", "Shows which element is active")]
 public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Element Status";
+
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Element";
     public override string TermGauge => "Timer";
@@ -545,11 +502,9 @@ public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(BLM, null, null, " Shows if Paradox is ready")]
+[TrackerDisplay("Paradox", BLM, null, null, " Shows if Paradox is ready")]
 public sealed unsafe class ParadoxTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Paradox";
     public override string GaugeAddonName => "JobHudBLM0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -564,11 +519,9 @@ public sealed unsafe class ParadoxTracker : JobGaugeTracker<ElementalGaugeData>
                 preview);
 }
 
-[TrackerDisplay(BLM, null, "Shows Umbral Heart count", "Shows if any Umbral Hearts are available")]
+[TrackerDisplay("Umbral Hearts", BLM, null, "Shows Umbral Heart count", "Shows if any Umbral Hearts are available")]
 public sealed unsafe class UmbralHeartTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Umbral Hearts";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Hearts";
 
@@ -584,11 +537,10 @@ public sealed unsafe class UmbralHeartTracker : JobGaugeTracker<ElementalGaugeDa
                 preview);
 }
 
-[TrackerDisplay(BLM, "Shows Astral Fire time left", "Shows Astral Fire stacks", "Shows if Astral Fire is active")]
+[TrackerDisplay("Astral Fire", BLM, "Shows Astral Fire time left", "Shows Astral Fire stacks", "Shows if Astral Fire is active")]
 public sealed unsafe class AstralFireTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Astral Fire";
+
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Astral Fire Stacks";
     public override string TermGauge => "Timer";
@@ -608,11 +560,9 @@ public sealed unsafe class AstralFireTracker : JobGaugeTracker<ElementalGaugeDat
     }
 }
 
-[TrackerDisplay(BLM, "Shows Umbral Ice time left", "Shows Umbral Ice stacks", "Shows if Umbral Ice is active")]
+[TrackerDisplay("Umbral Ice", BLM, "Shows Umbral Ice time left", "Shows Umbral Ice stacks", "Shows if Umbral Ice is active")]
 public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Umbral Ice";
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Umbral Ice Stacks";
     public override string TermGauge => "Timer";
@@ -633,11 +583,10 @@ public sealed unsafe class UmbralIceTracker : JobGaugeTracker<ElementalGaugeData
     }
 }
 
-[TrackerDisplay(BLM, null, "Shows Astral Soul Stacks", "Shows whether 6 stacks are up")]
+[TrackerDisplay("Astral Soul Stacks", BLM, null, "Shows Astral Soul Stacks", "Shows whether 6 stacks are up")]
 public sealed unsafe class AstralSoulTracker : JobGaugeTracker<AstralGaugeData>
 {
-    public override Job Job => BLM;
-    public override string DisplayName => "Astral Soul Stacks";
+
     public override string GaugeAddonName => "JobHudBLM1";
     public override string TermCount => "Stacks";
 
@@ -653,11 +602,10 @@ public sealed unsafe class AstralSoulTracker : JobGaugeTracker<AstralGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SMN, null, "Shows Aetherflow stack count", "Shows if there are any stacks available")]
+[TrackerDisplay("Aetherflow Gauge", SMN, null, "Shows Aetherflow stack count", "Shows if there are any stacks available")]
 public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<AetherflowSMNGaugeData>
 {
-    public override Job Job => SMN;
-    public override string DisplayName => "Aetherflow Gauge";
+
     public override string GaugeAddonName => "JobHudSMN0";
     public override string TermCount => "Stacks";
 
@@ -672,11 +620,9 @@ public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay(RDM, "Shows the lesser of White or Black Mana", "Shows Mana stack count", "Shows if both gauges are at least 50")]
+[TrackerDisplay("Mana Stacks", RDM, "Shows the lesser of White or Black Mana", "Shows Mana stack count", "Shows if both gauges are at least 50")]
 public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
 {
-    public override Job Job => RDM;
-    public override string DisplayName => "Mana Stacks";
     public override string GaugeAddonName => "JobHudRDM0";
     public override string TermCount => "Mana Stacks";
 
@@ -689,11 +635,10 @@ public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
     }
 }
 
-[TrackerDisplay(RDM, "Shows Black Mana", "Shows spendable combos", "Shows if Black Mana is at least 50")]
+[TrackerDisplay("Black Mana", RDM, "Shows Black Mana", "Shows spendable combos", "Shows if Black Mana is at least 50")]
 public sealed unsafe class BlackManaTracker : JobGaugeTracker<BalanceGaugeData>
 {
-    public override Job Job => RDM;
-    public override string DisplayName => "Black Mana";
+
     public override string GaugeAddonName => "JobHudRDM0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -702,11 +647,9 @@ public sealed unsafe class BlackManaTracker : JobGaugeTracker<BalanceGaugeData>
             : new((int)Math.Floor((double)(Math.Min(GaugeData->BlackMana, GaugeData->WhiteMana) / 50)), 2, GaugeData->BlackMana, 100, GaugeData->BlackMana >= 50 ? 1 : 0, 1, preview);
 }
 
-[TrackerDisplay(RDM, "Shows White Mana", "Shows spendable combos", "Shows if White Mana is at least 50")]
+[TrackerDisplay("White Mana", RDM, "Shows White Mana", "Shows spendable combos", "Shows if White Mana is at least 50")]
 public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
 {
-    public override Job Job => RDM;
-    public override string DisplayName => "White Mana";
     public override string GaugeAddonName => "JobHudRDM0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -715,11 +658,10 @@ public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
             : new((int)Math.Floor((double)(GaugeData->WhiteMana / 50)), 2, GaugeData->WhiteMana, 100, GaugeData->WhiteMana >= 50 ? 1 : 0, 1, preview);
 }
 
-[TrackerDisplay(RDM, null, null, "Shows Combo/Imbalance state")]
+[TrackerDisplay("Balance Crystal", RDM, null, null, "Shows Combo/Imbalance state")]
 public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeData>
 {
-    public override Job Job => RDM;
-    public override string DisplayName => "Balance Crystal";
+
     public override string GaugeAddonName => "JobHudRDM0";
     public override string[] StateNames { get; } = { "Neutral", "Excess Black", "Excess White", "Combo Ready" };
 
@@ -734,11 +676,10 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
     }
 }
 
-[TrackerDisplay(PCT, "Shows total recast time", "Shows charges", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
+[TrackerDisplay("Creature Motif Deadline", PCT, "Shows total recast time", "Shows charges", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
 public sealed unsafe class CreatureMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
-    public override Job Job => PCT;
-    public override string DisplayName => "Creature Motif Deadline";
+
     public override string GaugeAddonName => "JobHudRPM0";
 
     public override TrackerData GetCurrentData(float? preview = null)
@@ -750,11 +691,9 @@ public sealed unsafe class CreatureMotifDeadline : JobGaugeTracker<CanvasGaugeDa
     }
 }
 
-[TrackerDisplay(PCT, "Shows total recast time", "Shows charges", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
+[TrackerDisplay("Weapon Motif Deadline", PCT, "Shows total recast time", "Shows charges", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
 public sealed unsafe class WeaponMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
-    public override Job Job => PCT;
-    public override string DisplayName => "Weapon Motif Deadline";
     public override string GaugeAddonName => "JobHudRPM0";
 
     public override TrackerData GetCurrentData(float? preview = null)
@@ -766,11 +705,9 @@ public sealed unsafe class WeaponMotifDeadline : JobGaugeTracker<CanvasGaugeData
     }
 }
 
-[TrackerDisplay(PCT, "Shows total recast time", "Shows if ready", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
+[TrackerDisplay("Landscape Motif Deadline", PCT, "Shows total recast time", "Shows if ready", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
 public sealed unsafe class LandscapeMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
-    public override Job Job => PCT;
-    public override string DisplayName => "Landscape Motif Deadline";
     public override string GaugeAddonName => "JobHudRPM0";
 
     public override TrackerData GetCurrentData(float? preview = null)
@@ -782,11 +719,9 @@ public sealed unsafe class LandscapeMotifDeadline : JobGaugeTracker<CanvasGaugeD
     }
 }
 
-[TrackerDisplay(PCT, "Shows Palette Gauge value", "Shows White Paint Stacks", "Shows whether Black Paint is available")]
+[TrackerDisplay("Palette Gauge", PCT, "Shows Palette Gauge value", "Shows White Paint Stacks", "Shows whether Black Paint is available")]
 public sealed unsafe class PaletteGaugeTracker : JobGaugeTracker<PaletteGaugeData>
 {
-    public override Job Job => PCT;
-    public override string DisplayName => "Palette Gauge";
     public override string GaugeAddonName => "JobHudRPM1";
     public override string TermCount => "Stacks";
 
@@ -806,11 +741,9 @@ public sealed unsafe class PaletteGaugeTracker : JobGaugeTracker<PaletteGaugeDat
 
 #region Tank
 
-[TrackerDisplay(PLD, "Shows Oath Gauge value", "Shows spendable Oath Gauge abilities", "Shows if tank stance is on")]
+[TrackerDisplay("Oath Gauge", PLD, "Shows Oath Gauge value", "Shows spendable Oath Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
 {
-    public override Job Job => PLD;
-    public override string DisplayName => "Oath Gauge";
     public override string GaugeAddonName => "JobHudPLD0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -824,11 +757,10 @@ public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
                 preview);
 }
 
-[TrackerDisplay(WAR, "Shows Beast Gauge value", "Shows spendable Beast Gauge abilities", "Shows if tank stance is on")]
+[TrackerDisplay("Beast Gauge", WAR, "Shows Beast Gauge value", "Shows spendable Beast Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
 {
-    public override Job Job => WAR;
-    public override string DisplayName => "Beast Gauge";
+
     public override string GaugeAddonName => "JobHudWAR0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -842,11 +774,10 @@ public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DRK, "Shows Blood Gauge value", "Shows spendable Blood Gauge abilities", "Shows if tank stance is on")]
+[TrackerDisplay("JobHudDRK0", DRK, "Shows Blood Gauge value", "Shows spendable Blood Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
 {
-    public override Job Job => DRK;
-    public override string DisplayName => "Blood Gauge";
+
     public override string GaugeAddonName => "JobHudDRK0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -860,11 +791,10 @@ public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
                 preview);
 }
 
-[TrackerDisplay(DRK, " Shows Darkside timer", null, "Shows if Darkside is active")]
+[TrackerDisplay("JobHudDRK1", DRK, " Shows Darkside timer", null, "Shows if Darkside is active")]
 public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeData>
 {
-    public override Job Job => DRK;
-    public override string DisplayName => "Darkside Gauge";
+
     public override string GaugeAddonName => "JobHudDRK1";
     public override string TermGauge => "Timer";
 
@@ -879,11 +809,9 @@ public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeD
                 preview);
 }
 
-[TrackerDisplay(DRK, "Shows Living Shadow timer", null, "Shows if Living Shadow is active")]
+[TrackerDisplay("JobHudDRK1", DRK, "Shows Living Shadow timer", null, "Shows if Living Shadow is active")]
 public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeData>
 {
-    public override Job Job => DRK;
-    public override string DisplayName => "Living Shadow";
     public override string GaugeAddonName => "JobHudDRK1";
     public override string TermGauge => "Timer";
 
@@ -898,11 +826,9 @@ public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeDa
                 preview);
 }
 
-[TrackerDisplay(GNB, null, "Shows Cartridge Count", "Shows if Tank Stance is on")]
+[TrackerDisplay("JobHudGNB0", GNB, null, "Shows Cartridge Count", "Shows if Tank Stance is on")]
 public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 {
-    public override Job Job => GNB;
-    public override string DisplayName => "Powder Gauge";
     public override string GaugeAddonName => "JobHudGNB0";
     public override string TermCount => "Cartridges";
 
@@ -921,11 +847,9 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 
 #region Healer
 
-[TrackerDisplay(WHM, "Shows Lily timer", "Shows Lilies available", "Shows if Blood Lily is available")]
+[TrackerDisplay("Lilies", WHM, "Shows Lily timer", "Shows Lilies available", "Shows if Blood Lily is available")]
 public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
 {
-    public override Job Job => WHM;
-    public override string DisplayName => "Lilies";
     public override string GaugeAddonName => "JobHudWHM0";
     public override string TermCount => "Lilies";
     public override string TermGauge => "Timer";
@@ -941,11 +865,10 @@ public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
                 preview);
 }
 
-[TrackerDisplay(WHM, "Shows Lily timer", "Shows Lilies spent", "Shows if Blood Lily is available")]
+[TrackerDisplay("Blood Lily", WHM, "Shows Lily timer", "Shows Lilies spent", "Shows if Blood Lily is available")]
 public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
 {
-    public override Job Job => WHM;
-    public override string DisplayName => "Blood Lily";
+
     public override string GaugeAddonName => "JobHudWHM0";
     public override string TermCount => "Blood Lily";
     public override string TermGauge => "Timer";
@@ -961,11 +884,10 @@ public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SCH, null, "Shows Aetherflow stacks", "Shows if any stacks are available")]
+[TrackerDisplay("Aetherflow Gauge", SCH, null, "Shows Aetherflow stacks", "Shows if any stacks are available")]
 public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<AetherflowACNGaugeData>
 {
-    public override Job Job => SCH;
-    public override string DisplayName => "Aetherflow Gauge";
+
     public override string GaugeAddonName => "JobHudACN0";
     public override string TermCount => "Stacks";
 
@@ -980,11 +902,10 @@ public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay(SCH, "Shows Fae Aether value", null, "Shows if Faerie is summoned")]
+[TrackerDisplay("Fae Aether", SCH, "Shows Fae Aether value", null, "Shows if Faerie is summoned")]
 public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
 {
-    public override Job Job => SCH;
-    public override string DisplayName => "Fae Aether";
+
     public override string GaugeAddonName => "JobHudSCH0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -998,11 +919,9 @@ public sealed unsafe class FaerieGaugeTracker : JobGaugeTracker<FaerieGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SCH, "Shows Seraph timer", null, "Shows if Seraph is active")]
+[TrackerDisplay("Seraph Timer", SCH, "Shows Seraph timer", null, "Shows if Seraph is active")]
 public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
 {
-    public override Job Job => SCH;
-    public override string DisplayName => "Seraph Timer";
     public override string GaugeAddonName => "JobHudSCH0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -1016,11 +935,10 @@ public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SGE, null, null, "Shows if Eukrasia is active")]
+[TrackerDisplay("Eukrasia", SGE, null, null, "Shows if Eukrasia is active")]
 public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
 {
-    public override Job Job => SGE;
-    public override string DisplayName => "Eukrasia";
+
     public override string GaugeAddonName => "JobHudGFF0";
 
     public override TrackerData GetCurrentData(float? preview = null) =>
@@ -1034,11 +952,10 @@ public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
                 preview);
 }
 
-[TrackerDisplay(SGE, "Shows Addersgall timer", "Shows Addersgall stacks", "Shows if any stacks are available")]
+[TrackerDisplay("Addersgall Gauge", SGE, "Shows Addersgall timer", "Shows Addersgall stacks", "Shows if any stacks are available")]
 public sealed unsafe class AddersgallTracker : JobGaugeTracker<AddersgallGaugeData>
 {
-    public override Job Job => SGE;
-    public override string DisplayName => "Addersgall Gauge";
+
     public override string GaugeAddonName => "JobHudGFF1";
     public override string TermCount => "Stacks";
     public override string TermGauge => "Timer";
@@ -1054,11 +971,10 @@ public sealed unsafe class AddersgallTracker : JobGaugeTracker<AddersgallGaugeDa
                 preview);
 }
 
-[TrackerDisplay(SGE, null, "Shows Addersting stacks", "Shows if any stacks are available")]
+[TrackerDisplay("Addersting Counter", SGE, null, "Shows Addersting stacks", "Shows if any stacks are available")]
 public sealed unsafe class AdderstingTracker : JobGaugeTracker<AddersgallGaugeData>
 {
-    public override Job Job => SGE;
-    public override string DisplayName => "Addersting Counter";
+
     public override string GaugeAddonName => "JobHudGFF1";
     public override string TermCount => "Stacks";
 

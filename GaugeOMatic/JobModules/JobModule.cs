@@ -213,7 +213,13 @@ public abstract class JobModule : IDisposable
         Save();
     }
 
-    public void AddBlankTracker() => AddTrackerConfig(new(nameof(EmptyTracker), "Empty Tracker", true, AddonOptions[0].Name, new()));
+    public void AddBlankTracker() => AddTrackerConfig(new()
+    {
+        TrackerType = nameof(EmptyTracker),
+        Enabled = true,
+        AddonName = AddonOptions[0].Name,
+        WidgetConfig = new()
+    });
 
     public abstract void Save();
     public abstract void TweakUI(ref UpdateFlags update);

@@ -17,6 +17,8 @@ using static GaugeOMatic.Widgets.HeatReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
@@ -30,7 +32,7 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Heat Gauge",
         Author = "ItsBexy",
@@ -257,32 +259,40 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-        RadioControls("Base Color", ref Config.BaseColor, new() { 12, 11 }, new() { "Orange", "Blue" }, ref update, true);
-
-        if (Config.BaseColor == 12)
+        switch (UiTab)
         {
-            ColorPickerRGBA("Main Bar", ref Config.MainColorOrange, ref update);
-            ColorPickerRGBA("Gain", ref Config.GainColorOrange, ref update);
-            ColorPickerRGBA("Drain", ref Config.DrainColorOrange, ref update);
-        }
-        else
-        {
-            ColorPickerRGBA("Main Bar", ref Config.MainColorBlue, ref update);
-            ColorPickerRGBA("Gain", ref Config.GainColorBlue, ref update);
-            ColorPickerRGBA("Drain", ref Config.DrainColorBlue, ref update);
-        }
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+                RadioControls("Base Color", ref Config.BaseColor, new() { 12, 11 }, new() { "Orange", "Blue" }, ref update, true);
 
-        //todo: maybe implement Hide Controls?
-        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                if (Config.BaseColor == 12)
+                {
+                    ColorPickerRGBA("Main Bar", ref Config.MainColorOrange, ref update);
+                    ColorPickerRGBA("Gain", ref Config.GainColorOrange, ref update);
+                    ColorPickerRGBA("Drain", ref Config.DrainColorOrange, ref update);
+                }
+                else
+                {
+                    ColorPickerRGBA("Main Bar", ref Config.MainColorBlue, ref update);
+                    ColorPickerRGBA("Gain", ref Config.GainColorBlue, ref update);
+                    ColorPickerRGBA("Drain", ref Config.DrainColorBlue, ref update);
+                }
+                break;
+            case Behavior:
+                //todo: maybe implement Hide Controls?
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.HeatReplicaCfg = Config;

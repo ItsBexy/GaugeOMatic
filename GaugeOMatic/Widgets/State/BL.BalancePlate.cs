@@ -13,6 +13,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalancePlate;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -20,14 +21,15 @@ namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class BalancePlate : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Balance Gauge Backplate",
         Author = "ItsBexy",
         Description =
             "A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.",
         WidgetTags = MultiComponent | Replica | State,
-        MultiCompData = new("BL", "Balance Gauge Replica", 1)
+        MultiCompData = new("BL", "Balance Gauge Replica", 1),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } =
@@ -218,22 +220,28 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
         Config.FillColorLists(Tracker.CurrentData.MaxState);
-
-        for (var i = 0; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                for (var i = 0; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
 
-            var bgColor = Config.BGColors[i];
-            var crystalColor = Config.CrystalColors[i];
-            var fxColor = Config.FXColors[i];
-            if (ColorPickerRGBA($"Backdrop##{i}", ref bgColor, ref update)) Config.BGColors[i] = bgColor;
-            if (ColorPickerRGB($"Crystal##{i}", ref crystalColor, ref update)) Config.CrystalColors[i] = crystalColor;
-            if (ColorPickerRGBA($"Effects##{i}", ref fxColor, ref update)) Config.FXColors[i] = fxColor;
+                    var bgColor = Config.BGColors[i];
+                    var crystalColor = Config.CrystalColors[i];
+                    var fxColor = Config.FXColors[i];
+                    if (ColorPickerRGBA($"Backdrop##{i}", ref bgColor, ref update)) Config.BGColors[i] = bgColor;
+                    if (ColorPickerRGB($"Crystal##{i}", ref crystalColor, ref update)) Config.CrystalColors[i] = crystalColor;
+                    if (ColorPickerRGBA($"Effects##{i}", ref fxColor, ref update)) Config.FXColors[i] = fxColor;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

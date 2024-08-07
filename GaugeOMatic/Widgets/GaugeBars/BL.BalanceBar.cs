@@ -17,6 +17,7 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -35,7 +36,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Balance Bar",
         Author = "ItsBexy",
@@ -313,33 +314,37 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        RadioControls("Side", ref Config.Side, new() { 0u, 1u }, new() { "Left", "Right" }, ref update);
-
-        Heading("Colors");
-
-        RadioControls("Base Color", ref Config.BaseColor, new() { 0u, 1u }, new() { "Light", "Dark" }, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-        ColorPickerRGB("Flash", ref Config.FlashColor, ref update);
-        ColorPickerRGB("Petal Color", ref Config.PetalColor, ref update);
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        var petalEffect = new List<bool> { Config.PetalInc, Config.PetalDec };
-        if (ToggleControls("Petal Effect", ref petalEffect, new() { "On Increase", "On Decrease" }, ref update))
+        switch (UiTab)
         {
-            Config.PetalInc = petalEffect[0];
-            Config.PetalDec = petalEffect[1];
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                RadioControls("Side", ref Config.Side, new() { 0u, 1u }, new() { "Left", "Right" }, ref update);
+                break;
+            case Colors:
+                RadioControls("Base Color", ref Config.BaseColor, new() { 0u, 1u }, new() { "Light", "Dark" }, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                ColorPickerRGB("Flash", ref Config.FlashColor, ref update);
+                ColorPickerRGB("Petal Color", ref Config.PetalColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                var petalEffect = new List<bool> { Config.PetalInc, Config.PetalDec };
+                if (ToggleControls("Petal Effect", ref petalEffect, new() { "On Increase", "On Decrease" }, ref update))
+                {
+                    Config.PetalInc = petalEffect[0];
+                    Config.PetalDec = petalEffect[1];
+                }
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
         }
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BalanceBarCfg = Config;

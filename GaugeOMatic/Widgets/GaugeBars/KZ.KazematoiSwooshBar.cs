@@ -20,6 +20,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -31,7 +32,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Kazematoi Bar",
         Author = "ItsBexy",
@@ -67,7 +68,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         Mask = ClippingMaskFromPart(1, 0).SetPos(5, 3);
 
         NumTextNode = new();
-        LabelTextNode = new LabelTextNode(Config.LabelTextProps.Text, Tracker.DisplayName);
+        LabelTextNode = new LabelTextNode(Config.LabelTextProps.Text, Tracker.DisplayAttr.Name);
         Gain = new CustomNode();
         Drain = new CustomNode();
 
@@ -367,31 +368,33 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                ToggleControls("Mirror", ref Config.Mirror, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Fill Color", ref Config.MainColor, ref update);
+                ColorPickerRGB("Tick Color", ref Config.TickColor, ref update);
+                ColorPickerRGB("Backdrop (Full)", ref Config.BgFullColor, ref update);
+                ColorPickerRGB("Backdrop (Empty)", ref Config.BgEmptyColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
 
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        ToggleControls("Mirror", ref Config.Mirror, ref update);
-
-        Heading("Colors");
-
-        ColorPickerRGB("Fill Color", ref Config.MainColor, ref update);
-        ColorPickerRGB("Tick Color", ref Config.TickColor, ref update);
-        ColorPickerRGB("Backdrop Tint (Full)", ref Config.BgFullColor, ref update);
-        ColorPickerRGB("Backdrop Tint (Empty)", ref Config.BgEmptyColor, ref update);
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-       // MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.KazematoiSwooshBarCfg = Config;

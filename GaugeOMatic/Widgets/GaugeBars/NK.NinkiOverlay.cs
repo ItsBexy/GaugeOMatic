@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.NinkiOverlay;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -26,7 +27,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Ninki Overlay",
         Author = "ItsBexy",
@@ -190,18 +191,25 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
-        Heading("Colors");
-        ColorPickerRGBA("Scroll Color", ref Config.ScrollColor, ref update);
-        ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
-
-        Heading("Behavior");
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                ColorPickerRGBA("Scroll Color", ref Config.ScrollColor, ref update);
+                ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
+                break;
+            case Behavior:
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.NinkiOverlayCfg = Config;

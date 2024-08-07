@@ -17,7 +17,8 @@ public partial class ConfigWindow
     private static void DrawTrackerRow(Tracker tracker, ref UpdateFlags update)
     {
         var hash = tracker.GetHashCode();
-        var index = tracker.TrackerConfig.Index;
+        var trackerConfig = tracker.TrackerConfig;
+        var index = trackerConfig.Index;
 
         ImGui.TableNextRow();
 
@@ -29,9 +30,10 @@ public partial class ConfigWindow
 
         ImGui.TableNextColumn();
 
-        DrawGameIcon(tracker.GameIcon, 22f, tracker.TrackerConfig.Enabled);
+        var attr = tracker.DisplayAttr;
+        DrawGameIcon(attr.GameIcon, 22f, trackerConfig.Enabled);
 
-        if (ImGui.IsItemHovered()) tracker.DrawTooltip();
+        if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
         tracker.ItemRefMenu.Draw("[ Track... ]", 180f, ref update);
 
@@ -49,6 +51,8 @@ public partial class ConfigWindow
 
         ImGui.TableNextColumn();
         PreviewControls(tracker, hash);
+
+        if (update.HasFlag(Save)) trackerConfig.DisplayAttr = null;
     }
 
     private static void LayerControls(Tracker tracker, int hash, int index, ref UpdateFlags update)

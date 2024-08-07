@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.HeatOverlay;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -26,13 +27,14 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Heat Gauge Overlay",
         Author = "ItsBexy",
         Description = "A glowing overlay over the Heat Gauge",
         WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("HT", "Heat Gauge Replica", 2)
+        MultiCompData = new("HT", "Heat Gauge Replica", 2),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { MCH0 };
@@ -235,19 +237,24 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            var color = Config.Colors[i];
-            if (ColorPickerRGB($"{Tracker.StateNames[i]}##Color{i}", ref color, ref update)) Config.Colors[i] = color;
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+
+                break;
+            case Colors:
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    var color = Config.Colors[i];
+                    if (ColorPickerRGB($"{Tracker.StateNames[i]}##Color{i}", ref color, ref update)) Config.Colors[i] = color;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

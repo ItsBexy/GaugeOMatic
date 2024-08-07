@@ -14,7 +14,6 @@ namespace GaugeOMatic.Trackers;
 public abstract partial class Tracker : IDisposable
 {
     public TrackerConfig TrackerConfig { get; set; } = null!;
-    public abstract string DisplayName { get; }
 
     public Widget? Widget { get; set; }
     public bool Available;
@@ -27,8 +26,6 @@ public abstract partial class Tracker : IDisposable
     public AddonDropdown AddonDropdown = null!;
     public ItemRefMenu ItemRefMenu = null!;
     public ItemRef? ItemRef;
-
-    public abstract uint GameIcon { get; }
 
     public string AddonName
     {
@@ -81,7 +78,7 @@ public abstract partial class Tracker : IDisposable
 
     public void CreateWindow(Widget widget, Configuration configuration)
     {
-        Window = new(this, widget, configuration, $"{DisplayName}##{GetHashCode()}");
+        Window = new(this, widget, configuration, $"{DisplayAttr.Name}##{GetHashCode()}");
         WindowSystem.AddWindow(Window);
     }
 
@@ -130,8 +127,6 @@ public abstract partial class Tracker : IDisposable
         tracker.WidgetMenuTable = new(tracker);
         tracker.WidgetMenuWindow = new(tracker);
         tracker.ItemRefMenu = new(tracker);
-
-        trackerConfig.DefaultName = tracker.DisplayName;
 
         return tracker;
     }

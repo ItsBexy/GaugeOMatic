@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,7 +28,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Faerie Bar",
         Author = "ItsBexy",
@@ -137,24 +138,30 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        ToggleControls("Mirror", ref Config.Mirror, ref update);
-
-        Heading("Colors");
-        ColorPickerRGBA("Backdrop", ref Config.Background, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                ToggleControls("Mirror", ref Config.Mirror, ref update);
+                break;
+            case Colors:
+                ColorPickerRGBA("Backdrop", ref Config.Background, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.FaerieLessCfg = Config;

@@ -3,6 +3,7 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
+using CustomNodes;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -45,7 +46,8 @@ public class PLDModule : JobModule
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
         var gauge = (AddonJobHudPLD0*)gaugeAddon;
-        VisibilityTweak(TweakConfigs.PLDHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
+        var gaugeIndex = new AddonIndex(gaugeAddon);
+        VisibilityTweak(TweakConfigs.PLDHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gaugeIndex[14u]);
     }
 }
 

@@ -11,6 +11,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -22,13 +23,14 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Parameter Bar Glow",
         Author = "ItsBexy",
         Description = "A glowing border over one of the parameter bars",
         WidgetTags = HasAddonRestrictions | State,
-        AllowedAddons = new () { "_ParameterWidget" }
+        AllowedAddons = new () { "_ParameterWidget" },
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } =
@@ -115,8 +117,17 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        ColorPickerRGB("Color", ref Config.Color, ref update);
-        RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, new() { "HP", "MP" }, ref update);
+        switch (UiTab) //todo: this is a bit silly, maybe implement a single-tab setup (UiTabOptions = None?)
+        {
+            case Layout:
+                RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, new() { "HP", "MP" }, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Color", ref Config.Color, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ParameterGlowCfg = Config;

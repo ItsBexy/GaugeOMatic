@@ -51,7 +51,7 @@ public partial class ConfigWindow
     {
         if (!ImGui.BeginTabItem("Trackers")) return;
 
-        if (ImGui.BeginTable($"{jobModule.Abbr}TrackerTable", 9, SizingFixedFit))
+        if (ImGui.BeginTable($"{jobModule.Abbr}TrackerTable", 7, SizingFixedFit))
         {
             ImGui.TableSetupColumn("");
             ImGui.TableSetupColumn("Tracker");

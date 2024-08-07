@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using static GaugeOMatic.Widgets.WidgetTags;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 namespace GaugeOMatic.Widgets;
 
@@ -13,6 +15,7 @@ public class WidgetInfo
     public string? Description { get; init; }
     public WidgetTags WidgetTags { get; init; }
     public MultiComponentData? MultiCompData;
+    public WidgetUiTab UiTabOptions { get; init; } = All;
 
     public struct MultiComponentData
     {
@@ -29,7 +32,7 @@ public class WidgetInfo
 
     internal static Dictionary<string, string> MultiCompDict = new();
 
-    public int? FixedCount;                // only applicable if tagged with HasFixedMaximum
+    public int? FixedCount = null;         // only applicable if tagged with HasFixedMaximum
     public List<string>? AllowedAddons;    // only applicable if tagged with HasAddonRestrictions
     public List<string>? RestrictedAddons; // only applicable if tagged with HasAddonRestrictions
 

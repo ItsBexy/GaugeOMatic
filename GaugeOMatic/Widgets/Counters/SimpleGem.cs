@@ -22,6 +22,8 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static ImGuiNET.ImGuiMouseCursor;
 
 #pragma warning disable CS8618
 
@@ -33,12 +35,13 @@ public sealed unsafe class SimpleGem : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Simple Gems",
         Author = "ItsBexy",
         Description = "A counter based on Simple Mode job gauges.",
-        WidgetTags = Counter | Replica
+        WidgetTags = Counter | Replica,
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public static Vector4[] Coords = {
@@ -356,28 +359,45 @@ public sealed unsafe class SimpleGem : CounterWidget
             _ => new(1, -1)
         };
     }
-    private static void GemSelect(IDalamudTextureWrap spriteSheet, ref GemShapes currentShape, int col, int row, GemShapes shape, ref UpdateFlags update)
-    {
-        if (currentShape == shape) col++;
-        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new Vector2(col / 4f, row / 9f), new((col + 1) / 4f, (row + 1) / 9f));
-        if (ImGui.IsItemClicked())
-        {
-            currentShape = shape;
-            update |= Save;
-        }
-
-        if (ImGui.IsItemHovered())
-        {
-            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
-        }
-    }
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
+        switch (UiTab)
+        {
+            case Layout:
+                GemSelectUI(ref update);
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
+                if (Config.GemShape is not (Circle or CircleHollow)) AngleControls("Angle (Gem)", ref Config.GemAngle, ref update);
+                AngleControls("Angle (Group)", ref Config.Angle, ref update);
+                AngleControls("Curve", ref Config.Curve, ref update, true);
+                break;
+            case Colors:
+                ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
+                RadioControls("Frame Base", ref Config.FrameBase, new() { Brass, Silver, Black }, new() { "Brass", "Silver", "Black" }, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                break;
+            case Behavior:
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                {
+                    if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
+                    if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
+                }
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
+        }
 
-        var spriteSheet = TextureProvider.GetFromFile(Path.Combine(PluginDirPath, @"TextureAssets\SimpleGemUI.png")).GetWrapOrDefault();
+        if (update.HasFlag(Save)) ApplyConfigs();
+        widgetConfig.SimpleGemCfg = Config;
+    }
 
+    private void GemSelectUI(ref UpdateFlags update)
+    {
+        var spriteSheet = TextureProvider.GetFromFile(Path.Combine(PluginDirPath, @"TextureAssets\SimpleGemUI.png"))
+                                         .GetWrapOrDefault();
         if (spriteSheet != null)
         {
             LabelColumn("Shape");
@@ -418,39 +438,20 @@ public sealed unsafe class SimpleGem : CounterWidget
             ImGui.SameLine();
             GemSelect(spriteSheet, ref Config.GemShape, 2, 7, Horse, ref update);
         }
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-
-
-
-        if (Config.GemShape is not (Circle or CircleHollow))
-        {
-            AngleControls("Angle (Gem)", ref Config.GemAngle, ref update);
-        }
-
-        AngleControls("Angle (Group)", ref Config.Angle, ref update);
-        AngleControls("Curve", ref Config.Curve, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
-        RadioControls("Frame Base", ref Config.FrameBase, new() { Brass, Silver, Black }, new() { "Brass", "Silver", "Black" }, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-
-        Heading("Behavior");
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
-        {
-            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
-            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
-        }
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
-
-        if (update.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.SimpleGemCfg = Config;
     }
 
+    private static void GemSelect(IDalamudTextureWrap spriteSheet, ref GemShapes currentShape, int col, int row, GemShapes shape, ref UpdateFlags update)
+    {
+        if (currentShape == shape) col++;
+        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new Vector2(col / 4f, row / 9f), new((col + 1) / 4f, (row + 1) / 9f));
+        if (ImGui.IsItemClicked())
+        {
+            currentShape = shape;
+            update |= Save;
+        }
+
+        if (ImGui.IsItemHovered()) ImGui.SetMouseCursor(Hand);
+    }
 
     #endregion
 }

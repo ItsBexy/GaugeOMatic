@@ -22,6 +22,7 @@ using static GaugeOMatic.Widgets.OathBar;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -33,7 +34,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Oath Bar",
         Author = "ItsBexy",
@@ -98,7 +99,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
         Effects = new CustomNode(CreateResNode(), Halo, Shine, Streak).SetPos(-98, 11);
 
         NumTextNode = new();
-        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayAttr.Name);
         LabelTextNode.SetWidth(162);
 
         Contents = new CustomNode(CreateResNode(), Frame, Bar, Glow, Effects).SetOrigin(0, 60);
@@ -459,52 +460,51 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, Config.ShowFiligree ? 100 : 32, 2000, 1, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
-        ToggleControls("Filigree", ref Config.ShowFiligree, ref update);
-        if (Config.ShowFiligree) Config.Width = Max(Config.Width, 100);
-
-        Heading("Colors");
-
-        ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-        ColorPickerRGBA("Tickmark", ref Config.TickmarkColor, ref update);
-        ColorPickerRGBA("Effects", ref Config.EffectsColor, ref update);
-
-        if (Config.MilestoneType > 0)
+        switch (UiTab)
         {
-            ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-            ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
-            ColorPickerRGB(" ##Pulse3", ref Config.PulseColor3, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Width", ref Config.Width, Config.ShowFiligree ? 100 : 32, 2000, 1, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
+                ToggleControls("Filigree", ref Config.ShowFiligree, ref update);
+                if (Config.ShowFiligree) Config.Width = Max(Config.Width, 100);
+                break;
+            case Colors:
+                ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                ColorPickerRGBA("Tickmark", ref Config.TickmarkColor, ref update);
+                ColorPickerRGBA("Effects", ref Config.EffectsColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                var twinkleEffect = new List<bool> { Config.TwinkleInc, Config.TwinkleDec };
+                if (ToggleControls("Sparkle Effect", ref twinkleEffect, new() { "On Increase", "On Decrease" }, ref update))
+                {
+                    Config.TwinkleInc = twinkleEffect[0];
+                    Config.TwinkleDec = twinkleEffect[1];
+                }
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                if (Config.MilestoneType > 0)
+                {
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+                    ColorPickerRGB(" ##Pulse3", ref Config.PulseColor3, ref update);
+                }
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+                break;
+            default:
+                break;
         }
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-
-
-        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
-
-        var twinkleEffect = new List<bool> { Config.TwinkleInc, Config.TwinkleDec };
-        if (ToggleControls("Sparkle Effect", ref twinkleEffect, new() { "On Increase", "On Decrease" }, ref update))
-        {
-            Config.TwinkleInc = twinkleEffect[0];
-            Config.TwinkleDec = twinkleEffect[1];
-        }
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.OathBarCfg = Config;

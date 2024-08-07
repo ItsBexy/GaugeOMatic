@@ -21,6 +21,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -32,7 +33,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Huton Pinwheel",
         Author = "ItsBexy",
@@ -314,21 +315,27 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Blade", ref Config.ActiveColor, ref update);
-        ColorPickerRGB("Fade", ref Config.FadeColor, ref update);
-        ColorPickerRGB("Clock Hand", ref Config.HandColor, ref update);
-
-        Heading("Behavior");
-
-        ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Blade", ref Config.ActiveColor, ref update);
+                ColorPickerRGB("Fade", ref Config.FadeColor, ref update);
+                ColorPickerRGB("Clock Hand", ref Config.HandColor, ref update);
+                break;
+            case Behavior:
+                ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.HutonReplicaCfg = Config;

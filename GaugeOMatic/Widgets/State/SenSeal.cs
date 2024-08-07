@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.SenSeal;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,12 +28,13 @@ public sealed unsafe class SenSeal : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Sen Seal",
         Author = "ItsBexy",
         Description = "A widget recreating SAM's Sen Seals",
-        WidgetTags = State
+        WidgetTags = State,
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { SAM1 };
@@ -329,25 +331,29 @@ public sealed unsafe class SenSeal : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        RadioControls("Seal", ref Config.Seal, new() { 0,1,2 }, new() { "Setsu", "Getsu", "Ka" }, ref update);
-        ToggleControls("Show Kanji", ref Config.Kanji, ref update);
-
-        Heading("Color Modifier");
-
-        var inactiveColor = Config.Colors[0];
-        if (ColorPickerRGBA("Inactive", ref inactiveColor, ref update)) Config.Colors[0] = inactiveColor;
-
-
-        var maxState = Tracker.CurrentData.MaxState;
-        for (var i = 1; i <= maxState; i++)
+        switch (UiTab)
         {
-            var color = Config.Colors[i];
-            var label = $"{Tracker.StateNames[i]}";
-            if (ColorPickerRGB(label, ref color, ref update)) Config.Colors[i] = color;
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                RadioControls("Seal", ref Config.Seal, new() { 0, 1, 2 }, new() { "Setsu", "Getsu", "Ka" }, ref update);
+                ToggleControls("Show Kanji", ref Config.Kanji, ref update);
+                break;
+            case Colors:
+                var inactiveColor = Config.Colors[0];
+                if (ColorPickerRGBA("Inactive", ref inactiveColor, ref update)) Config.Colors[0] = inactiveColor;
+
+
+                var maxState = Tracker.CurrentData.MaxState;
+                for (var i = 1; i <= maxState; i++)
+                {
+                    var color = Config.Colors[i];
+                    var label = $"{Tracker.StateNames[i]}";
+                    if (ColorPickerRGB(label, ref color, ref update)) Config.Colors[i] = color;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

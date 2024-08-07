@@ -13,6 +13,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -24,12 +25,13 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Aetherflow Gems",
         Author = "ItsBexy",
         Description = "A recreation of Arcanist/Summoner/Scholar's Aetherflow Gauge.",
-        WidgetTags = Counter | Replica
+        WidgetTags = Counter | Replica,
+        UiTabOptions = Layout|Colors|Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -260,24 +262,29 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-        RadioControls("Base Color", ref Config.BaseColor, new() { 1, 0 }, new() { "Pink", "Green" }, ref update);
-        ColorPickerRGB("Color Modifier", ref Config.ColorModifier, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-
-        Heading("Behavior");
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+        switch (UiTab)
         {
-            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
-            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+                RadioControls("Base Color", ref Config.BaseColor, new() { 1, 0 }, new() { "Pink", "Green" }, ref update);
+                ColorPickerRGB("Color Modifier", ref Config.ColorModifier, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                break;
+            case Behavior:
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                {
+                    if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
+                    if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
+                }
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
         }
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.AetherflowReplicaCfg = Config;

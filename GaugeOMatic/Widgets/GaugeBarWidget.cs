@@ -124,7 +124,7 @@ public abstract class GaugeBarWidget : Widget
     public virtual void RevealBar(bool instant = false) { }
 
     public bool MilestoneActive;
-    protected void HandleMilestone(float prog, bool reset = false)
+    protected void HandleMilestone(float prog, bool reset = false) // todo: incorporate audio options
     {
         if (reset)
         {

@@ -16,6 +16,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,12 +28,13 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Eukrasia Sigil",
         Author = "ItsBexy",
         Description = "A widget recreating Sage's Eukrasia indicator.",
-        WidgetTags = State
+        WidgetTags = State,
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } =
@@ -398,22 +400,29 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        ToggleControls("Show Nouliths", ref Config.ShowNouliths, ref update);
-
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                ToggleControls("Show Nouliths", ref Config.ShowNouliths, ref update);
+                break;
+            case Colors:
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
 
-            var color = Config.Colors[i];
-            var fxColor = Config.FXColors[i];
-            var noulithColor = Config.NoulithColors[i];
-            if (ColorPickerRGB($"Color##{i}", ref color, ref update)) Config.Colors[i] = color;
-            if (ColorPickerRGB($"Pulse##{i}", ref fxColor, ref update)) Config.FXColors[i] = fxColor;
-            if (Config.ShowNouliths && ColorPickerRGB($"Nouliths##{i}", ref noulithColor, ref update))
-                Config.NoulithColors[i] = noulithColor;
+                    var color = Config.Colors[i];
+                    var fxColor = Config.FXColors[i];
+                    var noulithColor = Config.NoulithColors[i];
+                    if (ColorPickerRGB($"Color##{i}", ref color, ref update)) Config.Colors[i] = color;
+                    if (ColorPickerRGB($"Pulse##{i}", ref fxColor, ref update)) Config.FXColors[i] = fxColor;
+                    if (Config.ShowNouliths && ColorPickerRGB($"Nouliths##{i}", ref noulithColor, ref update))
+                        Config.NoulithColors[i] = noulithColor;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

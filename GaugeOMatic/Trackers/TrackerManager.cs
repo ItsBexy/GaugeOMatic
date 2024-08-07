@@ -45,7 +45,9 @@ public class TrackerManager : IDisposable
             new BLMModule(this, TrackerConfigs.BLM),
             new SMNModule(this, TrackerConfigs.SMN),
             new RDMModule(this, TrackerConfigs.RDM),
-            new PCTModule(this, TrackerConfigs.PCT)
+            new PCTModule(this, TrackerConfigs.PCT),
+
+            new BLUModule(this, TrackerConfigs.BLU)
         };
 
         Condition.ConditionChange += ApplyDisplayRules;
@@ -90,4 +92,6 @@ public class TrackerConfigs
     public TrackerConfig[] SMN { get; set; } = SMNDefault.Clone().Disable();
     public TrackerConfig[] RDM { get; set; } = RDMDefault.Clone().Disable();
     public TrackerConfig[] PCT { get; set; } = PCTDefault.Clone().Disable();
+
+    public TrackerConfig[] BLU { get; set; } = Array.Empty<TrackerConfig>();
 }

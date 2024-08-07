@@ -168,11 +168,12 @@ public class PresetWindow : Window, IDisposable
                 AddTrackerButton(trackerConfig);
                 ImGui.SameLine();
 
-                ImGuiHelpy.DrawGameIcon(trackerConfig.GameIcon, 22f);
+                ImGuiHelpy.DrawGameIcon(trackerConfig.GetDisplayAttr().GameIcon, 22f);
+                if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
-               // ImGuiHelpy.WriteIcon(attr.Icon, attr.TypeDesc, attr.Color);
+                ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayAttr().Name);
+                if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
-                ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayName ?? "");
                 ImGui.TableNextColumn();
                 CopyWidgetButton(trackerConfig);
 
@@ -195,7 +196,7 @@ public class PresetWindow : Window, IDisposable
                 else module.AddBlankTracker();
             }
 
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add " + trackerConfig.GetDisplayName);
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip("Add " + trackerConfig.GetDisplayAttr().Name);
         }
 
         static void CopyWidgetButton(TrackerConfig trackerConfig)

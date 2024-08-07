@@ -2,8 +2,6 @@ using CustomNodes;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Utility;
-using GaugeOMatic.Widgets.Common;
-using ImGuiNET;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,6 +13,7 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
 
@@ -28,7 +27,7 @@ public class NumTextNode : CustomNode
 
     public unsafe NumTextNode()
     {
-        BgNode = new CustomNode(CreateNineGridNode(CommonParts.BgPart, 0)).SetNineGridOffset(0, 21, 0, 21)
+        BgNode = new CustomNode(CreateNineGridNode(BgPart, 0)).SetNineGridOffset(0, 21, 0, 21)
                                                                  .SetSize(65, 40)
                                                                  .SetPos(-17, -21)
                                                                  .SetOrigin(16, 20)
@@ -161,24 +160,12 @@ public struct NumTextProps
         Align = Center;
     }
 
-    public static void NumTextControls(string label, ref NumTextProps configVal, ref UpdateFlags update)
+    public static void NumTextControls(string label, ref NumTextProps configVal, ref UpdateFlags update, bool separatorAfter = false)
     {
         var numTextProps = configVal;
-        ImGuiHelpy.TableSeparator(2);
+        ToggleControls(label, ref numTextProps.Enabled, ref update);
 
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        var treeNode = ImGui.TreeNodeEx($"{label}##{label}treeRow");
-
-        var enabled = numTextProps.Enabled;
-        ImGui.TableNextColumn();
-        if (ImGui.Checkbox($"##{label}Enabled", ref enabled))
-        {
-            numTextProps.Enabled = enabled;
-            update |= Save;
-        }
-
-        if (treeNode)
+        if (numTextProps.Enabled)
         {
             PositionControls("Position", ref numTextProps.Position, ref update);
             ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
@@ -193,7 +180,7 @@ public struct NumTextProps
             RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update, true);
             ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
             ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
-            ImGui.TreePop();
+            if (separatorAfter) ImGuiHelpy.TableSeparator(2);
         }
 
         if (update.HasFlag(Save)) configVal = numTextProps;

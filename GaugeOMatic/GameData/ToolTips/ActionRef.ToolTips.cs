@@ -63,8 +63,19 @@ public partial class ActionRef
             _ => Cooldown
         };
 
-        if (barType == StatusTimer) MulticolorText((Plain, "Shows time remaining on"), (Yellow, ReadyStatus?.Name ?? "?"));
-        else if (barType == ComboTimer) ImGui.Text("Shows combo time remaining for this action");
+        if (barType == StatusTimer)
+        {
+            ImGui.TextColored(Plain, "Shows");
+            SameLineSquished();
+            if (ReadyStatus?.Icon != null)
+            {
+                DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize());
+                SameLineSquished();
+            }
+            ImGui.TextColored(Yellow, ReadyStatus?.Name ?? "?");
+            SameLineSquished();
+            ImGui.TextColored(Plain, "timer");
+        } else if (barType == ComboTimer) ImGui.Text("Shows combo time remaining for this action");
         else ImGui.Text($"Shows recast time remaining ({LastKnownCooldown}s)");
     }
 
@@ -78,7 +89,18 @@ public partial class ActionRef
         ImGui.TextDisabled("Ready Conditions");
 
         if (HasFlag(TransformedButton)) MulticolorText((Plain, "•"), (Orange, GetBaseAction().Name), (Plain, "has changed to this action"));
-        if (HasFlag(RequiresStatus) && readyStatus.Length > 1) MulticolorText((Plain, "•"), (Yellow, readyStatus), (Plain, "is active"));
+        if (HasFlag(RequiresStatus) && readyStatus.Length > 1)
+        {
+
+            ImGui.TextColored(Plain, "•");
+            SameLineSquished();
+            if (ReadyStatus?.Icon != null)
+            {
+                DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize());
+                SameLineSquished();
+            }
+            MulticolorText((Yellow, readyStatus), (Plain, "is active"));
+        }
 
         if (HasFlag(ComboBonus)) ImGui.Text("• This action is the next step in an active combo");
         else if (HasFlag(CanGetAnts)) ImGui.Text("• This action is highlighted");

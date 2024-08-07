@@ -1,4 +1,4 @@
-using Dalamud.Interface;
+using Dalamud.Interface.Textures;
 using Dalamud.Interface.Windowing;
 using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
@@ -54,10 +53,10 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Spacing();
 
-        if (ImGui.BeginTable("LayoutTable", 3, SizingFixedFit | BordersInnerV))
+        if (ImGui.BeginTable("LayoutTable", 3, SizingFixedFit))
         {
-            ImGui.TableSetupColumn("VertTabBar", WidthFixed, 40f * GlobalScale);
-            ImGui.TableSetupColumn("VertTabBar2", WidthFixed, 40f * GlobalScale);
+            ImGui.TableSetupColumn("VertTabBar");
+            ImGui.TableSetupColumn("VertTabBar2");
             ImGui.TableSetupColumn("body", WidthFixed, 1200f * GlobalScale);
 
             VerticalTabBar();
@@ -84,11 +83,13 @@ public partial class ConfigWindow : Window, IDisposable
 
     private void VerticalTabBar()
     {
-        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab, string? textOverride = null)
+        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab)
         {
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
+            TextureProvider.GetFromGameIcon(new GameIconLookup(GetJobIcon(job))).TryGetWrap(out var tex, out _);
+
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
-            if (ImGui.Button($"{textOverride ?? job.ToString()}      "))
+            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle,new(22)))
             {
                 Configuration.JobTab = job;
                 Configuration.GeneralTab = Jobs;
@@ -97,11 +98,13 @@ public partial class ConfigWindow : Window, IDisposable
             ImGui.PopStyleColor(3);
         }
 
-        void GeneralButton(string label, FontAwesomeIcon icon, GeneralTab genTab, string tooltip)
+        void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
         {
             var active = Configuration.GeneralTab == genTab;
+            TextureProvider.GetFromGameIcon(new GameIconLookup(icon)).TryGetWrap(out var tex, out _);
+
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
-            if (ImGuiHelpy.IconButton(label, icon, 32f))
+            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
             {
                 Configuration.GeneralTab = genTab;
                 Configuration.Save();
@@ -119,7 +122,7 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.TableNextColumn();
 
         // GeneralButton("Settings", Cog, Settings, "General Settings");
-        GeneralButton("Help", Question, Help, "Help");
+        GeneralButton(66313, Help, "Help");
 
         ImGui.Spacing();
         ImGui.Spacing();
@@ -161,7 +164,7 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(RDM);
         DPSButton(PCT);
 
-        // VerticalTabButton(BLU, (ColorRGB)0x026999ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x052657ff);
+       // TankButton(BLU);
     }
 
     internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.TabActive);

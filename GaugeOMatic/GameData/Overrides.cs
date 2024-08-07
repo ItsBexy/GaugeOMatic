@@ -61,7 +61,7 @@ internal static class Overrides
         16534, 16531, 131, 16532, 16533, 25859, 139, 37010, 137, 3568, 7431,            // WHM
         185, 7437, 16539, 17864, 167, 181, 25883, 189, 16511, 190, 16230, 25884, 17869, // SCH
         163, 17870, 186, 25798, 25804, 17215, 25802, 25803, 37037, 25800,               //     todo: sort out SCH/SMN overlap
-        3603, 3595, 3601, 3594, 3599, 3615, 3600, 3596, 37022, 37019, 37020, 37021,     // AST
+        3603, 3595, 3601, 3594, 3599, 3615, 3600, 3596, 37022, 37019, 37020, 37021,37017,     // AST
         24284, 24283, 24296, 24297, 24287, 24290, 24285, 24286                          // SGE
     };
 
@@ -69,7 +69,9 @@ internal static class Overrides
     {
         { 2259, "Mudra" },
         { 2261, "Mudra" },
-        { 2263, "Mudra" }
+        { 2263, "Mudra" },
+        { 37017, "Astral / Umbral Draw" }, // todo: deal with this in some way
+        { 37018, "Astral / Umbral Draw" }
     };
 
     public static Dictionary<uint, string> StatusAliases = new()

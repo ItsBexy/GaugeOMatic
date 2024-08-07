@@ -1,5 +1,9 @@
 using System.Numerics;
+using static System.IO.Path;
 using static CustomNodes.CustomNodeManager;
+using static CustomNodes.CustomNodeManager.CustomPartsList;
+using static GaugeOMatic.GaugeOMatic;
+
 // ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Widgets.Common;
@@ -18,9 +22,9 @@ internal static class CommonParts
 
     #region Instanced (dispose with Widget)
 
-    public static CustomPartsList CircleMask => new("ui/uld/navimap_mask.tex",
-                                                     new(0, 0, 176, 176),
-                                                     new(84, 0, 8, 20));
+    public static unsafe CustomPartsList CircleMask => new(AssetFromFile(Combine(PluginDirPath, @"TextureAssets\CircleMask.tex")),
+                                                           new(0, 0, 352, 352),
+                                                           new(168, 0, 16, 40));
 
     public static CustomPartsList SquareMask => new("ui/uld/bgpartsmask.tex", new Vector4(0, 0, 32, 32));
 
@@ -142,6 +146,31 @@ internal static class CommonParts
             new(206, 82, 58, 14)  // 16 streaks
         );
 
+    public static CustomPartsList VPR0 =>
+        new("ui/uld/JobHudRDB0.tex",
+            new(0, 0, 152, 60),     // 0  Sword
+            new(0, 60, 170, 80),    // 1  Sword Glow
+            new(170, 0, 104, 120),  // 2  Base Plate
+            new(170, 120, 52, 26),  // 3  Blue Gem (pointing left)
+            new(222, 120, 52, 26),  // 4  Gold Gem (pointing right)
+            new(0, 140, 30, 46),    // 5  Diamond Frame
+            new(30, 140, 30, 46),   // 6  Diamond
+            new(60, 140, 30, 46),   // 7  Diamond Glow
+            new(90, 140, 46, 46),   // 8  Flash
+            new(136, 146, 70, 28),  // 9  Gem Glow (pointing right)
+            new(136, 174, 58, 12),  // 10 Glowline
+            new(152, 0, 10, 22),    // 11 "I" Divider
+            new(0, 186, 68, 134),   // 12 Lightning 1
+            new(68, 186, 68, 134),  // 13 Lightning 2
+            new(136, 186, 68, 134), // 14 Lightning 3
+            new(204, 186, 68, 134), // 15 Lightning 4
+            new(0, 320, 68, 134),   // 16 Lightning 5
+            new(68, 320, 68, 134),  // 17 Lightning 6
+            new(136, 320, 68, 134), // 18 Lightning 7
+            new(204, 320, 68, 134), // 19 Lightning 8
+            new(206, 146, 68, 32)   // 20 Oval Glow
+            );
+
     #endregion
 
     #region Ranged
@@ -227,9 +256,30 @@ internal static class CommonParts
             new(119, 306, 29, 36)  // 30 red sparkles
         );
 
-            #endregion
+    public static CustomPartsList PCT1 => new(
+        "ui/uld/JobHudRPM1.tex",
+        new(0, 0, 134, 110),    // 0  Palette
+        new(0, 110, 36, 36),    // 1  Pearl Frame
+        new(36, 110, 36, 36),   // 2  White Pearl
+        new(72, 110, 36, 36),   // 3  Black Pearl
+        new(0, 146, 36, 36),    // 4  White Glow
+        new(36, 146, 36, 36),   // 5  Black Glow
+        new(134, 0, 156, 40),   // 6  Bar Backdrop
+        new(134, 40, 156, 40),  // 7  Bar Glow
+        new(134, 80, 156, 40),  // 8  Bar Frame
+        new(160, 162, 94, 48),  // 9  Brush
+        new(134, 120, 140, 42), // 10 Bar Fill (White)
+        new(0, 182, 160, 20),   // 11 RGB Rainbow
+        new(0, 202, 160, 20),   // 12 CMY Rainbow
+        new(72, 146, 36, 36),   // 13 Pearl Flash
+        new(254, 162, 36, 36),  // 14 Pearl Halo
+        new(108, 110, 26, 26),  // 15 Sparkle
+        new(160, 210, 60, 40)   // 16 Number BG
+        );
 
-            #region Tank
+    #endregion
+
+    #region Tank
 
     public static CustomPartsList PLD0 =>
         new("ui/uld/JobHudPLD.tex",
@@ -290,27 +340,27 @@ internal static class CommonParts
 
             #endregion
 
-            #region Healer
+    #region Healer
 
     public static CustomPartsList SCH1 =>
-        new("ui/uld/JobHudSCH1.tex",
-            new(0, 0, 248, 80),     // 0 frame
-            new(3, 80, 174, 44),    // 1 bar
-            new(3, 124, 174, 44),   // 2 empty bar
-            new(0, 168, 196, 68),   // 3 butterfly wing glow
-            new(0, 304, 68, 76),    // 4 simple wings
-            new(192, 80, 44, 80),   // 5 faerie
-            new(196, 168, 52, 52),  // 6 darts
-            new(196, 220, 28, 44),  // 7 sparkles
-            new(0, 236, 196, 68),   // 8 butterfly wing monotone
-            new(248, 0, 68, 196),   // 9 butterfly wing bg (rotated)
-            new(244, 192, 72, 188), // 10 feathery wing
-            new(198, 264, 44, 80)   // 11 Seraph
-        );
+    new("ui/uld/JobHudSCH1.tex",
+    new(0, 0, 248, 80),     // 0 frame
+    new(3, 80, 174, 44),    // 1 bar
+    new(3, 124, 174, 44),   // 2 empty bar
+    new(0, 168, 196, 68),   // 3 butterfly wing glow
+    new(0, 304, 68, 76),    // 4 simple wings
+    new(192, 80, 44, 80),   // 5 faerie
+    new(196, 168, 52, 52),  // 6 darts
+    new(196, 220, 28, 44),  // 7 sparkles
+    new(0, 236, 196, 68),   // 8 butterfly wing monotone
+    new(248, 0, 68, 196),   // 9 butterfly wing bg (rotated)
+    new(244, 192, 72, 188), // 10 feathery wing
+    new(198, 264, 44, 80)   // 11 Seraph
+    );
 
-            #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
     #endregion
 }

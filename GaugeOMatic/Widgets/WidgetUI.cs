@@ -16,8 +16,19 @@ using static ImGuiNET.ImGuiColorEditFlags;
 namespace GaugeOMatic.Widgets;
 
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
-internal static class WidgetUI
+public static class WidgetUI
 {
+    [Flags]
+    public enum WidgetUiTab
+    {
+        None = 0,
+        Layout = 0x1,
+        Colors = 0x2,
+        Behavior = 0x4,
+        Text = 0x8,
+        All = 0xF
+    }
+
     public static void LabelColumn(string label)
     {
         ImGui.TableNextRow();
@@ -90,13 +101,20 @@ internal static class WidgetUI
         return false;
     }
 
-    public static void AngleControls(string label, ref float angle, ref UpdateFlags update)
+    public static void AngleControls(string label, ref float angle, ref UpdateFlags update, bool clamp = false)
     {
         LabelColumn(label);
         if (FloatInputDrag(label, ref angle, -1000, 1000, 1f, format: "%.2f"))
         {
-            while (angle < -180) angle += 360;
-            while (angle > 180) angle -= 360;
+            if (clamp)
+            {
+                angle = Math.Clamp(angle, -180, 180);
+            }
+            else
+            {
+                while (angle < -180) angle += 360;
+                while (angle > 180) angle -= 360;
+            }
             update |= Save;
         }
     }

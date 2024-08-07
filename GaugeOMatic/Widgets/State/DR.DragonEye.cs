@@ -1,14 +1,13 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
-using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonEye;
@@ -16,6 +15,7 @@ using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig;
 using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig.EyeState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 // ReSharper disable All
 
@@ -29,13 +29,14 @@ public sealed unsafe class DragonEye : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Dragon Eye",
         Author = "ItsBexy",
         Description = "An indicator recreating the eye on Dragoon's Life of the Dragon gauge.",
         WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("DR", "Replica Dragon Gauge", 3)
+        MultiCompData = new("DR", "Replica Dragon Gauge", 3),
+        UiTabOptions = Layout | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = { DRG0 };
@@ -358,7 +359,6 @@ public sealed unsafe class DragonEye : StateWidget
         public Vector2 Position = new(83, 89);
         [DefaultValue(1)] public float Scale = 1;
         public bool Mirror;
-        public List<ColorRGB> ColorList = new();
         public List<EyeState> EyeStates = new();
 
         public DragonEyeConfig(WidgetConfig widgetConfig)
@@ -370,7 +370,6 @@ public sealed unsafe class DragonEye : StateWidget
             Position = config.Position;
             Scale = config.Scale;
             Mirror = config.Mirror;
-            ColorList = config.ColorList;
             EyeStates = config.EyeStates;
         }
 
@@ -378,7 +377,6 @@ public sealed unsafe class DragonEye : StateWidget
 
         public void FillLists(int maxState)
         {
-            while (ColorList.Count <= maxState) ColorList.Add(new(255, 255, 255));
             while (EyeStates.Count <= maxState) EyeStates.Add(EyeStates.Count switch { < 1 => Closed, < 2 => HalfOpen, _ => Open });
         }
     }
@@ -407,23 +405,26 @@ public sealed unsafe class DragonEye : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        ToggleControls("Mirror", ref Config.Mirror, ref update);
-
-        Heading("Appearance");
-
-        var maxState = Tracker.CurrentData.MaxState;
-
-        for (var i = 0; i <= maxState; i++)
+        switch (UiTab)
         {
-            var color = Config.ColorList[i];
-            var label = $"{Tracker.StateNames[i]}";
-            var eyeState = Config.EyeStates[i];
-         //   if (ColorPickerRGB(label, ref color, ref update)) Config.ColorList[i] = color;
-            if (RadioControls<DragonEyeConfig.EyeState>($"{label}##appearance{i}", ref eyeState, EyeStateList, EyeStateNames, ref update)) Config.EyeStates[i] = eyeState;
+            case Layout:
+
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                ToggleControls("Mirror", ref Config.Mirror, ref update);
+                break;
+            case Behavior:
+                var maxState = Tracker.CurrentData.MaxState;
+
+                for (var i = 0; i <= maxState; i++)
+                {
+                    var label = $"{Tracker.StateNames[i]}";
+                    var eyeState = Config.EyeStates[i];
+                    if (RadioControls($"{label}##appearance{i}", ref eyeState, EyeStateList, EyeStateNames, ref update)) Config.EyeStates[i] = eyeState;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

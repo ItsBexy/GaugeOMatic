@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -30,7 +31,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Simple Bar",
         Author = "ItsBexy",
@@ -65,7 +66,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         Backdrop = NineGridFromPart(0, 5, 0, 10, 0, 10);
         Frame = NineGridFromPart(0, 0, 0, 15, 0, 15);
         NumTextNode = new();
-        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayAttr.Name);
 
         Bar = new(CreateResNode(), Drain, Gain, Main);
         BarFrame = new(CreateResNode(), Backdrop, Bar, Frame);
@@ -230,38 +231,39 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, 50, 2000, 1, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-
-        ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-
-        if (Config.MilestoneType > 0)
+        switch (UiTab)
         {
-            ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-            ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Width", ref Config.Width, 50, 2000, 1, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+                ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                if (Config.MilestoneType > 0)
+                {
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+                }
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+                break;
+            default:
+                break;
         }
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.SimpleBarCfg = Config;

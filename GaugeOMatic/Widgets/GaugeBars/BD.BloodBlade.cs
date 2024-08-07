@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -30,7 +31,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Blood Blade",
         Author = "ItsBexy",
@@ -264,40 +265,43 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        ToggleControls("Show Ring", ref Config.Ring, ref update);
-
-        Heading("Colors");
-
-        ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-
-        if (Config.MilestoneType > 0)
+        switch (UiTab)
         {
-            ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-            ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
-            ColorPickerRGB(" ##Pulse3", ref Config.PulseColor3, ref update);
-            ColorPickerRGB(" ##Pulse4", ref Config.PulseColor4, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                ToggleControls("Show Ring", ref Config.Ring, ref update);
+                break;
+            case Colors:
+                ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                if (Config.MilestoneType > 0)
+                {
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+                    ColorPickerRGB(" ##Pulse3", ref Config.PulseColor3, ref update);
+                    ColorPickerRGB(" ##Pulse4", ref Config.PulseColor4, ref update);
+                }
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                //   LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update); //todo: why is this commented out?
+                break;
+            default:
+                break;
         }
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-     //   LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BloodBladeCfg = Config;

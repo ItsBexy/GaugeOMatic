@@ -10,10 +10,12 @@ using System.Linq;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Game.ClientState.Conditions.ConditionFlag;
 using static GaugeOMatic.GameData.JobData;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static Newtonsoft.Json.JsonConvert;
 using static System.Activator;
-using static GaugeOMatic.Trackers.Tracker;
 
 namespace GaugeOMatic.Widgets;
 
@@ -83,6 +85,8 @@ public abstract unsafe class Widget : IDisposable
         if (Addon != null) Addon->UldManager.UpdateDrawNodeList();
     }
 
+    public WidgetUiTab UiTab { get; set; } = Layout;
+
     public abstract void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update);
     public abstract void Update();
     public abstract void InitConfigs();
@@ -136,7 +140,7 @@ public abstract unsafe class Widget : IDisposable
         bool CheckLevel()
         {
             if (!TrackerConfig.LimitLevelRange) return true;
-            if ((TrackerConfig.LevelMin ?? 1) == 1 && (TrackerConfig.LevelMax ?? LevelCap) == LevelCap) return true;
+            if (TrackerConfig.LevelMin == 1 && TrackerConfig.LevelMax == LevelCap) return true;
             var level = ClientState.LocalPlayer?.Level ?? 1;
             return !(level < TrackerConfig.LevelMin || level > TrackerConfig.LevelMax);
         }

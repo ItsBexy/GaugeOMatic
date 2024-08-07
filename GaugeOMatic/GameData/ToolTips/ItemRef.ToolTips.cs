@@ -86,6 +86,4 @@ public abstract partial class ItemRef
     public virtual void PrintCounterDesc() { }
     public virtual void PrintStateDesc() { }
     public virtual void FooterContents() { }
-
-
 }

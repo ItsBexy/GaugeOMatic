@@ -14,6 +14,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -25,12 +26,13 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Shroud Flames",
         Author = "ItsBexy",
         Description = "A counter imitating the shroud stack display on Reaper's Death Gauge.",
-        WidgetTags = Counter | Replica
+        WidgetTags = Counter | Replica,
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -230,22 +232,27 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        AngleControls("Curve", ref Config.Curve, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Base Color", ref Config.BaseColor, ref update);
-        ColorPickerRGB("Orb Tint", ref Config.OrbColor, ref update);
-        ColorPickerRGB("Flash Color", ref Config.FlashColor, ref update);
-
-        Heading("Behavior");
-        RadioControls("Animation", ref Config.SpendAnim, new() { 0, 1 }, new() { "Default", "Divide" }, ref update);
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                AngleControls("Curve", ref Config.Curve, ref update, true);
+                break;
+            case Colors:
+                ColorPickerRGB("Base Color", ref Config.BaseColor, ref update);
+                ColorPickerRGB("Orb Tint", ref Config.OrbColor, ref update);
+                ColorPickerRGB("Flash Color", ref Config.FlashColor, ref update);
+                break;
+            case Behavior:
+                RadioControls("Animation", ref Config.SpendAnim, new() { 0, 1 }, new() { "Default", "Divide" }, ref update);
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ReaperFlameCfg = Config;

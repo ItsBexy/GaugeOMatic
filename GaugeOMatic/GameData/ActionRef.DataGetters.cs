@@ -9,7 +9,7 @@ namespace GaugeOMatic.GameData;
 
 public partial class ActionRef
 {
-    private static unsafe ActionManager* ActionManager => Instance();
+    public static unsafe ActionManager* ActionManager => Instance();
 
     public int GetMaxCharges() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetMaxCharges(GetAdjustedId(), 0);
 

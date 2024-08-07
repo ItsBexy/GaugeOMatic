@@ -18,6 +18,7 @@ using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -29,7 +30,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Simple Circle",
         Author = "ItsBexy",
@@ -197,21 +198,27 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
-        Heading("Color");
-        ColorPickerRGBA("Color", ref Config.Color, ref update);
-        RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" }, ref update);
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new () { Redo , Undo, CircleNotch }, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                ColorPickerRGBA("Color", ref Config.Color, ref update);
+                RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" }, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new() { Redo, Undo, CircleNotch }, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.SimpleCircleCfg = Config;

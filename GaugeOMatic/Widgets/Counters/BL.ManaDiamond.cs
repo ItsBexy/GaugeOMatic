@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.ManaDiamond;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -26,13 +27,14 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Mana Diamonds",
         Author = "ItsBexy",
         Description = "A recreation of Red Mage's Mana Stack counter",
         WidgetTags = Counter | MultiComponent | Replica,
-        MultiCompData = new("BL", "Balance Gauge Replica", 4)
+        MultiCompData = new("BL", "Balance Gauge Replica", 4),
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -238,7 +240,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
         [DefaultValue(1f)] public float Scale = 1f;
         public AddRGB GemColor = new(65, -120, -120);
         public bool HideEmpty;
-        public CounterPulse Pulse = AtMax;
+        [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
 
         public ManaDiamondConfig(WidgetConfig widgetConfig)
         {
@@ -278,23 +280,27 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
-        Heading("Color");
-        ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
-
-        Heading("Behavior");
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+        switch (UiTab)
         {
-            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
-            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
+                break;
+            case Behavior:
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                {
+                    if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
+                    if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
+                }
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
         }
-
-        RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ManaDiamondCfg = Config;

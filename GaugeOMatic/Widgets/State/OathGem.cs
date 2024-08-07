@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.OathGem;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -22,12 +23,13 @@ namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class OathGem : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Oath Gem",
         Author = "ItsBexy",
         Description = "A widget recreating the low-level tank stance gem for GLA / PLD",
-        WidgetTags = State | Replica
+        WidgetTags = State | Replica,
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { PLD0 };
@@ -188,20 +190,27 @@ public sealed unsafe class OathGem : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
         Config.FillColorLists(Tracker.CurrentData.MaxState);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
 
-            var color = Config.Colors[i];
-            if (ColorPickerRGB($"Gem Color##gemColor{i}", ref color, ref update))
-                Config.Colors[i] = color;
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
+
+                    var color = Config.Colors[i];
+                    if (ColorPickerRGB($"Gem Color##gemColor{i}", ref color, ref update))
+                        Config.Colors[i] = color;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

@@ -1,15 +1,16 @@
 using CustomNodes;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Utility;
 using Newtonsoft.Json;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleTimer;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -21,12 +22,13 @@ public sealed class SimpleTimer : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Simple Timer",
         Author = "ItsBexy",
         Description = "It's just timer text. That's it. Nothing else. Hope you like numbers, because you are about to see one on your screen.",
-        WidgetTags = GaugeBar
+        WidgetTags = GaugeBar,
+        UiTabOptions = Text
     };
 
     #region Nodes
@@ -90,26 +92,31 @@ public sealed class SimpleTimer : GaugeBarWidget
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
         var numTextProps = Config.NumTextProps;
+        switch (UiTab)
+        {
+            case Text:
+                var label = $"{Tracker.TermGauge} Text";
 
-        var label = $"{Tracker.TermGauge} Text";
-        ImGuiHelpy.TableSeparator(2);
+                PositionControls($"Position##{label}Pos", ref numTextProps.Position, ref update);
+                ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
+                ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
+                ToggleControls("Backdrop", ref numTextProps.ShowBg, ref update);
+                if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor, ref update);
 
-        PositionControls($"Position##{label}Pos", ref numTextProps.Position, ref update);
-        ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
-        ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
-        ToggleControls("Backdrop", ref numTextProps.ShowBg, ref update);
-        if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor, ref update);
+                ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames, ref update);
 
-        ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames, ref update);
+                RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons, ref update);
+                IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1, ref update);
 
-        RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons, ref update);
-        IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1, ref update);
+                RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update, true);
+                ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
+                ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
 
-        RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update, true);
-        ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
-        ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
-
-        GaugeBarWidgetConfig.SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) Config.NumTextProps = numTextProps;
 

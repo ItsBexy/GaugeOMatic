@@ -235,7 +235,7 @@ public partial class StatusRef
         { 1238, new(1238, RDM, Self, 20) }, // Acceleration,
         { 1239, new(1239, RDM, Self, 20) }, // Embolden,
         { 1249, new(1249, RDM, Self, 15) }, // Dualcast,
-        { 1971, new(1971, RDM, Self, 15) }, // Manafication,
+        { 1971, new(1971, RDM, Self, 30) }, // Manafication,
         { 2707, new(2707, RDM, Self, 10) }, // Magick Barrier,
         { 3875, new(3875, RDM, Self, 15) }, // Magicked Swordplay,
         { 3876, new(3876, RDM, Self, 30) }, // Thorned Flourish,
@@ -261,7 +261,7 @@ public partial class StatusRef
 
         # region Tank
 
-        { 74, new(74, PLD, Self, 15) },                                  // Sentinel,
+        { 74, new(74, PLD, Self, 15, seeAlso: new() {3829}) },          // Sentinel,
         { 76, new(76, PLD, Self, 20) },                                  // Fight or Flight,
         { 77, new(77, PLD, Self, 10) },                                  // Bulwark,
         { 79, new(79, PLD, Self, 0) },                                   // Iron Will,
@@ -275,14 +275,15 @@ public partial class StatusRef
         { 2674, new(2674, GLA, Self, 8, seeAlso: new() { 728, 1856 }) }, // Sheltron,
         { 728, new(728, GLA, Self, 8, seeAlso: new() { 2674, 1856 }) }, //
         { 1856, new(1856, GLA, Self, 8, seeAlso: new() { 728, 2674 }) {HideFromDropdown = true} },
-        { 2675, new(2675, GLA, Self, 4) },                               // Knight's Resolve,
-        { 2676, new(2676, GLA, Self, 12) },                              // Knight's Benediction,
-        { 3019, new(3019, GLA, Self, 30) },                              // Confiteor Ready,
-        { 3827, new(3827, GLA, Self, 30) },                              // Supplication Ready,
-        { 3828, new(3828, GLA, Self, 30) },                              // Sepulchre Ready,
-        { 3829, new(3829, GLA, Self, 15) },                              // Guardian,
-        { 3831, new(3831, GLA, Self, 30) },                              // Blade of Honor Ready,
-        { 3847, new(3847, GLA, Self, 30) },                              // Goring Blade Ready,
+        { 2675, new(2675, GLA, Self, 4) },                        // Knight's Resolve,
+        { 2676, new(2676, GLA, Self, 12) },                       // Knight's Benediction,
+        { 3019, new(3019, GLA, Self, 30) },                       // Confiteor Ready,
+        { 3827, new(3827, GLA, Self, 30) },                       // Supplication Ready,
+        { 3828, new(3828, GLA, Self, 30) },                       // Sepulchre Ready,
+        { 3829, new(3829, GLA, Self, 15, seeAlso: new() {74})  }, // Guardian,
+        { 3830, new(3830, GLA, Self, 15)  },                      // Guardian's Will,
+        { 3831, new(3831, GLA, Self, 30) },                       // Blade of Honor Ready,
+        { 3847, new(3847, GLA, Self, 30) },                       // Goring Blade Ready,
 
         { 87, new(87, WAR, Self, 10) },                            // Thrill of Battle,
         { 89, new(89, WAR, Self, 15) },                            // Vengeance,
@@ -409,6 +410,7 @@ public partial class StatusRef
         { 843, new(843, AST, Target, 30, seeAlso: new() { 838, 1881 }) },                    // 
         { 1889, new(1889, AST, Self, 30) },                                                  // Intersection,
         { 1890, new(1890, AST, Self, 10) },                                                  // Horoscope,
+        { 1891, new(1891, AST, Self, 30) },                                                  // Horoscope Helios,
         { 1892, new(1892, AST, Self, 20) },                                                  // Neutral Sect,
         { 1921, new(1921, AST, Self, 30) },                                                  // Neutral Sect,
         { 2713, new(2713, AST, Self, 30) },                                                  // Clarifying Draw,
@@ -424,7 +426,7 @@ public partial class StatusRef
         { 3892, new(3892, AST, Self, 30) },                                                  // The Spire,
         { 3893, new(3893, AST, Self, 30) },                                                  // Divining,
         { 3894, new(3894, AST, Self, 30, seeAlso: new() { 836 }) },                          // Helios Conjunction,
-        { 836, new(836, AST, Self, 30, seeAlso: new() { 3894 }) },                          // 
+        { 836, new(836, AST, Self, 30, seeAlso: new() { 3894 }) },                           // 
         { 3895, new(3895, AST, Self, 30) },                                                  // Suntouched,
         { 3896, new(3896, AST, Self, 15) },                                                  // Sun Sign,
 
@@ -451,7 +453,7 @@ public partial class StatusRef
         { 2938, new(2938, SGE, Self, 15) },                                  // Kerakeia,
         { 3003, new(3003, SGE, Self, 20) },                                  // Holos,
         { 3365, new(3365, SGE, Self, 30) },                                  // Holosakos,
-        { 3897, new(3897, SGE, Self, 30) },                                  // Eukrasian Dyskrasia,
+        { 3897, new(3897, SGE, Target, 30) },                                  // Eukrasian Dyskrasia,
         { 3898, new(3898, SGE, Self, 20) },                                  // Philosophia,
         { 3899, new(3899, SGE, Self, 20) },                                  // Eudaimonia,
 

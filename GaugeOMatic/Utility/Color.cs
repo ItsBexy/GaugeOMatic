@@ -1,5 +1,7 @@
 using FFXIVClientStructs.FFXIV.Client.Graphics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 // ReSharper disable UnusedMember.Global
@@ -150,6 +152,40 @@ public static class Color
             Base = @base;
             Add = add;
             Multiply = multiply;
+        }
+    }
+
+    // ReSharper disable once UnusedType.Global
+    public struct Gradient
+    {
+        public SortedList<uint, ColorRGB> Points;
+
+        public Gradient() {
+            Points = new()
+            {
+                {0,new(0,0,0)},
+                {100,new(255,255,255)}
+            };
+        }
+
+        public Gradient(params KeyValuePair<uint, ColorRGB>[] points)
+        {
+            Points = new();
+            foreach (var p in points) Points.Add(p.Key, p.Value);
+        }
+
+        public readonly ColorRGB ColorAt(float f)
+        {
+            var f100 = f * 100;
+            if (Points.Count < 1) return new();
+            if (Points.Count < 2) return Points[0];
+            if (f100 < Points.Keys.Min()) return Points[Points.Keys.Min()];
+            if (f100 > Points.Keys.Max()) return Points[Points.Keys.Max()];
+
+            var after = Points.Last(p => p.Key < f100);
+            var before = Points.First(p => p.Key > f100);
+
+            return Vector4.Lerp(before.Value, after.Value, (f100 - before.Key) / (after.Key - before.Key));
         }
     }
 }

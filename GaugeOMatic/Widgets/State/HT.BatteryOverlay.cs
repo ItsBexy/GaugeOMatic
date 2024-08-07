@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.BatteryOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,13 +28,14 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Battery Gauge Overlay",
         Author = "ItsBexy",
         Description = "An electrical overlay over the Battery Gauge",
         WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("HT", "Heat Gauge Replica", 4)
+        MultiCompData = new("HT", "Heat Gauge Replica", 4),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { MCH0 };
@@ -264,23 +266,28 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
-            var pulseColor = Config.PulseColors[i];
-            var ringColor = Config.RingColors[i];
-            var elecColor = Config.ElecColors[i];
-            if (ColorPickerRGB($"Pulse##Color{i}", ref pulseColor, ref update)) Config.PulseColors[i] = pulseColor;
-            if (ColorPickerRGB($"Ring##Color{i}", ref ringColor, ref update)) Config.RingColors[i] = ringColor;
-            if (ColorPickerRGB($"Lightning##Color{i}", ref elecColor, ref update)) Config.ElecColors[i] = elecColor;
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
+                    var pulseColor = Config.PulseColors[i];
+                    var ringColor = Config.RingColors[i];
+                    var elecColor = Config.ElecColors[i];
+                    if (ColorPickerRGB($"Pulse##Color{i}", ref pulseColor, ref update)) Config.PulseColors[i] = pulseColor;
+                    if (ColorPickerRGB($"Ring##Color{i}", ref ringColor, ref update)) Config.RingColors[i] = ringColor;
+                    if (ColorPickerRGB($"Lightning##Color{i}", ref elecColor, ref update)) Config.ElecColors[i] = elecColor;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

@@ -25,6 +25,22 @@ public class JobData
         MIN = 16, BTN = 17, FSH = 18
     }
 
+    [Flags]
+    public enum Role
+    {
+        None = 0x00,
+        Tank = 0x01,
+        Healer = 0x02,
+        Melee = 0x04,
+        Ranged = 0x08,
+        Caster = 0x10,
+        Limited = 0x20,
+        Crafter = 0x40,
+        Gatherer = 0x80,
+        Combat = 0x3F,
+        All = 0xFF
+    }
+
     public static Job GetJobByCategory(uint cat) =>
         cat switch
         {
@@ -51,6 +67,7 @@ public class JobData
             99 => AST,
             111 => SAM,
             112 => RDM,
+            129 => BLU,
             149 => GNB,
             150 => DNC,
             180 => RPR,
@@ -59,24 +76,6 @@ public class JobData
             197 => PCT,
             _ => Job.None
         };
-
-    public const byte LevelCap = 100;
-
-    [Flags]
-    public enum Role
-    {
-        None     = 0x00,
-        Tank     = 0x01,
-        Healer   = 0x02,
-        Melee    = 0x04,
-        Ranged   = 0x08,
-        Caster   = 0x10,
-        Limited  = 0x20,
-        Crafter  = 0x40,
-        Gatherer = 0x80,
-        Combat   = 0x3F,
-        All      = 0xFF
-    }
 
     public static Role GetRoleByCategory(uint cat) =>
         cat switch
@@ -91,6 +90,8 @@ public class JobData
             161 => Melee | Tank | Ranged,
             _ => Role.None
         };
+
+    public const byte LevelCap = 100;
 
     internal static Job Current => LastKnown = (Job)(ClientState.LocalPlayer?.ClassJob.Id ?? 0);
     internal static Job LastKnown;

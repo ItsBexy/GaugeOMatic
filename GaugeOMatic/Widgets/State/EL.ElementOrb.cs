@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.ElementOrb;
 using static GaugeOMatic.Widgets.ElementOrb.ElementOrbConfig.OrbBase;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -23,13 +24,14 @@ namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class ElementOrb : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Elemental Orb",
         Author = "ItsBexy",
         Description = "A widget recreating the orb on BLM's elemental gauge.",
         WidgetTags = State | MultiComponent | Replica,
-        MultiCompData = new("EL", "Elemental Gauge Replica", 2)
+        MultiCompData = new("EL", "Elemental Gauge Replica", 2),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { BLM0 };
@@ -241,26 +243,34 @@ public sealed unsafe class ElementOrb : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Crescent Angle", ref Config.CrescentAngle, ref update);
-
         Config.FillColorLists(Tracker.CurrentData.MaxState);
-
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Crescent Angle", ref Config.CrescentAngle, ref update);
+                break;
+            case Colors:
 
-            var baseColor = Config.BaseColors[i];
-            var orbMod = Config.OrbModifiers[i];
-            var orbPulse = Config.OrbPulses[i];
-            var haloColor = Config.HaloColors[i];
-            if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() {Grey, Red, Blue}, new() {"Grey", "Red", "Blue"}, ref update)) Config.BaseColors[i] = baseColor;
-            if (ColorPickerRGB($"Color Modifier##orbMod{i}", ref orbMod, ref update)) Config.OrbModifiers[i] = orbMod;
-            if (ColorPickerRGB($"Orb Pulse##orbPulse{i}", ref orbPulse, ref update)) Config.OrbPulses[i] = orbPulse;
-            if (ColorPickerRGB($"Rim Pulse##rimPulse{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
+
+                    var baseColor = Config.BaseColors[i];
+                    var orbMod = Config.OrbModifiers[i];
+                    var orbPulse = Config.OrbPulses[i];
+                    var haloColor = Config.HaloColors[i];
+                    if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() { Grey, Red, Blue }, new() { "Grey", "Red", "Blue" }, ref update)) Config.BaseColors[i] = baseColor;
+                    if (ColorPickerRGB($"Color Modifier##orbMod{i}", ref orbMod, ref update)) Config.OrbModifiers[i] = orbMod;
+                    if (ColorPickerRGB($"Orb Pulse##orbPulse{i}", ref orbPulse, ref update)) Config.OrbPulses[i] = orbPulse;
+                    if (ColorPickerRGB($"Rim Pulse##rimPulse{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;
+                }
+                break;
+            default:
+                break;
         }
+        Heading("Layout");
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ElementOrbCfg = Config;

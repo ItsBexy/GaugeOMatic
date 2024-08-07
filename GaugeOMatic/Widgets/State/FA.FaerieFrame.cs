@@ -17,6 +17,7 @@ using static GaugeOMatic.Widgets.FaerieFrame.FaerieFrameConfig;
 using static GaugeOMatic.Widgets.FaerieFrame.FaerieFrameConfig.FrameState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -28,13 +29,14 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Faerie Frame",
         Author = "ItsBexy",
         Description = "A glowing border over one of the parameter bars",
         WidgetTags = MultiComponent | State | Replica,
-        MultiCompData = new("FA", "Faerie Gauge Replica", 1)
+        MultiCompData = new("FA", "Faerie Gauge Replica", 1),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { SCH1 };
@@ -330,26 +332,32 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
-        var maxState = Tracker.CurrentData.MaxState;
-
-        for (var i = 0; i <= maxState; i++)
+        switch (UiTab)
         {
-            Heading($"{Tracker.StateNames[i]}");
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                var maxState = Tracker.CurrentData.MaxState;
 
-            var frameState = Config.FrameStates[i];
-            var frameColor = Config.FrameColors[i];
-            var seraphColor = Config.SeraphColors[i];
-            if (RadioControls($"Appearance##appearance{i}", ref frameState, new(){Blank,FrameState.Faerie, FrameState.Seraph }, new() {"Blank","Faerie","Seraph"}, ref update)) Config.FrameStates[i] = frameState;
-            if (ColorPickerRGB($"Frame Tint##framecolor{i}", ref frameColor, ref update)) Config.FrameColors[i] = frameColor;
+                for (var i = 0; i <= maxState; i++)
+                {
+                    Heading($"{Tracker.StateNames[i]}");
 
-            if (frameState == FrameState.Seraph)
-            {
-                if (ColorPickerRGB($"Seraph Color##seraphcolor{i}", ref seraphColor, ref update)) Config.SeraphColors[i] = seraphColor;
-            }
+                    var frameState = Config.FrameStates[i];
+                    var frameColor = Config.FrameColors[i];
+                    var seraphColor = Config.SeraphColors[i];
+                    if (RadioControls($"Appearance##appearance{i}", ref frameState, new() { Blank, FrameState.Faerie, FrameState.Seraph }, new() { "Blank", "Faerie", "Seraph" }, ref update)) Config.FrameStates[i] = frameState;
+                    if (ColorPickerRGB($"Frame Tint##framecolor{i}", ref frameColor, ref update)) Config.FrameColors[i] = frameColor;
+
+                    if (frameState == FrameState.Seraph)
+                        if (ColorPickerRGB($"Seraph Color##seraphcolor{i}", ref seraphColor, ref update))
+                            Config.SeraphColors[i] = seraphColor;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

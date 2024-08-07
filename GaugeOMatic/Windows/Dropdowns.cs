@@ -10,13 +10,12 @@ using System.Linq;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.ActionRef;
-using static GaugeOMatic.GameData.ParamRef.ParamTypes;
 using static GaugeOMatic.GameData.StatusRef;
+using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static System.StringComparison;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -139,7 +138,7 @@ public class ItemRefMenu : BranchingDropdown
         public string Name;
         public string TrackerType;
         public uint ItemId;
-        public TrackerDisplayAttribute? DisplayAttr;
+        public TrackerDisplayAttribute DisplayAttr;
 
         public MenuOption(string name, string trackerType, uint itemId = 0)
         {
@@ -147,37 +146,25 @@ public class ItemRefMenu : BranchingDropdown
             TrackerType = trackerType;
             ItemId = itemId;
 
-            DisplayAttr = (TrackerDisplayAttribute?)Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?
-                              .GetCustomAttributes(typeof(TrackerDisplayAttribute), true)
-                              .First();
+            var attrList = Type.GetType($"{typeof(Tracker).Namespace}.{TrackerType}")?
+                .GetCustomAttributes(typeof(TrackerDisplayAttribute), true);
+
+            if (trackerType == nameof(ParameterTracker))
+            {
+                DisplayAttr = ParamRef.Attrs[(ParamRef.ParamTypes)itemId];
+            }
+            else
+            {
+                DisplayAttr = (TrackerDisplayAttribute?)attrList?.FirstOrDefault(new TrackerDisplayAttribute()) ?? new();
+            }
         }
 
         public static implicit operator MenuOption(ActionRef a) => new(a.NameChain, nameof(ActionTracker), a.ID);
         public static implicit operator MenuOption(StatusRef s) => new(s.Name, nameof(StatusTracker), s.ID);
-
-        public readonly void DrawTooltip()
-        {
-            switch (TrackerType)
-            {
-                case nameof(ActionTracker):
-                    ((ActionRef)ItemId).DrawTooltip();
-                    break;
-                case nameof(StatusTracker):
-                    ((StatusRef)ItemId).DrawTooltip();
-                    break;
-                case nameof(ParameterTracker):
-                    ((ParamRef)ItemId).DrawTooltip();
-                    break;
-                default:
-                    DisplayAttr?.DrawTooltip(Name);
-                    break;
-            }
-        }
     }
 
     public List<MenuOption> StatusOptions { get; init; }
     public List<MenuOption> ActionOptions { get; init; }
-    public List<MenuOption> ParamOptions { get; init; }
 
     public sealed override List<(string label, List<MenuOption> options)> SubMenus { get; }
 
@@ -192,18 +179,11 @@ public class ItemRefMenu : BranchingDropdown
                                                       .Select(static a => (MenuOption)a.Value)
                                                       .OrderBy(static a => a.Name));
 
-        ParamOptions = new()
-        {
-            new("HP", nameof(ParameterTracker), (uint)HP),
-            new("MP", nameof(ParameterTracker), (uint)MP),
-            new("Castbar", nameof(ParameterTracker), (uint)Castbar)
-        };
-
         SubMenus = new List<(string label, List<MenuOption> options)>
         {
             ("Status Effects", StatusOptions),
             ("Actions", ActionOptions),
-            ("Other", ParamOptions)
+            ("Other", ParamRef.MenuOptions)
         };
 
         if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Insert(2, ("Job Gauge", Tracker.JobModule.JobGaugeMenu));
@@ -245,13 +225,13 @@ public class ItemRefMenu : BranchingDropdown
                 update |= Reset | Save | Rebuild;
             }
 
-            if (ImGui.IsItemHovered()) o.DrawTooltip();
+            if (ImGui.IsItemHovered()) o.DisplayAttr.DrawTooltip(o.TrackerType, o.ItemId);
         }
 
         ImGui.EndMenu();
     }
 
-    public override string DropdownText(string fallback) => Tracker.DisplayName;
+    public override string DropdownText(string fallback) => Tracker.DisplayAttr.Name;
 }
 
 public class WidgetMenu : BranchingDropdown

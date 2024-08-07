@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -30,7 +31,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Arrow Bar",
         Author = "ItsBexy",
@@ -61,7 +62,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         Bar = BuildBar().SetPos(19, 13);
         Frame = NineGridFromPart(0, 0, 13, 38, 13, 56).SetSize(188, 34);
         BarFrame = new CustomNode(CreateResNode(), Bar, Frame).SetOrigin(0, 17);
-        LabelTextNode = new(Config.LabelText.Text, Tracker.DisplayName);
+        LabelTextNode = new(Config.LabelText.Text, Tracker.DisplayAttr.Name);
         NumTextNode = new();
 
         AnimateTickmark();
@@ -289,29 +290,33 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, 30, 2000, 1, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-
-        ColorPickerRGBA("Backdrop", ref Config.Background, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayName, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Width", ref Config.Width, 30, 2000, 1, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+                ColorPickerRGBA("Backdrop", ref Config.Background, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
+                LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayAttr.Name, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ArrowBarCfg = Config;

@@ -17,6 +17,7 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.DragonScales;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -28,13 +29,14 @@ public sealed unsafe class DragonScales : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Dragon Scales",
         Author = "ItsBexy",
         Description = "A stack counter recreating DRG's First Minds' Focus counter.",
         WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("DR", "Replica Dragon Gauge", 1)
+        MultiCompData = new("DR", "Replica Dragon Gauge", 1),
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = { DRG0 };
@@ -260,7 +262,7 @@ public sealed unsafe class DragonScales : CounterWidget
         public AddRGB ScaleColor = new(-40,-100,11);
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
-        public CounterPulse Pulse = AtMax;
+        [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
 
         public DragonScalesConfig(WidgetConfig widgetConfig)
         {
@@ -304,25 +306,31 @@ public sealed unsafe class DragonScales : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Scale Color", ref Config.ScaleColor, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-
-        Heading("Behavior");
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+        switch (UiTab)
         {
-            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) FrameVanish();
-            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) FrameAppear();
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Scale Color", ref Config.ScaleColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                break;
+            case Behavior:
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                {
+                    if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) FrameVanish();
+                    if (!Config.HideEmpty && WidgetContainer.Alpha < 255) FrameAppear();
+                }
+
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
+
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
         }
-
-        RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.DragonScalesCfg = Config;

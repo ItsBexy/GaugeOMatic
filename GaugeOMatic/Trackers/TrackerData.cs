@@ -1,5 +1,4 @@
 using GaugeOMatic.GameData;
-using System;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
 
 namespace GaugeOMatic.Trackers;
@@ -23,25 +22,7 @@ public abstract partial class Tracker
 
         public TrackerData(ActionRef a, float? preview = null) => this = a.GetTrackerData(preview);
 
-        public TrackerData(StatusRef s, float? preview = null)
-        {
-            MaxCount = s.MaxStacks;
-            MaxGauge = Math.Max(0.0001f, s.MaxTime);
-            MaxState = 1;
-
-            if (preview != null)
-            {
-                State = preview > 0 ? 1 : 0;
-                Count = (int)(preview * MaxCount);
-                GaugeValue = (float)(preview * MaxGauge);
-            }
-            else if (s.TryGetStatus(out var status))
-            {
-                State = 1;
-                Count = status is { StackCount: > 0 } ? status.StackCount : 1;
-                GaugeValue = s.MaxTime == 0 ? MaxGauge : Math.Abs(status?.RemainingTime ?? 0f);
-            }
-        }
+        public TrackerData(StatusRef s, float? preview = null) => this = s.GetTrackerData(preview);
 
         public TrackerData(ParamRef p, float? preview = null)
         {

@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.NinkiBorders;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,7 +28,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Ninki Borders",
         Author = "ItsBexy",
@@ -228,29 +229,31 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        var borders = new List<bool> { Config.Top, Config.Bottom };
-        if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }, ref update))
+        switch (UiTab)
         {
-            Config.Top = borders[0];
-            Config.Bottom = borders[1];
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                var borders = new List<bool> { Config.Top, Config.Bottom };
+                if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }, ref update))
+                {
+                    Config.Top = borders[0];
+                    Config.Bottom = borders[1];
+                }
+                break;
+            case Colors:
+                ColorPickerRGBA("Border Color", ref Config.BorderColor, ref update);
+                ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
+                break;
+            case Behavior:
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
         }
-
-        Heading("Colors");
-
-        ColorPickerRGBA("Border Color", ref Config.BorderColor, ref update);
-        ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
-
-        Heading("Behavior");
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-
-      //  IntControls("Animation Time", ref Config.AnimationLength, 0, 2000, 50, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.NinkiBordersCfg = Config;

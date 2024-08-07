@@ -26,7 +26,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Ninki Scroll",
         Author = "ItsBexy",
@@ -335,30 +335,37 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
+        switch (UiTab)
+        {
+            case WidgetUiTab.Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case WidgetUiTab.Colors:
+                Heading("Horizontal Section");
 
-        Heading("Colors (Horizontal)");
+                ColorPickerRGB("Main Bar (Low)", ref Config.BarColorLow, ref update);
+                ColorPickerRGB("Main Bar (High)", ref Config.BarColorHigh, ref update);
+                ColorPickerRGB("Gain", ref Config.GainColorH, ref update);
+                ColorPickerRGB("Border Glow", ref Config.BorderGlow, ref update);
+                ColorPickerRGB("Flash Effects##flash1", ref Config.FlashH, ref update);
+                ColorPickerRGB("##flash2", ref Config.FlashH2, ref update);
 
-        ColorPickerRGB("Main Bar (Low)", ref Config.BarColorLow, ref update);
-        ColorPickerRGB("Main Bar (High)", ref Config.BarColorHigh, ref update);
-        ColorPickerRGB("Gain", ref Config.GainColorH, ref update);
-        ColorPickerRGB("Border Glow", ref Config.BorderGlow, ref update);
-        ColorPickerRGB("Flash Effects##flash1", ref Config.FlashH, ref update);
-        ColorPickerRGB("##flash2", ref Config.FlashH2, ref update);
-
-        Heading("Colors (Vertical)");
-        ColorPickerRGB("Bar Color", ref Config.BarColorHigh2, ref update);
-        ColorPickerRGB("Gain Color", ref Config.GainColorV, ref update);
-        ColorPickerRGB("Drain Color", ref Config.DrainColorV, ref update);
-
-        Heading("Behavior");
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-        PercentControls("Midpoint", ref Config.Midpoint, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                Heading("Vertical Section");
+                ColorPickerRGB("Bar Color", ref Config.BarColorHigh2, ref update);
+                ColorPickerRGB("Gain Color", ref Config.GainColorV, ref update);
+                ColorPickerRGB("Drain Color", ref Config.DrainColorV, ref update);
+                break;
+            case WidgetUiTab.Behavior:
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                PercentControls("Midpoint", ref Config.Midpoint, ref update);
+                break;
+            case WidgetUiTab.Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.NinkiReplicaCfg = Config;

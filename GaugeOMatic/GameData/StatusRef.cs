@@ -8,8 +8,9 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.Sheets;
 using static GaugeOMatic.GameData.StatusRef.StatusHolderType;
+using static GaugeOMatic.Trackers.Tracker;
 using DalamudStatus = Dalamud.Game.ClientState.Statuses.Status;
-using StatusExcelRow = Lumina.Excel.GeneratedSheets.Status;
+using StatusExcelRow = Lumina.Excel.GeneratedSheets2.Status;
 
 namespace GaugeOMatic.GameData;
 
@@ -91,6 +92,7 @@ public partial class StatusRef : ItemRef
         return statusList != null && (statusList.Any(StatusMatch(ID, ClientState.LocalPlayer?.GameObjectId)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
     }
 
+    public static StatusList? PlayerStatus => ClientState.LocalPlayer?.StatusList;
     public static StatusList? TargetStatus =>
         ClientState.LocalPlayer?.TargetObject?.ObjectKind == BattleNpc
             ? ((IBattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
@@ -98,5 +100,28 @@ public partial class StatusRef : ItemRef
 
     public enum StatusHolderType { Self, Target }
 
+    public TrackerData GetTrackerData(float? preview)
+    {
+        var maxCount = MaxStacks;
+        var maxGauge = Math.Max(0.0001f, MaxTime);
+
+        var count = 0;
+        var state = 0;
+        var gaugeValue = 0f;
+        if (preview != null)
+        {
+            state = preview > 0 ? 1 : 0;
+            count = (int)(preview * maxCount);
+            gaugeValue = preview.Value * maxGauge;
+        }
+        else if (TryGetStatus(out var status))
+        {
+            state = 1;
+            count = status is { StackCount: > 0 } ? status.StackCount : 1;
+            gaugeValue = MaxTime == 0 ? maxGauge : Math.Abs(status?.RemainingTime ?? 0f);
+        }
+
+        return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview);
+    }
 
 }

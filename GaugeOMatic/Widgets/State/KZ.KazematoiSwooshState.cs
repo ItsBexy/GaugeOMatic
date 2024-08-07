@@ -14,6 +14,7 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.KazematoiSwooshState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -25,13 +26,14 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Kazematoi Swoosh",
         Author = "ItsBexy",
         Description = "A state indicator based on the backdrop of NIN's Kazematoi",
         WidgetTags = State | MultiComponent,
-        MultiCompData = new("KZ", "Kazematoi Replica", 1)
+        MultiCompData = new("KZ", "Kazematoi Replica", 1),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { NIN1,
@@ -243,37 +245,42 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-
         Config.FillColorLists(Tracker.CurrentData.MaxState);
 
-        for (var i = 0; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                break;
+            case Colors:
+                for (var i = 0; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
 
-            var backdropBase = Config.BackdropBases[i];
-            var backdropTint = Config.BackdropTints[i];
-            var cloudColor = Config.CloudColors[i];
-            var sweepColor = Config.SweepColors[i];
-            var clouds = Config.Clouds[i];
+                    var backdropBase = Config.BackdropBases[i];
+                    var backdropTint = Config.BackdropTints[i];
+                    var cloudColor = Config.CloudColors[i];
+                    var sweepColor = Config.SweepColors[i];
+                    var clouds = Config.Clouds[i];
 
-            if (i == 0)
-            {
-                ToggleControls("Hide", ref Config.HideInactive, ref update);
-            }
-            if (i != 0 || !Config.HideInactive)
-            {
-                if (RadioControls($"Base Color##baseColor{i}", ref backdropBase, new() { 1, 0 }, new() { "Violet", "Grey" }, ref update, true)) Config.BackdropBases[i] = backdropBase;
-                if (ColorPickerRGB($"Backdrop Tint##backdrop{i}", ref backdropTint, ref update)) Config.BackdropTints[i] = backdropTint;
-                if (i != 0 && ColorPickerRGB($"Flash Color##sweep{i}", ref sweepColor, ref update)) Config.SweepColors[i] = sweepColor;
-                if (i != 0 && ToggleControls($"Show Clouds##clouds{i}", ref clouds, ref update)) Config.Clouds[i] = clouds;
-                if (i != 0 && clouds && ColorPickerRGB($"Cloud Color##cloudColor{i}", ref cloudColor, ref update)) Config.CloudColors[i] = cloudColor;
-            }
-
+                    if (i == 0)
+                    {
+                        ToggleControls("Hide", ref Config.HideInactive, ref update);
+                    }
+                    if (i != 0 || !Config.HideInactive)
+                    {
+                        if (RadioControls($"Base Color##baseColor{i}", ref backdropBase, new() { 1, 0 }, new() { "Violet", "Grey" }, ref update, true)) Config.BackdropBases[i] = backdropBase;
+                        if (ColorPickerRGB($"Backdrop Tint##backdrop{i}", ref backdropTint, ref update)) Config.BackdropTints[i] = backdropTint;
+                        if (i != 0 && ColorPickerRGB($"Flash Color##sweep{i}", ref sweepColor, ref update)) Config.SweepColors[i] = sweepColor;
+                        if (i != 0 && ToggleControls($"Show Clouds##clouds{i}", ref clouds, ref update)) Config.Clouds[i] = clouds;
+                        if (i != 0 && clouds && ColorPickerRGB($"Cloud Color##cloudColor{i}", ref cloudColor, ref update)) Config.CloudColors[i] = cloudColor;
+                    }
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

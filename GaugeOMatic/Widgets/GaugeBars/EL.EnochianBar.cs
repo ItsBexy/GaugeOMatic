@@ -18,6 +18,7 @@ using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -29,7 +30,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Enochian Bar",
         Author = "ItsBexy",
@@ -65,7 +66,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public override CustomNode BuildContainer()
     {
         CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0,-1);
-        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
+        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetSize(176,176).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
 
         Lattice = ImageNodeFromPart(0, 8).SetAddRGB(-20).SetMultiply(50).SetImageWrap(1);
         Plate = ImageNodeFromPart(0, 9).SetPos(9, 8).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
@@ -299,38 +300,43 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt }, ref update);
-
-
-        Heading("Colors");
-        ColorPickerRGB("Plate Tint", ref Config.PlateColor, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-        ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-
-        var emptyBehavior = new List<bool> { Config.DimEmpty, Config.HideEmpty, Config.HideHand };
-        if (ToggleControls("When Empty", ref emptyBehavior, new() { "Dim Bar", "Hide Bar", "Hide Clock Hand" }, ref update))
+        switch (UiTab)
         {
-            if (Config.HideEmpty != emptyBehavior[1]) HideCheck(emptyBehavior[1]);
-            if (Config.DimEmpty != emptyBehavior[0]) DimCheck(emptyBehavior[0]);
-            Config.DimEmpty = emptyBehavior[0];
-            Config.HideEmpty = emptyBehavior[1];
-            Config.HideHand = emptyBehavior[2];
-            Config.HideFull = false;
-        }
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt }, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Plate Tint", ref Config.PlateColor, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
 
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+
+                var emptyBehavior = new List<bool> { Config.DimEmpty, Config.HideEmpty, Config.HideHand };
+                if (ToggleControls("When Empty", ref emptyBehavior, new() { "Dim Bar", "Hide Bar", "Hide Clock Hand" }, ref update))
+                {
+                    if (Config.HideEmpty != emptyBehavior[1]) HideCheck(emptyBehavior[1]);
+                    if (Config.DimEmpty != emptyBehavior[0]) DimCheck(emptyBehavior[0]);
+                    Config.DimEmpty = emptyBehavior[0];
+                    Config.HideEmpty = emptyBehavior[1];
+                    Config.HideHand = emptyBehavior[2];
+                    Config.HideFull = false;
+                }
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.EnochianBarCfg = Config;

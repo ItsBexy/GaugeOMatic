@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.BeastGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -22,12 +23,13 @@ namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class BeastGem : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Beast Gem",
         Author = "ItsBexy",
         Description = "A widget recreating the low-level tank stance gem for MRD / WAR",
-        WidgetTags = State | Replica
+        WidgetTags = State | Replica,
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { WAR0 };
@@ -174,19 +176,24 @@ public sealed unsafe class BeastGem : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
         Config.FillColorLists(Tracker.CurrentData.MaxState);
-
-        Heading("Colors");
-        ColorPickerRGB("Base Tint", ref Config.BaseColor, ref update);
-
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            var color = Config.Colors[i];
-            if (ColorPickerRGB($"{Tracker.StateNames[i]}", ref color, ref update)) Config.Colors[i] = color;
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                break;
+            case Colors:
+                ColorPickerRGB("Base Tint", ref Config.BaseColor, ref update);
+
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    var color = Config.Colors[i];
+                    if (ColorPickerRGB($"{Tracker.StateNames[i]}", ref color, ref update)) Config.Colors[i] = color;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

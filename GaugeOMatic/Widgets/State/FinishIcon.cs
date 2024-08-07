@@ -16,6 +16,7 @@ using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using System.ComponentModel;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,12 +28,13 @@ public sealed unsafe class FinishIcon : StateWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Finish Icon",
         Author = "ItsBexy",
         Description = "A widget recreating DNC's Standard Finish timer",
-        WidgetTags = State
+        WidgetTags = State,
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } =
@@ -177,22 +179,26 @@ public sealed unsafe class FinishIcon : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
-        RadioControls("Icon", ref Config.Tech, new() { false, true }, new() { "Standard", "Technical" }, ref update);
-
-        Heading("Color Modifier");
-
-        var maxState = Tracker.CurrentData.MaxState;
-
-        for (var i = 1; i <= maxState; i++)
+        switch (UiTab)
         {
-            var color = Config.Colors[i];
-            var label = $"{Tracker.StateNames[i]}";
-            if (ColorPickerRGB(label, ref color, ref update)) Config.Colors[i] = color;
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
+                RadioControls("Icon", ref Config.Tech, new() { false, true }, new() { "Standard", "Technical" }, ref update);
+                break;
+            case Colors:
+                var maxState = Tracker.CurrentData.MaxState;
+
+                for (var i = 1; i <= maxState; i++)
+                {
+                    var color = Config.Colors[i];
+                    var label = $"{Tracker.StateNames[i]}";
+                    if (ColorPickerRGB(label, ref color, ref update)) Config.Colors[i] = color;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();

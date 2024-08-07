@@ -1,4 +1,3 @@
-using Dalamud.Game.ClientState.Statuses;
 using ImGuiNET;
 using System.Linq;
 using System.Numerics;
@@ -62,6 +61,4 @@ public partial class StatusRef
 
     public override void PrintCounterDesc() => ImGui.Text($"Shows stacks ({MaxStacks})");
     public override void PrintBarTimerDesc() => ImGui.Text($"Shows time remaining{(MaxTime > 0 ? $" ({MaxTime}s)" : "")}");
-
-    public static StatusList? PlayerStatus => ClientState.LocalPlayer?.StatusList;
 }

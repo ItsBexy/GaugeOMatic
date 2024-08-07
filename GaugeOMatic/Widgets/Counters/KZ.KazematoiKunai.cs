@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,13 +28,14 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Kazematoi Kunai",
         Author = "ItsBexy",
         Description = "A set of kunai recreating those on the Kazematoi Gauge.",
         WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("KZ", "Kazematoi Replica", 3)
+        MultiCompData = new("KZ", "Kazematoi Replica", 3),
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = { NIN1 };
@@ -211,7 +213,7 @@ public sealed unsafe class KazematoiKunai : CounterWidget
         public float Curve;
         public float KunaiAngle;
         public bool HideEmpty;
-        public CounterPulse Pulse = AtMax;
+        [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
 
         public KazematoiKunaiConfig(WidgetConfig widgetConfig)
         {
@@ -276,29 +278,33 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        ToggleControls("Staggered", ref Config.Stagger, ref update);
-        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        AngleControls("Angle (Knife)", ref Config.KunaiAngle, ref update);
-        AngleControls("Angle (All)", ref Config.Angle, ref update);
-        AngleControls("Curve", ref Config.Curve, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Kunai Tint", ref Config.KunaiColor, ref update);
-
-        Heading("Behavior");
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+        switch (UiTab)
         {
-            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
-            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                ToggleControls("Staggered", ref Config.Stagger, ref update);
+                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
+                AngleControls("Angle (Knife)", ref Config.KunaiAngle, ref update);
+                AngleControls("Angle (All)", ref Config.Angle, ref update);
+                AngleControls("Curve", ref Config.Curve, ref update, true);
+                break;
+            case Colors:
+                ColorPickerRGB("Kunai Tint", ref Config.KunaiColor, ref update);
+                break;
+            case Behavior:
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                {
+                    if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
+                    if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
+                }
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
+
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
         }
-
-        RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.KazematoiKunaiCfg = Config;

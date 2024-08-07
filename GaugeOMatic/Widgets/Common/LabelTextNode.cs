@@ -1,7 +1,6 @@
 using CustomNodes;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using ImGuiNET;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
 
@@ -87,22 +85,9 @@ public struct LabelTextProps
     public static void LabelTextControls(string label, ref LabelTextProps configVal, string hintText, ref UpdateFlags update)
     {
         var labelTextProps = configVal;
-        TableSeparator(2);
 
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-
-        var treeNode = ImGui.TreeNodeEx($"{label}##{label}treeRow");
-
-        var enabled = labelTextProps.Enabled;
-        ImGui.TableNextColumn();
-        if (ImGui.Checkbox($"##{label}Enabled", ref enabled))
-        {
-            labelTextProps.Enabled = enabled;
-            update |= UpdateFlags.Save;
-        }
-
-        if (treeNode)
+        ToggleControls(label, ref labelTextProps.Enabled,ref update);
+        if (labelTextProps.Enabled)
         {
             var text = labelTextProps.Text;
 
@@ -116,8 +101,6 @@ public struct LabelTextProps
 
             RadioIcons($"Alignment##{label}align", ref labelTextProps.Align, AlignList, AlignIcons, ref update);
             IntControls($"Font Size##{label}fontSize", ref labelTextProps.FontSize, 1, 100, 1, ref update);
-
-            ImGui.TreePop();
         }
 
         if (update.HasFlag(UpdateFlags.Save)) configVal = labelTextProps;

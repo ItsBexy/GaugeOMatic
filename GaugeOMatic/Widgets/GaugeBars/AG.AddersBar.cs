@@ -22,6 +22,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -33,7 +34,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Addersgall Bar",
         Author = "ItsBexy",
@@ -77,7 +78,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Bar = BuildBar();
         Plate = ImageNodeFromPart(0, 1).SetPos(-100, -24).SetOrigin(100, 24).RemoveFlags(SetVisByAlpha);
         Frame = NineGridFromPart(0, 0, 0, 32, 0, 32);
-        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayName);
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayAttr.Name);
         LabelTextNode.SetWidth(144);
 
         NumTextNode = new();
@@ -413,44 +414,45 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
-        ToggleControls("Backplate", ref Config.ShowPlate, ref update);
-        if (Config.ShowPlate) Config.Width = Max(Config.Width, 144);
-
-        Heading("Colors");
-
-        ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-        ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-        ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-        ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-        ColorPickerRGB("Sparkles", ref Config.SparkleColor, ref update);
-
-        if (Config.MilestoneType > 0)
+        switch (UiTab)
         {
-            ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-            ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
-            ColorPickerRGB(" ##Pulse3", ref Config.PulseSparkles, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
+                ToggleControls("Backplate", ref Config.ShowPlate, ref update);
+                if (Config.ShowPlate) Config.Width = Max(Config.Width, 144);
+                break;
+            case Colors:
+
+                ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
+                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
+                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                ColorPickerRGB("Sparkles", ref Config.SparkleColor, ref update);
+                break;
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                if (Config.MilestoneType > 0)
+                {
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+                    ColorPickerRGB(" ##Pulse3", ref Config.PulseSparkles, ref update);
+                }
+                break;
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+                break;
+            default:
+                break;
         }
-
-        Heading("Behavior");
-
-        SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-
-        ToggleControls("Invert Fill", ref Config.Invert, ref update);
-
-        HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-        MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
-
-        NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
-        LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayName, ref update);
 
         if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.AddersBarCfg = Config;

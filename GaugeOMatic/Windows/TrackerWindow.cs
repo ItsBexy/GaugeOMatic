@@ -11,6 +11,9 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static ImGuiNET.ImGuiTableColumnFlags;
+using static ImGuiNET.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -51,9 +54,9 @@ public class TrackerWindow : Window, IDisposable
 
     private void HeaderTable(ref UpdateFlags update)
     {
-        if (!ImGui.BeginTable("TrackerHeaderTable" + Hash, 2, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.PadOuterX)) return;
+        if (!ImGui.BeginTable("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX)) return;
 
-        ImGui.TableSetupColumn("Labels", ImGuiTableColumnFlags.WidthFixed, 60f * GlobalScale);
+        ImGui.TableSetupColumn("Labels", WidthFixed, 60f * GlobalScale);
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
@@ -71,10 +74,26 @@ public class TrackerWindow : Window, IDisposable
             update |= Reset | Save;
         }
 
-
         PreviewControls();
 
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+
         ImGui.EndTable();
+        ImGui.TextDisabled("Widget Settings");
+        ImGui.SameLine();
+
+        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetColumnWidth() - (80 * GlobalScale));
+        if (ImGuiHelpy.IconButtonWithText("Default", FontAwesomeIcon.UndoAlt, $"##{Hash}Default", 80f))
+        {
+            Widget?.ResetConfigs();
+            Widget?.ApplyConfigs();
+            Tracker.UpdateTracker();
+            update |= Save;
+        }
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip(
+                $"This will reset to the defaults for {Widget?.WidgetInfo.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
 
     }
 
@@ -103,39 +122,36 @@ public class TrackerWindow : Window, IDisposable
 
     private void WidgetOptionTable(WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        if (ImGui.BeginTable("TrackerWidgetOptionTable" + Hash, 2, ImGuiTableFlags.SizingFixedFit | ImGuiTableFlags.PadOuterX))
+        void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
         {
-            ImGui.TableSetupColumn("Labels");
-
-
-            ImGuiHelpy.TableSeparator(2);
-
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            ImGui.TextColored(new(1, 1, 1, 0.3f), "Widget Settings");
-            ImGui.TableNextColumn();
-
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetColumnWidth() - (80 * GlobalScale));
-            if (ImGuiHelpy.IconButtonWithText("Default", FontAwesomeIcon.UndoAlt, $"##{Hash}Default", 80f))
+            if (tabs.HasFlag(uiTab) && ImGui.BeginTabItem($"{label}##{label}Tab{Hash}"))
             {
-                Widget?.ResetConfigs();
-                Widget?.ApplyConfigs();
-                Tracker.UpdateTracker();
-                update |= Save;
+                Tracker.Widget!.UiTab = uiTab;
+                ImGui.EndTabItem();
             }
+        }
 
-            if (ImGui.IsItemHovered())
-                ImGui.SetTooltip(
-                    $"This will reset to the defaults for {Widget?.WidgetInfo.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
+        ImGui.Spacing();
+        if (ImGui.BeginTabBar("UiTab" + Hash))
+        {
+            var tabOptions = Tracker.Widget?.WidgetInfo.UiTabOptions??WidgetUiTab.None;
+            DrawTab(tabOptions, "Layout", Layout);
+            DrawTab(tabOptions, "Colors", Colors);
+            DrawTab(tabOptions, "Text", Text);
+            DrawTab(tabOptions, "Behavior", Behavior);
+        }
+
+        if (ImGui.BeginTable($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingFixedFit | PadOuterX, new(280,10)))
+        {
+            ImGui.TableSetupColumn("Labels",WidthFixed);
+            ImGui.TableSetupColumn("Controls", WidthFixed);
 
             ImGui.Spacing();
             ImGui.Spacing();
 
             Widget?.DrawUI(ref widgetConfig, ref update);
 
-            ImGuiHelpy.TableSeparator(2);
-
-            DisplayRuleTable(ref update);
+            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable(ref update);
 
             ImGui.EndTable();
         }
@@ -148,34 +164,17 @@ public class TrackerWindow : Window, IDisposable
         ImGui.TextColored(new(1, 1, 1, 0.3f), "Display Rules");
         ImGui.TableNextColumn();
 
-        var cond4 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, new() { false, true }, new() { "Anytime", "Combat / Duty Only" }, ref update);
-
-        var cond1 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange, ref update);
-
-        var cond2 = false;
+        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, new() { false, true }, new() { "Anytime", "Combat / Duty Only" }, ref update);
+        var cond2 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange, ref update);
         var cond3 = false;
+        var cond4 = false;
         if (Tracker.TrackerConfig.LimitLevelRange)
         {
-            var min = Tracker.TrackerConfig.LevelMin ?? 1;
-            var max = Tracker.TrackerConfig.LevelMax ?? LevelCap;
-            cond2 = IntControls("Minimum Level", ref min, 1, max, 1, ref update);
-            cond3 = IntControls("Maximum Level", ref max, min, LevelCap, 1, ref update);
-
-            if (cond2 || cond3)
-            {
-                Tracker.TrackerConfig.LevelMin = min;
-                Tracker.TrackerConfig.LevelMax = max;
-            }
+            var min = Tracker.TrackerConfig.LevelMin??1;
+            var max = Tracker.TrackerConfig.LevelMax??LevelCap;
+            cond3 = IntControls("Minimum Level", ref min, 1, max, 1, ref update);
+            cond4 = IntControls("Maximum Level", ref max, min, LevelCap, 1, ref update);
         }
-        else
-        {
-            if (Tracker.TrackerConfig.LevelMin == 1 && Tracker.TrackerConfig.LevelMax == LevelCap)
-            {
-                Tracker.TrackerConfig.LevelMin = null;
-                Tracker.TrackerConfig.LevelMax = null;
-            }
-        }
-
 
         if (cond1 || cond2 || cond3 || cond4) Tracker.Widget?.ApplyDisplayRules();
     }

@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -27,13 +28,14 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Umbral Hearts",
         Author = "ItsBexy",
         Description = "A counter based on BLM's Umbral Heart counter",
         WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("EL", "Elemental Gauge Replica", 5)
+        MultiCompData = new("EL", "Elemental Gauge Replica", 5),
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = { BLM0 };
@@ -194,20 +196,25 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        AngleControls("Curve", ref Config.Curve, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Color Modifier", ref Config.StackColor, ref update);
-        ColorPickerRGB("Glow Color", ref Config.GlowColor, ref update);
-
-        Heading("Behavior");
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                AngleControls("Curve", ref Config.Curve, ref update, true);
+                break;
+            case Colors:
+                ColorPickerRGB("Color Modifier", ref Config.StackColor, ref update);
+                ColorPickerRGB("Glow Color", ref Config.GlowColor, ref update);
+                break;
+            case Behavior:
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
+        }
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.UmbralHeartCfg = Config;

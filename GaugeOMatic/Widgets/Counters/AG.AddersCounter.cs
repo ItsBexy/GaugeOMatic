@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static System.Math;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -26,13 +27,14 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     public override WidgetInfo WidgetInfo => GetWidgetInfo;
 
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Addersgall Gems",
         Author = "ItsBexy",
         Description = "A set of gems recreating those on the Addersgall Gauge.",
         WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("AG", "Addersgall Gauge Replica", 2)
+        MultiCompData = new("AG", "Addersgall Gauge Replica", 2),
+        UiTabOptions = Layout | Colors | Behavior
     };
 
     public override CustomPartsList[] PartsLists { get; } = {
@@ -376,27 +378,31 @@ public sealed unsafe class AddersCounter : CounterWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-        FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-        AngleControls("Angle", ref Config.Angle, ref update);
-        AngleControls("Curve", ref Config.Curve, ref update);
-
-        Heading("Colors");
-        ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
-        ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-        ColorPickerRGB("Effects Color", ref Config.FXColor, ref update);
-
-        Heading("Behavior");
-        if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+        switch (UiTab)
         {
-            if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
-            if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
+                AngleControls("Angle", ref Config.Angle, ref update);
+                AngleControls("Curve", ref Config.Curve, ref update, true);
+                break;
+            case Colors:
+                ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGB("Effects Color", ref Config.FXColor, ref update);
+                break;
+            case Behavior:
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                {
+                    if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
+                    if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
+                }
+                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                break;
+            default:
+                break;
         }
-
-        CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
 
         if (update.HasFlag(Save)) ApplyConfigs();
         widgetConfig.AddersCounterCfg = Config;

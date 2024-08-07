@@ -1,11 +1,12 @@
-using FFXIVClientStructs.FFXIV.Client.System.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using GaugeOMatic.Utility;
 using Lumina.Data.Files;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static FFXIVClientStructs.FFXIV.Client.Graphics.Kernel.Texture;
+using static FFXIVClientStructs.FFXIV.Client.System.Memory.IMemorySpace;
+using static FFXIVClientStructs.FFXIV.Component.GUI.TextureType;
+using static GaugeOMatic.Utility.MemoryHelper;
 
 namespace CustomNodes;
 
@@ -52,7 +53,7 @@ public unsafe partial class CustomNodeManager
 
         public static AtkUldAsset* CreateAsset(string texturePath)
         {
-            var atkAsset = (AtkUldAsset*)MemoryHelper.Alloc((ulong)sizeof(AtkUldAsset));
+            var atkAsset = (AtkUldAsset*)Alloc((ulong)sizeof(AtkUldAsset));
             atkAsset->AtkTexture.Ctor();
             atkAsset->Id = NextAssetId++;
             atkAsset->AtkTexture.LoadTexture(texturePath, 2);
@@ -68,11 +69,11 @@ public unsafe partial class CustomNodeManager
                 var newTexture = CreateTexture2D(data.TextureBuffer.Width, data.TextureBuffer.Height, (byte)data.Header.MipCount, (uint)data.Header.Format, 0u, 0u);
                 newTexture->InitializeContents(dataPtr);
 
-                var atkAsset = (AtkUldAsset*)MemoryHelper.Alloc((ulong)sizeof(AtkUldAsset));
+                var atkAsset = (AtkUldAsset*)Alloc((ulong)sizeof(AtkUldAsset));
                 atkAsset->AtkTexture.Ctor();
                 atkAsset->Id = NextAssetId++;
 
-                atkAsset->AtkTexture.TextureType = TextureType.KernelTexture;
+                atkAsset->AtkTexture.TextureType = KernelTexture;
                 atkAsset->AtkTexture.KernelTexture = newTexture;
 
                 return atkAsset;
@@ -83,8 +84,8 @@ public unsafe partial class CustomNodeManager
         {
             var count = coords.Count;
 
-            var atkUldPartsList = MemoryHelper.Alloc<AtkUldPartsList>();
-            var atkParts = (AtkUldPart*)MemoryHelper.Alloc((ulong)sizeof(AtkUldPart) * (ulong)count);
+            var atkUldPartsList = Alloc<AtkUldPartsList>();
+            var atkParts = (AtkUldPart*)Alloc((ulong)sizeof(AtkUldPart) * (ulong)count);
 
             for (var i = 0; i < count; i++)
             {
@@ -107,9 +108,9 @@ public unsafe partial class CustomNodeManager
         {
             try
             {
-                IMemorySpace.Free(AtkUldPartsList->Parts, (ulong)sizeof(AtkUldPart) * AtkUldPartsList->PartCount);
-                IMemorySpace.Free(AtkUldPartsList, (ulong)sizeof(AtkUldPartsList));
-                IMemorySpace.Free(Asset, (ulong)sizeof(AtkUldAsset));
+                Free(AtkUldPartsList->Parts, (ulong)sizeof(AtkUldPart) * AtkUldPartsList->PartCount);
+                Free(AtkUldPartsList, (ulong)sizeof(AtkUldPartsList));
+                Free(Asset, (ulong)sizeof(AtkUldAsset));
                 Texture.ReleaseTexture();
             }
             catch (Exception ex)

@@ -15,6 +15,7 @@ using static GaugeOMatic.Widgets.BloodGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -22,13 +23,14 @@ namespace GaugeOMatic.Widgets;
 
 public sealed unsafe class BloodGem : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo => new()
+    public static WidgetInfo GetWidgetInfo { get; } = new()
     {
         DisplayName = "Blood Gem",
         Author = "ItsBexy",
         Description = "A widget recreating the tank stance gem for DRK.",
         WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("BD", "Blood Gauge Replica", 1)
+        MultiCompData = new("BD", "Blood Gauge Replica", 1),
+        UiTabOptions = Layout | Colors
     };
 
     public override CustomPartsList[] PartsLists { get; } = { DRK0 };
@@ -232,25 +234,31 @@ public sealed unsafe class BloodGem : StateWidget
 
     public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
     {
-        Heading("Layout");
-        PositionControls("Position", ref Config.Position, ref update);
-        ScaleControls("Scale", ref Config.Scale, ref update);
-
-        ToggleControls("Show Ring", ref Config.Ring, ref update);
-
-        if (Config.Ring) ColorPickerRGB("Ring Tint", ref Config.RingColor, ref update);
-
         Config.FillColorLists(Tracker.CurrentData.MaxState);
-        for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+        switch (UiTab)
         {
-            Heading(Tracker.StateNames[i]);
+            case Layout:
+                PositionControls("Position", ref Config.Position, ref update);
+                ScaleControls("Scale", ref Config.Scale, ref update);
+                ToggleControls("Show Ring", ref Config.Ring, ref update);
+                break;
+            case Colors:
+                if (Config.Ring) ColorPickerRGB("Ring Tint", ref Config.RingColor, ref update);
 
-            var gemColor = Config.GemColors[i];
-            var haloColor = Config.HaloColors[i];
-            var haloColor2 = Config.HaloColors2[i];
-            if (ColorPickerRGB($"Gem Color##gemColor{i}", ref gemColor, ref update)) Config.GemColors[i] = gemColor;
-            if (ColorPickerRGB($"Halo Color##haloColor{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;
-            if (ColorPickerRGB($" ##haloColor2{i}", ref haloColor2, ref update)) Config.HaloColors2[i] = haloColor2;
+                for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
+                {
+                    Heading(Tracker.StateNames[i]);
+
+                    var gemColor = Config.GemColors[i];
+                    var haloColor = Config.HaloColors[i];
+                    var haloColor2 = Config.HaloColors2[i];
+                    if (ColorPickerRGB($"Gem Color##gemColor{i}", ref gemColor, ref update)) Config.GemColors[i] = gemColor;
+                    if (ColorPickerRGB($"Halo Color##haloColor{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;
+                    if (ColorPickerRGB($" ##haloColor2{i}", ref haloColor2, ref update)) Config.HaloColors2[i] = haloColor2;
+                }
+                break;
+            default:
+                break;
         }
 
         if (update.HasFlag(Save)) ApplyConfigs();
