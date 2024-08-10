@@ -1,8 +1,10 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
+using GaugeOMatic.Trackers;
 using static FFXIVClientStructs.FFXIV.Client.Game.ActionManager;
 using static GaugeOMatic.GameData.ActionFlags;
 using static GaugeOMatic.GameData.ActionRef.BarType;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.Trackers.Tracker;
 
 namespace GaugeOMatic.GameData;
@@ -44,7 +46,7 @@ public partial class ActionRef
         ComboTimer = 2
     }
 
-    public unsafe TrackerData GetTrackerData(float? preview)
+    public override unsafe TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null)
     {
         var barType = GetBarType();
 
@@ -66,7 +68,7 @@ public partial class ActionRef
 
         var gaugeValue = preview == null ? barType switch
                              {
-                                 StatusTimer => Math.Abs(ReadyStatus!.TryGetStatus(out var status) ? status?.RemainingTime ?? 0 : 0),
+                                 StatusTimer => Math.Abs(ReadyStatus!.TryGetStatus(out var status, Self) ? status?.RemainingTime ?? 0 : 0),
                                  ComboTimer => HasAnts() ? ActionManager->Combo.Timer : 0,
                                  _ => cooldownRemaining
                              } : (float)(preview * maxGauge);
@@ -81,7 +83,7 @@ public partial class ActionRef
             var transformCheck = !HasFlag(TransformedButton) || GetBaseAction().GetAdjustedId() == ID;
             var chargeCheck = !HasFlag(HasCharges) || GetCurrentCharges() != 0;
             var cooldownCheck = !HasFlag(LongCooldown, exclude: HasCharges) || !(cooldownRemaining > 0);
-            var statusCheck = !HasFlag(RequiresStatus) || (ReadyStatus?.TryGetStatus() ?? false);
+            var statusCheck = !HasFlag(RequiresStatus) || (ReadyStatus?.TryGetStatus(Self) ?? false);
             var antCheck = !HasFlag(CanGetAnts | ComboBonus) || HasAnts();
 
             state = transformCheck && cooldownCheck && chargeCheck && statusCheck && antCheck ? 1 : 0;

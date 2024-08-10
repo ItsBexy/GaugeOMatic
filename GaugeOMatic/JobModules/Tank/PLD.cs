@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
 using System;
 using System.Collections.Generic;
 using CustomNodes;
@@ -10,7 +9,8 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
+using GaugeOMatic.Windows.Dropdowns;
 
 namespace GaugeOMatic.JobModules;
 

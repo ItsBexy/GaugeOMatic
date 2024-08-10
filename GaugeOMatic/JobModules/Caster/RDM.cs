@@ -1,6 +1,6 @@
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
+using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
 using static FFXIVClientStructs.FFXIV.Client.UI.UIModule;
@@ -8,11 +8,12 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
@@ -64,7 +65,7 @@ public class RDMModule : JobModule
     {
         SwordplayStatePrev = SwordplayStateCurrent;
         SwordplayStateCurrent = TweakConfigs.RDM0SwordplayCue &&
-                                StatusData[3875].TryGetStatus(out var buff) &&
+                                StatusData[3875].TryGetStatus(out var buff, Self) &&
                                 buff?.StackCount == 3;
 
         if (SwordplayStateCurrent)

@@ -687,7 +687,7 @@ public sealed unsafe class CreatureMotifDeadline : JobGaugeTracker<CanvasGaugeDa
         var action = (ActionRef)35347;
         return GaugeAddon == null || GaugeData->CreatureMotif > 0
                    ? new(0, action.GetMaxCharges(), 0, action.GetCooldownTotal(), 0, 1, preview)
-                   : new(action, preview);
+                   : action.GetTrackerData(preview);
     }
 }
 
@@ -701,7 +701,7 @@ public sealed unsafe class WeaponMotifDeadline : JobGaugeTracker<CanvasGaugeData
         var action = (ActionRef)35348;
         return GaugeAddon == null || GaugeData->WeaponMotif
                    ? new(0, action.GetMaxCharges(), 0, action.GetCooldownTotal(), 0, 1, preview)
-                   : new(action, preview);
+                   : action.GetTrackerData(preview);
     }
 }
 
@@ -715,7 +715,7 @@ public sealed unsafe class LandscapeMotifDeadline : JobGaugeTracker<CanvasGaugeD
         var action = (ActionRef)35349;
         return GaugeAddon == null || GaugeData->LandscapeMotif
                    ? new(0, action.GetMaxCharges(), 0, action.GetCooldownTotal(), 0, 1, preview)
-                   : new(action, preview);
+                   : action.GetTrackerData(preview);
     }
 }
 

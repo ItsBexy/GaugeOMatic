@@ -3,6 +3,7 @@ using GaugeOMatic.GameData;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Widgets;
 using GaugeOMatic.Windows;
+using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +22,10 @@ public abstract partial class Tracker : IDisposable
     public bool UsePreviewValue => TrackerConfig.Preview && (GaugeOMatic.ConfigWindow.IsOpen || Window?.IsOpen == true);
 
     public JobModule JobModule = null!;
-    public WidgetMenu WidgetMenuTable = null!;
-    public WidgetMenu WidgetMenuWindow = null!;
+    public WidgetDropdown WidgetMenuTable = null!;
+    public WidgetDropdown WidgetMenuWindow = null!;
     public AddonDropdown AddonDropdown = null!;
-    public ItemRefMenu ItemRefMenu = null!;
+    public TrackerDropdown TrackerDropdown = null!;
     public ItemRef? ItemRef;
 
     public string AddonName
@@ -126,7 +127,7 @@ public abstract partial class Tracker : IDisposable
         tracker.AddonDropdown = new(tracker);
         tracker.WidgetMenuTable = new(tracker);
         tracker.WidgetMenuWindow = new(tracker);
-        tracker.ItemRefMenu = new(tracker);
+        tracker.TrackerDropdown = new(tracker);
 
         return tracker;
     }

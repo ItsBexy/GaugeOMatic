@@ -1,8 +1,11 @@
+using System;
 using GaugeOMatic.Trackers;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.GameData;
 
@@ -46,7 +49,7 @@ public class ParamRef : ItemRef
         { LimitBreak3, new("Limit Break 3", None,61233,barDesc: "Shows first limit break segment", counterDesc: "Shows if Limit Break 3 is available", stateDesc: "Shows if Limit Break 3 is available") }
    };
 
-    public static List<MenuOption> MenuOptions = new()
+    public static List<MenuOption> ParamOptions = new()
     {
         new ParamRef(HP).CreateMenuOption(),
         new ParamRef(MP).CreateMenuOption(),
@@ -58,4 +61,68 @@ public class ParamRef : ItemRef
     public MenuOption CreateMenuOption() => new(Name, nameof(ParameterTracker), ID) { DisplayAttr = Attrs[ParamType] };
 
     public override void DrawTooltip() => Attrs[ParamType].DrawTooltip();
+
+    public override unsafe Tracker.TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null)
+    {
+        var count = 0;
+        const int maxCount = 1;
+        float gaugeValue = 0;
+        float maxGauge = 1;
+        var state = 0;
+        const int maxState = 1;
+
+        var hasLabelOverride = false;
+        string? labelOverride = null;
+        if (ClientState.LocalPlayer != null)
+        {
+            switch (ParamType)
+            {
+                case HP:
+                    maxGauge = ClientState.LocalPlayer.MaxHp;
+                    gaugeValue = preview != null ? preview.Value * maxGauge : ClientState.LocalPlayer.CurrentHp;
+                    break;
+                case MP:
+                    maxGauge = ClientState.LocalPlayer.MaxMp;
+                    gaugeValue = preview != null ? preview.Value * maxGauge : ClientState.LocalPlayer.CurrentMp;
+                    break;
+                case Castbar:
+                {
+                    hasLabelOverride = true;
+                    if (ClientState.LocalPlayer.IsCasting)
+                    {
+                        maxGauge = ClientState.LocalPlayer.TotalCastTime;
+                        gaugeValue = ClientState.LocalPlayer.CurrentCastTime;
+
+                        labelOverride = Sheets.ActionSheet?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
+                        state = 1;
+                        count = 1;
+                    }
+                    else if (preview != null)
+                    {
+                        maxGauge = 1;
+                        gaugeValue = preview.Value;
+                    }
+                    break;
+                }
+                case GCD:
+                    var groupDetail = ActionRef.ActionManager->GetRecastGroupDetail(57);
+
+                    maxGauge = groupDetail->Total;
+                    gaugeValue = maxGauge - groupDetail->Elapsed;
+                    state = gaugeValue > 0 ? 0 : 1;
+                    count = state;
+                    break;
+                case Combo:
+                    maxGauge = 30;
+                    gaugeValue = ActionRef.ActionManager->Combo.Timer;
+                    state = gaugeValue > 0 ? 1:0;
+                    count = state;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        return new Tracker.TrackerData(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) {HasLabelOverride = hasLabelOverride,LabelOverride = labelOverride};
+    }
 }

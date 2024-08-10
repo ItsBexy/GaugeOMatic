@@ -6,14 +6,14 @@ using GaugeOMatic.Config;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
-using GaugeOMatic.Windows;
+using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Dalamud.Game.Addon.Lifecycle.AddonEvent;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
@@ -89,7 +89,7 @@ public abstract class JobModule : IDisposable
         return trackerConfig.TrackerType switch
         {
             nameof(StatusTracker) or nameof(ActionTracker) when itemId == 0 => false,
-            nameof(StatusTracker) => ((StatusRef)itemId).CheckJob(this),
+           // nameof(StatusTracker) => ((StatusRef)itemId).CheckJob(this),
             nameof(ActionTracker) => ((ActionRef)itemId).CheckJob(this),
             _ => true
         };

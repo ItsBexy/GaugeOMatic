@@ -12,7 +12,7 @@ public partial class StatusRef
     public override void TooltipHeaderText()
     {
         MulticolorText((Plain,Name),(Disabled,$" [{ID}]"));
-        ImGui.TextDisabled(StatusHolder == StatusHolderType.Target ? "On Enemy Target" : "On Self");
+        ImGui.TextDisabled(AppliedTo == StatusActor.Target ? "On Enemy Target" : "On Self");
     }
 
     public override void DrawTooltipIcon(Vector2 startPos)

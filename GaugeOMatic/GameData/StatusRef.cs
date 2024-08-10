@@ -3,11 +3,12 @@ using Dalamud.Game.ClientState.Statuses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GaugeOMatic.Trackers;
 using static Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.Sheets;
-using static GaugeOMatic.GameData.StatusRef.StatusHolderType;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.Trackers.Tracker;
 using DalamudStatus = Dalamud.Game.ClientState.Statuses.Status;
 using StatusExcelRow = Lumina.Excel.GeneratedSheets2.Status;
@@ -16,13 +17,22 @@ namespace GaugeOMatic.GameData;
 
 public partial class StatusRef : ItemRef
 {
-    public StatusHolderType StatusHolder;
+    public enum StatusActor
+    {
+        Any = 0,
+        Self = 1,
+        Target = 2,
+        Party = 3,
+    }
+
+    public StatusActor AppliedTo; // todo: allow these to be overridden within a tracker, so that multiple trackers for the same status can coexist with different AppliedTo/AppliedBy values
+    public StatusActor AppliedBy;
     public float MaxTime;
     public int MaxStacks;
     public List<uint>? SeeAlso;
     public StatusExcelRow? ExcelRow;
 
-    public StatusRef(uint id, Job job, StatusHolderType statusHolder, float maxtime = 1, Role role = Role.None, List<uint>? seeAlso = null)
+    public StatusRef(uint id, Job job, StatusActor appliedTo, StatusActor appliedBy, float maxtime = 1, Role role = Role.None, List<uint>? seeAlso = null)
     {
         ID = id;
         ExcelRow = StatusSheet?.GetRow(ID);
@@ -34,7 +44,8 @@ public partial class StatusRef : ItemRef
 
         Icon = (ushort?)ExcelRow?.Icon;
 
-        StatusHolder = statusHolder;
+        AppliedTo = appliedTo;
+        AppliedBy = appliedBy;
         MaxStacks = StatusMaxes.TryGetValue(id,out var m) ? m :
                     ExcelRow != null ? Math.Max(1, (int)ExcelRow.MaxStacks) : 1;
 
@@ -48,22 +59,47 @@ public partial class StatusRef : ItemRef
 
     public static implicit operator StatusRef(uint i) => StatusData.TryGetValue(i, out var result) ? result : new();
 
-    public static Func<DalamudStatus, bool> StatusMatch(uint id, ulong? playerId) =>
-        s =>
-        {
-            if (s.StatusId != id) return false;
-            return playerId == s.SourceId || playerId == s.SourceObject?.OwnerId;
-        };
+    public static Func<DalamudStatus, bool> StatusMatch(uint id, StatusActor appliedBy = Self) => s => s.StatusId == id && CheckSource(s, appliedBy);
 
-    public bool TryGetStatus(out DalamudStatus? result)
+    private static bool CheckSource(DalamudStatus s, StatusActor appliedBy)
     {
-        var statusList = StatusHolder == Self ? PlayerStatus : TargetStatus;
+        var sourceId = s.SourceId;
+        var sourceOwnerId = s.SourceObject?.OwnerId ?? sourceId;
+
+        switch (appliedBy)
+        {
+            case Any:
+                return true;
+            case Self:
+            {
+                var playerId = ClientState.LocalPlayer?.GameObjectId;
+                return sourceId == playerId || sourceOwnerId == playerId;
+            }
+            case Party:
+            {
+                foreach (var partyMember in PartyList)
+                    if (sourceId == partyMember.ObjectId || sourceOwnerId == partyMember.ObjectId)
+                        return true;
+                break;
+            }
+            case Target:
+            {
+                var target = ClientState.LocalPlayer?.TargetObject?.GameObjectId;
+                if (sourceId == target || sourceOwnerId == target) return true;
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    public bool TryGetStatus(out DalamudStatus? result, StatusActor appliedTo, StatusActor appliedBy = Self)
+    {
+        var statusList = appliedTo == Self ? PlayerStatus : TargetStatus;
 
         if (statusList != null)
         {
-            var playerId = ClientState.LocalPlayer?.GameObjectId;
-
-            foreach (var status in statusList.Where(StatusMatch(ID, playerId)))
+            foreach (var status in statusList.Where(StatusMatch(ID, appliedBy)))
             {
                 result = status;
                 return true;
@@ -73,7 +109,7 @@ public partial class StatusRef : ItemRef
             {
                 foreach (var seeID in SeeAlso)
                 {
-                    foreach (var status in statusList.Where(StatusMatch(seeID, playerId)))
+                    foreach (var status in statusList.Where(StatusMatch(seeID, appliedBy)))
                     {
                         result = status;
                         return true;
@@ -86,10 +122,10 @@ public partial class StatusRef : ItemRef
         return false;
     }
 
-    public bool TryGetStatus()
+    public bool TryGetStatus(StatusActor appliedTo, StatusActor appliedBy = Self)
     {
-        var statusList = StatusHolder == Self ? PlayerStatus : TargetStatus;
-        return statusList != null && (statusList.Any(StatusMatch(ID, ClientState.LocalPlayer?.GameObjectId)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
+        var statusList = appliedTo == Self ? PlayerStatus : TargetStatus;
+        return statusList != null && (statusList.Any(StatusMatch(ID, appliedBy)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
     }
 
     public static StatusList? PlayerStatus => ClientState.LocalPlayer?.StatusList;
@@ -98,10 +134,11 @@ public partial class StatusRef : ItemRef
             ? ((IBattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
             : null;
 
-    public enum StatusHolderType { Self, Target }
-
-    public TrackerData GetTrackerData(float? preview)
+    public override TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null)
     {
+        var appliedBy = trackerConfig?.AppliedBy ?? AppliedBy;
+        var appliedTo = trackerConfig?.AppliedTo ?? AppliedTo;
+
         var maxCount = MaxStacks;
         var maxGauge = Math.Max(0.0001f, MaxTime);
 
@@ -114,7 +151,7 @@ public partial class StatusRef : ItemRef
             count = (int)(preview * maxCount);
             gaugeValue = preview.Value * maxGauge;
         }
-        else if (TryGetStatus(out var status))
+        else if (TryGetStatus(out var status, appliedTo, appliedBy))
         {
             state = 1;
             count = status is { StackCount: > 0 } ? status.StackCount : 1;

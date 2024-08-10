@@ -1,11 +1,11 @@
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
+using GaugeOMatic.Windows.Dropdowns;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 

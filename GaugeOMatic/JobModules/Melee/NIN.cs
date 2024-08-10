@@ -3,19 +3,20 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
+using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
@@ -100,7 +101,7 @@ public class NINModule : JobModule
         var borderTop = gaugeIndex[9u];
         var borderBottom = gaugeIndex[10u];
 
-        if (TweakConfigs.NIN0HigiRecolor && (TweakConfigs.ShowPreviews || ((StatusRef)3850).TryGetStatus()))
+        if (TweakConfigs.NIN0HigiRecolor && (TweakConfigs.ShowPreviews || ((StatusRef)3850).TryGetStatus(Self)))
         {
             if (TweakConfigs.ShowPreviews) JobUiData->SetValue(0, 100, true);
 

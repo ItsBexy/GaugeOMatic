@@ -3,7 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Windows;
+using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -11,12 +11,13 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Windows.ItemRefMenu;
+using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
@@ -119,7 +120,7 @@ public class VPRModule : JobModule
 
     private unsafe void ApplyReawakenCueTweak(AddonJobHudRDB1* serpentGauge)
     {
-        if (TweakConfigs.VPR1ReawakenCue && ((StatusRef)3671).TryGetStatus() && serpentGauge->DataCurrent.GaugeValue < 50)
+        if (TweakConfigs.VPR1ReawakenCue && ((StatusRef)3671).TryGetStatus(Self) && serpentGauge->DataCurrent.GaugeValue < 50)
             UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86)->SetValue(9, 0, true);
     }
 
@@ -154,7 +155,7 @@ public class VPRModule : JobModule
                 }
                 else
                 {
-                    appliedColor = (!TweakConfigs.VPR0ColorAll && vipersight->DataCurrent.ComboStep < 2) || StatusData[1250].TryGetStatus()
+                    appliedColor = (!TweakConfigs.VPR0ColorAll && vipersight->DataCurrent.ComboStep < 2) || StatusData[1250].TryGetStatus(Self)
                                        ? neutral
                                        : ReavingFangs.GetAdjustedId()
                                            switch // check what state the Dread Fangs button is in

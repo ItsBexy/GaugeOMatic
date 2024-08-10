@@ -6,7 +6,7 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.Sheets;
 using static GaugeOMatic.GameData.StatusRef;
-using static GaugeOMatic.GameData.StatusRef.StatusHolderType;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using ActionExcelRow = Lumina.Excel.GeneratedSheets.Action;
 
 namespace GaugeOMatic.GameData;
@@ -126,7 +126,7 @@ public partial class ActionRef : ItemRef
                 var procStatus = aps.Value.Status;
                 var statusId = procStatus.Row;
 
-                if (!StatusData.ContainsKey(statusId)) StatusData.TryAdd(statusId, new(statusId, Job, Self) { HideFromDropdown = true });
+                if (!StatusData.ContainsKey(statusId)) StatusData.TryAdd(statusId, new(statusId, Job, Self, Self) { HideFromDropdown = true });
 
                 ReadyStatus = statusId;
             }

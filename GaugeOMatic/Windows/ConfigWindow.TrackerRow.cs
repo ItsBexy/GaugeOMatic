@@ -35,7 +35,7 @@ public partial class ConfigWindow
 
         if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
-        tracker.ItemRefMenu.Draw("[ Track... ]", 180f, ref update);
+        tracker.TrackerDropdown.Draw("[ Track... ]", 180f, ref update);
 
         ImGui.TableNextColumn();
         LayerControls(tracker, hash, index, ref update);
