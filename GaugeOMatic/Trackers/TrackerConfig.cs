@@ -8,7 +8,6 @@ using System.Linq;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.ParamRef;
-using static GaugeOMatic.GameData.StatusRef;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace GaugeOMatic.Trackers;
@@ -23,9 +22,17 @@ public class TrackerConfig
     public WidgetConfig WidgetConfig = null!;
 
     public bool Enabled { get; set; }
+
     public bool LimitLevelRange = false;
-    [DefaultValue(1)] public byte? LevelMin = 1;
-    [DefaultValue(100)] public byte? LevelMax = 100;
+
+    [DefaultValue(1)]
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public byte LevelMin { get; set; } = 1;
+
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore, DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [DefaultValue(LevelCap)]
+    public byte LevelMax { get; set; } = LevelCap;
+
     public bool HideOutsideCombatDuty;
 
     [JsonIgnore] public int Index { get; set; }
@@ -37,9 +44,6 @@ public class TrackerConfig
         get => WidgetConfig.WidgetType;
         set => WidgetConfig.WidgetType = value;
     }
-
-    public StatusActor? AppliedBy { get; set; } = null;
-    public StatusActor? AppliedTo { get; set; } = null;
 
     [JsonIgnore] public TrackerDisplayAttribute? DisplayAttr;
     public TrackerDisplayAttribute GetDisplayAttr() =>

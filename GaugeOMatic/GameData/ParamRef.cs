@@ -1,8 +1,6 @@
-using System;
 using GaugeOMatic.Trackers;
+using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Client.Game;
-using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
@@ -62,7 +60,7 @@ public class ParamRef : ItemRef
 
     public override void DrawTooltip() => Attrs[ParamType].DrawTooltip();
 
-    public override unsafe Tracker.TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null)
+    public override unsafe Tracker.TrackerData GetTrackerData(float? preview)
     {
         var count = 0;
         const int maxCount = 1;

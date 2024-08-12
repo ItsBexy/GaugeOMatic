@@ -142,7 +142,7 @@ public abstract unsafe class Widget : IDisposable
             if (!TrackerConfig.LimitLevelRange) return true;
             if (TrackerConfig.LevelMin == 1 && TrackerConfig.LevelMax == LevelCap) return true;
             var level = ClientState.LocalPlayer?.Level ?? 1;
-            return !(level < TrackerConfig.LevelMin || level > TrackerConfig.LevelMax);
+            return level >= TrackerConfig.LevelMin && level <= TrackerConfig.LevelMax;
         }
 
         bool CheckFlags() => !TrackerConfig.HideOutsideCombatDuty || Condition.Any(InCombat, BoundByDuty, BoundByDuty56, BoundByDuty95, InDeepDungeon);

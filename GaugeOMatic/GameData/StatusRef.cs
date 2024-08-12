@@ -3,7 +3,6 @@ using Dalamud.Game.ClientState.Statuses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GaugeOMatic.Trackers;
 using static Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
@@ -22,7 +21,7 @@ public partial class StatusRef : ItemRef
         Any = 0,
         Self = 1,
         Target = 2,
-        Party = 3,
+        Party = 3
     }
 
     public StatusActor AppliedTo; // todo: allow these to be overridden within a tracker, so that multiple trackers for the same status can coexist with different AppliedTo/AppliedBy values
@@ -134,11 +133,8 @@ public partial class StatusRef : ItemRef
             ? ((IBattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
             : null;
 
-    public override TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null)
+    public override TrackerData GetTrackerData(float? preview)
     {
-        var appliedBy = trackerConfig?.AppliedBy ?? AppliedBy;
-        var appliedTo = trackerConfig?.AppliedTo ?? AppliedTo;
-
         var maxCount = MaxStacks;
         var maxGauge = Math.Max(0.0001f, MaxTime);
 
@@ -151,7 +147,7 @@ public partial class StatusRef : ItemRef
             count = (int)(preview * maxCount);
             gaugeValue = preview.Value * maxGauge;
         }
-        else if (TryGetStatus(out var status, appliedTo, appliedBy))
+        else if (TryGetStatus(out var status, AppliedTo, AppliedBy))
         {
             state = 1;
             count = status is { StackCount: > 0 } ? status.StackCount : 1;

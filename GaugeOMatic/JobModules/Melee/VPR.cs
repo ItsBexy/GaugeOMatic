@@ -71,19 +71,17 @@ public class VPRModule : JobModule
                 ImGui.SameLine();
                 ImGui.Text("Test");
                 ImGui.SameLine();
-                if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview)) update |= UpdateFlags.Save;
+                if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview))
+                {
+                    TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
+                    update |= UpdateFlags.Save;
+                }
 
                 RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, new() { false, true }, new() { "3rd Step Only", "All Steps" }, ref update, true);
 
-                ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank, ref update);
-                if (ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
-
-                ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear, ref update);
-                if (ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
-
-                ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update);
-                if (ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
-
+                if (ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank, ref update)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
+                if (ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear, ref update)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
+                if (ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
             }
         }
 

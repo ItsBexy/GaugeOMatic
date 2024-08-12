@@ -1,6 +1,5 @@
 using FFXIVClientStructs.FFXIV.Client.Game;
 using System;
-using GaugeOMatic.Trackers;
 using static FFXIVClientStructs.FFXIV.Client.Game.ActionManager;
 using static GaugeOMatic.GameData.ActionFlags;
 using static GaugeOMatic.GameData.ActionRef.BarType;
@@ -46,7 +45,7 @@ public partial class ActionRef
         ComboTimer = 2
     }
 
-    public override unsafe TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null)
+    public override unsafe TrackerData GetTrackerData(float? preview)
     {
         var barType = GetBarType();
 

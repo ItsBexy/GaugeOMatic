@@ -1,13 +1,17 @@
+using CustomNodes;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
+using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
+using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -46,10 +50,25 @@ public class BLMModule : JobModule
 
     public override void TweakUI(ref UpdateFlags update)
     {
-        // todo: "recolor MP bar by element" tweak
-
         Heading("Elemental Gauge");
         ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHide0, ref update);
+        ToggleControls("Color MP bar by element", ref TweakConfigs.BLM0MpColor, ref update);
+        if (TweakConfigs.BLM0MpColor)
+        {
+            Info("Changes the color of the MP bar to match your current element"); ImGui.SameLine();
+            ImGui.Text("Test");
+            ImGui.SameLine();
+            if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview))
+            {
+                TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
+                update |= UpdateFlags.Save;
+            }
+
+            if (ColorPickerRGB("Fire", ref TweakConfigs.BLM0MpFire, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
+            if (ColorPickerRGB("Ice", ref TweakConfigs.BLM0MpIce, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpIce;
+            if (ColorPickerRGB("None", ref TweakConfigs.BLM0MpNone, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpNone;
+
+        }
 
         Heading("Astral Gauge");
         ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1, ref update);
@@ -59,6 +78,36 @@ public class BLMModule : JobModule
     {
         var gauge = (AddonJobHudBLM0*)gaugeAddon;
         VisibilityTweak(TweakConfigs.BLMHide0, ((AddonJobHud*)gauge)->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
+
+        ApplyMpBarTweak(gauge);
+    }
+
+    private unsafe void ApplyMpBarTweak(AddonJobHudBLM0* gauge)
+    {
+        AddonIndex paramWidget = GameGui.GetAddonByName("_ParameterWidget");
+        var offset = TweakConfigs.BLM0MpColor ? paramWidget[4u, 5u].Add
+                         : 0;
+
+        var color = TweakConfigs.BLM0MpColor
+                        ? TweakConfigs.ShowPreviews
+                              ? TweakConfigs.TestColor ?? TweakConfigs.BLM0MpFire
+                              : gauge->DataCurrent.ElementActive
+                                  ? gauge->DataCurrent.ElementStacks > 0 ? TweakConfigs.BLM0MpFire : TweakConfigs.BLM0MpIce
+                                  : TweakConfigs.BLM0MpNone
+                        : 0;
+
+        var componentColor = color - offset;
+        var inverse = componentColor * -1;
+
+        // don't feel like fighting with the SimpleTweak or implementing IPC,
+        // so we're just going to offset the colors of every other node in the MP bar lmao
+        paramWidget[4u].SetAddRGB(componentColor);
+        paramWidget[4u, 8u].SetAddRGB(inverse);
+        paramWidget[4u, 7u].SetAddRGB(inverse);
+        paramWidget[4u, 6u].SetAddRGB(inverse);
+        paramWidget[4u, 4u].SetAddRGB(inverse);
+        paramWidget[4u, 3u].SetAddRGB(inverse);
+        paramWidget[4u, 2u].SetAddRGB(inverse);
     }
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
@@ -71,5 +120,10 @@ public class BLMModule : JobModule
 public partial class TweakConfigs
 {
     public bool BLMHide0;
+    public bool BLM0MpColor;
+    public AddRGB BLM0MpFire = new(186, 0, -45);
+    public AddRGB BLM0MpIce = new(0, 140, 210);
+    public AddRGB BLM0MpNone = new(187, 128, 158);
+
     public bool BLMHide1;
 }

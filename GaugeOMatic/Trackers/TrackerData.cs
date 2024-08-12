@@ -1,7 +1,3 @@
-using GaugeOMatic.GameData;
-using static GaugeOMatic.GameData.ParamRef.ParamTypes;
-using static GaugeOMatic.GameData.StatusRef;
-
 namespace GaugeOMatic.Trackers;
 
 public abstract partial class Tracker

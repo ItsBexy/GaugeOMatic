@@ -29,7 +29,7 @@ public sealed class StatusTracker : Tracker
     public override string TermGauge => "Timer";
     public override string[] StateNames { get; } = { "Inactive", "Active" };
 
-    public override TrackerData GetCurrentData(float? preview = null) => (ItemRef!).GetTrackerData(preview,TrackerConfig);
+    public override TrackerData GetCurrentData(float? preview = null) => ItemRef!.GetTrackerData(preview);
 }
 
 public sealed class ActionTracker : Tracker
@@ -41,7 +41,7 @@ public sealed class ActionTracker : Tracker
     public override string TermGauge => "Timer";
     public override string[] StateNames { get; } = { "Unavailable", "Available" };
 
-    public override TrackerData GetCurrentData(float? preview = null) => (ItemRef!).GetTrackerData(preview);
+    public override TrackerData GetCurrentData(float? preview = null) => ItemRef!.GetTrackerData(preview);
 }
 
 public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged

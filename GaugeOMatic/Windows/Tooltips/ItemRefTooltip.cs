@@ -2,7 +2,6 @@ using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System.Numerics;
-using GaugeOMatic.Trackers;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Trackers.Tracker;
 
@@ -88,5 +87,5 @@ public abstract partial class ItemRef
     public virtual void PrintCounterDesc() { }
     public virtual void PrintStateDesc() { }
     public virtual void FooterContents() { }
-    public abstract TrackerData GetTrackerData(float? preview, TrackerConfig? trackerConfig = null);
+    public abstract TrackerData GetTrackerData(float? preview);
 }

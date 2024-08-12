@@ -170,10 +170,12 @@ public class TrackerWindow : Window, IDisposable
         var cond4 = false;
         if (Tracker.TrackerConfig.LimitLevelRange)
         {
-            var min = Tracker.TrackerConfig.LevelMin??1;
-            var max = Tracker.TrackerConfig.LevelMax??LevelCap;
+            var min = Tracker.TrackerConfig.LevelMin;
+            var max = Tracker.TrackerConfig.LevelMax;
             cond3 = IntControls("Minimum Level", ref min, 1, max, 1, ref update);
+            if (cond3) { Tracker.TrackerConfig.LevelMin = min;}
             cond4 = IntControls("Maximum Level", ref max, min, LevelCap, 1, ref update);
+            if (cond4) { Tracker.TrackerConfig.LevelMax = max; }
         }
 
         if (cond1 || cond2 || cond3 || cond4) Tracker.Widget?.ApplyDisplayRules();
