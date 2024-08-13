@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using static Dalamud.Interface.UiBuilder;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
@@ -356,5 +357,21 @@ public static class WidgetUI
         ImGui.PushStyleColor(Text, new Vector4(1, 1, 1, 0.3f));
         ImGui.Text(headingText);
         ImGui.PopStyleColor();
+    }
+
+    public static void Info(string helpText)
+    {
+        ImGui.SameLine();
+        ImGui.PushFont(IconFont);
+        ImGui.TextDisabled(FontAwesomeIcon.QuestionCircle.ToIconString());
+        ImGui.PopFont();
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.BeginTooltip();
+            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+            ImGui.TextUnformatted(helpText);
+            ImGui.PopTextWrapPos();
+            ImGui.EndTooltip();
+        }
     }
 }

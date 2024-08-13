@@ -22,26 +22,32 @@ public abstract partial class Tracker
 
 public sealed class StatusTracker : Tracker
 {
+    public StatusRef StatusRef => StatusRefCopy ??= ((StatusRef)ItemRef!.ID).Clone();
+    public StatusRef? StatusRefCopy { get; private set; } // make a local copy for the tracker so we can modify it
+
     public override RefType RefType => Status;
-    public override TrackerDisplayAttribute DisplayAttr => ItemRef!;
+    public override TrackerDisplayAttribute DisplayAttr => StatusRef;
 
     public override string TermCount => "Stacks";
     public override string TermGauge => "Timer";
     public override string[] StateNames { get; } = { "Inactive", "Active" };
 
-    public override TrackerData GetCurrentData(float? preview = null) => ItemRef!.GetTrackerData(preview);
+    public override TrackerData GetCurrentData(float? preview = null) => StatusRef.GetTrackerData(preview);
 }
 
 public sealed class ActionTracker : Tracker
 {
+    public ActionRef ActionRef => ActionRefCopy ??= ItemRef!.ID;
+    public ActionRef? ActionRefCopy { get; private set; }
+
     public override RefType RefType => Action;
-    public override TrackerDisplayAttribute DisplayAttr => new((ActionRef)ItemRef!);
+    public override TrackerDisplayAttribute DisplayAttr => ActionRef;
 
     public override string TermCount => "Charges";
     public override string TermGauge => "Timer";
     public override string[] StateNames { get; } = { "Unavailable", "Available" };
 
-    public override TrackerData GetCurrentData(float? preview = null) => ItemRef!.GetTrackerData(preview);
+    public override TrackerData GetCurrentData(float? preview = null) => ActionRef.GetTrackerData(preview);
 }
 
 public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged

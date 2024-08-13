@@ -159,6 +159,7 @@ public abstract class JobModule : IDisposable
 
     public void FinalizeHandler(AddonEvent type, AddonArgs args)
     {
+        RevertTweaks();
         DisposeTrackers();
     }
 
@@ -167,7 +168,7 @@ public abstract class JobModule : IDisposable
     public static void UpdateHandler(AddonArgs args, Action<IntPtr> applyFunc)
     {
         try { applyFunc(args.Addon); }
-        catch (Exception) { Log.Error($"Couldn't apply tweaks! ({args.AddonName})");}
+        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({args.AddonName})\n{ex}");}
     }
 
     public void BuildWidgets()
@@ -225,5 +226,6 @@ public abstract class JobModule : IDisposable
     public abstract void TweakUI(ref UpdateFlags update);
     public virtual void ApplyTweaks0(IntPtr gaugeAddon) { }
     public virtual void ApplyTweaks1(IntPtr gaugeAddon) { }
+    public virtual void RevertTweaks() { }
     public abstract List<MenuOption> JobGaugeMenu { get; }
 }

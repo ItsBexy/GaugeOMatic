@@ -5,11 +5,11 @@ using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -63,9 +63,8 @@ public class BLMModule : JobModule
                 TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
                 update |= UpdateFlags.Save;
             }
-
-            if (ColorPickerRGB("Fire", ref TweakConfigs.BLM0MpFire, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
-            if (ColorPickerRGB("Ice", ref TweakConfigs.BLM0MpIce, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpIce;
+            if (ColorPickerRGB("Astral Fire", ref TweakConfigs.BLM0MpFire, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
+            if (ColorPickerRGB("Umbral Ice", ref TweakConfigs.BLM0MpIce, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpIce;
             if (ColorPickerRGB("None", ref TweakConfigs.BLM0MpNone, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpNone;
 
         }
@@ -79,20 +78,22 @@ public class BLMModule : JobModule
         var gauge = (AddonJobHudBLM0*)gaugeAddon;
         VisibilityTweak(TweakConfigs.BLMHide0, ((AddonJobHud*)gauge)->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
 
-        ApplyMpBarTweak(gauge);
+        MpBarTweak(TweakConfigs.BLM0MpColor, gauge->DataCurrent.ElementActive, gauge->DataCurrent.ElementStacks);
     }
 
-    private unsafe void ApplyMpBarTweak(AddonJobHudBLM0* gauge)
+    private unsafe void MpBarTweak(bool tweakActive, bool elementActive = false, int elementStacks = 0)
     {
-        AddonIndex paramWidget = GameGui.GetAddonByName("_ParameterWidget");
-        var offset = TweakConfigs.BLM0MpColor ? paramWidget[4u, 5u].Add
-                         : 0;
+        var addon = (AtkUnitBase*)GameGui.GetAddonByName("_ParameterWidget");
+        if (addon == null) return;
 
-        var color = TweakConfigs.BLM0MpColor
+        AddonIndex addonIndex = addon;
+
+        var offset = tweakActive ? addonIndex[4u, 5u].Add : 0;
+        var color = tweakActive
                         ? TweakConfigs.ShowPreviews
                               ? TweakConfigs.TestColor ?? TweakConfigs.BLM0MpFire
-                              : gauge->DataCurrent.ElementActive
-                                  ? gauge->DataCurrent.ElementStacks > 0 ? TweakConfigs.BLM0MpFire : TweakConfigs.BLM0MpIce
+                              : elementActive
+                                  ? elementStacks > 0 ? TweakConfigs.BLM0MpFire : TweakConfigs.BLM0MpIce
                                   : TweakConfigs.BLM0MpNone
                         : 0;
 
@@ -101,19 +102,24 @@ public class BLMModule : JobModule
 
         // don't feel like fighting with the SimpleTweak or implementing IPC,
         // so we're just going to offset the colors of every other node in the MP bar lmao
-        paramWidget[4u].SetAddRGB(componentColor);
-        paramWidget[4u, 8u].SetAddRGB(inverse);
-        paramWidget[4u, 7u].SetAddRGB(inverse);
-        paramWidget[4u, 6u].SetAddRGB(inverse);
-        paramWidget[4u, 4u].SetAddRGB(inverse);
-        paramWidget[4u, 3u].SetAddRGB(inverse);
-        paramWidget[4u, 2u].SetAddRGB(inverse);
+        addonIndex[4u].SetAddRGB(componentColor);
+        addonIndex[4u, 8u].SetAddRGB(inverse);
+        addonIndex[4u, 7u].SetAddRGB(inverse);
+        addonIndex[4u, 6u].SetAddRGB(inverse);
+        addonIndex[4u, 4u].SetAddRGB(inverse);
+        addonIndex[4u, 3u].SetAddRGB(inverse);
+        addonIndex[4u, 2u].SetAddRGB(inverse);
     }
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
         var gauge = (AddonJobHudBLM1*)gaugeAddon;
         VisibilityTweak(TweakConfigs.BLMHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(15));
+    }
+
+    public override void RevertTweaks()
+    {
+        MpBarTweak(false);
     }
 }
 

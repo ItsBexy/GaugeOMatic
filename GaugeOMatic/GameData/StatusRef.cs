@@ -31,6 +31,24 @@ public partial class StatusRef : ItemRef
     public List<uint>? SeeAlso;
     public StatusExcelRow? ExcelRow;
 
+    public StatusRef Clone() =>
+        new()
+        {
+            Job = Job,
+            Role = Role,
+            ID = ID,
+            Name = Name,
+            HideFromDropdown = HideFromDropdown,
+            Icon = Icon,
+
+            AppliedTo = AppliedTo,
+            AppliedBy = AppliedBy,
+            MaxTime = MaxTime,
+            MaxStacks = MaxStacks,
+            SeeAlso = SeeAlso,
+            ExcelRow = ExcelRow
+        };
+
     public StatusRef(uint id, Job job, StatusActor appliedTo, StatusActor appliedBy, float maxtime = 1, Role role = Role.None, List<uint>? seeAlso = null)
     {
         ID = id;

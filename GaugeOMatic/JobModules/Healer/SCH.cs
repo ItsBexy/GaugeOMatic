@@ -7,8 +7,9 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
+using static GaugeOMatic.GameData.StatusRef;
+using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
@@ -49,10 +50,11 @@ public class SCHModule : JobModule
 
         Heading("Faerie Gauge");
         ToggleControls("Hide Faerie Gauge", ref TweakConfigs.SCHHide1, ref update);
-        //todo: update this tweak to allow showing the Dissipation timer instead
-        ToggleControls("Hide Fae Aether value while faerie-less", ref TweakConfigs.SCHDissHideText, ref update);
-        Info("Hides the gauge value while the faerie is not\n" +
-                            "summoned, or while Dissipation is active");
+
+        if (!TweakConfigs.SCHHide1)
+            RadioControls("While Faerieless: ", ref TweakConfigs.SCH1FaerieLess,
+                          new() { 0, 1, 2 },
+                          new() { "Show Gauge Value", "Hide Gauge Value", "Show Dissipation Timer" }, ref update);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
@@ -67,11 +69,46 @@ public class SCHModule : JobModule
         var gauge = (AddonJobHudSCH0*)gaugeAddon;
         VisibilityTweak(TweakConfigs.SCHHide1, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
 
-        if (gauge != null && gauge->GaugeStandard.Container != null)
+        FaerielessTweak(gauge);
+    }
+
+    private unsafe void FaerielessTweak(AddonJobHudSCH0* gauge)
+    {
+        if (gauge == null || gauge->GaugeStandard.FaeGaugeTextContainer == null) return;
+        var summoned = gauge->DataCurrent.FaerieSummoned;
+        bool show;
+        int dissTimer;
+
+        switch (TweakConfigs.SCH1FaerieLess)
         {
-            var summoned = gauge->DataCurrent.FaerieSummoned;
-            gauge->GaugeStandard.FaeGaugeTextContainer->ToggleVisibility(!TweakConfigs.SCHDissHideText || summoned);
-            gauge->GaugeSimple.FaeValueDisplay->OwnerNode->ToggleVisibility(!TweakConfigs.SCHDissHideText || summoned);
+            case 1:
+                show = summoned;
+                dissTimer = 0;
+                break;
+            case 2:
+                show = StatusData[791].TryGetStatus(out var buff, Self) || summoned;
+                dissTimer = (int)Math.Abs(buff?.RemainingTime??0);
+                break;
+            default:
+                show = true;
+                dissTimer = 0;
+                break;
+        }
+
+        ((CustomNode)gauge->GaugeStandard.FaeGaugeTextContainer).SetVis(show);
+        ((CustomNode)gauge->GaugeSimple.FaeValueDisplay->OwnerNode).SetVis(show);
+
+        var textStandard = (CustomNode)gauge->GaugeStandard.FaeGaugeText;
+        var textSimple = (CustomNode)gauge->GaugeSimple.FaeValueDisplay->AtkTextNode;
+        if (dissTimer > 0)
+        {
+            textStandard.SetText(dissTimer.ToString()).SetTextColor(0xD7D7D7FF,0x316381FF);
+            textSimple.SetText(dissTimer.ToString()).SetTextColor(0xD7D7D7FF, 0x316381FF);
+        }
+        else
+        {
+            textStandard.SetTextColor(0xffffffff, 0x288246ff);
+            textSimple.SetTextColor(0xffffffff, 0x9d835bff);
         }
     }
 }
@@ -79,6 +116,7 @@ public class SCHModule : JobModule
 public partial class TweakConfigs
 {
     public bool SCHHide0;
+    public uint SCH1FaerieLess;
     public bool SCHHide1;
     public bool SCHDissHideText;
 }

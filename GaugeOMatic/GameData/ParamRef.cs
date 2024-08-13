@@ -1,6 +1,7 @@
 using GaugeOMatic.Trackers;
 using System;
 using System.Collections.Generic;
+using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
@@ -56,6 +57,8 @@ public class ParamRef : ItemRef
         new ParamRef(GCD).CreateMenuOption()
     };
 
+    public static float LastKnownGCD = 2.5f;
+
     public MenuOption CreateMenuOption() => new(Name, nameof(ParameterTracker), ID) { DisplayAttr = Attrs[ParamType] };
 
     public override void DrawTooltip() => Attrs[ParamType].DrawTooltip();
@@ -103,16 +106,26 @@ public class ParamRef : ItemRef
                     break;
                 }
                 case GCD:
-                    var groupDetail = ActionRef.ActionManager->GetRecastGroupDetail(57);
+                    var groupDetail = ActionManager->GetRecastGroupDetail(57);
+                    var totalGCD = groupDetail->Total;
 
-                    maxGauge = groupDetail->Total;
-                    gaugeValue = maxGauge - groupDetail->Elapsed;
+                    if (totalGCD == 0)
+                    {
+                        maxGauge = LastKnownGCD;
+                        gaugeValue = 0;
+                    }
+                    else
+                    {
+                        LastKnownGCD = totalGCD;
+                        maxGauge = totalGCD;
+                        gaugeValue = totalGCD - groupDetail->Elapsed;
+                    }
                     state = gaugeValue > 0 ? 0 : 1;
                     count = state;
                     break;
                 case Combo:
                     maxGauge = 30;
-                    gaugeValue = ActionRef.ActionManager->Combo.Timer;
+                    gaugeValue = ActionManager->Combo.Timer;
                     state = gaugeValue > 0 ? 1:0;
                     count = state;
                     break;
@@ -121,6 +134,6 @@ public class ParamRef : ItemRef
             }
         }
 
-        return new Tracker.TrackerData(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) {HasLabelOverride = hasLabelOverride,LabelOverride = labelOverride};
+        return new(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) {HasLabelOverride = hasLabelOverride,LabelOverride = labelOverride};
     }
 }

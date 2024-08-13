@@ -14,6 +14,14 @@ public partial class ConfigWindow
 {
     public static JobModule? GetModuleForTab(Job jobTab, List<JobModule> jobModules) => jobModules.Find(g => g.Job == jobTab);
 
+    public enum JobModuleTabs
+    {
+        Trackers = 0,
+        Tweaks = 1
+    }
+
+    public static JobModuleTabs JobModuleTab { get; set; } = JobModuleTabs.Trackers;
+
     public static void DrawJobModuleTab(JobModule jobModule)
     {
         UpdateFlags update = 0;
@@ -21,7 +29,6 @@ public partial class ConfigWindow
         {
             TrackerTab(jobModule, ref update);
             TweakTab(jobModule, ref update);
-
             ImGui.EndTabBar();
         }
 
@@ -35,6 +42,8 @@ public partial class ConfigWindow
     private static void TweakTab(JobModule jobModule, ref UpdateFlags update)
     {
         if (!ImGui.BeginTabItem($"Tweaks##{jobModule.Abbr}TweaksTab")) return;
+
+        JobModuleTab = JobModuleTabs.Tweaks;
 
         if (ImGui.BeginTable($"{jobModule.Abbr}TweaksTable", 2, SizingFixedFit))
         {
@@ -50,6 +59,8 @@ public partial class ConfigWindow
     private static void TrackerTab(JobModule jobModule, ref UpdateFlags update)
     {
         if (!ImGui.BeginTabItem("Trackers")) return;
+
+        JobModuleTab = JobModuleTabs.Trackers;
 
         if (ImGui.BeginTable($"{jobModule.Abbr}TrackerTable", 7, SizingFixedFit))
         {

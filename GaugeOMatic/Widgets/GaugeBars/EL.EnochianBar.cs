@@ -89,12 +89,12 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Bar = new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(11, 10).SetSize(86, 86).SetAddRGB(-20).SetMultiply(50);
 
         ClockHand = ImageNodeFromPart(0, 12).SetOrigin(15, 10).DefineTimeline(new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 });
-        ClockHand.Node->SetPriority(1); //todo: option to toggle this
+        ClockHand.Node->SetPriority((ushort)(Config.HandOnTop ? 1 : 0));
 
         ClockHandContainer = new CustomNode(CreateResNode(), ClockHand).SetPos(-6, -2).SetSize(30, 128);
 
         NumTextNode = new();
-        NumTextNode.Node->SetPriority(2);
+        NumTextNode.Node->SetPriority((ushort)(Config.HandOnTop ? 2 : 0));
 
         Contents2 = new CustomNode(CreateResNode(), Backplate, Bar, ClockHandContainer).SetSize(128, 124).SetOrigin(8, 8);
         Contents = new CustomNode(CreateResNode(),Contents2).SetOrigin(7,8);
@@ -210,6 +210,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         public bool Smooth;
         [DefaultValue(true)] public bool HideHand = true;
         [DefaultValue(true)] public bool DimEmpty = true;
+        public bool HandOnTop;
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), new(0), Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled:   false,
@@ -242,6 +243,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             Smooth = config.Smooth;
             HideHand = config.HideHand;
             DimEmpty = config.DimEmpty;
+            HandOnTop = config.HandOnTop;
 
             LabelText = config.LabelText;
 
@@ -307,6 +309,10 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 ScaleControls("Scale", ref Config.Scale, ref update);
                 AngleControls("Angle", ref Config.Angle, ref update);
                 RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt }, ref update);
+
+                if (ToggleControls("Force Clock Hand To Top", ref Config.HandOnTop, ref update)) update |= UpdateFlags.Reset;
+                Info("Attempts to force the clock hand to the top layer, above other widgets.\n\nNOTE: Can be finicky, may not always work.");
+
                 break;
             case Colors:
                 ColorPickerRGB("Plate Tint", ref Config.PlateColor, ref update);

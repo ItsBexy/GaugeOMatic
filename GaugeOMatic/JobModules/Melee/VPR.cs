@@ -13,7 +13,6 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.JobModules.Tweaks.TweakUI;
 using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -148,8 +147,8 @@ public class VPRModule : JobModule
                     JobUiData->SetValue(3, 1, true);
 
                     appliedColor = TweakConfigs.TestColor == neutral ? neutral :
-                                   TweakConfigs.TestColor == flank ? flank :
-                                   rear;
+                                   TweakConfigs.TestColor == rear ? rear :
+                                   flank;
                 }
                 else
                 {
