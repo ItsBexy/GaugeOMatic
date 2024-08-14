@@ -10,19 +10,19 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
+using static GaugeOMatic.Widgets.FreeGemCounterConfig.ArrangementStyle;
 using static GaugeOMatic.Widgets.KazematoiKunai;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class KazematoiKunai : CounterWidget
+public sealed unsafe class KazematoiKunai : FreeGemCounter
 {
     public KazematoiKunai(Tracker tracker) : base(tracker) { }
 
@@ -42,7 +42,6 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
     #region Nodes
 
-    public List<CustomNode> Stacks;
     public List<CustomNode> Slots;
     public List<CustomNode> Knives;
     public List<CustomNode> Knives1;
@@ -66,27 +65,17 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
         for (var i = 0; i < count; i++)
         {
-            var (x, y) = StaggerOffsets(i);
-
-            Slots.Add(ImageNodeFromPart(0, 4).SetImageWrap(2).SetPos(x, y));
+            Slots.Add(ImageNodeFromPart(0, 4).SetImageWrap(2));
             Knives1.Add(ImageNodeFromPart(0, 2).SetImageWrap(2));
             Knives2.Add(new CustomNode(CreateResNode(), ImageNodeFromPart(0, 3).SetImageWrap(2)));
 
             SetupKnifePulse1(i);
             SetupKnifePulse2(i);
 
-            Knives.Add(new CustomNode(CreateResNode(), Knives1[i], Knives2[i]).SetPos(x, y));
+            Knives.Add(new CustomNode(CreateResNode(), Knives1[i], Knives2[i]));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Slots[i], Knives[i]).SetOrigin(9, 69));
+            Stacks.Add(new CustomNode(CreateResNode(), Slots[i], Knives[i]).SetOrigin(9, 69).SetSize(46,78));
         }
-    }
-
-    private (int x, int y) StaggerOffsets(int i)
-    {
-        var even = i % 2 == 0;
-        var x = even && Config.Stagger ? 5 : 0;
-        var y = !even && Config.Stagger ? 16 : 0;
-        return (x, y);
     }
 
     #endregion
@@ -141,18 +130,16 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
     public override void ShowStack(int i)
     {
-        var (x, y) = StaggerOffsets(i);
         Animator += new Tween(Knives[i],
-                              new(0) { X = x + 15, Y = y - 32, Alpha = 0 },
-                              new(170) { X = x, Y = y, Alpha = 255 });
+                              new(0) { X = 15, Y = -32, Alpha = 0 },
+                              new(170) { X = 0, Y = 0, Alpha = 255 });
     }
 
     public override void HideStack(int i)
     {
-        var (x, y) = StaggerOffsets(i);
         Animator += new Tween(Knives[i],
-                              new(0) { X = x, Y = y, Alpha = 255 },
-                              new(90) { X = x - 15, Y = y + 32, Alpha = 0 });
+                              new(0) { X = 0, Y =0, Alpha = 255 },
+                              new(90) { X = -15, Y = 32, Alpha = 0 });
     }
 
     private void AllVanish()
@@ -202,44 +189,44 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
     #region Configs
 
-    public class KazematoiKunaiConfig : CounterWidgetConfig
+    public class KazematoiKunaiConfig : FreeGemCounterConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB KunaiColor = new(0);
         [DefaultValue(true)] public bool Stagger = true;
-        [DefaultValue(23f)] public float Spacing = 23;
-        public float Angle;
-        public float Curve;
-        public float KunaiAngle;
         public bool HideEmpty;
         [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
 
-        public KazematoiKunaiConfig(WidgetConfig widgetConfig)
+        public KazematoiKunaiConfig(WidgetConfig widgetConfig) : base(widgetConfig.KazematoiKunaiCfg)
         {
             var config = widgetConfig.KazematoiKunaiCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             KunaiColor = config.KunaiColor;
             Stagger = config.Stagger;
-            Spacing = config.Spacing;
-            KunaiAngle = config.KunaiAngle;
-            Angle = config.Angle;
-            Curve = config.Curve;
             HideEmpty = config.HideEmpty;
-
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
-        public KazematoiKunaiConfig() { }
+        public KazematoiKunaiConfig()
+        {
+            Spacing = 23;
+        }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
+    public override FreeGemCounterConfig GetConfig => Config;
+
+    protected override Vector2 AdjustedGemPos(int i, double x, double y, float gemAngle)
+    {
+        var even = i % 2 == 0;
+        var x2 = even && Config.Stagger ? 5 : 0;
+        var y2 = !even && Config.Stagger ? 16 : 0;
+
+        var cos = Cos(gemAngle);
+        var sin = Sin(gemAngle);
+
+        return new((float)((x2 * cos) - (y2 * sin) + x),
+                   (float)((y2 * cos) + (x2 * sin) + y));
+    }
 
     public KazematoiKunaiConfig Config;
 
@@ -249,64 +236,42 @@ public sealed unsafe class KazematoiKunai : CounterWidget
 
     public override void ApplyConfigs()
     {
-        var widgetAngle = Config.Angle + (Config.Curve / 2f);
         WidgetContainer.SetPos(Config.Position + new Vector2(-3, 0))
-                  .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle, true);
+                       .SetScale(Config.Scale);
 
-        var posAngle = 0f;
-        double x = 0;
-        double y = 0;
+        PlaceFreeGems();
 
         for (var i = 0; i < Stacks.Count; i++)
         {
-            var (sx, sy) = StaggerOffsets(i);
-
-            var knifeAngle = (Config.Curve * (i - 0.5f)) + Config.KunaiAngle;
-
-            Stacks[i].SetPos((float)x, (float)y)
-                     .SetRotation(knifeAngle, true);
-
-            Knives[i].SetPos(sx, sy).SetAddRGB(Config.KunaiColor);
-            Slots[i].SetPos(sx, sy);
-
-            x += Cos(posAngle * (PI / 180)) * Config.Spacing;
-            y += Sin(posAngle * (PI / 180)) * Config.Spacing;
-            posAngle += Config.Curve;
+            Knives[i].SetAddRGB(Config.KunaiColor);
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override string StackTerm => "Knife";
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Staggered", ref Config.Stagger, ref update);
-                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-                AngleControls("Angle (Knife)", ref Config.KunaiAngle, ref update);
-                AngleControls("Angle (All)", ref Config.Angle, ref update);
-                AngleControls("Curve", ref Config.Curve, ref update, true);
+                if (Config.Arrangement == Arc) ToggleControls("Staggered", ref Config.Stagger);
                 break;
             case Colors:
-                ColorPickerRGB("Kunai Tint", ref Config.KunaiColor, ref update);
+                ColorPickerRGB("Kunai Tint", ref Config.KunaiColor);
                 break;
             case Behavior:
-                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty))
                 {
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.KazematoiKunaiCfg = Config;
     }
 

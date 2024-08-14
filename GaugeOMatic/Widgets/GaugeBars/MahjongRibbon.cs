@@ -16,10 +16,9 @@ using static GaugeOMatic.Widgets.MahjongRibbon;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -168,12 +167,6 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     #endregion
 
     #region UpdateFuncs
-
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
-
-    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
-    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
 
     public override void PlaceTickMark(float prog)
     {
@@ -332,37 +325,37 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Width", ref Config.Width, 64, 1440, 1, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                FloatControls("Width", ref Config.Width, 64, 1440, 1);
+                AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                ColorPickerRGBA("Backdrop", ref Config.Background, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-                ColorPickerRGB("Tick Color", ref Config.TickColor, ref update);
+                ColorPickerRGBA("Backdrop", ref Config.Background);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
+                ColorPickerRGB("Tick Color", ref Config.TickColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls("Collapse Empty", "Collapse Full");
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
-                LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayAttr.Name, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, true);
+                LabelTextControls("Label Text", ref Config.LabelText, Tracker.DisplayAttr.Name);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.MahjongRibbonCfg = Config;
     }
 

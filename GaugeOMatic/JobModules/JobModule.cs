@@ -223,7 +223,7 @@ public abstract class JobModule : IDisposable
     });
 
     public abstract void Save();
-    public abstract void TweakUI(ref UpdateFlags update);
+    public abstract void TweakUI();
     public virtual void ApplyTweaks0(IntPtr gaugeAddon) { }
     public virtual void ApplyTweaks1(IntPtr gaugeAddon) { }
     public virtual void RevertTweaks() { }

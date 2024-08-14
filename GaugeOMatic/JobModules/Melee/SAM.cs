@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -43,20 +42,20 @@ public class SAMModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Kenki Gauge");
-        ToggleControls("Hide Kenki Bar", ref TweakConfigs.SAMHide0Kenki, ref update);
+        ToggleControls("Hide Kenki Bar", ref TweakConfigs.SAMHide0Kenki);
 
-        ToggleControls("Hide Meditation Stacks", ref TweakConfigs.SAMHide0Meditation, ref update);
+        ToggleControls("Hide Meditation Stacks", ref TweakConfigs.SAMHide0Meditation);
 
         Heading("Sen Gauge");
-        ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHide1, ref update);
+        ToggleControls("Hide Sen Gauge", ref TweakConfigs.SAMHide1);
 
         Heading("Reposition Seals");
-        PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu, ref update);
-        PositionControls("Getsu", ref TweakConfigs.SAMSealPosGetsu, ref update);
-        PositionControls("Ka", ref TweakConfigs.SAMSealPosKa, ref update);
+        PositionControls("Setsu", ref TweakConfigs.SAMSealPosSetsu);
+        PositionControls("Getsu", ref TweakConfigs.SAMSealPosGetsu);
+        PositionControls("Ka", ref TweakConfigs.SAMSealPosKa);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

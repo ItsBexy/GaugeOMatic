@@ -1,10 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -13,11 +14,9 @@ using static GaugeOMatic.Widgets.ShimmerHalo;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using System.ComponentModel;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -199,15 +198,15 @@ public sealed unsafe class ShimmerHalo : StateWidget
         if (Fill.Visible) { BeginRotation(); }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                FloatControls("Speed", ref Config.Speed, -200, 200, 1f, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                AngleControls("Angle", ref Config.Angle);
+                FloatControls("Speed", ref Config.Speed, -200, 200, 1f);
                 break;
             case Colors:
                 var maxState = Tracker.CurrentData.MaxState;
@@ -216,14 +215,14 @@ public sealed unsafe class ShimmerHalo : StateWidget
                 {
                     var color = Config.ColorList[i];
                     var label = $"{Tracker.StateNames[i]}";
-                    if (ColorPickerRGB(label, ref color, ref update)) Config.ColorList[i] = color;
+                    if (ColorPickerRGB(label, ref color)) Config.ColorList[i] = color;
                 }
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ShimmerHaloCfg = Config;
     }
 

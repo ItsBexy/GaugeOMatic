@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
-using static GaugeOMatic.Trackers.Tracker;
 
 namespace GaugeOMatic.Windows.Dropdowns;
 
@@ -39,9 +38,9 @@ public abstract class BranchingDropdown
 
     /// <summary>An indexed collection, whose values can inform the behaviour of the <see cref ="DrawSubMenu">DrawSubMenu()</see> method.</summary>
     public abstract ICollection SubMenus { get; }
-    public abstract void DrawSubMenu(int i, ref UpdateFlags update);
+    public abstract void DrawSubMenu(int i);
 
-    public void Draw(string label, float width, ref UpdateFlags update)
+    public void Draw(string label, float width)
     {
         var i = 0;
 
@@ -54,19 +53,19 @@ public abstract class BranchingDropdown
         if (IsOpen) ImGui.PopStyleColor(1);
 
         var popupPos = new Vector2(windowPos.X + cursorPos.X, windowPos.Y + cursorPos.Y + 22f);
-        CreateMenuPopup($"##{label}{GetHashCode()}MenuPopup", width * GlobalScale, popupPos, ref update);
+        CreateMenuPopup($"##{label}{GetHashCode()}MenuPopup", width * GlobalScale, popupPos);
 
         if (ImGui.IsItemClicked()) ImGui.OpenPopup($"##{label}{GetHashCode()}MenuPopup");
     }
 
-    public void CreateMenuPopup(string label, float width, Vector2 popupPos, ref UpdateFlags update)
+    public void CreateMenuPopup(string label, float width, Vector2 popupPos)
     {
         IsOpen = ImGui.BeginPopup(label);
         if (!IsOpen) return;
 
         ImGui.SetWindowPos(popupPos);
         ImGui.Button("", new(width - 16f, 0.01f));
-        for (var i = 0; i < SubMenus.Count; i++) DrawSubMenu(i, ref update);
+        for (var i = 0; i < SubMenus.Count; i++) DrawSubMenu(i);
         ImGui.Button("", new(width - 16f, 0.01f));
         ImGui.EndPopup();
     }

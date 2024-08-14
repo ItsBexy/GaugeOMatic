@@ -8,14 +8,13 @@ using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.NinkiBorders;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -227,35 +226,35 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 var borders = new List<bool> { Config.Top, Config.Bottom };
-                if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }, ref update))
+                if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }))
                 {
                     Config.Top = borders[0];
                     Config.Bottom = borders[1];
                 }
                 break;
             case Colors:
-                ColorPickerRGBA("Border Color", ref Config.BorderColor, ref update);
-                ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
+                ColorPickerRGBA("Border Color", ref Config.BorderColor);
+                ColorPickerRGBA("Tick Color", ref Config.TickColor);
                 break;
             case Behavior:
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert);
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.NinkiBordersCfg = Config;
     }
 

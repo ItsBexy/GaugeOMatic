@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -39,18 +38,18 @@ public class MNKModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Beast Chakra Gauge");
-        ToggleControls("Hide Beast Chakra Gauge", ref TweakConfigs.MNKHide0, ref update);
+        ToggleControls("Hide Beast Chakra Gauge", ref TweakConfigs.MNKHide0);
         if (!TweakConfigs.MNKHide0)
         {
-            ToggleControls("Reverse Order", ref TweakConfigs.MNK0Reverse, ref update);
+            ToggleControls("Reverse Order", ref TweakConfigs.MNK0Reverse);
             Info("Reverses the order of the Beast Chakras. Useful if you\nprefer to arrange your combo buttons from right to left.");
         }
 
         Heading("Chakra Gauge");
-        ToggleControls("Hide Chakra Gauge", ref TweakConfigs.MNKHide1, ref update);
+        ToggleControls("Hide Chakra Gauge", ref TweakConfigs.MNKHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

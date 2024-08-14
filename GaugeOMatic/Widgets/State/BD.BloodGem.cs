@@ -1,20 +1,19 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BloodGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -232,18 +231,18 @@ public sealed unsafe class BloodGem : StateWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Show Ring", ref Config.Ring, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                ToggleControls("Show Ring", ref Config.Ring);
                 break;
             case Colors:
-                if (Config.Ring) ColorPickerRGB("Ring Tint", ref Config.RingColor, ref update);
+                if (Config.Ring) ColorPickerRGB("Ring Tint", ref Config.RingColor);
 
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
                 {
@@ -252,16 +251,16 @@ public sealed unsafe class BloodGem : StateWidget
                     var gemColor = Config.GemColors[i];
                     var haloColor = Config.HaloColors[i];
                     var haloColor2 = Config.HaloColors2[i];
-                    if (ColorPickerRGB($"Gem Color##gemColor{i}", ref gemColor, ref update)) Config.GemColors[i] = gemColor;
-                    if (ColorPickerRGB($"Halo Color##haloColor{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;
-                    if (ColorPickerRGB($" ##haloColor2{i}", ref haloColor2, ref update)) Config.HaloColors2[i] = haloColor2;
+                    if (ColorPickerRGB($"Gem Color##gemColor{i}", ref gemColor)) Config.GemColors[i] = gemColor;
+                    if (ColorPickerRGB($"Halo Color##haloColor{i}", ref haloColor)) Config.HaloColors[i] = haloColor;
+                    if (ColorPickerRGB($" ##haloColor2{i}", ref haloColor2)) Config.HaloColors2[i] = haloColor2;
                 }
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BloodGemCfg = Config;
     }
 

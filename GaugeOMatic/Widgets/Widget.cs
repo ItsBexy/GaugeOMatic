@@ -7,10 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using ImGuiNET;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Game.ClientState.Conditions.ConditionFlag;
 using static GaugeOMatic.GameData.JobData;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
@@ -87,7 +87,7 @@ public abstract unsafe class Widget : IDisposable
 
     public WidgetUiTab UiTab { get; set; } = Layout;
 
-    public abstract void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update);
+    public virtual void DrawUI(ref WidgetConfig widgetConfig) { }
     public abstract void Update();
     public abstract void InitConfigs();
     public abstract void ResetConfigs();
@@ -151,6 +151,13 @@ public abstract unsafe class Widget : IDisposable
             Show();
         else
             Hide();
+    }
+
+    // ReSharper disable once UnusedMember.Global
+    public virtual void DrawBounds(uint col = 0xffffffff)
+    {
+        if (WidgetContainer.TryGetBounds(out var bounds) && bounds?.Length >= 4)
+            ImGui.GetBackgroundDrawList().AddQuad(bounds[0], bounds[1], bounds[2], bounds[3], col);
     }
 }
 

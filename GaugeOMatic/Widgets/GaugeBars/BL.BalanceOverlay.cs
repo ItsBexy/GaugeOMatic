@@ -14,10 +14,9 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -208,30 +207,30 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 break;
             case Colors:
-                ColorPickerRGBA("Color", ref Config.Color, ref update);
-                ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
+                ColorPickerRGBA("Color", ref Config.Color);
+                ColorPickerRGBA("Tick Color", ref Config.TickColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BalanceOverlayCfg = Config;
     }
 

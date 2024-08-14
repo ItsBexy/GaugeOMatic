@@ -2,25 +2,23 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ReaperFlame;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class ReaperFlame : CounterWidget
+public sealed unsafe class ReaperFlame : FreeGemCounter
 {
     public ReaperFlame(Tracker tracker) : base(tracker) { }
 
@@ -50,12 +48,11 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     #region Nodes
 
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> Flames = new();
-    public List<CustomNode> FlameTwins = new();
-    public List<CustomNode> Orbs = new();
-    public List<CustomNode> Halos = new();
-    public List<CustomNode> Pulsars = new();
+    public List<CustomNode> Flames;
+    public List<CustomNode> FlameTwins;
+    public List<CustomNode> Orbs;
+    public List<CustomNode> Halos;
+    public List<CustomNode> Pulsars;
 
     public override CustomNode BuildContainer()
     {
@@ -91,7 +88,7 @@ public sealed unsafe class ReaperFlame : CounterWidget
                 new(FlameTwins[i], new(0) { PartId = 0 }, new(475 + tMod) { PartId = 5 }) { Repeat = true }
             };
 
-            stacks.Add(new CustomNode(CreateResNode(), Flames[i], Orbs[i], Halos[i], Pulsars[i], FlameTwins[i]).SetSize(36, 44));
+            stacks.Add(new CustomNode(CreateResNode(), Flames[i], Orbs[i], Halos[i], Pulsars[i], FlameTwins[i]).SetSize(32, 32));
         }
         return stacks;
     }
@@ -162,45 +159,35 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     #region Configs
 
-    public class ReaperFlameConfig : CounterWidgetConfig
+    public class ReaperFlameConfig : FreeGemCounterConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
-        [DefaultValue(20f)] public float Spacing = 20;
-        public float Angle;
-        public float Curve;
         public AddRGB BaseColor = new(-150, 20, 150);
         public AddRGB OrbColor = new(0, 0, 0);
         public AddRGB FlashColor = new(-120, -50, 0);
         public int SpendAnim;
 
-        public ReaperFlameConfig(WidgetConfig widgetConfig)
+        public ReaperFlameConfig(WidgetConfig widgetConfig) : base(widgetConfig.ReaperFlameCfg)
         {
             var config = widgetConfig.ReaperFlameCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
-            Spacing = config.Spacing;
-            Angle = config.Angle;
-            Curve = config.Curve;
             BaseColor = config.BaseColor;
             OrbColor = config.OrbColor;
             FlashColor = config.FlashColor;
             SpendAnim = config.SpendAnim;
-
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
         public ReaperFlameConfig() { }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public ReaperFlameConfig Config;
+
+    public override int ArcMask => 0b10111;
+    public override int ListMask => 0b101;
+    public override string StackTerm => "Flame";
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -208,19 +195,14 @@ public sealed unsafe class ReaperFlame : CounterWidget
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position)
+                       .SetScale(Config.Scale);
 
-        var angle = Config.Angle;
-        double x = 0;
-        double y = 0;
+        PlaceFreeGems();
 
         for (var i = 0; i < Stacks.Count; i++)
         {
-            Stacks[i].SetPos((float)x, (float)y).SetAddRGB(Config.BaseColor);
-            x += Cos(angle * (PI / 180)) * Config.Spacing;
-            y += Sin(angle * (PI / 180)) * Config.Spacing;
-            angle += Config.Curve;
+            Stacks[i].SetAddRGB(Config.BaseColor);
 
             Orbs[i].SetAddRGB(Config.OrbColor);
             Halos[i].SetAddRGB(Config.FlashColor);
@@ -230,31 +212,48 @@ public sealed unsafe class ReaperFlame : CounterWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void PlaceGemsInArc()
     {
+        var angle = Config.Angle;
+        double x = 0;
+        double y = 0;
+
+        for (var i = 0; i < Stacks.Count; i++)
+        {
+            var flameScale = float.Lerp(1, GetConfig.ScaleShift, i / 10f);
+
+            Stacks[i].SetPos((float)x, (float)y)
+                     .SetScale(Math.Max(0f, flameScale));
+
+            var flameSpacing = GetConfig.Spacing * GetConfig.SpacingModifier * flameScale;
+
+            x += Cos(angle * (PI / 180)) * flameSpacing;
+            y += Sin(angle * (PI / 180)) * flameSpacing;
+            angle += Config.Curve;
+        }
+    }
+
+    public override void DrawUI(ref WidgetConfig widgetConfig)
+    {
+        base.DrawUI(ref widgetConfig);
+
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                AngleControls("Curve", ref Config.Curve, ref update, true);
                 break;
             case Colors:
-                ColorPickerRGB("Base Color", ref Config.BaseColor, ref update);
-                ColorPickerRGB("Orb Tint", ref Config.OrbColor, ref update);
-                ColorPickerRGB("Flash Color", ref Config.FlashColor, ref update);
+                ColorPickerRGB("Base Color", ref Config.BaseColor);
+                ColorPickerRGB("Orb Tint", ref Config.OrbColor);
+                ColorPickerRGB("Flash Color", ref Config.FlashColor);
                 break;
             case Behavior:
-                RadioControls("Animation", ref Config.SpendAnim, new() { 0, 1 }, new() { "Default", "Divide" }, ref update);
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                RadioControls("Animation", ref Config.SpendAnim, new() { 0, 1 }, new() { "Default", "Divide" });
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ReaperFlameCfg = Config;
     }
 

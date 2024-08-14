@@ -1,19 +1,18 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.KazematoiSwooshState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -243,16 +242,16 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
         SpinCloud.SetAddRGB(Config.GetSweepColor(state));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
 
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
                 for (var i = 0; i <= Tracker.CurrentData.MaxState; i++)
@@ -267,15 +266,15 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
 
                     if (i == 0)
                     {
-                        ToggleControls("Hide", ref Config.HideInactive, ref update);
+                        ToggleControls("Hide", ref Config.HideInactive);
                     }
                     if (i != 0 || !Config.HideInactive)
                     {
-                        if (RadioControls($"Base Color##baseColor{i}", ref backdropBase, new() { 1, 0 }, new() { "Violet", "Grey" }, ref update, true)) Config.BackdropBases[i] = backdropBase;
-                        if (ColorPickerRGB($"Backdrop Tint##backdrop{i}", ref backdropTint, ref update)) Config.BackdropTints[i] = backdropTint;
-                        if (i != 0 && ColorPickerRGB($"Flash Color##sweep{i}", ref sweepColor, ref update)) Config.SweepColors[i] = sweepColor;
-                        if (i != 0 && ToggleControls($"Show Clouds##clouds{i}", ref clouds, ref update)) Config.Clouds[i] = clouds;
-                        if (i != 0 && clouds && ColorPickerRGB($"Cloud Color##cloudColor{i}", ref cloudColor, ref update)) Config.CloudColors[i] = cloudColor;
+                        if (RadioControls($"Base Color##baseColor{i}", ref backdropBase, new() { 1, 0 }, new() { "Violet", "Grey" }, true)) Config.BackdropBases[i] = backdropBase;
+                        if (ColorPickerRGB($"Backdrop Tint##backdrop{i}", ref backdropTint)) Config.BackdropTints[i] = backdropTint;
+                        if (i != 0 && ColorPickerRGB($"Flash Color##sweep{i}", ref sweepColor)) Config.SweepColors[i] = sweepColor;
+                        if (i != 0 && ToggleControls($"Show Clouds##clouds{i}", ref clouds)) Config.Clouds[i] = clouds;
+                        if (i != 0 && clouds && ColorPickerRGB($"Cloud Color##cloudColor{i}", ref cloudColor)) Config.CloudColors[i] = cloudColor;
                     }
                 }
                 break;
@@ -283,7 +282,7 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.KazematoiSwooshStateCfg = Config;
     }
 

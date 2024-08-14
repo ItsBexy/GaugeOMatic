@@ -5,16 +5,16 @@ using ImGuiNET;
 using System;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 
 namespace GaugeOMatic.Windows;
 
 public partial class ConfigWindow
 {
-    private static void DrawTrackerRow(Tracker tracker, ref UpdateFlags update)
+    private static void DrawTrackerRow(Tracker tracker)
     {
         var hash = tracker.GetHashCode();
         var trackerConfig = tracker.TrackerConfig;
@@ -26,7 +26,7 @@ public partial class ConfigWindow
 
         DeleteButton(tracker, hash);
         SameLineSquished();
-        EnabledCheckbox(tracker, hash, ref update);
+        EnabledCheckbox(tracker, hash);
 
         ImGui.TableNextColumn();
 
@@ -35,35 +35,37 @@ public partial class ConfigWindow
 
         if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
-        tracker.TrackerDropdown.Draw("[ Track... ]", 180f, ref update);
+        tracker.TrackerDropdown.Draw("[ Track... ]", 180f);
 
         ImGui.TableNextColumn();
-        LayerControls(tracker, hash, index, ref update);
+        LayerControls(tracker, hash, index);
 
         ImGui.TableNextColumn();
-        tracker.WidgetMenuTable.Draw("[Select Widget]", 200f, ref update);
+        tracker.WidgetMenuTable.Draw("[Select Widget]", 200f);
 
         ImGui.TableNextColumn();
-        WidgetControls(tracker, hash, index, ref update);
+        WidgetControls(tracker, hash, index);
 
         ImGui.TableNextColumn();
-        AddonDropdown(tracker, hash, ref update);
+        AddonDropdown(tracker, hash);
 
         ImGui.TableNextColumn();
         PreviewControls(tracker, hash);
 
-        if (update.HasFlag(Save)) trackerConfig.DisplayAttr = null;
+        if (UpdateFlag.HasFlag(Save)) trackerConfig.DisplayAttr = null;
+
+      //  tracker.Widget?.DrawBounds();
     }
 
-    private static void LayerControls(Tracker tracker, int hash, int index, ref UpdateFlags update)
+    private static void LayerControls(Tracker tracker, int hash, int index)
     {
-        BumpUpButton(tracker, hash, index, ref update);
+        BumpUpButton(tracker, hash, index);
         SameLineSquished();
-        BumpDownButton(tracker, hash, index, ref update);
+        BumpDownButton(tracker, hash, index);
         SameLineSquished();
     }
 
-    private static void BumpUpButton(Tracker tracker, int hash, int index, ref UpdateFlags update)
+    private static void BumpUpButton(Tracker tracker, int hash, int index)
     {
         if (index == 0) IconButtonDisabled($"BumpUp{hash}", FontAwesomeIcon.ChevronUp);
         else if (ImGuiComponents.IconButton($"BumpUp{hash}", FontAwesomeIcon.ChevronUp))
@@ -73,11 +75,11 @@ public partial class ConfigWindow
 
             tracker.TrackerConfig.Index--;
             swapWith.TrackerConfig.Index++;
-            update |= SoftReset | Save;
+            UpdateFlag |= SoftReset | Save;
         }
     }
 
-    private static void BumpDownButton(Tracker tracker, int hash, int index, ref UpdateFlags update)
+    private static void BumpDownButton(Tracker tracker, int hash, int index)
     {
         if (index == tracker.JobModule.TrackerList.Count - 1) IconButtonDisabled($"BumpDown{hash}", FontAwesomeIcon.ChevronDown);
         else if (ImGuiComponents.IconButton($"BumpDown{hash}", FontAwesomeIcon.ChevronDown))
@@ -87,17 +89,17 @@ public partial class ConfigWindow
 
             tracker.TrackerConfig.Index++;
             swapWith.TrackerConfig.Index--;
-            update |= SoftReset | Save;
+            UpdateFlag |= SoftReset | Save;
         }
     }
 
-    private static void WidgetControls(Tracker tracker, int hash, int index, ref UpdateFlags update)
+    private static void WidgetControls(Tracker tracker, int hash, int index)
     {
         SettingsButton();
         SameLineSquished();
         CopyWidgetButton(tracker, hash);
         SameLineSquished();
-        PasteWidgetButton(tracker, hash, ref update);
+        PasteWidgetButton(tracker, hash);
         void SettingsButton()
         {
             if (!tracker.Available) IconButtonDisabled($"Settings{hash}", FontAwesomeIcon.Cog);
@@ -141,14 +143,14 @@ public partial class ConfigWindow
 
     }
 
-    private static void PasteWidgetButton(Tracker tracker, int hash, ref UpdateFlags update)
+    private static void PasteWidgetButton(Tracker tracker, int hash)
     {
         if (!string.IsNullOrEmpty(WidgetClipType) && tracker.WidgetMenuTable.AvailableWidgets.ContainsKey(WidgetClipType))
         {
             if (ImGuiComponents.IconButton($"PasteWidget{hash}", FontAwesomeIcon.PaintRoller))
             {
                 tracker.WidgetConfig = WidgetClipboard!;
-                update |= Reset | Save;
+                UpdateFlag |= Reset | Save;
             }
 
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Paste Copied Settings");
@@ -156,12 +158,12 @@ public partial class ConfigWindow
         else IconButtonDisabled(FontAwesomeIcon.PaintRoller);
     }
 
-    private static void AddonDropdown(Tracker tracker, int hash, ref UpdateFlags update)
+    private static void AddonDropdown(Tracker tracker, int hash)
     {
         if (!tracker.AddonDropdown.Draw($"AddonSelect{hash}", 120f)) return;
 
         tracker.AddonName = tracker.AddonDropdown.CurrentSelection;
-        update |= Reset | Save;
+        UpdateFlag |= Reset | Save;
     }
 
     private static void PreviewControls(Tracker tracker, int hash)
@@ -198,13 +200,13 @@ public partial class ConfigWindow
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Shift-Click to Delete");
     }
 
-    private static void EnabledCheckbox(Tracker tracker, int hash, ref UpdateFlags update)
+    private static void EnabledCheckbox(Tracker tracker, int hash)
     {
         var enabled = tracker.TrackerConfig.Enabled;
         if (ImGui.Checkbox($"##Enabled{hash}", ref enabled))
         {
             tracker.TrackerConfig.Enabled = enabled;
-            update |= Reset | Save;
+            UpdateFlag |= Reset | Save;
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Enable/Disable");
     }

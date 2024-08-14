@@ -7,7 +7,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -40,13 +39,13 @@ public class DNCModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Step Gauge");
-        ToggleControls("Hide Step Gauge", ref TweakConfigs.DNCHide0, ref update);
+        ToggleControls("Hide Step Gauge", ref TweakConfigs.DNCHide0);
 
         Heading("Fourfold Feathers");
-        ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHide1, ref update);
+        ToggleControls("Hide Fourfold Feathers", ref TweakConfigs.DNCHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

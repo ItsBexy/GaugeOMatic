@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -40,15 +39,15 @@ public class MCHModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Heat Gauge");
-        ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHide0Heat, ref update);
-        ToggleControls("Hide Battery Gauge", ref TweakConfigs.MCHHide0Battery, ref update);
+        ToggleControls("Hide Heat Gauge", ref TweakConfigs.MCHHide0Heat);
+        ToggleControls("Hide Battery Gauge", ref TweakConfigs.MCHHide0Battery);
 
         if (!TweakConfigs.MCHHide0Battery)
         {
-            PositionControls("Move Battery Gauge", ref TweakConfigs.MCHBatteryPos, ref update);
+            PositionControls("Move Battery Gauge", ref TweakConfigs.MCHBatteryPos);
         }
     }
 

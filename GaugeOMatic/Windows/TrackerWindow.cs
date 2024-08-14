@@ -8,9 +8,8 @@ using ImGuiNET;
 using System;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static ImGuiNET.ImGuiTableColumnFlags;
 using static ImGuiNET.ImGuiTableFlags;
@@ -33,26 +32,27 @@ public class TrackerWindow : Window, IDisposable
         Flags = ImGuiWindowFlags.NoCollapse;
         SizeConstraints = new WindowSizeConstraints
         {
-            MinimumSize = new(300f, 320f),
+            MinimumSize = new(300f, 300f),
             MaximumSize = new(1100f)
         };
+        SizeCondition = ImGuiCond.Appearing;
     }
 
     public override void Draw()
     {
-        UpdateFlags update = 0;
+        UpdateFlag = 0;
         var widgetConfig = Tracker.WidgetConfig;
         if (!Tracker.Available || Widget == null) IsOpen = false;
 
-        HeaderTable(ref update);
+        HeaderTable();
 
-        WidgetOptionTable(widgetConfig, ref update);
+        WidgetOptionTable(widgetConfig);
 
-        if (update.HasFlag(Save)) Configuration.Save();
-        if (update.HasFlag(Reset)) Tracker.JobModule.ResetWidgets();
+        if (UpdateFlag.HasFlag(Save)) Configuration.Save();
+        if (UpdateFlag.HasFlag(Reset)) Tracker.JobModule.ResetWidgets();
     }
 
-    private void HeaderTable(ref UpdateFlags update)
+    private void HeaderTable()
     {
         if (!ImGui.BeginTable("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX)) return;
 
@@ -62,7 +62,7 @@ public class TrackerWindow : Window, IDisposable
         ImGui.TableNextColumn();
         ImGuiHelpy.TextRightAligned("Widget");
         ImGui.TableNextColumn();
-        Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f, ref update);
+        Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f);
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
@@ -71,7 +71,7 @@ public class TrackerWindow : Window, IDisposable
         if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
         {
             Tracker.AddonName = Tracker.AddonDropdown.CurrentSelection;
-            update |= Reset | Save;
+            UpdateFlag |= Reset | Save;
         }
 
         PreviewControls();
@@ -89,7 +89,7 @@ public class TrackerWindow : Window, IDisposable
             Widget?.ResetConfigs();
             Widget?.ApplyConfigs();
             Tracker.UpdateTracker();
-            update |= Save;
+            UpdateFlag |= Save;
         }
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip(
@@ -120,7 +120,7 @@ public class TrackerWindow : Window, IDisposable
         }
     }
 
-    private void WidgetOptionTable(WidgetConfig widgetConfig, ref UpdateFlags update)
+    private void WidgetOptionTable(WidgetConfig widgetConfig)
     {
         void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
         {
@@ -143,38 +143,38 @@ public class TrackerWindow : Window, IDisposable
 
         if (ImGui.BeginTable($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingFixedFit | PadOuterX, new(280,10)))
         {
-            ImGui.TableSetupColumn("Labels",WidthFixed);
+            ImGui.TableSetupColumn("Labels",WidthStretch,100);
             ImGui.TableSetupColumn("Controls", WidthFixed);
 
             ImGui.Spacing();
             ImGui.Spacing();
 
-            Widget?.DrawUI(ref widgetConfig, ref update);
+            Widget?.DrawUI(ref widgetConfig);
 
-            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable(ref update);
+            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
 
             ImGui.EndTable();
         }
     }
 
-    private void DisplayRuleTable(ref UpdateFlags update)
+    private void DisplayRuleTable()
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
         ImGui.TextColored(new(1, 1, 1, 0.3f), "Display Rules");
         ImGui.TableNextColumn();
 
-        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, new() { false, true }, new() { "Anytime", "Combat / Duty Only" }, ref update);
-        var cond2 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange, ref update);
+        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, new() { false, true }, new() { "Anytime", "Combat / Duty Only" });
+        var cond2 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange);
         var cond3 = false;
         var cond4 = false;
         if (Tracker.TrackerConfig.LimitLevelRange)
         {
             var min = Tracker.TrackerConfig.LevelMin;
             var max = Tracker.TrackerConfig.LevelMax;
-            cond3 = IntControls("Minimum Level", ref min, 1, max, 1, ref update);
+            cond3 = IntControls("Minimum Level", ref min, 1, max, 1);
             if (cond3) { Tracker.TrackerConfig.LevelMin = min;}
-            cond4 = IntControls("Maximum Level", ref max, min, LevelCap, 1, ref update);
+            cond4 = IntControls("Maximum Level", ref max, min, LevelCap, 1);
             if (cond4) { Tracker.TrackerConfig.LevelMax = max; }
         }
 

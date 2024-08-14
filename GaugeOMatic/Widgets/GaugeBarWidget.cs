@@ -2,11 +2,10 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
-using Newtonsoft.Json;
 using static GaugeOMatic.GameData.ActionFlags;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
@@ -15,62 +14,6 @@ using static Newtonsoft.Json.DefaultValueHandling;
 // ReSharper disable UnusedMethodReturnValue.Global
 
 namespace GaugeOMatic.Widgets;
-
-public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
-{
-    protected GaugeBarWidgetConfig() => NumTextProps = NumTextDefault;
-
-    protected GaugeBarWidgetConfig(GaugeBarWidgetConfig? config)
-    {
-        NumTextProps = NumTextDefault;
-
-        if (config == null) { return; }
-
-        HideEmpty = config.HideEmpty;
-        HideFull = config.HideFull;
-        Invert = config.Invert;
-        AnimationLength = config.AnimationLength;
-        NumTextProps = config.NumTextProps;
-        SplitCharges = config.SplitCharges;
-        MilestoneType = config.MilestoneType;
-        Milestone = config.Milestone;
-    }
-
-    protected virtual NumTextProps NumTextDefault => new();
-    public bool HideEmpty;
-    public bool HideFull;
-    public bool Invert;
-    [DefaultValue(250)] public int AnimationLength = 250;
-    public NumTextProps NumTextProps;
-    public bool SplitCharges;
-    [JsonProperty(DefaultValueHandling = Include)] public MilestoneType MilestoneType;
-    [DefaultValue(0.5f)] public float Milestone = 0.5f;
-
-    public static bool MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone, ref UpdateFlags update)
-    {
-        var r = RadioControls(label, ref milestoneType, new() { MilestoneType.None, Above, Below }, new() { "Never", "Above Threshold", "Below Threshold" }, ref update);
-        var p = milestoneType > 0 && PercentControls("Threshold", ref milestone, ref update);
-
-        return r || p;
-    }
-
-    public static bool SplitChargeControls(ref bool splitCharges, RefType refType, int maxCount, ref UpdateFlags update)
-    {
-        return refType == RefType.Action && maxCount > 1 &&
-               RadioControls("Cooldown Style", ref splitCharges, new() { false, true }, new() { "All Charges", "Per Charge" }, ref update);
-    }
-
-    public static bool HideControls(string labelE, string labelF,ref bool hideEmpty, ref bool hideFull, Action emptyCheck, Action fullCheck, ref UpdateFlags update)
-    {
-        var toggle1 = ToggleControls(labelE, ref hideEmpty, ref update);
-        var toggle2 = ToggleControls(labelF, ref hideFull, ref update);
-        if (toggle1) emptyCheck();
-        if (toggle2) fullCheck();
-        return toggle1 || toggle2;
-    }
-
-    public static bool HideControls(ref bool hideEmpty, ref bool hideFull, Action emptyCheck, Action fullCheck, ref UpdateFlags update) => HideControls("Hide Empty", "Hide Full", ref hideEmpty, ref hideFull, emptyCheck, fullCheck, ref update);
-}
 
 public enum MilestoneType { None, Above, Below }
 
@@ -105,12 +48,13 @@ public abstract class GaugeBarWidget : Widget
     // handlers that can be used to trigger animations/behaviours at certain progress points
 
     public virtual void OnIncrease(float prog, float prevProg) { }
-    public virtual void OnIncreaseFromMin() { }
-    public virtual void OnIncreaseToMax() { }
 
     public virtual void OnDecrease(float prog, float prevProg) { }
-    public virtual void OnDecreaseToMin() { }
-    public virtual void OnDecreaseFromMax() { }
+
+    public virtual void OnDecreaseToMin() { if (GetConfig.HideEmpty) HideBar(); }
+    public virtual void OnIncreaseFromMin() { if (GetConfig.HideEmpty) RevealBar(); }
+    public virtual void OnDecreaseFromMax() { if (GetConfig.HideFull) RevealBar(); }
+    public virtual void OnIncreaseToMax() { if (GetConfig.HideFull) HideBar(); }
 
     public virtual void PlaceTickMark(float prog) { }
 
@@ -221,22 +165,78 @@ public abstract class GaugeBarWidget : Widget
 
         Animator = Animator.Remove("DrainGain", main, drain)
                    + new Tween(increasing || drain.Node == null ? main : drain,
-                                               new(0) { TimelineProg = previous },
-                                               new(time) { TimelineProg = current })
+                               new(0) { TimelineProg = previous },
+                               new(time) { TimelineProg = current })
                                                { Label = "DrainGain" };
     }
 
-    public void EmptyCheck()
+    public bool HideControls() => HideControls("Hide Empty", "Hide Full");
+
+    public bool HideControls(string labelE, string labelF)
     {
-        if (Tracker.CurrentData.GaugeValue == 0 || (GetConfig.Invert && Math.Abs(Tracker.CurrentData.GaugeValue - MaxGauge) < 0.01f))
+        var emptyToggle = ToggleControls(labelE, ref GetConfig.HideEmpty);
+        var fullToggle = ToggleControls(labelF, ref GetConfig.HideFull);
+
+        var isEmpty = Tracker.CurrentData.GaugeValue == 0;
+        var isFull = Math.Abs(Tracker.CurrentData.GaugeValue - MaxGauge) < 0.01f;
+
+        if (emptyToggle && (isEmpty || (GetConfig.Invert && isFull)))
+        {
             if (GetConfig.HideEmpty) HideBar();
             else RevealBar();
-    }
+        }
 
-    public void FullCheck()
-    {
-        if ((GetConfig.Invert && Tracker.CurrentData.GaugeValue == 0) || Math.Abs(Tracker.CurrentData.GaugeValue - MaxGauge) < 0.01f)
+        if (fullToggle && ((GetConfig.Invert && isEmpty) || isFull))
+        {
             if (GetConfig.HideFull) HideBar();
             else RevealBar();
+        }
+
+        return emptyToggle || fullToggle;
+    }
+}
+
+public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
+{
+    protected GaugeBarWidgetConfig() => NumTextProps = NumTextDefault;
+
+    protected GaugeBarWidgetConfig(GaugeBarWidgetConfig? config)
+    {
+        NumTextProps = NumTextDefault;
+
+        if (config == null) { return; }
+
+        HideEmpty = config.HideEmpty;
+        HideFull = config.HideFull;
+        Invert = config.Invert;
+        AnimationLength = config.AnimationLength;
+        NumTextProps = config.NumTextProps;
+        SplitCharges = config.SplitCharges;
+        MilestoneType = config.MilestoneType;
+        Milestone = config.Milestone;
+    }
+
+    protected virtual NumTextProps NumTextDefault => new();
+    public bool HideEmpty;
+    public bool HideFull;
+    public bool Invert;
+    [DefaultValue(250)] public int AnimationLength = 250;
+    public NumTextProps NumTextProps;
+    public bool SplitCharges;
+    [JsonProperty(DefaultValueHandling = Include)] public MilestoneType MilestoneType;
+    [DefaultValue(0.5f)] public float Milestone = 0.5f;
+
+    public static bool MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone)
+    {
+        var r = RadioControls(label, ref milestoneType, new() { MilestoneType.None, Above, Below }, new() { "Never", "Above Threshold", "Below Threshold" });
+        var p = milestoneType > 0 && PercentControls("Threshold", ref milestone);
+
+        return r || p;
+    }
+
+    public static bool SplitChargeControls(ref bool splitCharges, RefType refType, int maxCount)
+    {
+        return refType == RefType.Action && maxCount > 1 &&
+               RadioControls("Cooldown Style", ref splitCharges, new() { false, true }, new() { "All Charges", "Per Charge" });
     }
 }

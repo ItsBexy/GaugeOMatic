@@ -7,7 +7,6 @@ using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -17,8 +16,8 @@ using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -133,14 +132,18 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override void OnIncrease(float prog, float prevProg) => HaloPulse();
 
-    public override void OnDecreaseToMin() => HaloPulse();
-    public override void OnIncreaseFromMin() => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
-    public override void OnDecreaseFromMax() => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
-    public override void OnIncreaseToMax()
+    public override void OnDecreaseToMin() => HideBar();
+    public override void OnIncreaseToMax() => HideBar();
+    public override void OnIncreaseFromMin() => RevealBar();
+    public override void OnDecreaseFromMax() => RevealBar();
+
+    public override void HideBar(bool instant = false)
     {
         Animator += new Tween(Circle, new(0) { Alpha = Circle.Alpha }, Hidden[150]);
         HaloPulse();
     }
+
+    public override void RevealBar(bool instant = false) => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
 
 
     #endregion
@@ -196,31 +199,31 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(38, 80));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 break;
             case Colors:
-                ColorPickerRGBA("Color", ref Config.Color, ref update);
-                RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" }, ref update);
+                ColorPickerRGBA("Color", ref Config.Color);
+                RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" });
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new() { Redo, Undo, CircleNotch }, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new() { Redo, Undo, CircleNotch });
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.SimpleCircleCfg = Config;
     }
 

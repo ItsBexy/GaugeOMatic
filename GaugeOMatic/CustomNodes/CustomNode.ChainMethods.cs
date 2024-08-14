@@ -154,6 +154,24 @@ public unsafe partial class CustomNode
         return this;
     }
 
+    public CustomNode SetOriginX(float ox)
+    {
+        if (Node == null) return this;
+
+        Node->OriginX = ox;
+        Node->DrawFlags |= 0xD;
+        return this;
+    }
+
+    public CustomNode SetOriginY(float oy)
+    {
+        if (Node == null) return this;
+
+        Node->OriginX = oy;
+        Node->DrawFlags |= 0xD;
+        return this;
+    }
+
     public CustomNode SetOrigin(float x, float y) => SetOrigin(new(x, y));
 
     public CustomNode SetRotation(float angle, bool deg = false)

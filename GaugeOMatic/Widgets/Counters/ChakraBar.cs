@@ -4,7 +4,6 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -12,10 +11,9 @@ using static GaugeOMatic.Widgets.ChakraBar;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -267,31 +265,24 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     public class ChakraBarConfig : CounterWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1f;
         public float Angle;
         public AddRGB GemColor = new(108, -25, -100);
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
         [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
 
-        public ChakraBarConfig(WidgetConfig widgetConfig)
+        public ChakraBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.ChakraBarCfg)
         {
             var config = widgetConfig.ChakraBarCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
             GemColor = config.GemColor;
             FrameColor = config.FrameColor;
             HideEmpty = config.HideEmpty;
 
             Pulse = config.Pulse;
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
         public ChakraBarConfig() { }
@@ -319,33 +310,31 @@ public sealed unsafe class ChakraBar : CounterWidget
         for (var i = 0; i < Tracker.CurrentData.MaxCount; i++) Pearls[i].SetRotation(-Config.Angle, true);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                ColorPickerRGB("Pearl Color", ref Config.GemColor, ref update);
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGB("Pearl Color", ref Config.GemColor);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;
             case Behavior:
-                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty))
                 {
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ChakraBarCfg = Config;
     }
 

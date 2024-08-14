@@ -13,6 +13,7 @@ public partial class ActionRef
     public static unsafe ActionManager* ActionManager => Instance();
 
     public int GetMaxCharges() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetMaxCharges(GetAdjustedId(), 0);
+    public int GetActionCost() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetActionCost(ActionType.Action, ID,default,default,default,default);
 
     public unsafe int GetCurrentCharges() => (int)ActionManager->GetCurrentCharges(GetAdjustedId());
 
@@ -84,8 +85,9 @@ public partial class ActionRef
             var cooldownCheck = !HasFlag(LongCooldown, exclude: HasCharges) || !(cooldownRemaining > 0);
             var statusCheck = !HasFlag(RequiresStatus) || (ReadyStatus?.TryGetStatus(Self) ?? false);
             var antCheck = !HasFlag(CanGetAnts | ComboBonus) || HasAnts();
+            var mpCheck = !HasFlag(CostsMP) || GetActionCost() < ClientState.LocalPlayer?.CurrentMp;
 
-            state = transformCheck && cooldownCheck && chargeCheck && statusCheck && antCheck ? 1 : 0;
+            state = transformCheck && cooldownCheck && chargeCheck && statusCheck && antCheck && mpCheck ? 1 : 0;
 
             count = maxCount > 1 ? GetCurrentCharges() : state;
         }

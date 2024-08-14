@@ -1,21 +1,20 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BatteryOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -264,14 +263,14 @@ public sealed unsafe class BatteryOverlay : StateWidget
         ElecWrapper2.SetAddRGB(elecColor + new AddRGB(100, 75, -75));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
 
@@ -281,16 +280,16 @@ public sealed unsafe class BatteryOverlay : StateWidget
                     var pulseColor = Config.PulseColors[i];
                     var ringColor = Config.RingColors[i];
                     var elecColor = Config.ElecColors[i];
-                    if (ColorPickerRGB($"Pulse##Color{i}", ref pulseColor, ref update)) Config.PulseColors[i] = pulseColor;
-                    if (ColorPickerRGB($"Ring##Color{i}", ref ringColor, ref update)) Config.RingColors[i] = ringColor;
-                    if (ColorPickerRGB($"Lightning##Color{i}", ref elecColor, ref update)) Config.ElecColors[i] = elecColor;
+                    if (ColorPickerRGB($"Pulse##Color{i}", ref pulseColor)) Config.PulseColors[i] = pulseColor;
+                    if (ColorPickerRGB($"Ring##Color{i}", ref ringColor)) Config.RingColors[i] = ringColor;
+                    if (ColorPickerRGB($"Lightning##Color{i}", ref elecColor)) Config.ElecColors[i] = elecColor;
                 }
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BatteryOverlayCfg = Config;
     }
 

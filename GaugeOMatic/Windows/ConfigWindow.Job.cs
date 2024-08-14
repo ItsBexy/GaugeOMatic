@@ -3,9 +3,9 @@ using GaugeOMatic.JobModules;
 using ImGuiNET;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.ImGuiHelpy;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static ImGuiNET.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
@@ -24,22 +24,22 @@ public partial class ConfigWindow
 
     public static void DrawJobModuleTab(JobModule jobModule)
     {
-        UpdateFlags update = 0;
+        UpdateFlag = 0;
         if (ImGui.BeginTabBar(jobModule.Abbr+"Tabs"))
         {
-            TrackerTab(jobModule, ref update);
-            TweakTab(jobModule, ref update);
+            TrackerTab(jobModule);
+            TweakTab(jobModule);
             ImGui.EndTabBar();
         }
 
-        if (update.HasFlag(Rebuild)) jobModule.RebuildTrackerList();
-        else if (update.HasFlag(Reset)) jobModule.ResetWidgets();
-        else if (update.HasFlag(SoftReset)) jobModule.SoftReset();
+        if (UpdateFlag.HasFlag(Rebuild)) jobModule.RebuildTrackerList();
+        else if (UpdateFlag.HasFlag(Reset)) jobModule.ResetWidgets();
+        else if (UpdateFlag.HasFlag(SoftReset)) jobModule.SoftReset();
 
-        if (update.HasFlag(Save)) jobModule.Save();
+        if (UpdateFlag.HasFlag(Save)) jobModule.Save();
     }
 
-    private static void TweakTab(JobModule jobModule, ref UpdateFlags update)
+    private static void TweakTab(JobModule jobModule)
     {
         if (!ImGui.BeginTabItem($"Tweaks##{jobModule.Abbr}TweaksTab")) return;
 
@@ -50,13 +50,13 @@ public partial class ConfigWindow
             ImGui.TableSetupColumn("Labels",ImGuiTableColumnFlags.WidthFixed);
             ImGui.TableSetupColumn("Options", ImGuiTableColumnFlags.WidthStretch);
 
-            jobModule.TweakUI(ref update);
+            jobModule.TweakUI();
 
             ImGui.EndTable();
         }
     }
 
-    private static void TrackerTab(JobModule jobModule, ref UpdateFlags update)
+    private static void TrackerTab(JobModule jobModule)
     {
         if (!ImGui.BeginTabItem("Trackers")) return;
 
@@ -74,7 +74,7 @@ public partial class ConfigWindow
 
             TableHeadersRowNoHover(new(1));
 
-            foreach (var tracker in jobModule.DrawOrder) DrawTrackerRow(tracker, ref update);
+            foreach (var tracker in jobModule.DrawOrder) DrawTrackerRow(tracker);
 
             ImGui.TableNextRow();
             ImGui.TableNextColumn();

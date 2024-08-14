@@ -15,9 +15,9 @@ using static GaugeOMatic.Widgets.InkSlash;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -301,34 +301,34 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         NumTextNode.SetPos(pos);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
-            case WidgetUiTab.Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 break;
-            case WidgetUiTab.Colors:
-                ColorPickerRGBA("Active Backdrop", ref Config.BackdropColor, ref update);
-                ColorPickerRGBA("Inactive Backdrop", ref Config.BackdropInactive, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-                ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
+            case Colors:
+                ColorPickerRGBA("Active Backdrop", ref Config.BackdropColor);
+                ColorPickerRGBA("Inactive Backdrop", ref Config.BackdropInactive);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
+                ColorPickerRGBA("Tick Color", ref Config.TickColor);
                 break;
-            case WidgetUiTab.Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
                 break;
-            case WidgetUiTab.Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.InkSlashCfg = Config;
     }
 

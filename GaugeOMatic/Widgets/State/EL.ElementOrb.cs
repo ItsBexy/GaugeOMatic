@@ -1,21 +1,20 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.ElementOrb;
 using static GaugeOMatic.Widgets.ElementOrb.ElementOrbConfig.OrbBase;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -241,15 +240,15 @@ public sealed unsafe class ElementOrb : StateWidget
         SetupPulse(Config.GetOrbPulse(state));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Crescent Angle", ref Config.CrescentAngle, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                AngleControls("Crescent Angle", ref Config.CrescentAngle);
                 break;
             case Colors:
 
@@ -261,10 +260,10 @@ public sealed unsafe class ElementOrb : StateWidget
                     var orbMod = Config.OrbModifiers[i];
                     var orbPulse = Config.OrbPulses[i];
                     var haloColor = Config.HaloColors[i];
-                    if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() { Grey, Red, Blue }, new() { "Grey", "Red", "Blue" }, ref update)) Config.BaseColors[i] = baseColor;
-                    if (ColorPickerRGB($"Color Modifier##orbMod{i}", ref orbMod, ref update)) Config.OrbModifiers[i] = orbMod;
-                    if (ColorPickerRGB($"Orb Pulse##orbPulse{i}", ref orbPulse, ref update)) Config.OrbPulses[i] = orbPulse;
-                    if (ColorPickerRGB($"Rim Pulse##rimPulse{i}", ref haloColor, ref update)) Config.HaloColors[i] = haloColor;
+                    if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() { Grey, Red, Blue }, new() { "Grey", "Red", "Blue" })) Config.BaseColors[i] = baseColor;
+                    if (ColorPickerRGB($"Color Modifier##orbMod{i}", ref orbMod)) Config.OrbModifiers[i] = orbMod;
+                    if (ColorPickerRGB($"Orb Pulse##orbPulse{i}", ref orbPulse)) Config.OrbPulses[i] = orbPulse;
+                    if (ColorPickerRGB($"Rim Pulse##rimPulse{i}", ref haloColor)) Config.HaloColors[i] = haloColor;
                 }
                 break;
             default:
@@ -272,7 +271,7 @@ public sealed unsafe class ElementOrb : StateWidget
         }
         Heading("Layout");
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ElementOrbCfg = Config;
     }
 

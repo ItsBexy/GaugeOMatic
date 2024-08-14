@@ -1,20 +1,19 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.OathGem;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -188,24 +187,24 @@ public sealed unsafe class OathGem : StateWidget
         Frame.SetMultiply(Config.FrameColor);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 break;
             case Colors:
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
 
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
                 {
                     Heading(Tracker.StateNames[i]);
 
                     var color = Config.Colors[i];
-                    if (ColorPickerRGB($"Gem Color##gemColor{i}", ref color, ref update))
+                    if (ColorPickerRGB($"Gem Color##gemColor{i}", ref color))
                         Config.Colors[i] = color;
                 }
                 break;
@@ -213,7 +212,7 @@ public sealed unsafe class OathGem : StateWidget
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.OathGemCfg = Config;
     }
 

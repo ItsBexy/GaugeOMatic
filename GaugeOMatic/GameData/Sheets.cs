@@ -18,9 +18,11 @@ internal static class Sheets
     public static ExcelSheet<ClassJobActionUI>? ActionUiSheet { get; } = DataManager.Excel.GetSheet<ClassJobActionUI>("ClassJobActionUI");
     public static ExcelSheet<ActionIndirection>? ActionIndirectionSheet { get; } = DataManager.Excel.GetSheet<ActionIndirection>("ActionIndirection");
 
-    public static Func<Action, bool> ActionFilter = static a => (a.IsPlayerAction || a.ActionProcStatus.Row > 0) && !a.IsPvP && //todo: make sure not to filter out sprint
-                                                                (GetJobByCategory(a.ClassJobCategory.Row) != Job.None ||
-                                                                 GetRoleByCategory(a.ClassJobCategory.Row) != None);
+    public static readonly List<uint> WhiteList = new() { 3 }; // Sprint sure is lonely
+
+    public static Func<Action, bool> ActionFilter = static a => WhiteList.Contains(a.RowId) ||
+                                                                (!a.IsPvP && (a.IsPlayerAction || a.ActionProcStatus.Row > 0) &&
+                                                                 (GetJobByCategory(a.ClassJobCategory.Row) != Job.None || GetRoleByCategory(a.ClassJobCategory.Row) != None));
 
     public static List<MenuOption> AllStatuses { get; } = new(StatusSheet?.Select(static r => (MenuOption)new StatusRef(r.RowId, Job.None, Self, Self, 1, All)) ?? new List<MenuOption>());
 

@@ -1,16 +1,15 @@
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -115,21 +114,21 @@ public sealed unsafe class ParameterGlow : StateWidget
         WidgetContainer.SetPos(barNode.X, barNode.Y);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
-        switch (UiTab) //todo: this is a bit silly, maybe implement a single-tab setup (UiTabOptions = None?)
+        switch (UiTab)
         {
             case Layout:
-                RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, new() { "HP", "MP" }, ref update);
+                RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, new() { "HP", "MP" });
                 break;
             case Colors:
-                ColorPickerRGB("Color", ref Config.Color, ref update);
+                ColorPickerRGB("Color", ref Config.Color);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ParameterGlowCfg = Config;
     }
 

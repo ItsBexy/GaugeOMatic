@@ -3,13 +3,12 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleTimer;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -89,7 +88,7 @@ public sealed class SimpleTimer : GaugeBarWidget
 
     public override void ApplyConfigs() => NumTextNode.ApplyProps(Config.NumTextProps);
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         var numTextProps = Config.NumTextProps;
         switch (UiTab)
@@ -97,30 +96,30 @@ public sealed class SimpleTimer : GaugeBarWidget
             case Text:
                 var label = $"{Tracker.TermGauge} Text";
 
-                PositionControls($"Position##{label}Pos", ref numTextProps.Position, ref update);
-                ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
-                ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
-                ToggleControls("Backdrop", ref numTextProps.ShowBg, ref update);
-                if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor, ref update);
+                PositionControls($"Position##{label}Pos", ref numTextProps.Position);
+                ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color);
+                ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor);
+                ToggleControls("Backdrop", ref numTextProps.ShowBg);
+                if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor);
 
-                ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames, ref update);
+                ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames);
 
-                RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons, ref update);
-                IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1, ref update);
+                RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons);
+                IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1);
 
-                RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update, true);
-                ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
-                ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
+                RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, true);
+                ToggleControls("Invert Value ", ref numTextProps.Invert);
+                ToggleControls("Show Zero ", ref numTextProps.ShowZero);
 
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) Config.NumTextProps = numTextProps;
+        if (UpdateFlag.HasFlag(Save)) Config.NumTextProps = numTextProps;
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.SimpleTimerCfg = Config;
     }
 

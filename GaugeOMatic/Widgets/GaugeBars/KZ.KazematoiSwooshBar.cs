@@ -9,8 +9,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -20,6 +18,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -258,19 +257,6 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
          new(400) { Alpha = 0, ScaleX = 1.6f, ScaleY = 1.8f, Rotation = 0f });
     }
 
-    public override void OnDecreaseToMin()
-    {
-        if (Config.HideEmpty) HideBar();
-    }
-
-    public override void OnIncreaseFromMin()
-    {
-        if (Config.HideEmpty) RevealBar();
-    }
-
-    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
-    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
-
     public override void PreUpdate(float prog, float prevProg)
     {
 
@@ -366,37 +352,36 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         LabelTextNode.ApplyProps(Config.LabelTextProps, new(-43,100));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                ToggleControls("Mirror", ref Config.Mirror, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                AngleControls("Angle", ref Config.Angle);
+                ToggleControls("Mirror", ref Config.Mirror);
                 break;
             case Colors:
-                ColorPickerRGB("Fill Color", ref Config.MainColor, ref update);
-                ColorPickerRGB("Tick Color", ref Config.TickColor, ref update);
-                ColorPickerRGB("Backdrop (Full)", ref Config.BgFullColor, ref update);
-                ColorPickerRGB("Backdrop (Empty)", ref Config.BgEmptyColor, ref update);
+                ColorPickerRGB("Fill Color", ref Config.MainColor);
+                ColorPickerRGB("Tick Color", ref Config.TickColor);
+                ColorPickerRGB("Backdrop (Full)", ref Config.BgFullColor);
+                ColorPickerRGB("Backdrop (Empty)", ref Config.BgEmptyColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls();
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
-                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.KazematoiSwooshBarCfg = Config;
     }
 

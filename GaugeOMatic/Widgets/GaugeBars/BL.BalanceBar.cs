@@ -9,14 +9,13 @@ using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalanceBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -312,41 +311,41 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new Vector2(left ? 32 : 83, 172));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                RadioControls("Side", ref Config.Side, new() { 0u, 1u }, new() { "Left", "Right" }, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                RadioControls("Side", ref Config.Side, new() { 0u, 1u }, new() { "Left", "Right" });
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 0u, 1u }, new() { "Light", "Dark" }, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-                ColorPickerRGB("Flash", ref Config.FlashColor, ref update);
-                ColorPickerRGB("Petal Color", ref Config.PetalColor, ref update);
+                RadioControls("Base Color", ref Config.BaseColor, new() { 0u, 1u }, new() { "Light", "Dark" });
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
+                ColorPickerRGB("Flash", ref Config.FlashColor);
+                ColorPickerRGB("Petal Color", ref Config.PetalColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
                 var petalEffect = new List<bool> { Config.PetalInc, Config.PetalDec };
-                if (ToggleControls("Petal Effect", ref petalEffect, new() { "On Increase", "On Decrease" }, ref update))
+                if (ToggleControls("Petal Effect", ref petalEffect, new() { "On Increase", "On Decrease" }))
                 {
                     Config.PetalInc = petalEffect[0];
                     Config.PetalDec = petalEffect[1];
                 }
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BalanceBarCfg = Config;
     }
 

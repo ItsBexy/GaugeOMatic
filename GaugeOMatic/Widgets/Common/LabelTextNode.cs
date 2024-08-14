@@ -10,7 +10,6 @@ using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
@@ -82,27 +81,27 @@ public struct LabelTextProps
         Align = align;
     }
 
-    public static void LabelTextControls(string label, ref LabelTextProps configVal, string hintText, ref UpdateFlags update)
+    public static void LabelTextControls(string label, ref LabelTextProps configVal, string hintText)
     {
         var labelTextProps = configVal;
 
-        ToggleControls(label, ref labelTextProps.Enabled,ref update);
+        ToggleControls(label, ref labelTextProps.Enabled);
         if (labelTextProps.Enabled)
         {
             var text = labelTextProps.Text;
 
-            if (StringControls("Override Text", ref text, hintText, ref update)) labelTextProps.Text = text;
+            if (StringControls("Override Text", ref text, hintText)) labelTextProps.Text = text;
 
-            PositionControls($"Position##{label}Pos", ref labelTextProps.Position, ref update);
-            ColorPickerRGBA($"Color##{label}color", ref labelTextProps.Color, ref update);
-            ColorPickerRGBA($"Edge Color##{label}edgeColor", ref labelTextProps.EdgeColor, ref update);
+            PositionControls($"Position##{label}Pos", ref labelTextProps.Position);
+            ColorPickerRGBA($"Color##{label}color", ref labelTextProps.Color);
+            ColorPickerRGBA($"Edge Color##{label}edgeColor", ref labelTextProps.EdgeColor);
 
-            ComboControls($"Font##{label}font", ref labelTextProps.Font, FontList, FontNames, ref update);
+            ComboControls($"Font##{label}font", ref labelTextProps.Font, FontList, FontNames);
 
-            RadioIcons($"Alignment##{label}align", ref labelTextProps.Align, AlignList, AlignIcons, ref update);
-            IntControls($"Font Size##{label}fontSize", ref labelTextProps.FontSize, 1, 100, 1, ref update);
+            RadioIcons($"Alignment##{label}align", ref labelTextProps.Align, AlignList, AlignIcons);
+            IntControls($"Font Size##{label}fontSize", ref labelTextProps.FontSize, 1, 100, 1);
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) configVal = labelTextProps;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) configVal = labelTextProps;
     }
 }

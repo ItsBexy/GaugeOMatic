@@ -107,5 +107,7 @@ public partial class ActionRef
 
         if (HasFlag(HasCharges)) ImGui.Text("• At least one charge is available");
         else if (HasFlag(LongCooldown)) ImGui.Text("• This action is off cooldown");
+
+        if (HasFlag(CostsMP)) ImGui.Text($"• Enough MP is available (Current Cost: {GetActionCost()})");
     }
 }

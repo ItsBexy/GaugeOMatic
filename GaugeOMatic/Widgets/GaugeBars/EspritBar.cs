@@ -10,7 +10,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.EspritBar;
@@ -192,12 +191,6 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
-
-    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
-    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
-
     #endregion
 
     #region Configs
@@ -304,44 +297,44 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(100, 62));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Fan Plate", ref Config.ShowPlate, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                RadioIcons("Direction", ref Config.Clockwise, new() { true, false }, new() { RedoAlt, UndoAlt }, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                ToggleControls("Fan Plate", ref Config.ShowPlate);
+                AngleControls("Angle", ref Config.Angle);
+                RadioIcons("Direction", ref Config.Clockwise, new() { true, false }, new() { RedoAlt, UndoAlt });
                 break;
             case Colors:
 
-                ColorPickerRGBA("Backdrop", ref Config.Backdrop, ref update);
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                ColorPickerRGBA("Backdrop", ref Config.Backdrop);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                HideControls(ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls();
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
                 if (Config.MilestoneType > 0)
                 {
-                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2);
                 }
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.EspritBarCfg = Config;
     }
 

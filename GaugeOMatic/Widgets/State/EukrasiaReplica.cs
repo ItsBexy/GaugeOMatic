@@ -1,21 +1,20 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -398,14 +397,14 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Show Nouliths", ref Config.ShowNouliths, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                ToggleControls("Show Nouliths", ref Config.ShowNouliths);
                 break;
             case Colors:
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
@@ -415,9 +414,9 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                     var color = Config.Colors[i];
                     var fxColor = Config.FXColors[i];
                     var noulithColor = Config.NoulithColors[i];
-                    if (ColorPickerRGB($"Color##{i}", ref color, ref update)) Config.Colors[i] = color;
-                    if (ColorPickerRGB($"Pulse##{i}", ref fxColor, ref update)) Config.FXColors[i] = fxColor;
-                    if (Config.ShowNouliths && ColorPickerRGB($"Nouliths##{i}", ref noulithColor, ref update))
+                    if (ColorPickerRGB($"Color##{i}", ref color)) Config.Colors[i] = color;
+                    if (ColorPickerRGB($"Pulse##{i}", ref fxColor)) Config.FXColors[i] = fxColor;
+                    if (Config.ShowNouliths && ColorPickerRGB($"Nouliths##{i}", ref noulithColor))
                         Config.NoulithColors[i] = noulithColor;
                 }
                 break;
@@ -425,7 +424,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.EukrasiaReplicaCfg = Config;
     }
 

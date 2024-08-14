@@ -80,6 +80,7 @@ public abstract partial class Tracker : IDisposable
     public void CreateWindow(Widget widget, Configuration configuration)
     {
         Window = new(this, widget, configuration, $"{DisplayAttr.Name}##{GetHashCode()}");
+        Window.Size = new(300, 600);
         WindowSystem.AddWindow(Window);
     }
 
@@ -131,7 +132,4 @@ public abstract partial class Tracker : IDisposable
 
         return tracker;
     }
-
-    [Flags]
-    public enum UpdateFlags { Save = 0x1, Reset = 0x2, SoftReset = 0x4, Rebuild = 0x8 }
 }

@@ -1,8 +1,8 @@
 using System.Numerics;
-using static System.IO.Path;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.CustomPartsList;
 using static GaugeOMatic.GaugeOMatic;
+using static System.IO.Path;
 
 // ReSharper disable UnusedMember.Global
 

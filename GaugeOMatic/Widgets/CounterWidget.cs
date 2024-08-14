@@ -2,26 +2,21 @@ using CustomNodes;
 using GaugeOMatic.Trackers;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
 
 namespace GaugeOMatic.Widgets;
 
-public abstract class CounterWidgetConfig : WidgetTypeConfig
-{
-    public enum CounterPulse { Never, Always, AtMax }
-
-    public bool AsTimer;
-    public bool InvertTimer;
-    [DefaultValue(10)] public int TimerSize = 10;
-}
-
 [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
+[SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
 [SuppressMessage("ReSharper", "UnusedParameter.Global")]
 public abstract class CounterWidget : Widget
 {
+    protected CounterWidget(Tracker tracker) : base(tracker) { }
+
     public abstract CounterWidgetConfig GetConfig { get; }
 
     public virtual void OnFirstRun(int count, int max) { }
@@ -116,16 +111,52 @@ public abstract class CounterWidget : Widget
         PostUpdate(current);
     }
 
-    protected CounterWidget(Tracker tracker) : base(tracker) { }
-
-    public void CounterAsTimerControls(ref bool useAsTimer, ref bool invertTimer, ref int timerSize, string term, ref UpdateFlags update)
+    public void CounterAsTimerControls(string term)
     {
         if (term == "Cooldown") term = "Timer";
 
-        if (ToggleControls($"Use as {term}", ref useAsTimer, ref update)) SizeChange();
-        if (!useAsTimer) return;
+        if (ToggleControls($"Use as {term}", ref GetConfig.AsTimer)) SizeChange();
+        if (!GetConfig.AsTimer) return;
 
-        if (ToggleControls($"Invert {term}", ref invertTimer, ref update)) FirstRun = true;
-        if (IntControls($"{term} Size", ref timerSize, 1, 30, 1, ref update)) SizeChange();
+        if (ToggleControls($"Invert {term}", ref GetConfig.InvertTimer)) FirstRun = true;
+        if (IntControls($"{term} Size", ref GetConfig.TimerSize, 1, 60, 1)) SizeChange();
     }
+
+    public override void DrawUI(ref WidgetConfig widgetConfig)
+    {
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref GetConfig.Position);
+                ScaleControls("Scale", ref GetConfig.Scale);
+                break;
+            case Behavior:
+                CounterAsTimerControls(Tracker.TermGauge);
+                break;
+        }
+    }
+}
+
+public abstract class CounterWidgetConfig : WidgetTypeConfig
+{
+    public enum CounterPulse { Never, Always, AtMax }
+
+    public Vector2 Position;
+    [DefaultValue(1f)] public float Scale = 1;
+    public bool AsTimer;
+    public bool InvertTimer;
+    [DefaultValue(10)] public int TimerSize = 10;
+
+    protected CounterWidgetConfig(CounterWidgetConfig? config)
+    {
+        if (config == null) return;
+        Position = config.Position;
+        Scale = config.Scale;
+
+        AsTimer = config.AsTimer;
+        InvertTimer = config.InvertTimer;
+        TimerSize = config.TimerSize;
+    }
+
+    protected CounterWidgetConfig() { }
 }

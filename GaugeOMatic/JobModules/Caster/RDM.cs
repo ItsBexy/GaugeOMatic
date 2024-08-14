@@ -10,7 +10,6 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -42,11 +41,11 @@ public class RDMModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Balance Gauge");
-        ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0, ref update);
-        ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue, ref update);
+        ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0);
+        ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue);
         Info("Cues the gauge to become highlighted after pressing\nManification and gaining the Magicked Swordplay buff");
     }
 

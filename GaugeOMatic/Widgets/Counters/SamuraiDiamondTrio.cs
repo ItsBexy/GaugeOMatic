@@ -2,6 +2,7 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
@@ -10,14 +11,13 @@ using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.CustomPartsList;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.GaugeOMatic;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.SamuraiDiamondTrio;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.IO.Path;
 
@@ -58,9 +58,9 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
         Stacks = BuildStacks();
 
-        Plate = ImageNodeFromPart(0, 10).SetScale(Max>=3?1:0);
+        Plate = ImageNodeFromPart(0, 10).SetScale(Max>=3?1:0).SetOrigin(51,0);
 
-        return new CustomNode(CreateResNode(),Plate,new CustomNode(CreateResNode(), Stacks.ToArray())).SetOrigin(51, 31);
+        return new CustomNode(CreateResNode(),Plate,new CustomNode(CreateResNode(), Stacks.ToArray())).SetOrigin(51, 31).SetSize(102,62);
     }
 
     private List<CustomNode> BuildStacks()
@@ -78,7 +78,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
             Frames.Add(ImageNodeFromPart(1, 0).SetSize(32,32)
                                               .SetImageWrap(2)
                                               .SetPos(-4,-6)
-                                              .SetAlpha(Max < 3 || i > 2));
+                                              .SetOrigin(16,0));
 
             Gems.Add(ImageNodeFromPart(0, 11).SetOrigin(12, 10));
 
@@ -209,30 +209,29 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
     public class SamuraiDiamondConfig : CounterWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB? GemColor = null; // deprecated
         public AddRGB GemTint = new(9, -47, -91);
         public ColorRGB PlateTint = new(100);
+        public bool HidePlate;
+        public bool MirrorPlate;
+        public int PlatePos;
         public bool HideEmpty;
         [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
 
-        public SamuraiDiamondConfig(WidgetConfig widgetConfig)
+        public SamuraiDiamondConfig(WidgetConfig widgetConfig) : base(widgetConfig.SamuraiDiamondCfg)
         {
             var config = widgetConfig.SamuraiDiamondCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             PlateTint = config.PlateTint;
+            PlatePos = config.PlatePos;
+            HidePlate = config.HidePlate;
+            MirrorPlate = config.MirrorPlate;
             HideEmpty = config.HideEmpty;
             GemTint = config.GemColor == null ? config.GemTint : config.GemColor.Value - GemTintOffset;
 
             Pulse = config.Pulse;
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
         public SamuraiDiamondConfig() { }
@@ -249,13 +248,30 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     private static AddRGB GemTintOffset = new(-9, 47, 91);
     public override void ApplyConfigs()
     {
+        if (Max >= 5)
+        {
+            Config.PlatePos = Math.Clamp(Config.PlatePos, 0, Max - 4 + (Max % 2));
+            Config.PlatePos -= Config.PlatePos % 2;
+        }
+        else
+        {
+            Config.PlatePos = 0;
+        }
+
+
         WidgetContainer.SetPos(Config.Position);
         WidgetContainer.SetScale(Config.Scale);
-        Plate.SetMultiply(Config.PlateTint);
+        Plate.SetMultiply(Config.PlateTint)
+             .SetScaleX(Config.MirrorPlate?-1:1)
+             .SetX(Config.PlatePos * 23f)
+             .SetAlpha(!Config.HidePlate);
 
         for (var i = 0; i < Max; i++)
         {
-            Frames[i].SetMultiply(Config.PlateTint);
+            Frames[i].SetMultiply(Config.PlateTint)
+                     .SetAlpha(Config.HidePlate || Max < 3 || i < Config.PlatePos || i > Config.PlatePos + 2)
+                     .SetScaleX(Config.MirrorPlate?-1:1);
+
             Gems[i].SetAddRGB(Config.GemTint + GemTintOffset);
             Glows[i].SetAddRGB(Config.GemTint + GemTintOffset);
             Glows2[i].SetAddRGB(Config.GemTint + GemTintOffset);
@@ -263,32 +279,42 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+                if (Max >= 3)
+                {
+                    ToggleControls("Hide Plate", ref Config.HidePlate);
+
+                    if (!Config.HidePlate)
+                    {
+                        ToggleControls("Mirror Plate", ref Config.MirrorPlate);
+                        if (Max >= 5) IntControls("Plate Position", ref Config.PlatePos, 0, Max - 3, 2);
+                    }
+                }
+
+
                 break;
             case Colors:
-                ColorPickerRGB("Gem Color", ref Config.GemTint, ref update);
-                ColorPickerRGB("Plate Tint", ref Config.PlateTint, ref update);
+                ColorPickerRGB("Gem Color", ref Config.GemTint);
+                ColorPickerRGB("Plate Tint", ref Config.PlateTint);
                 break;
             case Behavior:
-                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty))
                 {
                     if (Config.HideEmpty && Tracker.CurrentData.Count == 0) PlateVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.SamuraiDiamondCfg = Config;
     }
 

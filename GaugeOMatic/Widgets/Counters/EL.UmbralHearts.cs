@@ -13,16 +13,14 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.UmbralHearts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class UmbralHearts : CounterWidget
+public sealed unsafe class UmbralHearts : FreeGemCounter
 {
     public UmbralHearts(Tracker tracker) : base(tracker) { }
 
@@ -42,10 +40,9 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     #region Nodes
 
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> Hearts = new();
-    public List<CustomNode> GlowWrappers = new();
-    public List<CustomNode> Glows = new();
+    public List<CustomNode> Hearts;
+    public List<CustomNode> GlowWrappers;
+    public List<CustomNode> Glows;
 
     public override CustomNode BuildContainer()
     {
@@ -127,40 +124,30 @@ public sealed unsafe class UmbralHearts : CounterWidget
 
     #region Configs
 
-    public class UmbralHeartConfig : CounterWidgetConfig
+    public class UmbralHeartConfig : FreeGemCounterConfig
     {
-        public Vector2 Position;
-        public float Scale = 1;
         public AddRGB StackColor = new(0);
         public AddRGB GlowColor = new(0);
-        public float Spacing = -16.5f;
-        public float Angle = -126;
-        public float Curve = -20;
 
-        public UmbralHeartConfig(WidgetConfig widgetConfig)
+        public UmbralHeartConfig(WidgetConfig widgetConfig) : base(widgetConfig.UmbralHeartCfg)
         {
             var config = widgetConfig.UmbralHeartCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             StackColor = config.StackColor;
-
             GlowColor = config.GlowColor;
-            Spacing = config.Spacing;
-            Angle = config.Angle;
-            Curve = config.Curve;
-
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
-        public UmbralHeartConfig() { }
+        public UmbralHeartConfig()
+        {
+            Spacing = -16.5f;
+            Angle = -126f;
+            Curve = -20f;
+        }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public UmbralHeartConfig Config;
 
@@ -171,52 +158,37 @@ public sealed unsafe class UmbralHearts : CounterWidget
     public override void ApplyConfigs()
     {
 
-        var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetContainer.SetPos(Config.Position+new Vector2(19, 22))
-                  .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle, true);
+        WidgetContainer.SetPos(Config.Position + new Vector2(19, 22))
+                       .SetScale(Config.Scale);
 
-        var posAngle = 0f;
-        double x = 0;
-        double y = 0;
+        PlaceFreeGems();
+
         for (var i = 0; i < Stacks.Count; i++)
         {
             Hearts[i].SetAddRGB(Config.StackColor);
             GlowWrappers[i].SetAddRGB(Config.GlowColor);
-            var gemAngle = Config.Curve * (i - 0.5f);
-
-            Stacks[i].SetPos((float)x, (float)y)
-                     .SetRotation(gemAngle, true);
-
-            x += Cos(posAngle * (PI / 180)) * Config.Spacing;
-            y += Sin(posAngle * (PI / 180)) * Config.Spacing;
-            posAngle += Config.Curve;
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override string StackTerm => "Heart";
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                AngleControls("Curve", ref Config.Curve, ref update, true);
                 break;
             case Colors:
-                ColorPickerRGB("Color Modifier", ref Config.StackColor, ref update);
-                ColorPickerRGB("Glow Color", ref Config.GlowColor, ref update);
+                ColorPickerRGB("Color Modifier", ref Config.StackColor);
+                ColorPickerRGB("Glow Color", ref Config.GlowColor);
                 break;
             case Behavior:
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.UmbralHeartCfg = Config;
     }
 

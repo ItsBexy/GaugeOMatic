@@ -56,6 +56,7 @@ public class TrackerDisplayAttribute : Attribute
     }
 
     public static implicit operator TrackerDisplayAttribute(ItemRef i) => new(i);
+    public static implicit operator TrackerDisplayAttribute(ActionRef a) => new(a);
 
     public void DrawTooltip() => DrawTooltip(GameIcon, Name, BarDesc, CounterDesc, StateDesc, Footer);
 

@@ -1,9 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
 using ImGuiNET;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 
 namespace GaugeOMatic.Windows.Dropdowns;
 
@@ -41,11 +43,11 @@ public class WidgetDropdown : BranchingDropdown
         };
     }
 
-    public override void DrawSubMenu(int i, ref Tracker.UpdateFlags update)
+    public override void DrawSubMenu(int i)
     {
         var (label, tag) = SubMenus[i];
 
-        if (tag == WidgetTags.MultiComponent) MultiCompSubMenu(label, tag, ref update);
+        if (tag == WidgetTags.MultiComponent) MultiCompSubMenu(label, tag);
         else
         {
             if (ImGui.BeginMenu($"{label}##{Hash}{label}Menu"))
@@ -56,7 +58,7 @@ public class WidgetDropdown : BranchingDropdown
                 foreach (var w in widgets.Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
                 {
                     Tracker.WidgetType = w.Key;
-                    update |= Tracker.UpdateFlags.Reset | Tracker.UpdateFlags.Save;
+                    UpdateFlag |= Reset | Save;
                 }
 
                 ImGui.EndMenu();
@@ -64,7 +66,7 @@ public class WidgetDropdown : BranchingDropdown
         }
     }
 
-    public void MultiCompSubMenu(string label, WidgetTags tag, ref Tracker.UpdateFlags update)
+    public void MultiCompSubMenu(string label, WidgetTags tag)
     {
         if (ImGui.BeginMenu($"{label}##{Hash}{label}Menu"))
         {
@@ -79,7 +81,7 @@ public class WidgetDropdown : BranchingDropdown
                                                .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
                     {
                         Tracker.WidgetType = w.Key;
-                        update |= Tracker.UpdateFlags.Reset | Tracker.UpdateFlags.Save;
+                        UpdateFlag |= Reset | Save;
                     }
 
                     ImGui.EndMenu();

@@ -61,12 +61,13 @@ public partial class ActionRef : ItemRef
             SetFlag(ComboBonus, ExcelRow.ActionCombo.Row > 0);
             SetFlag(Unassignable, !ExcelRow.IsPlayerAction);
             SetFlag(CanGetAnts, AntActions.Contains(ID));
-
-            if (HiddenActions.Contains(ID)) HideFromDropdown = true;
+            SetFlag(CostsMP, ExcelRow.PrimaryCostType == 3 && ExcelRow.PrimaryCostValue > 0);
 
             CheckForUpgrades();
             CheckTransformations();
             CheckStatusEffects();
+
+            if (ActionOverrideFuncs.ContainsKey(ID)) ActionOverrideFuncs[ID].Invoke(this);
         }
         else
         {
@@ -158,6 +159,13 @@ public partial class ActionRef : ItemRef
         if (ActionSheet != null)
             foreach (var a in ActionSheet.Where(ActionFilter))
                 ActionData.TryAdd(a.RowId, new(a.RowId));
+
+        HideUntrackableActions();
+    }
+
+    private static void HideUntrackableActions() //todo: put together a list of actions that are marked as untrackable and see which ones we can handle somehow
+    {
+        foreach (var a in ActionData.Where(static a => HiddenActions.Contains(a.Key) || !a.Value.HasFlag(Trackable))) a.Value.HideFromDropdown = true;
     }
 }
 
@@ -165,7 +173,7 @@ public partial class ActionRef : ItemRef
 public enum ActionFlags
 {
     None = 0,
-    Upgrade = 0b1,
+    Upgrade = 0x1,
     HasCharges = 0x2,
     LongCooldown = 0x4,
     RequiresStatus = 0x8,
@@ -173,5 +181,7 @@ public enum ActionFlags
     TransformedButton = 0x20,
     Unassignable = 0x40,
     CanGetAnts = 0x80,
-    RoleAction = 0x100
+    CostsMP = 0x100,
+    RoleAction = 0x200,
+    Trackable = 0x1FE // has at least one condition that makes its ready state trackable
 }

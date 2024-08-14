@@ -13,7 +13,6 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
@@ -50,19 +49,19 @@ public class VPRModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Vipersight");
-        ToggleControls("Hide Vipersight", ref TweakConfigs.VPRHide0, ref update);
+        ToggleControls("Hide Vipersight", ref TweakConfigs.VPRHide0);
         if (!TweakConfigs.VPRHide0)
         {
-            ToggleControls("Mirror Highlights", ref TweakConfigs.VPR0Mirror, ref update);
+            ToggleControls("Mirror Highlights", ref TweakConfigs.VPR0Mirror);
             Info("Reverses the left/right position of the gauge highlights.\n" +
                  "Useful if you keep your Steel Fangs button on the right-hand side.");
 
             LabelColumn("Color-Code Highlights");
 
-            if (ImGui.Checkbox("##BoolColor-Code Vipersight", ref TweakConfigs.VPR0ColorCode)) update |= UpdateFlags.Save;
+            if (ImGui.Checkbox("##BoolColor-Code Vipersight", ref TweakConfigs.VPR0ColorCode)) UpdateFlag |= UpdateFlags.Save;
             Info("Changes the gauge's highlight color to indicate your next positional.");
 
             if (TweakConfigs.VPR0ColorCode)
@@ -73,21 +72,21 @@ public class VPRModule : JobModule
                 if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview))
                 {
                     TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
-                    update |= UpdateFlags.Save;
+                    UpdateFlag |= UpdateFlags.Save;
                 }
 
-                RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, new() { false, true }, new() { "3rd Step Only", "All Steps" }, ref update, true);
+                RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, new() { false, true }, new() { "3rd Step Only", "All Steps" }, true);
 
-                if (ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank, ref update)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
-                if (ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear, ref update)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
-                if (ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral, ref update)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
+                if (ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
+                if (ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
+                if (ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
             }
         }
 
         Heading("Serpent Offerings Gauge");
-        ToggleControls("Hide Serpent Offerings Gauge", ref TweakConfigs.VPRHide1, ref update);
+        ToggleControls("Hide Serpent Offerings Gauge", ref TweakConfigs.VPRHide1);
 
-        ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue, ref update);
+        ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue);
         Info("Cues the gauge to become highlighted after pressing\nSerpent's Ire and gaining Ready to Reawaken");
     }
 

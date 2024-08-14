@@ -7,6 +7,8 @@ using System.Linq;
 using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.ParamRef;
 using static GaugeOMatic.GameData.StatusRef;
+using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static System.StringComparison;
 
 namespace GaugeOMatic.Windows.Dropdowns;
@@ -79,7 +81,7 @@ public class TrackerDropdown : BranchingDropdown
     public static string StatusSearchString = "";
     public static string ActionSearchString = "";
 
-    public override void DrawSubMenu(int i, ref Tracker.UpdateFlags update)
+    public override void DrawSubMenu(int i)
     {
         var (label, options) = SubMenus[i];
         if (!options.Any()) return;
@@ -110,7 +112,7 @@ public class TrackerDropdown : BranchingDropdown
             {
                 Tracker.TrackerConfig.ItemId = o.ItemId;
                 Tracker.TrackerConfig.TrackerType = o.TrackerType;
-                update |= Tracker.UpdateFlags.Reset | Tracker.UpdateFlags.Save | Tracker.UpdateFlags.Rebuild;
+                UpdateFlag |= Reset | Save | Rebuild;
             }
 
             if (ImGui.IsItemHovered()) o.DisplayAttr.DrawTooltip(o.TrackerType, o.ItemId);

@@ -3,7 +3,6 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -14,16 +13,14 @@ using static GaugeOMatic.Widgets.ElementalCrystals;
 using static GaugeOMatic.Widgets.ElementalCrystals.ElementalCrystalConfig.BaseColors;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class ElementalCrystals : CounterWidget
+public sealed unsafe class ElementalCrystals : FreeGemCounter
 {
     public ElementalCrystals(Tracker tracker) : base(tracker) { }
 
@@ -43,11 +40,10 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     #region Nodes
 
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> StackContents = new();
-    public List<CustomNode> Crystals = new();
-    public List<CustomNode> Glows1 = new();
-    public List<CustomNode> Glows2 = new();
+    public List<CustomNode> StackContents;
+    public List<CustomNode> Crystals;
+    public List<CustomNode> Glows1;
+    public List<CustomNode> Glows2;
 
     public override CustomNode BuildContainer()
     {
@@ -132,44 +128,35 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     #region Configs
 
-    public class ElementalCrystalConfig : CounterWidgetConfig
+    public class ElementalCrystalConfig : FreeGemCounterConfig
     {
         public enum BaseColors { Ice = 3, Fire = 4 }
 
-        public Vector2 Position = new(19, 22);
-        [DefaultValue(1f)] public float Scale = 1;
         public BaseColors BaseColor = Ice;
         public AddRGB CrystalColor = new(0);
         public AddRGB GlowColor = new(0);
-        [DefaultValue(20f)] public float Spacing = 20;
-        public float Angle = -62;
-        public float Curve = 18;
 
-        public ElementalCrystalConfig(WidgetConfig widgetConfig)
+        public ElementalCrystalConfig(WidgetConfig widgetConfig) : base(widgetConfig.ElementalCrystalCfg)
         {
             var config = widgetConfig.ElementalCrystalCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             CrystalColor = config.CrystalColor;
 
             BaseColor = config.BaseColor;
             GlowColor = config.GlowColor;
-            Spacing = config.Spacing;
-            Angle = config.Angle;
-            Curve = config.Curve;
-
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
-        public ElementalCrystalConfig() { }
+        public ElementalCrystalConfig()
+        {
+            Angle = -62;
+            Curve = 18;
+            Position = new(19, 22);
+        }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public ElementalCrystalConfig Config;
 
@@ -179,59 +166,45 @@ public sealed unsafe class ElementalCrystals : CounterWidget
 
     public override void ApplyConfigs()
     {
+        WidgetContainer.SetPos(Config.Position + new Vector2(19, 22))
+                       .SetScale(Config.Scale);
 
-        var widgetAngle = Config.Angle+(Config.Curve/2f);
-        WidgetContainer.SetPos(Config.Position+new Vector2(19, 22))
-                  .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle, true);
+        PlaceFreeGems();
 
-        var posAngle = 0f;
-        double x = 0;
-        double y = 0;
         for (var i = 0; i < Stacks.Count; i++)
         {
-            Crystals[i].SetPartId((ushort)Config.BaseColor);
-            Glows1[i].SetPartId((ushort)(Config.BaseColor + 3));
-            Glows2[i].SetPartId((ushort)(Config.BaseColor + 3));
+            Crystals[i].SetPartId((ushort)Config.BaseColor)
+                       .SetAddRGB(Config.CrystalColor);
 
-            var gemAngle = Config.Curve * (i - 0.5f);
+            Glows1[i].SetPartId((ushort)(Config.BaseColor + 3))
+                     .SetAddRGB(Config.GlowColor);
 
-            Stacks[i].SetPos((float)x, (float)y)
-                     .SetRotation(gemAngle, true);
-
-            Crystals[i].SetAddRGB(Config.CrystalColor);
-            Glows1[i].SetAddRGB(Config.GlowColor);
-            Glows2[i].SetAddRGB(Config.GlowColor);
-            x += Cos(posAngle * (PI / 180)) * Config.Spacing;
-            y += Sin(posAngle * (PI / 180)) * Config.Spacing;
-            posAngle += Config.Curve;
+            Glows2[i].SetPartId((ushort)(Config.BaseColor + 3))
+                     .SetAddRGB(Config.GlowColor);
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override string StackTerm => "Crystal";
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
+
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                AngleControls("Curve", ref Config.Curve, ref update, true);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, ref update, true);
-                ColorPickerRGB("Color Modifier", ref Config.CrystalColor, ref update);
-                ColorPickerRGB("Glow Color", ref Config.GlowColor, ref update);
+                RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, true);
+                ColorPickerRGB("Color Modifier", ref Config.CrystalColor);
+                ColorPickerRGB("Glow Color", ref Config.GlowColor);
                 break;
             case Behavior:
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.ElementalCrystalCfg = Config;
     }
 

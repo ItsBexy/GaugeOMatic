@@ -8,7 +8,6 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -41,22 +40,22 @@ public class PCTModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Palette Gauge");
-        ToggleControls("Hide Palette Gauge", ref TweakConfigs.PCTHide1, ref update);
+        ToggleControls("Hide Palette Gauge", ref TweakConfigs.PCTHide1);
 
         Heading("Canvases");
-        ToggleControls("Hide Canvases", ref TweakConfigs.PCTHide0, ref update);
+        ToggleControls("Hide Canvases", ref TweakConfigs.PCTHide0);
 
         if (!TweakConfigs.PCTHide0)
         {
-            ToggleControls("Hide Easels", ref TweakConfigs.PCTHide0Easels, ref update);
+            ToggleControls("Hide Easels", ref TweakConfigs.PCTHide0Easels);
 
             Heading("Reposition Canvases");
-            PositionControls("Creature", ref TweakConfigs.PCT0CanvasPosCreature, ref update);
-            PositionControls("Weapon", ref TweakConfigs.PCT0CanvasPosWeapon, ref update);
-            PositionControls("Landscape", ref TweakConfigs.PCT0CanvasPosLandscape, ref update);
+            PositionControls("Creature", ref TweakConfigs.PCT0CanvasPosCreature);
+            PositionControls("Weapon", ref TweakConfigs.PCT0CanvasPosWeapon);
+            PositionControls("Landscape", ref TweakConfigs.PCT0CanvasPosLandscape);
         }
     }
 

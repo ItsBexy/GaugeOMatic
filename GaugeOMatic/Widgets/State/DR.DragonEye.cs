@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonEye;
@@ -15,6 +13,7 @@ using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig;
 using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig.EyeState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 // ReSharper disable All
@@ -403,15 +402,15 @@ public sealed unsafe class DragonEye : StateWidget
                   .SetScale(Config.Mirror ? -Config.Scale : Config.Scale, Config.Scale);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
 
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Mirror", ref Config.Mirror, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                ToggleControls("Mirror", ref Config.Mirror);
                 break;
             case Behavior:
                 var maxState = Tracker.CurrentData.MaxState;
@@ -420,14 +419,14 @@ public sealed unsafe class DragonEye : StateWidget
                 {
                     var label = $"{Tracker.StateNames[i]}";
                     var eyeState = Config.EyeStates[i];
-                    if (RadioControls($"{label}##appearance{i}", ref eyeState, EyeStateList, EyeStateNames, ref update)) Config.EyeStates[i] = eyeState;
+                    if (RadioControls($"{label}##appearance{i}", ref eyeState, EyeStateList, EyeStateNames)) Config.EyeStates[i] = eyeState;
                 }
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.DragonEyeCfg = Config;
     }
 

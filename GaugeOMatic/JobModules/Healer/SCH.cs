@@ -10,7 +10,6 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
@@ -43,18 +42,18 @@ public class SCHModule : JobModule
         Configuration.Save();
     }
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Aetherflow Gauge");
-        ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SCHHide0, ref update);
+        ToggleControls("Hide Aetherflow Gauge", ref TweakConfigs.SCHHide0);
 
         Heading("Faerie Gauge");
-        ToggleControls("Hide Faerie Gauge", ref TweakConfigs.SCHHide1, ref update);
+        ToggleControls("Hide Faerie Gauge", ref TweakConfigs.SCHHide1);
 
         if (!TweakConfigs.SCHHide1)
             RadioControls("While Faerieless: ", ref TweakConfigs.SCH1FaerieLess,
                           new() { 0, 1, 2 },
-                          new() { "Show Gauge Value", "Hide Gauge Value", "Show Dissipation Timer" }, ref update);
+                          new() { "Show Gauge Value", "Hide Gauge Value", "Show Dissipation Timer" });
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

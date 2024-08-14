@@ -7,14 +7,13 @@ using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.NinkiOverlay;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -189,29 +188,29 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 break;
             case Colors:
-                ColorPickerRGBA("Scroll Color", ref Config.ScrollColor, ref update);
-                ColorPickerRGBA("Tick Color", ref Config.TickColor, ref update);
+                ColorPickerRGBA("Scroll Color", ref Config.ScrollColor);
+                ColorPickerRGBA("Tick Color", ref Config.TickColor);
                 break;
             case Behavior:
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                ToggleControls("Invert Fill", ref Config.Invert);
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.NinkiOverlayCfg = Config;
     }
 

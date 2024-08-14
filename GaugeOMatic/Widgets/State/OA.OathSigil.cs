@@ -1,19 +1,18 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Numerics;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.OathSigil;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -207,17 +206,17 @@ public sealed unsafe class OathSigil : StateWidget
         WingR.SetVis(Config.IncludeWings);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Show Wings", ref Config.IncludeWings, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                ToggleControls("Show Wings", ref Config.IncludeWings);
                 break;
             case Colors:
-                RadioControls("Blend Mode", ref Config.BlendMode, new() { 0, 32 }, new() { "Normal", "Dodge" }, ref update, true);
+                RadioControls("Blend Mode", ref Config.BlendMode, new() { 0, 32 }, new() { "Normal", "Dodge" }, true);
 
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
                 {
@@ -225,8 +224,8 @@ public sealed unsafe class OathSigil : StateWidget
 
                     var sigilColor = Config.SigilColors[i];
                     var wingColor = Config.WingColors[i];
-                    if (ColorPickerRGB($"Sigil Color##sigilColor{i}", ref sigilColor, ref update)) Config.SigilColors[i] = sigilColor;
-                    if (Config.IncludeWings && ColorPickerRGB($"Wing Tint##wingColor{i}", ref wingColor, ref update)) Config.WingColors[i] = wingColor;
+                    if (ColorPickerRGB($"Sigil Color##sigilColor{i}", ref sigilColor)) Config.SigilColors[i] = sigilColor;
+                    if (Config.IncludeWings && ColorPickerRGB($"Wing Tint##wingColor{i}", ref wingColor)) Config.WingColors[i] = wingColor;
                 }
 
                 break;
@@ -234,7 +233,7 @@ public sealed unsafe class OathSigil : StateWidget
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.OathSigilCfg = Config;
     }
 

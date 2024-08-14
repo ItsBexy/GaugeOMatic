@@ -79,6 +79,18 @@ public unsafe partial class CustomNode
         set => SetScale(value);
     }
 
+    public float OriginX
+    {
+        get => Node->OriginX;
+        set => SetOriginX(value);
+    }
+
+    public float OriginY
+    {
+        get => Node->OriginY;
+        set => SetOriginY(value);
+    }
+
     public Vector2 Origin
     {
         get => new(Node->OriginX, Node->OriginY);

@@ -4,26 +4,25 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.PolyglotGem;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
-public sealed unsafe class PolyglotGem : CounterWidget
+public sealed unsafe class PolyglotGem : FreeGemCounter
 {
     public PolyglotGem(Tracker tracker) : base(tracker) { }
 
@@ -43,12 +42,11 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
     #region Nodes
 
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> Frames = new();
-    public List<CustomNode> GemContainers = new();
-    public List<CustomNode> Gems = new();
-    public List<CustomNode> Glows1 = new();
-    public List<CustomNode> Glows2 = new();
+    public List<CustomNode> Frames;
+    public List<CustomNode> GemContainers;
+    public List<CustomNode> Gems;
+    public List<CustomNode> Glows1;
+    public List<CustomNode> Glows2;
 
     public override CustomNode BuildContainer()
     {
@@ -77,7 +75,7 @@ public sealed unsafe class PolyglotGem : CounterWidget
         for (var i = 0; i < count; i++)
         {
             Frames.Add(ImageNodeFromPart(0, 19).SetOrigin(27.5f, 41.5f));
-            Gems.Add(ImageNodeFromPart(0, 13).SetPos(12, 18).SetOrigin(15, 23).SetAlpha(0));
+            Gems.Add(ImageNodeFromPart(0, 13).SetPos(12, 18).SetOrigin(16, 23.5f).SetAlpha(0));
             Glows1.Add(BuildGlowNode());
             Glows2.Add(BuildGlowNode());
 
@@ -221,46 +219,35 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
     #region Configs
 
-    public class PolyglotGemConfig : CounterWidgetConfig
+    public class PolyglotGemConfig : FreeGemCounterConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB GemColor = new(27, -78, 50);
         public AddRGB GlowColor = new(76, -128, 127);
-        [DefaultValue(26f)] public float Spacing = 26;
-        public float Angle;
-        public float Curve;
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
         [DefaultValue(Always)] public CounterPulse Pulse = Always;
 
-        public PolyglotGemConfig(WidgetConfig widgetConfig)
+        public PolyglotGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.PolyglotGemCfg)
         {
             var config = widgetConfig.PolyglotGemCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             GemColor = config.GemColor;
             GlowColor = config.GlowColor;
-
-            Spacing = config.Spacing;
-            Angle = config.Angle;
-            Curve = config.Curve;
             FrameColor = config.FrameColor;
             HideEmpty = config.HideEmpty;
 
             Pulse = config.Pulse;
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
-        public PolyglotGemConfig() { }
+        public PolyglotGemConfig()
+        {
+            Spacing = 26;
+        }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public PolyglotGemConfig Config;
 
@@ -270,26 +257,18 @@ public sealed unsafe class PolyglotGem : CounterWidget
 
     public override void ApplyConfigs()
     {
-        var widgetAngle = Config.Angle + (Config.Curve / 2f);
         WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale)
-                  .SetRotation(widgetAngle, true);
+                       .SetScale(Config.Scale);
+
+        PlaceFreeGems();
 
         var gemColorOffset = new AddRGB(-27, 78, -50);
         var glowColorOffset = new AddRGB(-76, 128, -127);
-        var posAngle = 0f;
-        double x = 0;
-        double y = 0;
         for (var i = 0; i < Stacks.Count; i++)
         {
             Frames[i].SetMultiply(Config.FrameColor);
 
-            var gemAngle = Config.Curve * (i - 0.5f);
-            while (gemAngle + widgetAngle > 180) gemAngle -= 360;
-            while (gemAngle + widgetAngle < -180) gemAngle += 360;
-
-
-            var combinedAngle = gemAngle + widgetAngle;
+            var combinedAngle = Degrees(Stacks[i].Rotation + WidgetContainer.Rotation);
 
             Frames[i].SetScaleY(Abs(combinedAngle) > 90 ? -1 : 1);
 
@@ -299,48 +278,35 @@ public sealed unsafe class PolyglotGem : CounterWidget
             Gems[i].SetScale(scaleX, scaleY).SetAddRGB(gemColorOffset + Config.GemColor);
             Glows1[i].SetAddRGB(glowColorOffset + Config.GlowColor);
             Glows2[i].SetAddRGB(glowColorOffset + Config.GlowColor);
-
-            Stacks[i].SetPos((float)x, (float)y)
-                     .SetRotation(gemAngle, true);
-
-            x += Cos(posAngle * (PI / 180)) * Config.Spacing;
-            y += Sin(posAngle * (PI / 180)) * Config.Spacing;
-            posAngle += Config.Curve;
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                AngleControls("Curve", ref Config.Curve, ref update, true);
                 break;
             case Colors:
-                ColorPickerRGB("Gem Color", ref Config.GemColor, ref update);
-                ColorPickerRGB("Glow Color", ref Config.GlowColor, ref update);
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                ColorPickerRGB("Gem Color", ref Config.GemColor);
+                ColorPickerRGB("Glow Color", ref Config.GlowColor);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;
             case Behavior:
-                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty))
                 {
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
                 }
 
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" }, ref update);
-
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
+                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.PolyglotGemCfg = Config;
     }
 

@@ -10,8 +10,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonSpear;
@@ -19,6 +17,7 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -189,12 +188,6 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
-
-    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
-    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
-
     protected override void StartMilestoneAnim()
     {
         Animator -= "BarPulse";
@@ -339,52 +332,50 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         HandleMilestone(CalcProg(), true);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                ToggleControls("Show Dragon", ref Config.ShowDragon, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                ToggleControls("Show Dragon", ref Config.ShowDragon);
                 break;
             case Colors:
                 if (Config.ShowDragon)
                 {
-                    ColorPickerRGBA("Backdrop", ref Config.DragonBg, ref update);
-                    ColorPickerRGBA("Line Art", ref Config.DragonLineArt, ref update);
+                    ColorPickerRGBA("Backdrop", ref Config.DragonBg);
+                    ColorPickerRGBA("Line Art", ref Config.DragonLineArt);
                 }
 
-                ColorPickerRGBA("Bar Backdrop", ref Config.BarBg, ref update);
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                ColorPickerRGBA("Bar Backdrop", ref Config.BarBg);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls("Collapse Empty", "Collapse Full");
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
 
                 if (Config.MilestoneType > 0)
                 {
-                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2);
 
-                    if (Config.ShowDragon) ColorPickerRGB(" ##Pulse3", ref Config.PulseColor3, ref update);
+                    if (Config.ShowDragon) ColorPickerRGB(" ##Pulse3", ref Config.PulseColor3);
                 }
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.DragonSpearCfg = Config;
     }
 

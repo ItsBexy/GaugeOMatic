@@ -7,9 +7,8 @@ using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BatteryReplica;
 using static GaugeOMatic.Widgets.Common.CommonParts;
@@ -17,6 +16,7 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -87,6 +87,18 @@ public unsafe class BatteryReplica : GaugeBarWidget
     #endregion
 
     #region Animations
+
+    public override void HideBar(bool instant = false)
+    {
+        Animator -= "Fade";
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+    }
+
+    public override void RevealBar(bool instant = false)
+    {
+        Animator -= "Fade";
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+    }
 
     public virtual KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 20 }, new(1) { Width = Config.Width }};
 
@@ -284,44 +296,46 @@ public unsafe class BatteryReplica : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width+6, 74));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Width", ref Config.Width, 148, 1000, 1, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                FloatControls("Width", ref Config.Width, 148, 1000, 1);
+                AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 11, 12 }, new() { "Blue", "Orange" }, ref update, true);
+                RadioControls("Base Color", ref Config.BaseColor, new() { 11, 12 }, new() { "Blue", "Orange" }, true);
 
                 if (Config.BaseColor == 12)
                 {
-                    ColorPickerRGBA("Main Bar", ref Config.MainColorOrange, ref update);
-                    ColorPickerRGBA("Gain", ref Config.GainColorOrange, ref update);
-                    ColorPickerRGBA("Drain", ref Config.DrainColorOrange, ref update);
+                    ColorPickerRGBA("Main Bar", ref Config.MainColorOrange);
+                    ColorPickerRGBA("Gain", ref Config.GainColorOrange);
+                    ColorPickerRGBA("Drain", ref Config.DrainColorOrange);
                 }
                 else
                 {
-                    ColorPickerRGBA("Main Bar", ref Config.MainColorBlue, ref update);
-                    ColorPickerRGBA("Gain", ref Config.GainColorBlue, ref update);
-                    ColorPickerRGBA("Drain", ref Config.DrainColorBlue, ref update);
+                    ColorPickerRGBA("Main Bar", ref Config.MainColorBlue);
+                    ColorPickerRGBA("Gain", ref Config.GainColorBlue);
+                    ColorPickerRGBA("Drain", ref Config.DrainColorBlue);
                 }
                 break;
             case Behavior:
-                //todo: maybe implement Hide Controls?
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls();
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.BatteryReplicaCfg = Config;
     }
 

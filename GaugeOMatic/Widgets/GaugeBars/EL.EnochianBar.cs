@@ -9,7 +9,6 @@ using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -17,6 +16,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -246,8 +246,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             HandOnTop = config.HandOnTop;
 
             LabelText = config.LabelText;
-
-            HideFull = false; //todo: maybe implement later but ugh
         }
 
         public EnochianBarConfig() { }
@@ -300,34 +298,33 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 .SetRotation(angle, true);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt }, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                AngleControls("Angle", ref Config.Angle);
+                RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt });
 
-                if (ToggleControls("Force Clock Hand To Top", ref Config.HandOnTop, ref update)) update |= UpdateFlags.Reset;
+                if (ToggleControls("Force Clock Hand To Top", ref Config.HandOnTop)) UpdateFlag |= Reset;
                 Info("Attempts to force the clock hand to the top layer, above other widgets.\n\nNOTE: Can be finicky, may not always work.");
 
                 break;
             case Colors:
-                ColorPickerRGB("Plate Tint", ref Config.PlateColor, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
+                ColorPickerRGB("Plate Tint", ref Config.PlateColor);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Turn Smoothly", ref Config.Smooth, ref update);
-
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Turn Smoothly", ref Config.Smooth);
+                ToggleControls("Invert Fill", ref Config.Invert);
 
                 var emptyBehavior = new List<bool> { Config.DimEmpty, Config.HideEmpty, Config.HideHand };
-                if (ToggleControls("When Empty", ref emptyBehavior, new() { "Dim Bar", "Hide Bar", "Hide Clock Hand" }, ref update))
+                if (ToggleControls("When Empty", ref emptyBehavior, new() { "Dim Bar", "Hide Bar", "Hide Clock Hand" }))
                 {
                     if (Config.HideEmpty != emptyBehavior[1]) HideCheck(emptyBehavior[1]);
                     if (Config.DimEmpty != emptyBehavior[0]) DimCheck(emptyBehavior[0]);
@@ -338,13 +335,13 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 }
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.EnochianBarCfg = Config;
     }
 

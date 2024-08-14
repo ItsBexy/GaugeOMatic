@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
@@ -31,7 +30,7 @@ public class BLUModule : JobModule
 
     public override List<MenuOption> JobGaugeMenu { get; } = new();
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
 
     }

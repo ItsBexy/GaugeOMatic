@@ -7,14 +7,16 @@ using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
+using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
+using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.NinkiReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 
 #pragma warning disable CS8618
 
@@ -120,6 +122,18 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     #region Animations
 
+    public override void HideBar(bool instant = false)
+    {
+        Animator -= "Fade";
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+    }
+
+    public override void RevealBar(bool instant = false)
+    {
+        Animator -= "Fade";
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+    }
+
     private KeyFrame[] HTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Max(0.001f, Config.Midpoint)) { Width = 175 }, new(1) { Width = 175 }};
     private KeyFrame[] VTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Min(0.999f, Config.Midpoint)) { Width = 0 }, new(1) { Width = 57 }};
 
@@ -208,8 +222,6 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         var prog = current / max;
         var prevProg = previous / max;
 
-        var spend = prevProg - prog >= 0.1f;
-
         if (FirstRun)
         {
             MainH.SetProgress(prog);
@@ -228,21 +240,36 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         GaugeBarH.SetAddRGB(pastMid ? Config.BarColorHigh - Config.BarColorLow : new(0, 0, 0));
 
         if (pastMid && prevProg < Config.Midpoint) MidpointAnim();
-        if (spend || (prog < Config.Midpoint && prevProg >= Config.Midpoint)) OnSpend();
-        if (prog - prevProg >= 0.049f) OnGain();
-        if (prog >= 1f && prevProg < 1f) OnReachMax();
-        else if (prog < 1f) OnDropFromMax();
+
+        if (prog > prevProg)
+        {
+            if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
+            if (prog > 0 && prevProg <= 0) OnIncreaseFromMin();
+            if (prog >= 1 && prevProg < 1) OnIncreaseToMax();
+        }
+        else if (prevProg > prog)
+        {
+            if (prevProg - prog >= DrainTolerance || (prog < Config.Midpoint && prevProg >= Config.Midpoint)) OnDecrease(prog, prevProg);
+            if (prevProg >= 1 && prog < 1) OnDecreaseFromMax();
+            if (prevProg > 0 && prog <= 0) OnDecreaseToMin();
+        }
 
         Animator.RunTweens();
     }
 
-    public void OnGain() => GainAnim();
-    public void OnSpend() => SpendAnim();
-    public void OnReachMax() => GaugeFullAnim();
-    public void OnDropFromMax()
+    public override void OnIncrease(float prog, float prevProg) => GainAnim();
+    public override void OnDecrease(float prog, float prevProg) => SpendAnim();
+    public override void OnIncreaseToMax()
+    {
+        GaugeFullAnim();
+        base.OnIncreaseToMax();
+    }
+
+    public override void OnDecreaseFromMax()
     {
         Animator -= GaugeBarV;
         GaugeBarV.SetAddRGB(0).SetMultiply(new ColorRGB(100, 100, 100));
+        base.OnDecreaseFromMax();
     }
 
     #endregion
@@ -333,41 +360,42 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(229, 83));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
-            case WidgetUiTab.Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
                 break;
-            case WidgetUiTab.Colors:
+            case Colors:
                 Heading("Horizontal Section");
 
-                ColorPickerRGB("Main Bar (Low)", ref Config.BarColorLow, ref update);
-                ColorPickerRGB("Main Bar (High)", ref Config.BarColorHigh, ref update);
-                ColorPickerRGB("Gain", ref Config.GainColorH, ref update);
-                ColorPickerRGB("Border Glow", ref Config.BorderGlow, ref update);
-                ColorPickerRGB("Flash Effects##flash1", ref Config.FlashH, ref update);
-                ColorPickerRGB("##flash2", ref Config.FlashH2, ref update);
+                ColorPickerRGB("Main Bar (Low)", ref Config.BarColorLow);
+                ColorPickerRGB("Main Bar (High)", ref Config.BarColorHigh);
+                ColorPickerRGB("Gain", ref Config.GainColorH);
+                ColorPickerRGB("Border Glow", ref Config.BorderGlow);
+                ColorPickerRGB("Flash Effects##flash1", ref Config.FlashH);
+                ColorPickerRGB("##flash2", ref Config.FlashH2);
 
                 Heading("Vertical Section");
-                ColorPickerRGB("Bar Color", ref Config.BarColorHigh2, ref update);
-                ColorPickerRGB("Gain Color", ref Config.GainColorV, ref update);
-                ColorPickerRGB("Drain Color", ref Config.DrainColorV, ref update);
+                ColorPickerRGB("Bar Color", ref Config.BarColorHigh2);
+                ColorPickerRGB("Gain Color", ref Config.GainColorV);
+                ColorPickerRGB("Drain Color", ref Config.DrainColorV);
                 break;
-            case WidgetUiTab.Behavior:
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                PercentControls("Midpoint", ref Config.Midpoint, ref update);
+            case Behavior:
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls();
+                PercentControls("Midpoint", ref Config.Midpoint);
                 break;
-            case WidgetUiTab.Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update);
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.NinkiReplicaCfg = Config;
     }
 

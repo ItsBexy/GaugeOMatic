@@ -12,7 +12,6 @@ using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
@@ -44,13 +43,13 @@ public class NINModule : JobModule
         Configuration.Save();
     }
 
-    public override unsafe void TweakUI(ref UpdateFlags update)
+    public override unsafe void TweakUI()
     {
         Heading("Ninki Gauge");
-        ToggleControls("Hide Ninki Gauge", ref TweakConfigs.NINHide0, ref update);
+        ToggleControls("Hide Ninki Gauge", ref TweakConfigs.NINHide0);
 
         LabelColumn("Higi Indicator");
-        if (ImGui.Checkbox("##BoolChange color under Higi", ref TweakConfigs.NIN0HigiRecolor)) update |= UpdateFlags.Save;
+        if (ImGui.Checkbox("##BoolChange color under Higi", ref TweakConfigs.NIN0HigiRecolor)) UpdateFlag |= UpdateFlags.Save;
         if (TweakConfigs.NIN0HigiRecolor)
         {
             Info("Changes the color of the gauge while the Higi buff is active.");
@@ -58,23 +57,23 @@ public class NINModule : JobModule
             ImGui.SameLine();
             ImGui.Text("Test");
             ImGui.SameLine();
-            if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview)) update |= UpdateFlags.Save;
+            if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview)) UpdateFlag |= UpdateFlags.Save;
 
             var gauge0 = (AddonJobHudNIN0*)GameGui.GetAddonByName("JobHudNIN0");
             if (gauge0 != null && gauge0->UseSimpleGauge)
             {
-                ColorPickerRGB("Fill Color", ref TweakConfigs.NIN0HigiColor3, ref update);
-                ColorPickerRGB("Frame Tint", ref TweakConfigs.NIN0HigiColor4, ref update);
+                ColorPickerRGB("Fill Color", ref TweakConfigs.NIN0HigiColor3);
+                ColorPickerRGB("Frame Tint", ref TweakConfigs.NIN0HigiColor4);
             }
             else
             {
-                ColorPickerRGB("Glow Color", ref TweakConfigs.NIN0HigiColor1, ref update);
-                ColorPickerRGB("Scroll Tint", ref TweakConfigs.NIN0HigiColor2, ref update);
+                ColorPickerRGB("Glow Color", ref TweakConfigs.NIN0HigiColor1);
+                ColorPickerRGB("Scroll Tint", ref TweakConfigs.NIN0HigiColor2);
             }
         }
 
         Heading("Kazematoi");
-        ToggleControls("Hide Kazematoi", ref TweakConfigs.NINHide1, ref update);
+        ToggleControls("Hide Kazematoi", ref TweakConfigs.NINHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

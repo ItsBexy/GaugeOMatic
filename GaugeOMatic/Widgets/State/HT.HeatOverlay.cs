@@ -1,20 +1,19 @@
+using CustomNodes;
+using GaugeOMatic.CustomNodes.Animation;
+using GaugeOMatic.Trackers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
-using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
-using GaugeOMatic.Trackers;
-using Newtonsoft.Json;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.HeatOverlay;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
@@ -235,29 +234,29 @@ public sealed unsafe class HeatOverlay : StateWidget
             .SetAddRGB(color + ColorOffset);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Width", ref Config.Width, 70, 1000, 1, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                FloatControls("Width", ref Config.Width, 70, 1000, 1);
+                AngleControls("Angle", ref Config.Angle);
 
                 break;
             case Colors:
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
                 {
                     var color = Config.Colors[i];
-                    if (ColorPickerRGB($"{Tracker.StateNames[i]}##Color{i}", ref color, ref update)) Config.Colors[i] = color;
+                    if (ColorPickerRGB($"{Tracker.StateNames[i]}##Color{i}", ref color)) Config.Colors[i] = color;
                 }
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.HeatOverlayCfg = Config;
     }
 

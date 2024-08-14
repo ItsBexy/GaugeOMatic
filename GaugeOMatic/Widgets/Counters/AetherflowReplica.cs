@@ -3,17 +3,15 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AetherflowReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -203,31 +201,23 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public class AetherflowReplicaConfig : CounterWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(1)] public int BaseColor = 1;
         public AddRGB ColorModifier = new(0);
         public float Angle;
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
 
-        public AetherflowReplicaConfig(WidgetConfig widgetConfig)
+        public AetherflowReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.AetherflowReplicaCfg)
         {
             var config = widgetConfig.AetherflowReplicaCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             BaseColor = config.BaseColor;
             ColorModifier = config.ColorModifier;
             Angle = config.Angle;
             FrameColor = config.FrameColor;
             HideEmpty = config.HideEmpty;
-
-            AsTimer = config.AsTimer;
-            TimerSize = config.TimerSize;
-            InvertTimer = config.InvertTimer;
         }
 
         public AetherflowReplicaConfig() { }
@@ -260,33 +250,31 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
+        base.DrawUI(ref widgetConfig);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
+                AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 1, 0 }, new() { "Pink", "Green" }, ref update);
-                ColorPickerRGB("Color Modifier", ref Config.ColorModifier, ref update);
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
+                RadioControls("Base Color", ref Config.BaseColor, new() { 1, 0 }, new() { "Pink", "Green" });
+                ColorPickerRGB("Color Modifier", ref Config.ColorModifier);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;
             case Behavior:
-                if (ToggleControls("Hide Empty", ref Config.HideEmpty, ref update))
+                if (ToggleControls("Hide Empty", ref Config.HideEmpty))
                 {
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
                 }
-                CounterAsTimerControls(ref Config.AsTimer, ref Config.InvertTimer, ref Config.TimerSize, Tracker.TermGauge, ref update);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
         widgetConfig.AetherflowReplicaCfg = Config;
     }
 

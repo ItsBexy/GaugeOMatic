@@ -10,11 +10,10 @@ using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Trackers.Tracker;
-using static GaugeOMatic.Trackers.Tracker.UpdateFlags;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static Newtonsoft.Json.DefaultValueHandling;
 
 namespace GaugeOMatic.Widgets;
@@ -160,29 +159,29 @@ public struct NumTextProps
         Align = Center;
     }
 
-    public static void NumTextControls(string label, ref NumTextProps configVal, ref UpdateFlags update, bool separatorAfter = false)
+    public static void NumTextControls(string label, ref NumTextProps configVal, bool separatorAfter = false)
     {
         var numTextProps = configVal;
-        ToggleControls(label, ref numTextProps.Enabled, ref update);
+        ToggleControls(label, ref numTextProps.Enabled);
 
         if (numTextProps.Enabled)
         {
-            PositionControls("Position", ref numTextProps.Position, ref update);
-            ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color, ref update);
-            ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor, ref update);
-            ToggleControls("Backdrop", ref numTextProps.ShowBg, ref update);
-            if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor, ref update);
+            PositionControls("Position", ref numTextProps.Position);
+            ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color);
+            ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor);
+            ToggleControls("Backdrop", ref numTextProps.ShowBg);
+            if (numTextProps.ShowBg) ColorPickerRGBA($"Backdrop Color##{label}bgColor", ref numTextProps.BgColor);
 
-            ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames, ref update);
-            RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons, ref update);
-            IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1, ref update);
+            ComboControls($"Font##{label}font", ref numTextProps.Font, FontList, FontNames);
+            RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons);
+            IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1);
 
-            RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, ref update, true);
-            ToggleControls("Invert Value ", ref numTextProps.Invert, ref update);
-            ToggleControls("Show Zero ", ref numTextProps.ShowZero, ref update);
+            RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, true);
+            ToggleControls("Invert Value ", ref numTextProps.Invert);
+            ToggleControls("Show Zero ", ref numTextProps.ShowZero);
             if (separatorAfter) ImGuiHelpy.TableSeparator(2);
         }
 
-        if (update.HasFlag(Save)) configVal = numTextProps;
+        if (UpdateFlag.HasFlag(Save)) configVal = numTextProps;
     }
 }

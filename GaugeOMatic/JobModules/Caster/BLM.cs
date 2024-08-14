@@ -1,16 +1,15 @@
 using CustomNodes;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
@@ -48,11 +47,11 @@ public class BLMModule : JobModule
         new("Astral Soul Stacks", nameof(AstralSoulTracker))
     };
 
-    public override void TweakUI(ref UpdateFlags update)
+    public override void TweakUI()
     {
         Heading("Elemental Gauge");
-        ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHide0, ref update);
-        ToggleControls("Color MP bar by element", ref TweakConfigs.BLM0MpColor, ref update);
+        ToggleControls("Hide Elemental Gauge", ref TweakConfigs.BLMHide0);
+        ToggleControls("Color MP bar by element", ref TweakConfigs.BLM0MpColor);
         if (TweakConfigs.BLM0MpColor)
         {
             Info("Changes the color of the MP bar to match your current element"); ImGui.SameLine();
@@ -61,16 +60,16 @@ public class BLMModule : JobModule
             if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview))
             {
                 TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
-                update |= UpdateFlags.Save;
+                UpdateFlag |= UpdateFlags.Save;
             }
-            if (ColorPickerRGB("Astral Fire", ref TweakConfigs.BLM0MpFire, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
-            if (ColorPickerRGB("Umbral Ice", ref TweakConfigs.BLM0MpIce, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpIce;
-            if (ColorPickerRGB("None", ref TweakConfigs.BLM0MpNone, ref update) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpNone;
+            if (ColorPickerRGB("Astral Fire", ref TweakConfigs.BLM0MpFire) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpFire;
+            if (ColorPickerRGB("Umbral Ice", ref TweakConfigs.BLM0MpIce) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpIce;
+            if (ColorPickerRGB("None", ref TweakConfigs.BLM0MpNone) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.BLM0MpNone;
 
         }
 
         Heading("Astral Gauge");
-        ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1, ref update);
+        ToggleControls("Hide Astral Gauge", ref TweakConfigs.BLMHide1);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

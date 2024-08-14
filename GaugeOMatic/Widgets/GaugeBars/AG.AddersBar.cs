@@ -13,7 +13,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -21,8 +20,8 @@ using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static System.Math;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static System.Math;
 
 #pragma warning disable CS8618
 
@@ -246,11 +245,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
-
-    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
-    public override void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
+    public override void OnIncreaseToMax() { if (GetConfig.HideFull) HideBar(); }
 
     public override void PostUpdate(float prog)
     {
@@ -412,49 +407,49 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width / 2) + 88, 11.5f));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
-                ToggleControls("Backplate", ref Config.ShowPlate, ref update);
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1);
+                AngleControls("Angle", ref Config.Angle);
+                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
+                ToggleControls("Backplate", ref Config.ShowPlate);
                 if (Config.ShowPlate) Config.Width = Max(Config.Width, 144);
                 break;
             case Colors:
 
-                ColorPickerRGBA("Backdrop", ref Config.BGColor, ref update);
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-                ColorPickerRGBA("Main Bar", ref Config.MainColor, ref update);
-                ColorPickerRGBA("Gain", ref Config.GainColor, ref update);
-                ColorPickerRGBA("Drain", ref Config.DrainColor, ref update);
-                ColorPickerRGB("Sparkles", ref Config.SparkleColor, ref update);
+                ColorPickerRGBA("Backdrop", ref Config.BGColor);
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
+                ColorPickerRGBA("Main Bar", ref Config.MainColor);
+                ColorPickerRGBA("Gain", ref Config.GainColor);
+                ColorPickerRGBA("Drain", ref Config.DrainColor);
+                ColorPickerRGB("Sparkles", ref Config.SparkleColor);
                 break;
             case Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls("Collapse Empty", "Collapse Full");
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
                 if (Config.MilestoneType > 0)
                 {
-                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor, ref update);
-                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2, ref update);
-                    ColorPickerRGB(" ##Pulse3", ref Config.PulseSparkles, ref update);
+                    ColorPickerRGB("Pulse Colors", ref Config.PulseColor);
+                    ColorPickerRGB(" ##Pulse2", ref Config.PulseColor2);
+                    ColorPickerRGB(" ##Pulse3", ref Config.PulseSparkles);
                 }
                 break;
             case Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
-                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.AddersBarCfg = Config;
     }
 

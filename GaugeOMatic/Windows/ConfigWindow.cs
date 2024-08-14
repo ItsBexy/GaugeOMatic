@@ -173,4 +173,5 @@ public partial class ConfigWindow : Window, IDisposable
 
     internal static Vector2 ConfigWindowSize;
     internal static Vector2 ConfigWindowPos;
+
 }

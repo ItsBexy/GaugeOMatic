@@ -12,7 +12,6 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
-using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -22,6 +21,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SoulBar;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -124,6 +124,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public override void HideBar(bool instant = false)
     {
+        TickMark.SetAlpha(0);
         Animator -= "Expand";
         var bgWidth = Config.Width + 2;
         var frameWidth = Config.Width + 10;
@@ -217,35 +218,6 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnDecreaseToMin()
-    {
-        TickMark.SetAlpha(0);
-        if (Config.HideEmpty) HideBar();
-    }
-
-    public override void OnIncreaseFromMin()
-    {
-        TickMark.SetAlpha(255);
-        if (Config.HideEmpty) RevealBar();
-    }
-
-    public override void OnIncreaseToMax() {
-        TickMark.SetAlpha(0);
-        if (Config.HideFull) HideBar();
-    }
-
-    public override void OnDecreaseFromMax()
-    {
-        TickMark.SetAlpha(255);
-        if (Config.HideFull) RevealBar();
-    }
-
-    public override void OnFirstRun(float prog)
-    {
-        TickMark.SetAlpha(prog > 0);
-        base.OnFirstRun(prog);
-    }
-
     protected override void StartMilestoneAnim()
     {
         Animator -= "BarPulse";
@@ -281,7 +253,8 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Main.SetAddRGB(red ? Config.MainColorRed + new AddRGB(-57, 115, 96) : Config.MainColorTeal + new AddRGB(128, -74, -71));
     }
 
-    public override void PlaceTickMark(float prog) => TickMark.SetX(Main.Width + prog + 1);
+    public override void PlaceTickMark(float prog) => TickMark.SetX(Main.Width + prog + 1)
+                                                              .SetAlpha(prog > 0 && prog < Tracker.CurrentData.MaxGauge);
 
     public override void PostUpdate(float prog)
     {
@@ -438,67 +411,67 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public float MidMarkerX() => (((Config.Mirror ? 1 - Config.Milestone : Config.Milestone) - 0.5f) * Config.Width) - 4;
 
-    public override void DrawUI(ref WidgetConfig widgetConfig, ref UpdateFlags update)
+    public override void DrawUI(ref WidgetConfig widgetConfig)
     {
         switch (UiTab)
         {
-            case WidgetUiTab.Layout:
-                PositionControls("Position", ref Config.Position, ref update);
-                ScaleControls("Scale", ref Config.Scale, ref update);
-                FloatControls("Width", ref Config.Width, 28, 180, 1, ref update);
-                AngleControls("Angle", ref Config.Angle, ref update);
-                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons, ref update);
+            case Layout:
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                FloatControls("Width", ref Config.Width, 28, 180, 1);
+                AngleControls("Angle", ref Config.Angle);
+                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
                 break;
-            case WidgetUiTab.Colors:
-                ColorPickerRGB("Frame Tint", ref Config.FrameColor, ref update);
-                RadioControls("Base Texture", ref Config.BaseColor, new() { 0, 1 }, new() { "Red", "Teal" }, ref update, true);
+            case Colors:
+                ColorPickerRGB("Frame Tint", ref Config.FrameColor);
+                RadioControls("Base Texture", ref Config.BaseColor, new() { 0, 1 }, new() { "Red", "Teal" }, true);
                 switch (Config.BaseColor)
                 {
                     case 0:
-                        ColorPickerRGBA("Main Bar", ref Config.MainColorRed, ref update);
-                        ColorPickerRGBA("Gain", ref Config.GainColorRed, ref update);
-                        ColorPickerRGBA("Drain", ref Config.DrainColorRed, ref update);
-                        ColorPickerRGBA("Tick", ref Config.TickRed, ref update);
+                        ColorPickerRGBA("Main Bar", ref Config.MainColorRed);
+                        ColorPickerRGBA("Gain", ref Config.GainColorRed);
+                        ColorPickerRGBA("Drain", ref Config.DrainColorRed);
+                        ColorPickerRGBA("Tick", ref Config.TickRed);
                         break;
                     default:
-                        ColorPickerRGBA("Main Bar", ref Config.MainColorTeal, ref update);
-                        ColorPickerRGBA("Gain", ref Config.GainColorTeal, ref update);
-                        ColorPickerRGBA("Drain", ref Config.DrainColorTeal, ref update);
-                        ColorPickerRGBA("Tick", ref Config.TickTeal, ref update);
+                        ColorPickerRGBA("Main Bar", ref Config.MainColorTeal);
+                        ColorPickerRGBA("Gain", ref Config.GainColorTeal);
+                        ColorPickerRGBA("Drain", ref Config.DrainColorTeal);
+                        ColorPickerRGBA("Tick", ref Config.TickTeal);
                         break;
                 }
                 break;
-            case WidgetUiTab.Behavior:
-                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount, ref update);
-                ToggleControls("Invert Fill", ref Config.Invert, ref update);
-                HideControls("Collapse Empty", "Collapse Full", ref Config.HideEmpty, ref Config.HideFull, EmptyCheck, FullCheck, ref update);
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, ref update);
+            case Behavior:
+                SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
+                ToggleControls("Invert Fill", ref Config.Invert);
+                HideControls("Collapse Empty", "Collapse Full");
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
                 if (Config.MilestoneType > 0)
                 {
                     switch (Config.BaseColor)
                     {
                         case 0:
-                            ColorPickerRGBA("Pulse Colors##Pulse1", ref Config.Pulse1Red, ref update);
-                            ColorPickerRGBA(" ##Pulse2", ref Config.Pulse2Red, ref update);
-                            ColorPickerRGBA(" ##Pulse3", ref Config.GlowRed, ref update);
+                            ColorPickerRGBA("Pulse Colors##Pulse1", ref Config.Pulse1Red);
+                            ColorPickerRGBA(" ##Pulse2", ref Config.Pulse2Red);
+                            ColorPickerRGBA(" ##Pulse3", ref Config.GlowRed);
                             break;
                         default:
-                            ColorPickerRGBA("Pulse Colors##Pulse1", ref Config.Pulse1Teal, ref update);
-                            ColorPickerRGBA(" ##Pulse2", ref Config.Pulse2Teal, ref update);
-                            ColorPickerRGBA(" ##Pulse3", ref Config.GlowTeal, ref update);
+                            ColorPickerRGBA("Pulse Colors##Pulse1", ref Config.Pulse1Teal);
+                            ColorPickerRGBA(" ##Pulse2", ref Config.Pulse2Teal);
+                            ColorPickerRGBA(" ##Pulse3", ref Config.GlowTeal);
                             break;
                     }
                 }
                 break;
-            case WidgetUiTab.Text:
-                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, ref update, true);
-                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name, ref update);
+            case Text:
+                NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps, true);
+                LabelTextControls("Label Text", ref Config.LabelTextProps, Tracker.DisplayAttr.Name);
                 break;
             default:
                 break;
         }
 
-        if (update.HasFlag(UpdateFlags.Save)) ApplyConfigs();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
         widgetConfig.SoulBarCfg = Config;
     }
 
