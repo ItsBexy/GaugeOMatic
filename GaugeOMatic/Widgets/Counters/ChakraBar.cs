@@ -14,6 +14,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
@@ -65,17 +66,17 @@ public sealed unsafe class ChakraBar : CounterWidget
     public override CustomNode BuildContainer()
     {
         Max = GetMax();
-        SocketPlate = BuildSocketPlate(Max, out var size).SetOrigin(size / 2, 29);
+        SocketPlate = BuildSocketPlate(Max, out var width).SetOrigin(width / 2, 29);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2, 29);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(width/2, 29).SetSize(width,58);
     }
 
-    private CustomNode BuildSocketPlate(int count, out int size)
+    private CustomNode BuildSocketPlate(int count, out int width)
     {
         if (count == 1)
         {
-            size = 88;
+            width = 88;
             return new(CreateResNode(),
                        ImageNodeFromPart(0, 3).SetPos(0, 0),
                        ImageNodeFromPart(0, 4).SetPos(44, 0));
@@ -90,7 +91,7 @@ public sealed unsafe class ChakraBar : CounterWidget
             x += i == 0 || i == count - 1 ? 62 : 36;
         }
 
-        size = x;
+        width = x;
         return new(CreateResNode(), socketNodes);
     }
 
@@ -288,9 +289,8 @@ public sealed unsafe class ChakraBar : CounterWidget
         public ChakraBarConfig() { }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
-
     public ChakraBarConfig Config;
+    public override CounterWidgetConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -310,9 +310,9 @@ public sealed unsafe class ChakraBar : CounterWidget
         for (var i = 0; i < Tracker.CurrentData.MaxCount; i++) Pearls[i].SetRotation(-Config.Angle, true);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -334,9 +334,14 @@ public sealed unsafe class ChakraBar : CounterWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ChakraBarCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 }

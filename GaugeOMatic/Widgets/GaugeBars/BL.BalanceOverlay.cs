@@ -2,8 +2,8 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
-using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
@@ -169,8 +169,6 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public sealed class BalanceOverlayConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB Color = "0xAF4A5A6B";
         public AddRGB TickColor = "0xD9462BD3";
 
@@ -180,8 +178,6 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Color = config.Color;
             TickColor = config.TickColor;
         }
@@ -189,8 +185,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         public BalanceOverlayConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
     public BalanceOverlayConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -207,7 +203,7 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -230,9 +226,14 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BalanceOverlayCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Plate;
 
     #endregion
 }

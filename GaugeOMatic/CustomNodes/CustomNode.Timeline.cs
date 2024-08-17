@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GaugeOMatic.CustomNodes.Animation;
 using System.Linq;
 
@@ -48,4 +49,13 @@ public partial class CustomNode
     }
 
     public static implicit operator Tween(CustomNode n) => new(n, new(0) { TimelineProg = 0 }, new(n.Timeline?.Length ?? 1) { TimelineProg = 1 });
+
+    public IEnumerable<CustomNode> GetDescendants()
+    {
+        var descendants = Children.ToList();
+
+        foreach (var node in descendants) descendants = descendants.Concat(node.GetDescendants()).ToList();
+
+        return descendants.Distinct().ToList();
+    }
 }

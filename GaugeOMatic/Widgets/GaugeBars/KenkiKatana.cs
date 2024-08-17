@@ -2,8 +2,8 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
-using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -198,8 +198,6 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
 
     public sealed class KenkiKatanaConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
         public bool Mirror;
 
@@ -231,8 +229,6 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
             Mirror = config.Mirror;
 
@@ -255,9 +251,8 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
         }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public KenkiKatanaConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -298,7 +293,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps,new(75,24));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -336,9 +331,14 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
         }
 
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.KenkiKatanaCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new(Blade, Hilt, Tassel);
 
     #endregion
 }

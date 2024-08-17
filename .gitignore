@@ -16,3 +16,5 @@ bin/
 /GaugeOMatic/Widgets/Counters/KZ.KazematoiKunai.cs
 /GaugeOMatic/Widgets/State/ShimmerHaloV2.cs
 /GaugeOMatic/Windows/ConfigWindow.Settings.cs
+/GaugeOMatic/CustomNodes/CustomNode.Bounds.Triangle.cs
+/GaugeOMatic/CustomNodes/CustomNode.Bounds.Concave.cs

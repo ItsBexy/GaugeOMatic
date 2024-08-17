@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
@@ -53,25 +54,25 @@ public sealed unsafe class DragonScales : CounterWidget
     public override CustomNode BuildContainer()
     {
         Max = GetMax();
-        Frame = BuildFrame(Max, out var size);
+        Frame = BuildFrame(Max, out var width);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(),Frame,StackContainer).SetOrigin(size/2,21);
+        return new CustomNode(CreateResNode(),Frame,StackContainer).SetOrigin(width/2,21).SetSize(width,42);
     }
 
 
-    public CustomNode BuildFrame(int count, out int size)
+    public CustomNode BuildFrame(int count, out int width)
     {
         var frameNodes = new List<CustomNode> { ImageNodeFromPart(0, 23) };
 
-        size = 21;
+        width = 21;
         for (var i=0;i<count-1;i++)
         {
-            frameNodes.Add(ImageNodeFromPart(0,24).SetX(size));
-            size += 24;
+            frameNodes.Add(ImageNodeFromPart(0,24).SetX(width));
+            width += 24;
         }
-        frameNodes.Add(ImageNodeFromPart(0,25).SetX(size));
-        size += 25;
+        frameNodes.Add(ImageNodeFromPart(0,25).SetX(width));
+        width += 25;
 
         return new(CreateResNode(),frameNodes.ToArray());
     }
@@ -277,9 +278,8 @@ public sealed unsafe class DragonScales : CounterWidget
         public DragonScalesConfig() { }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
-
     public DragonScalesConfig Config;
+    public override CounterWidgetConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -295,9 +295,9 @@ public sealed unsafe class DragonScales : CounterWidget
         StackContainer.SetAddRGB(Config.ScaleColor + ColorOffset);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -320,9 +320,14 @@ public sealed unsafe class DragonScales : CounterWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.DragonScalesCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 }

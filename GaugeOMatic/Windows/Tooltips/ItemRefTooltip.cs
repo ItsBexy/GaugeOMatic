@@ -1,4 +1,3 @@
-using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System.Numerics;
@@ -71,7 +70,7 @@ public abstract partial class ItemRef
         if (Icon == null) return null;
         try
         {
-            return TextureProvider.GetFromGameIcon(new GameIconLookup(Icon.Value))
+            return TextureProvider.GetFromGameIcon(new(Icon.Value))
                                   .TryGetWrap(out var texture, out _) ? texture : null;
         }
         catch

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
@@ -248,22 +248,18 @@ public sealed unsafe class SenSeal : StateWidget
 
     #region Configs
 
-    public class SenSealConfig
+    public class SenSealConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(0);
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> Colors = new();
         public int Seal;
         [DefaultValue(true)] public bool Kanji = true;
 
-        public SenSealConfig(WidgetConfig widgetConfig)
+        public SenSealConfig(WidgetConfig widgetConfig) : base(widgetConfig.SenSealCfg)
         {
             var config = widgetConfig.SenSealCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Colors = config.Colors;
             Seal = config.Seal;
             Kanji = config.Kanji;
@@ -278,6 +274,7 @@ public sealed unsafe class SenSeal : StateWidget
     }
 
     public SenSealConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -328,7 +325,7 @@ public sealed unsafe class SenSeal : StateWidget
         });
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -355,12 +352,16 @@ public sealed unsafe class SenSeal : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.SenSealCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
-    #endregion
+    public override Bounds GetBounds() => InactiveSeal;
 
+    #endregion
 }
 
 public partial class WidgetConfig

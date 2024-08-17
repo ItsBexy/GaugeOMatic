@@ -3,9 +3,8 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalancePlate;
@@ -161,22 +160,18 @@ public sealed unsafe class BalancePlate : StateWidget
 
     #region Configs
 
-    public class BalancePlateConfig
+    public class BalancePlateConfig : WidgetTypeConfig
     {
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> BGColors = new();
         public List<AddRGB> CrystalColors = new();
         public List<AddRGB> FXColors = new();
-        public Vector2 Position;
 
-        public BalancePlateConfig(WidgetConfig widgetConfig)
+        public BalancePlateConfig(WidgetConfig widgetConfig) : base(widgetConfig.BalancePlateCfg)
         {
             var config = widgetConfig.BalancePlateCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             BGColors = config.BGColors;
             CrystalColors = config.CrystalColors;
             FXColors = config.FXColors;
@@ -197,6 +192,7 @@ public sealed unsafe class BalancePlate : StateWidget
     }
 
     public BalancePlateConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -217,7 +213,7 @@ public sealed unsafe class BalancePlate : StateWidget
         CrystalGlow.SetAddRGB(Config.GetFXColor(state));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
@@ -243,9 +239,14 @@ public sealed unsafe class BalancePlate : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BalancePlateCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Plate;
 
     #endregion
 }

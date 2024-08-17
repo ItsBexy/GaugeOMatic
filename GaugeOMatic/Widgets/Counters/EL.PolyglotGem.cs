@@ -241,15 +241,13 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
             Pulse = config.Pulse;
         }
 
-        public PolyglotGemConfig()
-        {
-            Spacing = 26;
-        }
+        [JsonIgnore] public override float DefaultSpacing => 26;
+
+        public PolyglotGemConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
-
     public PolyglotGemConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -281,9 +279,9 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -306,8 +304,11 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.PolyglotGemCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

@@ -41,12 +41,11 @@ public class TrackerWindow : Window, IDisposable
     public override void Draw()
     {
         UpdateFlag = 0;
-        var widgetConfig = Tracker.WidgetConfig;
         if (!Tracker.Available || Widget == null) IsOpen = false;
 
         HeaderTable();
 
-        WidgetOptionTable(widgetConfig);
+        WidgetOptionTable();
 
         if (UpdateFlag.HasFlag(Save)) Configuration.Save();
         if (UpdateFlag.HasFlag(Reset)) Tracker.JobModule.ResetWidgets();
@@ -66,7 +65,7 @@ public class TrackerWindow : Window, IDisposable
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiHelpy.TextRightAligned("Pinned to:");
+        ImGuiHelpy.TextRightAligned("Pinned to:",true);
         ImGui.TableNextColumn();
         if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
         {
@@ -120,7 +119,7 @@ public class TrackerWindow : Window, IDisposable
         }
     }
 
-    private void WidgetOptionTable(WidgetConfig widgetConfig)
+    private void WidgetOptionTable()
     {
         void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
         {
@@ -141,15 +140,15 @@ public class TrackerWindow : Window, IDisposable
             DrawTab(tabOptions, "Behavior", Behavior);
         }
 
-        if (ImGui.BeginTable($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingFixedFit | PadOuterX, new(280,10)))
+        if (ImGui.BeginTable($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip))
         {
-            ImGui.TableSetupColumn("Labels",WidthStretch,100);
-            ImGui.TableSetupColumn("Controls", WidthFixed);
+            ImGui.TableSetupColumn("Labels",WidthStretch,0.75f);
+            ImGui.TableSetupColumn("Controls", WidthStretch, 1);
 
             ImGui.Spacing();
             ImGui.Spacing();
 
-            Widget?.DrawUI(ref widgetConfig);
+            Widget?.DrawUI();
 
             if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
 

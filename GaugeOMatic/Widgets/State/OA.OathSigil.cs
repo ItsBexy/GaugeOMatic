@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -52,7 +53,7 @@ public sealed unsafe class OathSigil : StateWidget
     public override CustomNode BuildContainer()
     {
         Sigil = ImageNodeFromPart(0, 0).SetOrigin(90, 90).SetAlpha(0).SetScale(0).SetY(50).SetImageFlag(32);
-        SigilWrapper = new(CreateResNode(), Sigil);
+        SigilWrapper = new CustomNode(CreateResNode(), Sigil).SetSize(180,180);
 
         WingR = ImageNodeFromPart(0, 1).SetPos(107, 42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1);
         WingL = ImageNodeFromPart(0, 1).SetPos(-6, 42).SetOrigin(70, 52).SetScale(0).SetAlpha(0);
@@ -143,23 +144,19 @@ public sealed unsafe class OathSigil : StateWidget
 
     #region Configs
 
-    public class OathSigilConfig
+    public class OathSigilConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(0, 0);
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> SigilColors = new();
         public List<ColorRGB> WingColors = new();
         [DefaultValue(true)] public bool IncludeWings = true;
         public byte BlendMode;
 
-        public OathSigilConfig(WidgetConfig widgetConfig)
+        public OathSigilConfig(WidgetConfig widgetConfig) : base(widgetConfig.OathSigilCfg)
         {
             var config = widgetConfig.OathSigilCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             IncludeWings = config.IncludeWings;
             SigilColors = config.SigilColors;
             WingColors = config.WingColors;
@@ -176,6 +173,7 @@ public sealed unsafe class OathSigil : StateWidget
     }
 
     public OathSigilConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -206,7 +204,7 @@ public sealed unsafe class OathSigil : StateWidget
         WingR.SetVis(Config.IncludeWings);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -233,9 +231,14 @@ public sealed unsafe class OathSigil : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.OathSigilCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => SigilWrapper;
 
     #endregion
 }

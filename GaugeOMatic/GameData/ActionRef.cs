@@ -111,6 +111,7 @@ public partial class ActionRef : ItemRef
 
                     var newAction = ActionData[newId];
                     newAction.SetFlag(Upgrade, true);
+                    if (HasFlag(CanGetAnts)) newAction.SetFlag(CanGetAnts,true);
                     newAction.HideFromDropdown = true;
                     newAction.BaseActionId = ID;
                 }

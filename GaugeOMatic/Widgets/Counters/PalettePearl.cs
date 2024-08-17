@@ -79,7 +79,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
             Pearls.Add(ImageNodeFromPart(0, 2).SetOrigin(18, 18).SetAlpha(0));
             PulseHalos.Add(ImageNodeFromPart(0, 14).SetScale(1.2f).SetOrigin(18, 18).SetAlpha(0).SetImageFlag(0x20));
             PulseGlows.Add(ImageNodeFromPart(0, 4).SetScale(1.5f).SetOrigin(18, 18).SetAlpha(0));
-            PulseContainers.Add(new CustomNode(CreateResNode(), PulseHalos[i], PulseGlows[i]));
+            PulseContainers.Add(new(CreateResNode(), PulseHalos[i], PulseGlows[i]));
             Glows.Add(ImageNodeFromPart(0, 4).SetOrigin(18, 18).SetAlpha(0));
             Sparkles.Add(ImageNodeFromPart(0, 15).SetPos(5, 5).SetSize(26, 26).SetOrigin(13, 13).SetImageFlag(0x20).SetRotation(PI / 2f).SetAlpha(0));
             Halos.Add(ImageNodeFromPart(0, 14).SetScale(1.2f).SetOrigin(18, 18).SetImageFlag(0x20).SetAlpha(0));
@@ -273,15 +273,13 @@ public sealed unsafe class PalettePearl : FreeGemCounter
             Pulse = config.Pulse;
         }
 
-        public PalettePearlConfig()
-        {
-            Spacing = 22;
-        }
+        [JsonIgnore] public override float DefaultSpacing => 22;
+
+        public PalettePearlConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
-
     public PalettePearlConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -315,9 +313,9 @@ public sealed unsafe class PalettePearl : FreeGemCounter
     }
 
     public override string StackTerm => "Pearl";
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -357,8 +355,11 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.PalettePearlCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

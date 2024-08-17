@@ -1,6 +1,8 @@
 using CustomNodes;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
+using System.Numerics;
+using static CustomNodes.CustomNode;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
@@ -46,8 +48,6 @@ public sealed class SimpleTimer : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public override void Update()
     {
         var current = Tracker.CurrentData.GaugeValue;
@@ -70,7 +70,9 @@ public sealed class SimpleTimer : GaugeBarWidget
         protected override NumTextProps NumTextDefault => new(enabled: true,
                                                               position: new(0),
                                                               color: new(255, 255, 255),
-                                                              edgeColor: new(0, 0, 0), showBg: false, bgColor: new(0),
+                                                              edgeColor: new(0, 0, 0),
+                                                              showBg: false,
+                                                              bgColor: new(0),
                                                               font: MiedingerMed,
                                                               fontSize: 20,
                                                               align: Center,
@@ -81,22 +83,34 @@ public sealed class SimpleTimer : GaugeBarWidget
     }
 
     public SimpleTimerConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
     public override void ResetConfigs() => Config = new();
 
-    public override void ApplyConfigs() => NumTextNode.ApplyProps(Config.NumTextProps);
+    public override void ApplyConfigs()
+    {
+        NumTextNode.ApplyProps(Config.NumTextProps,Config.Position);
+    }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         var numTextProps = Config.NumTextProps;
+
+        if (numTextProps.Position != Vector2.Zero)
+        {
+            Config.Position += numTextProps.Position;
+            numTextProps.Position = Vector2.Zero;
+            UpdateFlag |= Save;
+        }
+
         switch (UiTab)
         {
             case Text:
                 var label = $"{Tracker.TermGauge} Text";
 
-                PositionControls($"Position##{label}Pos", ref numTextProps.Position);
+                PositionControls($"Position##{label}Pos", ref Config.Position);
                 ColorPickerRGBA($"Color##{label}color", ref numTextProps.Color);
                 ColorPickerRGBA($"Edge Color##{label}edgeColor", ref numTextProps.EdgeColor);
                 ToggleControls("Backdrop", ref numTextProps.ShowBg);
@@ -117,11 +131,15 @@ public sealed class SimpleTimer : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) Config.NumTextProps = numTextProps;
-
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.SimpleTimerCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            Config.NumTextProps = numTextProps;
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new Bounds(NumTextNode, NumTextNode.BgNode).GetMaxBox() + new Vector2(7,0);
 
     #endregion
 }

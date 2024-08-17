@@ -89,7 +89,7 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
                                              .RemoveFlags(SetVisByAlpha)
                                              .SetAddRGB(255,-200,-200));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Stacks2[i], Glows2[i]).SetOrigin(15, 22));
+            Stacks.Add(new CustomNode(CreateResNode(), Stacks2[i], Glows2[i]).SetOrigin(15, 22).SetSize(30,44));
         }
     }
 
@@ -234,15 +234,15 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
             Pulse = config.Pulse;
         }
 
-        public CoilDiamondConfig()
-        {
-            Spacing = 23;
-        }
+        [JsonIgnore]
+        public override float DefaultSpacing => 23;
+
+        public CoilDiamondConfig() { }
     }
 
+    public CoilDiamondConfig Config;
     public override FreeGemCounterConfig GetConfig => Config;
 
-    public CoilDiamondConfig Config;
     public AddRGB GemColorOffset = new(-61,92,95);
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
@@ -272,9 +272,9 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -296,8 +296,11 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.CoilDiamondCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

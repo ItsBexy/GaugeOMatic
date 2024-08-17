@@ -1,6 +1,5 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System;
@@ -263,17 +262,22 @@ public static class ImGuiHelpy
         return button;
     }
 
-    public static void TextRightAligned(string text)
+    public static void TextRightAligned(string text, bool nowrap = false)
     {
         var w = ImGui.CalcTextSize(text).X;
         var space = ImGui.GetColumnWidth();
         if (w > 0)
         {
-            if (space < w) space = w;
-            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (space - w));
+            if (!nowrap && space < w)
+            {
+                ImGui.TextWrapped(text);
+            }
+            else
+            {
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (space - w));
+                ImGui.Text(text);
+            }
         }
-
-        ImGui.Text(text);
     }
 
     public static void TextRightAligned(string text, Vector4 color)
@@ -289,7 +293,7 @@ public static class ImGuiHelpy
     {
         var startPos = ImGui.GetCursorPosX();
 
-        TextureProvider.GetFromGameIcon(new GameIconLookup(trackerGameIcon)).TryGetWrap(out var tex, out _);
+        TextureProvider.GetFromGameIcon(new(trackerGameIcon)).TryGetWrap(out var tex, out _);
 
         if (tex != null)
         {
@@ -311,7 +315,7 @@ public static class ImGuiHelpy
         if (id == null) return null;
         try
         {
-            return TextureProvider.GetFromGameIcon(new GameIconLookup(id.Value))
+            return TextureProvider.GetFromGameIcon(new(id.Value))
                                   .TryGetWrap(out var texture, out _) ? texture : null;
         }
         catch

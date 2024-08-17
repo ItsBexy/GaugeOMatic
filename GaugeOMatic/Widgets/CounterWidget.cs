@@ -1,8 +1,6 @@
-using CustomNodes;
 using GaugeOMatic.Trackers;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
@@ -17,7 +15,7 @@ public abstract class CounterWidget : Widget
 {
     protected CounterWidget(Tracker tracker) : base(tracker) { }
 
-    public abstract CounterWidgetConfig GetConfig { get; }
+    public abstract override CounterWidgetConfig GetConfig { get; }
 
     public virtual void OnFirstRun(int count, int max) { }
 
@@ -43,7 +41,7 @@ public abstract class CounterWidget : Widget
         WidgetRoot.Dispose();
 
         WidgetContainer = BuildContainer();
-        WidgetRoot = new CustomNode(CreateResNode(), WidgetContainer);
+        WidgetRoot = new(CreateResNode(), WidgetContainer);
         WidgetRoot.AssembleNodeTree();
 
         ApplyConfigs();
@@ -122,7 +120,7 @@ public abstract class CounterWidget : Widget
         if (IntControls($"{term} Size", ref GetConfig.TimerSize, 1, 60, 1)) SizeChange();
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -141,18 +139,15 @@ public abstract class CounterWidgetConfig : WidgetTypeConfig
 {
     public enum CounterPulse { Never, Always, AtMax }
 
-    public Vector2 Position;
-    [DefaultValue(1f)] public float Scale = 1;
     public bool AsTimer;
     public bool InvertTimer;
     [DefaultValue(10)] public int TimerSize = 10;
 
-    protected CounterWidgetConfig(CounterWidgetConfig? config)
+    protected CounterWidgetConfig(CounterWidgetConfig? config) : base(config)
     {
         if (config == null) return;
-        Position = config.Position;
-        Scale = config.Scale;
 
+        Scale = config.Scale;
         AsTimer = config.AsTimer;
         InvertTimer = config.InvertTimer;
         TimerSize = config.TimerSize;

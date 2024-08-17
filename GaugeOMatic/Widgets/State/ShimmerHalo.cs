@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -144,21 +145,19 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     #region Configs
 
-    public class ShimmerHaloConfig
+    public class ShimmerHaloConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(83, 89);
-        public Vector2 Scale = new(1);
+        public new Vector2 Scale = new(1);
         public float Angle;
         public List<ColorRGB> ColorList = new();
         [DefaultValue(20f)] public float Speed = 20f;
 
-        public ShimmerHaloConfig(WidgetConfig widgetConfig)
+        public ShimmerHaloConfig(WidgetConfig widgetConfig) : base(widgetConfig.ShimmerHaloCfg)
         {
             var config = widgetConfig.ShimmerHaloCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
             Scale = config.Scale;
             Angle = config.Angle;
             ColorList = config.ColorList;
@@ -174,6 +173,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
     }
 
     public ShimmerHaloConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -198,7 +198,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
         if (Fill.Visible) { BeginRotation(); }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -222,12 +222,16 @@ public sealed unsafe class ShimmerHalo : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ShimmerHaloCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
-    #endregion
+    public override Bounds GetBounds() => Fill;
 
+    #endregion
 }
 
 public partial class WidgetConfig

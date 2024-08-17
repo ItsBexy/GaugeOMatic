@@ -3,7 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -199,8 +199,6 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     public sealed class BatteryReplicaConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(148)] public float Width = 148;
         public float Angle;
 
@@ -234,8 +232,6 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
 
@@ -296,7 +292,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width+6, 74));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -335,9 +331,14 @@ public unsafe class BatteryReplica : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BatteryReplicaCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new(Barrel, ClockFace);
 
     #endregion
 }

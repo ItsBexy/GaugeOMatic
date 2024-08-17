@@ -74,7 +74,7 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
             Glows[i].UnsetNodeFlags(NodeFlags.UseDepthBasedPriority);
             GlowWrappers.Add(new CustomNode(CreateResNode(), Glows[i]).SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Hearts[i], GlowWrappers[i]).SetOrigin(12, 34));
+            Stacks.Add(new CustomNode(CreateResNode(), Hearts[i], GlowWrappers[i]).SetOrigin(12, 34).SetSize(24,68));
         }
     }
 
@@ -129,6 +129,10 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
         public AddRGB StackColor = new(0);
         public AddRGB GlowColor = new(0);
 
+        [JsonIgnore] public override float DefaultSpacing => -16.5f;
+        [JsonIgnore] public override float DefaultAngle => -126f;
+        [JsonIgnore] public override float DefaultCurve => -20f;
+
         public UmbralHeartConfig(WidgetConfig widgetConfig) : base(widgetConfig.UmbralHeartCfg)
         {
             var config = widgetConfig.UmbralHeartCfg;
@@ -139,17 +143,11 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
             GlowColor = config.GlowColor;
         }
 
-        public UmbralHeartConfig()
-        {
-            Spacing = -16.5f;
-            Angle = -126f;
-            Curve = -20f;
-        }
+        public UmbralHeartConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
-
     public UmbralHeartConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -171,9 +169,9 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
     }
 
     public override string StackTerm => "Heart";
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -188,8 +186,11 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.UmbralHeartCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

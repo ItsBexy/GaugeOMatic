@@ -3,9 +3,8 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
@@ -196,23 +195,19 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     #region Configs
 
-    public class BatteryOverlayConfig
+    public class BatteryOverlayConfig : WidgetTypeConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> PulseColors = new();
         public List<AddRGB> RingColors = new();
         public List<AddRGB> ElecColors = new();
         public float Angle;
 
-        public BatteryOverlayConfig(WidgetConfig widgetConfig)
+        public BatteryOverlayConfig(WidgetConfig widgetConfig) : base(widgetConfig.BatteryOverlayCfg)
         {
             var config = widgetConfig.BatteryOverlayCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             PulseColors = config.PulseColors;
             RingColors = config.RingColors;
             ElecColors = config.ElecColors;
@@ -230,6 +225,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
     }
 
     public BatteryOverlayConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -263,7 +259,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
         ElecWrapper2.SetAddRGB(elecColor + new AddRGB(100, 75, -75));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -289,9 +285,14 @@ public sealed unsafe class BatteryOverlay : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BatteryOverlayCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => ClockOverlay;
 
     #endregion
 }

@@ -124,7 +124,7 @@ public sealed unsafe class SimpleGem : FreeGemCounter
                      .SetOrigin(32, 32)
                      .SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i * 40, 0).SetOrigin(32, 32));
+            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i * 40, 0).SetOrigin(32, 32).SetSize(64,64));
         }
     }
 
@@ -216,7 +216,7 @@ public sealed unsafe class SimpleGem : FreeGemCounter
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
 
-        public override float SpacingModifier => 2;
+        [JsonIgnore] public override float SpacingModifier => 2;
 
         public SimpleGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.SimpleGemCfg)
         {
@@ -236,9 +236,8 @@ public sealed unsafe class SimpleGem : FreeGemCounter
         public SimpleGemConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
-
     public SimpleGemConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -319,13 +318,13 @@ public sealed unsafe class SimpleGem : FreeGemCounter
 
     public override int ArcMask => Config.GemShape is Circle or CircleHollow ? 0b10111 : 0b11111;
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
             case Layout:
                 GemSelectUI();
-                base.DrawUI(ref widgetConfig);
+                base.DrawUI();
                 break;
             case Colors:
                 ColorPickerRGB("Gem Color", ref Config.GemColor);
@@ -333,7 +332,7 @@ public sealed unsafe class SimpleGem : FreeGemCounter
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;
             case Behavior:
-                base.DrawUI(ref widgetConfig);
+                base.DrawUI();
                 if (ToggleControls("Hide Empty", ref Config.HideEmpty))
                 {
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
@@ -344,8 +343,11 @@ public sealed unsafe class SimpleGem : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.SimpleGemCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     private void GemSelectUI()
@@ -397,7 +399,7 @@ public sealed unsafe class SimpleGem : FreeGemCounter
     private static void GemSelect(IDalamudTextureWrap spriteSheet, ref GemShapes currentShape, int col, int row, GemShapes shape)
     {
         if (currentShape == shape) col++;
-        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new Vector2(col / 4f, row / 9f), new((col + 1) / 4f, (row + 1) / 9f));
+        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new(col / 4f, row / 9f), new((col + 1) / 4f, (row + 1) / 9f));
         if (ImGui.IsItemClicked())
         {
             currentShape = shape;

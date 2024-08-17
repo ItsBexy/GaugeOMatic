@@ -58,6 +58,9 @@ public static class Color
         public static implicit operator uint(ColorRGB c) => (uint)((c.R << 24) + (c.G << 16) + (c.B << 8) + c.A);
         public static implicit operator string(ColorRGB c) => ((uint)c).ToString("x");
 
+        public readonly uint ToRGBAu => (uint)((R << 24) + (G << 16) + (B << 8) + A);
+        public readonly uint ToABGR => (uint)((A << 24) + (B << 16) + (G << 8) + R);
+
         public readonly Vector4 AsVec4() => this;
         public readonly Vector3 AsVec3() => this;
         public readonly IColor FromVec4(Vector4 v) => (ColorRGB)v;

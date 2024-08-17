@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
@@ -74,7 +75,7 @@ public sealed unsafe class TargetReticle : StateWidget
 
         BeginRotation();
 
-        return new(CreateResNode(), Halo, InnerHalo);
+        return new CustomNode(CreateResNode(), Halo, InnerHalo).SetSize(450,450);
     }
 
     #endregion
@@ -173,22 +174,18 @@ public sealed unsafe class TargetReticle : StateWidget
 
     #region Configs
 
-    public class TargetReticleConfig
+    public class TargetReticleConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(83, 89);
-        [DefaultValue(1)] public float Scale = 1;
         public float Angle;
         public List<ColorRGB> ColorList = new();
         [DefaultValue(20f)] public float Speed = 20f;
 
-        public TargetReticleConfig(WidgetConfig widgetConfig)
+        public TargetReticleConfig(WidgetConfig widgetConfig) : base(widgetConfig.TargetReticleCfg)
         {
             var config = widgetConfig.TargetReticleCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
             ColorList = config.ColorList;
             Speed = config.Speed;
@@ -203,6 +200,7 @@ public sealed unsafe class TargetReticle : StateWidget
     }
 
     public TargetReticleConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -228,14 +226,13 @@ public sealed unsafe class TargetReticle : StateWidget
         if (Halo.Visible) { BeginRotation(); }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
             case Layout:
                 PositionControls("Position", ref Config.Position);
                 ScaleControls("Scale", ref Config.Scale);
-                AngleControls("Angle", ref Config.Angle);
                 FloatControls("Speed", ref Config.Speed, -200, 200, 1f);
                 break;
             case Colors:
@@ -250,9 +247,14 @@ public sealed unsafe class TargetReticle : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.TargetReticleCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new Bounds(WidgetContainer) - (new Vector2(112.5f) * Config.Scale);
 
     #endregion
 }

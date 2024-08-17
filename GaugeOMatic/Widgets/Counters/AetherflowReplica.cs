@@ -12,6 +12,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
@@ -57,17 +58,17 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     {
         Max = GetMax();
 
-        SocketPlate = BuildSocketPlate(Max, out var size);
+        SocketPlate = BuildSocketPlate(Max, out var width);
         Gems = BuildGems(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((size/2f)-1, 37);
+        return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((width/2f)-1, 37).SetSize(width,74);
     }
 
-    private CustomNode BuildSocketPlate(int count, out int size)
+    private CustomNode BuildSocketPlate(int count, out int width)
     {
         if (count == 1)
         {
-            size = 76;
+            width = 76;
             return new(CreateResNode(),
                        ImageNodeFromPart(0, 6).SetPos(0, 0),
                        ImageNodeFromPart(0, 7).SetPos(37, 0));
@@ -82,8 +83,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
             x += i == 0 || i == count - 1 ? 57 : 38;
         }
 
-        size = x;
-        return new CustomNode(CreateResNode(), socketNodes).SetOrigin((size / 2f) - 1, 37);
+        width = x;
+        return new CustomNode(CreateResNode(), socketNodes).SetOrigin((width / 2f) - 1, 37);
     }
 
     private CustomNode BuildGems(int count)
@@ -112,6 +113,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
         return new(CreateResNode(), gemList);
     }
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 
@@ -223,9 +226,9 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         public AetherflowReplicaConfig() { }
     }
 
+    public AetherflowReplicaConfig Config;
     public override CounterWidgetConfig GetConfig => Config;
 
-    public AetherflowReplicaConfig Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -250,9 +253,9 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -274,8 +277,11 @@ public sealed unsafe class AetherflowReplica : CounterWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.AetherflowReplicaCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

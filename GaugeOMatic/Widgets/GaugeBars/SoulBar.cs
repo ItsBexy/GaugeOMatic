@@ -267,8 +267,6 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public sealed class SoulBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(180)] public float Width = 180;
         public float Angle;
         public bool Mirror;
@@ -310,8 +308,6 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             var config = widgetConfig.SoulBarCfg;
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
             Mirror = config.Mirror;
@@ -342,9 +338,8 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         public SoulBarConfig() => MilestoneType = Above;
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public SoulBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -411,7 +406,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public float MidMarkerX() => (((Config.Mirror ? 1 - Config.Milestone : Config.Milestone) - 0.5f) * Config.Width) - 4;
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -471,8 +466,11 @@ public sealed unsafe class SoulBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
-        widgetConfig.SoulBarCfg = Config;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -480,6 +478,8 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
         new() { ArrowRight, ArrowLeft };
+
+    public override CustomNode.Bounds GetBounds() => Frame;
 
     #endregion
 }

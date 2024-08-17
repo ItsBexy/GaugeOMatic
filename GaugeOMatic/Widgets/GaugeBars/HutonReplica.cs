@@ -3,10 +3,10 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.CustomPartsList;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -256,8 +256,6 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public sealed class HutonReplicaConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public bool Smooth;
         public ColorRGB ActiveColor = new(100);
         public ColorRGB FadeColor = new(0x32, 0x32, 0x64);
@@ -280,8 +278,6 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Smooth = config.Smooth;
             ActiveColor = config.ActiveColor;
             FadeColor = config.FadeColor;
@@ -312,7 +308,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(86, 144));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -336,9 +332,14 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.HutonReplicaCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 

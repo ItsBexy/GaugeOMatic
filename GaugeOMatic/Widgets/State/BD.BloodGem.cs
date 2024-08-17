@@ -3,7 +3,6 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNodeManager;
@@ -161,24 +160,19 @@ public sealed unsafe class BloodGem : StateWidget
 
     #region Configs
 
-    public class BloodGemConfig
+    public class BloodGemConfig : WidgetTypeConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> GemColors = new();
         public List<AddRGB> HaloColors = new();
         public List<AddRGB> HaloColors2 = new();
         public ColorRGB RingColor = new(100, 100, 100);
         public bool Ring;
 
-        public BloodGemConfig(WidgetConfig widgetConfig)
+        public BloodGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.BloodGemCfg)
         {
             var config = widgetConfig.BloodGemCfg;
 
             if (config == null) return;
-
-            Position = config.Position;
-            Scale = config.Scale;
 
             GemColors = config.GemColors;
             HaloColors = config.HaloColors;
@@ -201,6 +195,7 @@ public sealed unsafe class BloodGem : StateWidget
     }
 
     public BloodGemConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -231,7 +226,7 @@ public sealed unsafe class BloodGem : StateWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
@@ -260,8 +255,11 @@ public sealed unsafe class BloodGem : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BloodGemCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

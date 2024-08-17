@@ -3,9 +3,9 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
@@ -66,7 +66,7 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
                     .SetRotation(-4.71238898038469f)
                     .SetImageFlag(32);
 
-        CloudBox = new CustomNode(CreateResNode(), ScrollCloud, SpinCloud, Mask);
+        CloudBox = new(CreateResNode(), ScrollCloud, SpinCloud, Mask);
 
         Backdrop = ImageNodeFromPart(0, 0);
 
@@ -163,10 +163,8 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
 
     #region Configs
 
-    public class KazematoiSwooshStateConfig
+    public class KazematoiSwooshStateConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(0);
-        [DefaultValue(1)] public float Scale = 1;
         public float Angle;
         public List<ushort> BackdropBases = new();
         public List<AddRGB> BackdropTints = new();
@@ -175,14 +173,12 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
         public List<AddRGB> SweepColors = new();
         public bool HideInactive;
 
-        public KazematoiSwooshStateConfig(WidgetConfig widgetConfig)
+        public KazematoiSwooshStateConfig(WidgetConfig widgetConfig) : base(widgetConfig.KazematoiSwooshStateCfg)
         {
             var config = widgetConfig.KazematoiSwooshStateCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
             BackdropBases = config.BackdropBases;
             BackdropTints = config.BackdropTints;
@@ -211,6 +207,7 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
     }
 
     public KazematoiSwooshStateConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -242,7 +239,7 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
         SpinCloud.SetAddRGB(Config.GetSweepColor(state));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
 
@@ -282,9 +279,14 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.KazematoiSwooshStateCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Mask;
 
     #endregion
 

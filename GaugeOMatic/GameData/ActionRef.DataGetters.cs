@@ -15,7 +15,14 @@ public partial class ActionRef
     public int GetMaxCharges() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetMaxCharges(GetAdjustedId(), 0);
     public int GetActionCost() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetActionCost(ActionType.Action, ID,default,default,default,default);
 
-    public unsafe int GetCurrentCharges() => (int)ActionManager->GetCurrentCharges(GetAdjustedId());
+    // ReSharper disable once UnusedMember.Global
+    public int GetCurrentCharges()
+    {
+        var maxCharges = GetMaxCharges();
+        var elapsed = GetCooldownElapsed();
+        if (elapsed == 0) return maxCharges;
+        return (int)Math.Floor(elapsed / GetCooldownTotal() * maxCharges);
+    }
 
     public unsafe float GetCooldownTotal()
     {
@@ -80,16 +87,16 @@ public partial class ActionRef
         }
         else
         {
+            count = elapsed == 0 ? maxCount : (int)Math.Floor(elapsed / cooldownTotal * maxCount);
+
             var transformCheck = !HasFlag(TransformedButton) || GetBaseAction().GetAdjustedId() == ID;
-            var chargeCheck = !HasFlag(HasCharges) || GetCurrentCharges() != 0;
+            var chargeCheck = !HasFlag(HasCharges) || count != 0;
             var cooldownCheck = !HasFlag(LongCooldown, exclude: HasCharges) || !(cooldownRemaining > 0);
             var statusCheck = !HasFlag(RequiresStatus) || (ReadyStatus?.TryGetStatus(Self) ?? false);
             var antCheck = !HasFlag(CanGetAnts | ComboBonus) || HasAnts();
             var mpCheck = !HasFlag(CostsMP) || GetActionCost() < ClientState.LocalPlayer?.CurrentMp;
 
             state = transformCheck && cooldownCheck && chargeCheck && statusCheck && antCheck && mpCheck ? 1 : 0;
-
-            count = maxCount > 1 ? GetCurrentCharges() : state;
         }
 
         return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview);

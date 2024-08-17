@@ -181,9 +181,8 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
         public ReaperFlameConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
-
     public ReaperFlameConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override int ArcMask => 0b10111;
     public override int ListMask => 0b101;
@@ -233,9 +232,9 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
 
         switch (UiTab)
         {
@@ -253,8 +252,11 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ReaperFlameCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

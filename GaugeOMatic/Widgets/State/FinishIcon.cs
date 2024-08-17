@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -122,22 +122,18 @@ public sealed unsafe class FinishIcon : StateWidget
 
     #region Configs
 
-    public class FinishIconConfig
+    public class FinishIconConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(0);
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> Colors = new();
         [DefaultValue(11.5f)] public float Speed = 11.5f;
         public bool Tech;
 
-        public FinishIconConfig(WidgetConfig widgetConfig)
+        public FinishIconConfig(WidgetConfig widgetConfig) : base(widgetConfig.FinishIconCfg)
         {
             var config = widgetConfig.FinishIconCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Colors = config.Colors;
             Speed = config.Speed;
             Tech = config.Tech;
@@ -152,6 +148,7 @@ public sealed unsafe class FinishIcon : StateWidget
     }
 
     public FinishIconConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -176,7 +173,7 @@ public sealed unsafe class FinishIcon : StateWidget
         if (Symbol.Visible) { BeginRotation(); }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -200,12 +197,16 @@ public sealed unsafe class FinishIcon : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.FinishIconCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion
 
+    public override Bounds GetBounds() => Symbol;
 }
 
 public partial class WidgetConfig

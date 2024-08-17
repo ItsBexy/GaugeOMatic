@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -309,23 +309,19 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     #region Configs
 
-    public class EukrasiaReplicaConfig
+    public class EukrasiaReplicaConfig : WidgetTypeConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1)] public float Scale = 1;
         [DefaultValue(true)] public bool ShowNouliths = true;
         public List<AddRGB> Colors = new();
         public List<AddRGB> FXColors = new();
         public List<AddRGB> NoulithColors = new();
 
-        public EukrasiaReplicaConfig(WidgetConfig widgetConfig)
+        public EukrasiaReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.EukrasiaReplicaCfg)
         {
             var config = widgetConfig.EukrasiaReplicaCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             ShowNouliths = config.ShowNouliths;
             Colors = config.Colors;
             FXColors = config.FXColors;
@@ -362,6 +358,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
     }
 
     public EukrasiaReplicaConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -397,7 +394,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -424,9 +421,14 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.EukrasiaReplicaCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => FullActive;
 
     #endregion
 }

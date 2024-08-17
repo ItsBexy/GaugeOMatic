@@ -1,4 +1,3 @@
-using Dalamud.Interface.Textures;
 using Dalamud.Interface.Windowing;
 using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
@@ -86,7 +85,7 @@ public partial class ConfigWindow : Window, IDisposable
         void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab)
         {
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
-            TextureProvider.GetFromGameIcon(new GameIconLookup(GetJobIcon(job))).TryGetWrap(out var tex, out _);
+            TextureProvider.GetFromGameIcon(new(GetJobIcon(job))).TryGetWrap(out var tex, out _);
 
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
             if (tex != null && ImGui.ImageButton(tex.ImGuiHandle,new(22)))
@@ -101,7 +100,7 @@ public partial class ConfigWindow : Window, IDisposable
         void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
         {
             var active = Configuration.GeneralTab == genTab;
-            TextureProvider.GetFromGameIcon(new GameIconLookup(icon)).TryGetWrap(out var tex, out _);
+            TextureProvider.GetFromGameIcon(new(icon)).TryGetWrap(out var tex, out _);
 
             ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
             if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))

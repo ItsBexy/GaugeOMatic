@@ -1,24 +1,27 @@
-using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using GaugeOMatic.Trackers;
 using ImGuiNET;
 using System;
 using System.Numerics;
+using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static ImGuiNET.ImGuiKey;
 
 namespace GaugeOMatic.Windows;
 
 public partial class ConfigWindow
 {
-    private static void DrawTrackerRow(Tracker tracker)
+    private static void DrawTrackerRow(Tracker tracker, bool hovering = false)
     {
         var hash = tracker.GetHashCode();
         var trackerConfig = tracker.TrackerConfig;
         var index = trackerConfig.Index;
+
+        ImGui.PushStyleColor(ImGuiCol.Text, hovering? new ColorRGB(0, 255, 100): new Vector4(1,1,1,1));
 
         ImGui.TableNextRow();
 
@@ -52,9 +55,11 @@ public partial class ConfigWindow
         ImGui.TableNextColumn();
         PreviewControls(tracker, hash);
 
-        if (UpdateFlag.HasFlag(Save)) trackerConfig.DisplayAttr = null;
+        ImGui.PopStyleColor(1);
 
-      //  tracker.Widget?.DrawBounds();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) trackerConfig.DisplayAttr = null;
+
+
     }
 
     private static void LayerControls(Tracker tracker, int hash, int index)
@@ -67,29 +72,29 @@ public partial class ConfigWindow
 
     private static void BumpUpButton(Tracker tracker, int hash, int index)
     {
-        if (index == 0) IconButtonDisabled($"BumpUp{hash}", FontAwesomeIcon.ChevronUp);
-        else if (ImGuiComponents.IconButton($"BumpUp{hash}", FontAwesomeIcon.ChevronUp))
+        if (index == 0) IconButtonDisabled($"BumpUp{hash}", ChevronUp);
+        else if (ImGuiComponents.IconButton($"BumpUp{hash}", ChevronUp))
         {
             var swapWith = tracker.JobModule.TrackerList.Find(t => t.TrackerConfig.Index == index - 1);
             if (swapWith == null) return;
 
             tracker.TrackerConfig.Index--;
             swapWith.TrackerConfig.Index++;
-            UpdateFlag |= SoftReset | Save;
+            UpdateFlag |= SoftReset | UpdateFlags.Save;
         }
     }
 
     private static void BumpDownButton(Tracker tracker, int hash, int index)
     {
-        if (index == tracker.JobModule.TrackerList.Count - 1) IconButtonDisabled($"BumpDown{hash}", FontAwesomeIcon.ChevronDown);
-        else if (ImGuiComponents.IconButton($"BumpDown{hash}", FontAwesomeIcon.ChevronDown))
+        if (index == tracker.JobModule.TrackerList.Count - 1) IconButtonDisabled($"BumpDown{hash}", ChevronDown);
+        else if (ImGuiComponents.IconButton($"BumpDown{hash}", ChevronDown))
         {
             var swapWith = tracker.JobModule.TrackerList.Find(t => t.TrackerConfig.Index == index + 1);
             if (swapWith == null) return;
 
             tracker.TrackerConfig.Index++;
             swapWith.TrackerConfig.Index--;
-            UpdateFlag |= SoftReset | Save;
+            UpdateFlag |= SoftReset | UpdateFlags.Save;
         }
     }
 
@@ -102,8 +107,8 @@ public partial class ConfigWindow
         PasteWidgetButton(tracker, hash);
         void SettingsButton()
         {
-            if (!tracker.Available) IconButtonDisabled($"Settings{hash}", FontAwesomeIcon.Cog);
-            else if (ImGuiComponents.IconButton($"Settings{hash}", FontAwesomeIcon.Cog) && tracker.Window != null)
+            if (!tracker.Available) IconButtonDisabled($"Settings{hash}", Cog);
+            else if (ImGuiComponents.IconButton($"Settings{hash}", Cog) && tracker.Window != null)
             {
                 tracker.Window.PositionCondition = ImGuiCond.FirstUseEver;
                 tracker.Window.IsOpen = !tracker.Window.IsOpen;
@@ -131,7 +136,7 @@ public partial class ConfigWindow
 
     private static void CopyWidgetButton(Tracker tracker, int hash)
     {
-        if (ImGuiComponents.IconButton($"CopyWidget{hash}", FontAwesomeIcon.Copy))
+        if (ImGuiComponents.IconButton($"CopyWidget{hash}", Copy))
         {
             tracker.TrackerConfig.CleanUp();
             WidgetClipType = tracker.WidgetType;
@@ -147,15 +152,15 @@ public partial class ConfigWindow
     {
         if (!string.IsNullOrEmpty(WidgetClipType) && tracker.WidgetMenuTable.AvailableWidgets.ContainsKey(WidgetClipType))
         {
-            if (ImGuiComponents.IconButton($"PasteWidget{hash}", FontAwesomeIcon.PaintRoller))
+            if (ImGuiComponents.IconButton($"PasteWidget{hash}", PaintRoller))
             {
                 tracker.WidgetConfig = WidgetClipboard!;
-                UpdateFlag |= Reset | Save;
+                UpdateFlag |= Reset | UpdateFlags.Save;
             }
 
             if (ImGui.IsItemHovered()) ImGui.SetTooltip("Paste Copied Settings");
         }
-        else IconButtonDisabled(FontAwesomeIcon.PaintRoller);
+        else IconButtonDisabled(PaintRoller);
     }
 
     private static void AddonDropdown(Tracker tracker, int hash)
@@ -163,7 +168,7 @@ public partial class ConfigWindow
         if (!tracker.AddonDropdown.Draw($"AddonSelect{hash}", 120f)) return;
 
         tracker.AddonName = tracker.AddonDropdown.CurrentSelection;
-        UpdateFlag |= Reset | Save;
+        UpdateFlag |= Reset | UpdateFlags.Save;
     }
 
     private static void PreviewControls(Tracker tracker, int hash)
@@ -195,9 +200,23 @@ public partial class ConfigWindow
 
     private static void DeleteButton(Tracker tracker, int hash)
     {
-        if (!ImGui.IsKeyDown(ImGuiKey.ModShift)) IconButtonDisabled($"Delete{hash}", FontAwesomeIcon.TrashAlt);
-        else if (ImGuiComponents.IconButton($"Delete{hash}", FontAwesomeIcon.TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
-        if (ImGui.IsItemHovered()) ImGui.SetTooltip("Shift-Click to Delete");
+        var shift = ImGui.IsKeyDown(ModShift);
+        if (shift)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text,0xffffffff);
+            if (ImGuiComponents.IconButton($"Delete{hash}", TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
+            ImGui.PopStyleColor(1);
+        }
+        else
+        {
+            IconButtonDisabled($"Delete{hash}", TrashAlt);
+        }
+
+        if (ImGui.IsItemHovered())
+        {
+            ImGui.SetTooltip("Shift-Click to Delete");
+            if (shift) tracker.Widget?.DrawBounds(new ColorRGB(255, 0, 0).ToABGR, 2);
+        }
     }
 
     private static void EnabledCheckbox(Tracker tracker, int hash)
@@ -206,7 +225,7 @@ public partial class ConfigWindow
         if (ImGui.Checkbox($"##Enabled{hash}", ref enabled))
         {
             tracker.TrackerConfig.Enabled = enabled;
-            UpdateFlag |= Reset | Save;
+            UpdateFlag |= Reset | UpdateFlags.Save;
         }
         if (ImGui.IsItemHovered()) ImGui.SetTooltip("Enable/Disable");
     }

@@ -3,7 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -278,8 +278,6 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     public sealed class NinkiReplicaConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(0.5f)] public float Midpoint = 0.5f;
         public AddRGB BarColorLow = new(0, -70, 100);
         public AddRGB BarColorHigh = new(200, -90, -150);
@@ -309,8 +307,6 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Midpoint = config.Midpoint;
             BarColorLow = config.BarColorLow;
             BarColorHigh = config.BarColorHigh;
@@ -360,7 +356,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(229, 83));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -395,9 +391,14 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.NinkiReplicaCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Scroll;
 
     #endregion
 }

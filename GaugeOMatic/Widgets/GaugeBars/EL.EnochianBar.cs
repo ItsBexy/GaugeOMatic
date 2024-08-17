@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
@@ -197,8 +198,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public sealed class EnochianBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public int Direction;
         public float Angle;
 
@@ -230,8 +229,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Direction = config.Direction;
             Angle = config.Angle;
 
@@ -251,9 +248,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         public EnochianBarConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public EnochianBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -298,7 +294,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 .SetRotation(angle, true);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -341,8 +337,11 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
-        widgetConfig.EnochianBarCfg = Config;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     private void DimCheck(bool dimEmpty)
@@ -362,6 +361,8 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             else RevealBar();
         }
     }
+
+    public override Bounds GetBounds() => Lattice;
 
     #endregion
 }

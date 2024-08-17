@@ -77,7 +77,7 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
                                   new(950) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
                                   new(1600) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
                                   { Repeat = true, Ease = SinInOut, Label = "Pulse" };
-            Stacks.Add(new CustomNode(CreateResNode(), StackContents[i]).SetOrigin(10, 24));
+            Stacks.Add(new CustomNode(CreateResNode(), StackContents[i]).SetOrigin(10, 24).SetSize(20,48));
         }
     }
 
@@ -148,17 +148,15 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
             GlowColor = config.GlowColor;
         }
 
-        public ElementalCrystalConfig()
-        {
-            Angle = -62;
-            Curve = 18;
-            Position = new(19, 22);
-        }
+        [JsonIgnore] public override float DefaultAngle => -62f;
+        [JsonIgnore] public override float DefaultCurve => 18f;
+        [JsonIgnore] public override Vector2 DefaultPosition { get; } = new(19, 22);
+
+        public ElementalCrystalConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
-
     public ElementalCrystalConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -185,9 +183,9 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
     }
 
     public override string StackTerm => "Crystal";
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
 
         switch (UiTab)
         {
@@ -204,8 +202,11 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ElementalCrystalCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

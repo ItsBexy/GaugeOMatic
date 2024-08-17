@@ -21,7 +21,7 @@ public abstract class GaugeBarWidget : Widget
 {
     protected GaugeBarWidget(Tracker tracker) : base(tracker) { }
 
-    public abstract GaugeBarWidgetConfig GetConfig { get; }
+    public abstract override GaugeBarWidgetConfig GetConfig { get; }
     public NumTextProps NumTextProps => GetConfig.NumTextProps;
     public bool Invert => GetConfig.Invert;
     public int AnimDelay => GetConfig.AnimationLength;
@@ -198,13 +198,15 @@ public abstract class GaugeBarWidget : Widget
 
 public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
 {
-    protected GaugeBarWidgetConfig() => NumTextProps = NumTextDefault;
 
-    protected GaugeBarWidgetConfig(GaugeBarWidgetConfig? config)
+
+    protected GaugeBarWidgetConfig(GaugeBarWidgetConfig? config) : base(config)
     {
-        NumTextProps = NumTextDefault;
-
-        if (config == null) { return; }
+        if (config == null)
+        {
+            NumTextProps = NumTextDefault;
+            return;
+        }
 
         HideEmpty = config.HideEmpty;
         HideFull = config.HideFull;
@@ -215,6 +217,8 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
         MilestoneType = config.MilestoneType;
         Milestone = config.Milestone;
     }
+
+    protected GaugeBarWidgetConfig() => NumTextProps = NumTextDefault;
 
     protected virtual NumTextProps NumTextDefault => new();
     public bool HideEmpty;

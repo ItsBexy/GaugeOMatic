@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static CustomNodes.CustomNodeManager.CustomPartsList;
@@ -106,7 +108,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                                                                new(150) { Alpha = 255, ScaleX = 0.25f, ScaleY = 0.35f },
                                                                new(300) { Alpha = 0, ScaleX = 0.5f, ScaleY = 0.3f }));
 
-            stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i], Glows[i], Glows2[i], Pulsars[i]).SetPos(16 + (23 * i), i % 2 == 0 ? 23 : 17));
+            stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i], Glows[i], Glows2[i], Pulsars[i]).SetPos(16 + (23 * i), i % 2 == 0 ? 23 : 17).SetSize(32,32));
         }
 
         return stacks;
@@ -224,6 +226,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 
             if (config == null) return;
 
+            Position = config.Position;
             PlateTint = config.PlateTint;
             PlatePos = config.PlatePos;
             HidePlate = config.HidePlate;
@@ -237,9 +240,8 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         public SamuraiDiamondConfig() { }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
-
     public SamuraiDiamondConfig Config;
+    public override CounterWidgetConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -279,9 +281,9 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -314,9 +316,14 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.SamuraiDiamondCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new Bounds(new List<CustomNode> { Plate }.Concat(Stacks)).GetMaxBox();
 
     #endregion
 }

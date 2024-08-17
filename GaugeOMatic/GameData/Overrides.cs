@@ -100,6 +100,7 @@ internal static class Overrides
         25767,
         25768,
         25769,
+        25772,
         36944,
 
         // DRG

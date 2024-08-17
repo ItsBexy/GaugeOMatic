@@ -3,13 +3,12 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonEye;
-using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig;
 using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig.EyeState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -351,28 +350,26 @@ public sealed unsafe class DragonEye : StateWidget
 
     #region Configs
 
-    public class DragonEyeConfig
+    public class DragonEyeConfig : WidgetTypeConfig
     {
         public enum EyeState {Closed, HalfOpen, Open}
 
-        public Vector2 Position = new(83, 89);
-        [DefaultValue(1)] public float Scale = 1;
+        public override Vector2 DefaultPosition => new(83, 89);
+        
         public bool Mirror;
         public List<EyeState> EyeStates = new();
 
-        public DragonEyeConfig(WidgetConfig widgetConfig)
+        public DragonEyeConfig(WidgetConfig widgetConfig) : base(widgetConfig.DragonEyeCfg)
         {
             var config = widgetConfig.DragonEyeCfg;
 
             if (config == null) return;
-
-            Position = config.Position;
-            Scale = config.Scale;
+            
             Mirror = config.Mirror;
             EyeStates = config.EyeStates;
         }
 
-        public DragonEyeConfig() { }
+        public DragonEyeConfig() : base() { }
 
         public void FillLists(int maxState)
         {
@@ -381,7 +378,10 @@ public sealed unsafe class DragonEye : StateWidget
     }
 
     public DragonEyeConfig Config;
-    internal static List<EyeState> EyeStateList = new() { Closed, HalfOpen, Open };
+    public override WidgetTypeConfig GetConfig => Config;
+    public void UpdateConfigBase(ref WidgetConfig widgetConfig) => widgetConfig.DragonEyeCfg = Config;
+
+    internal static List<DragonEyeConfig.EyeState> EyeStateList = new() { Closed, HalfOpen, Open };
     public List<string> EyeStateNames = new() { "Closed", "Half-Open", "Open" };
 
     public override void InitConfigs()
@@ -402,7 +402,7 @@ public sealed unsafe class DragonEye : StateWidget
                   .SetScale(Config.Mirror ? -Config.Scale : Config.Scale, Config.Scale);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -426,12 +426,16 @@ public sealed unsafe class DragonEye : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.DragonEyeCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
-    #endregion
+    public override Bounds GetBounds() => EyeFrame;
 
+    #endregion
 }
 
 public partial class WidgetConfig

@@ -3,7 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -163,8 +163,6 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
     public sealed class BloodBladeConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
         [DefaultValue(true)] public bool Ring = true;
 
@@ -198,8 +196,6 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
             Ring = config.Ring;
 
@@ -220,9 +216,8 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         public BloodBladeConfig() => MilestoneType = Above;
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public BloodBladeConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -256,7 +251,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps,new(42,35));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -294,9 +289,14 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BloodBladeCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new(Frame, Ring);
 
     #endregion
 }

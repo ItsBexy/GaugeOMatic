@@ -3,9 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -268,24 +266,20 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     #region Configs
 
-    public class FaerieFrameConfig
+    public class FaerieFrameConfig : WidgetTypeConfig
     {
         public enum FrameState { Blank, Faerie, Seraph }
 
-        public Vector2 Position;
-        [DefaultValue(1)] public float Scale = 1;
         public List<FrameState> FrameStates = new();
         public List<AddRGB> FrameColors = new();
         public List<AddRGB> SeraphColors = new();
 
-        public FaerieFrameConfig(WidgetConfig widgetConfig)
+        public FaerieFrameConfig(WidgetConfig widgetConfig) : base(widgetConfig.FaerieFrameCfg)
         {
             var config = widgetConfig.FaerieFrameCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             FrameStates = config.FrameStates;
             FrameColors = config.FrameColors;
             SeraphColors = config.SeraphColors;
@@ -302,6 +296,7 @@ public sealed unsafe class FaerieFrame : StateWidget
     }
 
     public FaerieFrameConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -329,7 +324,7 @@ public sealed unsafe class FaerieFrame : StateWidget
     }
 
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -359,8 +354,11 @@ public sealed unsafe class FaerieFrame : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.FaerieFrameCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

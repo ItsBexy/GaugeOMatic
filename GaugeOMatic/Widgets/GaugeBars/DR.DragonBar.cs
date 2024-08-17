@@ -3,7 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -238,8 +238,6 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
     public sealed class DragonSpearConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(true)] public bool ShowDragon = true;
 
         public AddRGB DragonBg = new(0, 50, 180);
@@ -274,8 +272,6 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             ShowDragon = config.ShowDragon;
 
             DragonBg = config.DragonBg;
@@ -295,9 +291,8 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         public DragonSpearConfig() => HideEmpty = true;
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public DragonSpearConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -332,7 +327,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         HandleMilestone(CalcProg(), true);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -375,9 +370,14 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.DragonSpearCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => DragonBg;
 
     #endregion
 }

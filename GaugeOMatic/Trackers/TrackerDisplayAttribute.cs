@@ -141,7 +141,7 @@ public class TrackerDisplayAttribute : Attribute
     {
         var texture = ImGuiHelpy.GetGameIconTexture(iconId);
 
-        if (texture != null) ImGui.Image(texture.ImGuiHandle, new Vector2(40 * GlobalScale));
+        if (texture != null) ImGui.Image(texture.ImGuiHandle, new(40 * GlobalScale));
 
         ImGui.SetCursorPos(new(startPos.X + (50 * GlobalScale), startPos.Y + (2 * GlobalScale)));
     }

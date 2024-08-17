@@ -218,8 +218,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     public sealed class InkSlashConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        public Vector2 Scale = new(1, 1);
+        public new Vector2 Scale = new(1, 1);
         public AddRGB BackdropColor = new(-255);
         public AddRGB BackdropInactive = new(-255,-255,-255, 128);
         public AddRGB MainColor = new(55, -255, -255);
@@ -244,7 +243,6 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
             Scale = config.Scale;
             Rotation = config.Rotation;
             MainColor = config.MainColor;
@@ -257,9 +255,8 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         public InkSlashConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public InkSlashConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -301,7 +298,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         NumTextNode.SetPos(pos);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -328,8 +325,11 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.InkSlashCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

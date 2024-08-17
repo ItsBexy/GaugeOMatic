@@ -3,9 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -116,22 +114,17 @@ public sealed unsafe class BeastGem : StateWidget
 
     #region Configs
 
-    public class BeastGemConfig
+    public class BeastGemConfig : WidgetTypeConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> Colors = new();
         public ColorRGB BaseColor = new(100, 100, 100);
 
-        public BeastGemConfig(WidgetConfig widgetConfig)
+        public BeastGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.BeastGemCfg)
         {
             var config = widgetConfig.BeastGemCfg;
 
             if (config == null)
                 return;
-
-            Position = config.Position;
-            Scale = config.Scale;
 
             Colors = config.Colors;
             BaseColor = config.BaseColor;
@@ -149,6 +142,7 @@ public sealed unsafe class BeastGem : StateWidget
     }
 
     public BeastGemConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -173,7 +167,7 @@ public sealed unsafe class BeastGem : StateWidget
         Base.SetMultiply(Config.BaseColor);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
@@ -195,8 +189,11 @@ public sealed unsafe class BeastGem : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BeastGemCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

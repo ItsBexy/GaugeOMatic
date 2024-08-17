@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
@@ -78,12 +79,13 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     #region Configs
 
-    public class ParameterGlowConfig
+    public class ParameterGlowConfig : WidgetTypeConfig
     {
         public uint Bar;
         public AddRGB Color = new(0);
+        public bool PositionFreely; //todo: implement
 
-        public ParameterGlowConfig(WidgetConfig widgetConfig)
+        public ParameterGlowConfig(WidgetConfig widgetConfig) : base(widgetConfig.ParameterGlowCfg)
         {
             var config = widgetConfig.ParameterGlowCfg;
 
@@ -91,12 +93,14 @@ public sealed unsafe class ParameterGlow : StateWidget
 
             Bar = config.Bar;
             Color = config.Color;
+            PositionFreely = config.PositionFreely;
         }
 
         public ParameterGlowConfig() { }
     }
 
     public ParameterGlowConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -114,7 +118,7 @@ public sealed unsafe class ParameterGlow : StateWidget
         WidgetContainer.SetPos(barNode.X, barNode.Y);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -128,9 +132,14 @@ public sealed unsafe class ParameterGlow : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ParameterGlowCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => BarGlow;
 
     #endregion
 }

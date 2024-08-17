@@ -2,8 +2,8 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
-using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -67,9 +67,9 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         Mask = ClippingMaskFromPart(1, 0).SetPos(5, 3);
 
         NumTextNode = new();
-        LabelTextNode = new LabelTextNode(Config.LabelTextProps.Text, Tracker.DisplayAttr.Name);
-        Gain = new CustomNode();
-        Drain = new CustomNode();
+        LabelTextNode = new(Config.LabelTextProps.Text, Tracker.DisplayAttr.Name);
+        Gain = new();
+        Drain = new();
 
         Fill1 = ImageNodeFromPart(0, 5)
          .SetImageWrap(2)
@@ -126,7 +126,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
             new(TickMark, new(0) { ScaleX = 0.5f }, new(160) { ScaleX = 0.7f }, new(280) { ScaleX = 0.5f }) { Repeat = true }
         };
 
-        FillBox = new CustomNode(CreateResNode(), Main, Mask, TickWrapper);
+        FillBox = new(CreateResNode(), Main, Mask, TickWrapper);
 
         ColorBackdrop = ImageNodeFromPart(0, 1).DefineTimeline(BgTimeline);
         GreyBackdrop = ImageNodeFromPart(0, 0);
@@ -279,8 +279,6 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 
     public sealed class KazematoiSwooshBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position = new(0);
-        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
         public bool Mirror;
         public AddRGB MainColor = new(64, 0, 128);
@@ -307,8 +305,6 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
             MainColor = config.MainColor;
             BgFullColor = config.BgFullColor;
@@ -322,9 +318,8 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         public KazematoiSwooshBarConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public KazematoiSwooshBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -352,7 +347,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         LabelTextNode.ApplyProps(Config.LabelTextProps, new(-43,100));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -381,9 +376,14 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.KazematoiSwooshBarCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Mask;
 
     #endregion
 }

@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
@@ -62,10 +63,10 @@ public sealed unsafe class ManaDiamond : CounterWidget
     public override CustomNode BuildContainer()
     {
         Max = GetMax();
-        SocketPlate = BuildSocketPlate(Max, out var size);
+        SocketPlate = BuildSocketPlate(Max, out var width);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(size/2, 30.5f);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(width/2, 30.5f).SetSize(width,61);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -230,7 +231,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     #endregion
 
-    #region Configs
+    #region Configs // todo: add rotation
 
     public class ManaDiamondConfig : CounterWidgetConfig
     {
@@ -253,9 +254,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
         public ManaDiamondConfig() { }
     }
 
-    public override CounterWidgetConfig GetConfig => Config;
-
     public ManaDiamondConfig Config;
+    public override CounterWidgetConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -269,9 +269,9 @@ public sealed unsafe class ManaDiamond : CounterWidget
         StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -291,9 +291,14 @@ public sealed unsafe class ManaDiamond : CounterWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ManaDiamondCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 }

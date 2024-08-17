@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
@@ -154,8 +155,6 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     {
         public enum CircleStyles { CW, CCW, Erode }
 
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB Color = new(200);
         [DefaultValue(true)] public bool Dodge = true;
         [DefaultValue(CCW)] public CircleStyles Direction = CCW;
@@ -167,8 +166,6 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Color = config.Color;
             Dodge = config.Dodge;
             Direction = config.Direction;
@@ -176,9 +173,9 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
         public SimpleCircleConfig() { }
     }
-    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public SimpleCircleConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -199,7 +196,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(38, 80));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -223,9 +220,14 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
-        widgetConfig.SimpleCircleCfg = Config;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => new(LeftContainer, RightContainer);
 
     #endregion
 }

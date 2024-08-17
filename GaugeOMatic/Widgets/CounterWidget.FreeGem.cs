@@ -23,6 +23,7 @@ namespace GaugeOMatic.Widgets;
 
 [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
 [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
+[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local")]
 public abstract class FreeGemCounter : CounterWidget
 {
     protected FreeGemCounter(Tracker tracker) : base(tracker) { }
@@ -132,26 +133,35 @@ public abstract class FreeGemCounter : CounterWidget
         index = Clamp(index, 0, Stacks.Count - 1);
     }
 
-    private void ListControls()
+    private bool ListControls()
     {
+
         var i = GetConfig.ListIndex;
         var layout = GetConfig.LayoutList![i];
         var pos = new Vector2(layout.X, layout.Y);
 
-        if ((ListMask & 0b100) > 0 && PositionControls($"Position##pos{i}", ref pos)) layout = layout with { X = pos.X, Y = pos.Y };
-        if ((ListMask & 0b010) > 0) AngleControls($"Angle##angle{i}", ref layout.Z);
-        if ((ListMask & 0b001) > 0) ScaleControls($"Scale##scale{i}", ref layout.W);
+
+        var input1 = (ListMask & 0b100) > 0 && PositionControls($"Position##pos{i}", ref pos);
+
+        if (input1) layout = layout with { X = pos.X, Y = pos.Y };
+
+        var input2 = (ListMask & 0b010) > 0 && AngleControls($"Angle##angle{i}", ref layout.Z);
+        var input3 = (ListMask & 0b001) > 0 && ScaleControls($"Scale##scale{i}", ref layout.W);
+
+
 
         GetConfig.LayoutList[i] = layout;
+
+        return input1 || input2 || input3;
     }
 
     protected virtual Vector2 AdjustedGemPos(int i, double x, double y, float gemAngle) => new((float)x, (float)y);
     protected virtual float AdjustedGemAngle(int i, float widgetAngle) => (GetConfig.Curve * (i - 0.5f)) + GetConfig.GemAngle;
     protected virtual Vector2 GemFlipFactor(float gemAngle, float widgetAngle) => new(1, 1);
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
 
         switch (UiTab)
         {
@@ -161,17 +171,7 @@ public abstract class FreeGemCounter : CounterWidget
         }
     }
 
-    public float MaxScale => Math.Max(GetConfig.Scale, GetConfig.ScaleShift * (Stacks.Count / 10) * GetConfig.Scale);
-
-    public override void DrawBounds(uint col = 0xffffffff)
-    {
-          foreach (var edge in GetConcaveHull(Stacks, Math.Max(GetConfig.Spacing/2f,80), MaxScale))
-              ImGui.GetBackgroundDrawList().AddLine(edge.A, edge.B, col);
-
-
-          /*  foreach (var edge in GetMaxBox(Stacks))
-                ImGui.GetBackgroundDrawList().AddLine(edge.A, edge.B, col);*/
-    }
+    public override Bounds GetBounds() => Stacks;
 }
 
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
@@ -182,7 +182,7 @@ public abstract class FreeGemCounterConfig : CounterWidgetConfig
 
     public ArrangementStyle Arrangement = Arc;
     public ColorStyles ColorStyle = Same;
-    public float Spacing = 20;
+    public float Spacing;
     public float GemAngle;
     public float Angle;
     public float Curve;
@@ -193,7 +193,14 @@ public abstract class FreeGemCounterConfig : CounterWidgetConfig
 
     protected FreeGemCounterConfig(FreeGemCounterConfig? config) : base(config)
     {
-        if (config == null) { return; }
+        if (config == null)
+        {
+            Spacing = DefaultSpacing;
+            Angle = DefaultAngle;
+            Curve = DefaultCurve;
+            LayoutList = null;
+            return;
+        }
 
         Arrangement = config.Arrangement;
         ColorStyle = config.ColorStyle;
@@ -207,13 +214,16 @@ public abstract class FreeGemCounterConfig : CounterWidgetConfig
 
     protected FreeGemCounterConfig()
     {
-        Spacing = 20;
-        Angle = 0;
-        Curve = 0;
+        Spacing = DefaultSpacing;
+        Angle = DefaultAngle;
+        Curve = DefaultCurve;
         LayoutList = null;
     }
 
     public virtual float SpacingModifier => 1;
+    [JsonIgnore] public virtual float DefaultSpacing => 20;
+    [JsonIgnore] public virtual float DefaultCurve => 0;
+    [JsonIgnore] public virtual float DefaultAngle => 0;
 
     public void PrepareLists(int i)
     {

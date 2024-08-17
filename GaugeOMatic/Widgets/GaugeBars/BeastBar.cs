@@ -4,8 +4,8 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -174,8 +174,6 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
     public sealed class BeastBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public float Angle;
 
         public AddRGB BGColor = new(0, 0, 0);
@@ -207,11 +205,8 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         {
             var config = widgetConfig.BeastBarCfg;
 
-            if (config == null)
-                return;
+            if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Angle = config.Angle;
 
             BGColor = config.BGColor;
@@ -232,9 +227,8 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         public BeastBarConfig() => MilestoneType = Above;
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public BeastBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -277,7 +271,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                      .SetWidth(172);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -315,8 +309,10 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         }
 
         if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
             ApplyConfigs();
-        widgetConfig.BeastBarCfg = Config;
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -324,6 +320,8 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new List<FontAwesomeIcon> { ArrowRight, ArrowLeft };
+
+    public override Bounds GetBounds() => Frame;
 
     #endregion
 }

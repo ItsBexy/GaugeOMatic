@@ -3,9 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
@@ -153,26 +151,22 @@ public sealed unsafe class ElementOrb : StateWidget
 
     #region Configs
 
-    public class ElementOrbConfig
+    public class ElementOrbConfig : WidgetTypeConfig
     {
         public enum OrbBase { Grey = 24, Blue = 1, Red = 2 }
 
         public float CrescentAngle;
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> HaloColors = new();
         public List<AddRGB> OrbModifiers = new();
         public List<AddRGB> OrbPulses = new();
         public List<OrbBase> BaseColors = new();
-        public Vector2 Position;
 
-        public ElementOrbConfig(WidgetConfig widgetConfig)
+        public ElementOrbConfig(WidgetConfig widgetConfig) : base(widgetConfig.ElementOrbCfg)
         {
             var config = widgetConfig.ElementOrbCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             CrescentAngle = config.CrescentAngle;
 
             BaseColors = config.BaseColors;
@@ -213,6 +207,7 @@ public sealed unsafe class ElementOrb : StateWidget
     }
 
     public ElementOrbConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -240,7 +235,7 @@ public sealed unsafe class ElementOrb : StateWidget
         SetupPulse(Config.GetOrbPulse(state));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
@@ -271,8 +266,11 @@ public sealed unsafe class ElementOrb : StateWidget
         }
         Heading("Layout");
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.ElementOrbCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

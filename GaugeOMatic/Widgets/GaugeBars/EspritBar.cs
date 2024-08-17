@@ -3,7 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -197,8 +197,6 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public sealed class EspritBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(true)] public bool ShowPlate = true;
         public float Angle;
         [DefaultValue(true)] public bool Clockwise = true;
@@ -231,8 +229,6 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             ShowPlate = config.ShowPlate;
             Clockwise = config.Clockwise;
             Angle = config.Angle;
@@ -251,9 +247,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         public EspritBarConfig() => MilestoneType = Above;
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public EspritBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -297,7 +292,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new(100, 62));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -334,9 +329,14 @@ public sealed unsafe class EspritBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
-        widgetConfig.EspritBarCfg = Config;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => FanPlate;
 
     #endregion
 }

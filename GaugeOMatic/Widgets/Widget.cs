@@ -2,20 +2,20 @@ using CustomNodes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using ImGuiNET;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Game.ClientState.Conditions.ConditionFlag;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
-using static Newtonsoft.Json.JsonConvert;
 using static System.Activator;
+using static CustomNodes.CustomNode;
+
+// ReSharper disable VirtualMemberCallInConstructor
 
 namespace GaugeOMatic.Widgets;
 
@@ -35,7 +35,7 @@ public abstract unsafe class Widget : IDisposable
         Addon = (AtkUnitBase*)GameGui.GetAddonByName(Tracker.AddonName);
 
         WidgetContainer = BuildContainer();
-        WidgetRoot = new CustomNode(CreateResNode(), WidgetContainer);
+        WidgetRoot = new(CreateResNode(), WidgetContainer);
         WidgetRoot.AssembleNodeTree();
         Attach();
 
@@ -49,15 +49,17 @@ public abstract unsafe class Widget : IDisposable
         var type = Type.GetType($"{typeof(Widget).Namespace}.{tracker.WidgetType}");
 
         return type == null ? null :
-                   string.IsNullOrEmpty(tracker.AddonName) ? null :
-                       (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
-                       (Widget?)CreateInstance(type, tracker);
+               string.IsNullOrEmpty(tracker.AddonName) ? null :
+               (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
+               (Widget?)CreateInstance(type, tracker);
     }
 
     public abstract WidgetInfo WidgetInfo { get; }
     public Tracker Tracker { get; set; }
     public TrackerConfig TrackerConfig => Tracker.TrackerConfig;
     public AtkUnitBase* Addon;
+
+    public abstract WidgetTypeConfig GetConfig { get; }
 
     public Animator Animator = new();
     public CustomNode WidgetContainer;
@@ -87,7 +89,7 @@ public abstract unsafe class Widget : IDisposable
 
     public WidgetUiTab UiTab { get; set; } = Layout;
 
-    public virtual void DrawUI(ref WidgetConfig widgetConfig) { }
+    public virtual void DrawUI() { }
     public abstract void Update();
     public abstract void InitConfigs();
     public abstract void ResetConfigs();
@@ -115,7 +117,7 @@ public abstract unsafe class Widget : IDisposable
         if (IsVisible) return;
 
         IsVisible = true;
-        Animator += new Tween(WidgetRoot, WidgetRoot, new (100) { Alpha = 255 });
+        Animator += new Tween(WidgetRoot, WidgetRoot, new(100) { Alpha = 255 });
     }
 
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
@@ -128,6 +130,7 @@ public abstract unsafe class Widget : IDisposable
     }
 
     public Dictionary<string, Action<SharedEventArgs?>> SharedEvents = new();
+
     public void InvokeSharedEvent(string group, string eventLabel, SharedEventArgs? args = null)
     {
         foreach (var widget in Tracker.JobModule.WidgetList.Where(widget => widget?.SharedEventGroup == group))
@@ -145,7 +148,8 @@ public abstract unsafe class Widget : IDisposable
             return level >= TrackerConfig.LevelMin && level <= TrackerConfig.LevelMax;
         }
 
-        bool CheckFlags() => !TrackerConfig.HideOutsideCombatDuty || Condition.Any(InCombat, BoundByDuty, BoundByDuty56, BoundByDuty95, InDeepDungeon);
+        bool CheckFlags() => !TrackerConfig.HideOutsideCombatDuty ||
+                             Condition.Any(InCombat, BoundByDuty, BoundByDuty56, BoundByDuty95, InDeepDungeon);
 
         if (!ClientState.IsPvP && (Tracker.UsePreviewValue || (CheckLevel() && CheckFlags())))
             Show();
@@ -153,35 +157,19 @@ public abstract unsafe class Widget : IDisposable
             Hide();
     }
 
-    // ReSharper disable once UnusedMember.Global
-    public virtual void DrawBounds(uint col = 0xffffffff)
+    public virtual Bounds GetBounds() => WidgetRoot.GetDescendants().Where(static n => n.Size.X > 0 && n.Size.Y > 0 && n.Visible).ToList();
+
+    public void DrawBounds(uint col = 0xffffffffu, int thickness = 1)
     {
-        if (WidgetContainer.TryGetBounds(out var bounds) && bounds?.Length >= 4)
-            ImGui.GetBackgroundDrawList().AddQuad(bounds[0], bounds[1], bounds[2], bounds[3], col);
+        var bounds = GetBounds();
+
+        if (bounds.ContainsCursor())
+        {
+            col = 0xff00ff00;
+            thickness = 2;
+        }
+
+        bounds.Draw(col, thickness);
     }
 }
 
-public partial class WidgetConfig // each widget contributes a part to this in its own file
-{
-    public string? WidgetType { get; set; }
-    public static implicit operator string(WidgetConfig w) => SerializeObject(w, Json.JsonSettings);
-    public static implicit operator WidgetConfig?(string s) => DeserializeObject<WidgetConfig>(s) ?? null;
-
-    public WidgetConfig CleanUp(string? widgetType)
-    {
-        foreach (var p in
-                 from p in typeof(WidgetConfig).GetProperties()
-                 where p.GetValue(this) != null
-                 let decType = p.PropertyType.DeclaringType?.Name
-                 where decType != null && decType != widgetType
-                 select p)
-            p.SetValue(this, null);
-
-        return this;
-    }
-}
-
-public abstract class WidgetTypeConfig
-{
-
-}

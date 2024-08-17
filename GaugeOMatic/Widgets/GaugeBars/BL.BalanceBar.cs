@@ -229,8 +229,6 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public sealed class BalanceBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public AddRGB MainColor = new(0);
         public AddRGB GainColor = new(100, -20, -20);
         public AddRGB DrainColor = new(255, -100, -100);
@@ -259,8 +257,6 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             MainColor = config.MainColor;
             GainColor = config.GainColor;
             DrainColor = config.DrainColor;
@@ -275,9 +271,8 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         public BalanceBarConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public BalanceBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -311,7 +306,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new Vector2(left ? 32 : 83, 172));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -345,8 +340,11 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.BalanceBarCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

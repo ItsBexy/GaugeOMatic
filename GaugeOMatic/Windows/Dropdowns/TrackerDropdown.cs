@@ -64,11 +64,11 @@ public class TrackerDropdown : BranchingDropdown
 
         StatusOptionsUnfiltered = Sheets.AllStatuses;
 
-        ActionOptions = new List<MenuOption>(ActionData.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
-                                                      .Select(static a => (MenuOption)a.Value)
-                                                      .OrderBy(static a => a.Name));
+        ActionOptions = new(ActionData.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
+                                      .Select(static a => (MenuOption)a.Value)
+                                      .OrderBy(static a => a.Name));
 
-        SubMenus = new List<(string label, List<MenuOption> options)>
+        SubMenus = new()
         {
             ("Status Effects", StatusOptions),
             ("Actions", ActionOptions),

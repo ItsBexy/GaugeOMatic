@@ -57,22 +57,22 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Slots = new List<CustomNode>();
-        Stacks = new List<CustomNode>();
-        Knives = new List<CustomNode>();
-        Knives1 = new List<CustomNode>();
-        Knives2 = new List<CustomNode>();
+        Slots = new();
+        Stacks = new();
+        Knives = new();
+        Knives1 = new();
+        Knives2 = new();
 
         for (var i = 0; i < count; i++)
         {
             Slots.Add(ImageNodeFromPart(0, 4).SetImageWrap(2));
             Knives1.Add(ImageNodeFromPart(0, 2).SetImageWrap(2));
-            Knives2.Add(new CustomNode(CreateResNode(), ImageNodeFromPart(0, 3).SetImageWrap(2)));
+            Knives2.Add(new(CreateResNode(), ImageNodeFromPart(0, 3).SetImageWrap(2)));
 
             SetupKnifePulse1(i);
             SetupKnifePulse2(i);
 
-            Knives.Add(new CustomNode(CreateResNode(), Knives1[i], Knives2[i]));
+            Knives.Add(new(CreateResNode(), Knives1[i], Knives2[i]));
 
             Stacks.Add(new CustomNode(CreateResNode(), Slots[i], Knives[i]).SetOrigin(9, 69).SetSize(46,78));
         }
@@ -207,28 +207,12 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
             HideEmpty = config.HideEmpty;
         }
 
-        public KazematoiKunaiConfig()
-        {
-            Spacing = 23;
-        }
-    }
-
-    public override FreeGemCounterConfig GetConfig => Config;
-
-    protected override Vector2 AdjustedGemPos(int i, double x, double y, float gemAngle)
-    {
-        var even = i % 2 == 0;
-        var x2 = even && Config.Stagger ? 5 : 0;
-        var y2 = !even && Config.Stagger ? 16 : 0;
-
-        var cos = Cos(gemAngle);
-        var sin = Sin(gemAngle);
-
-        return new((float)((x2 * cos) - (y2 * sin) + x),
-                   (float)((y2 * cos) + (x2 * sin) + y));
+        [JsonIgnore] public override float DefaultSpacing => 23;
+        public KazematoiKunaiConfig() { }
     }
 
     public KazematoiKunaiConfig Config;
+    public override FreeGemCounterConfig GetConfig => Config;
 
     public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
 
@@ -247,10 +231,23 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
         }
     }
 
-    public override string StackTerm => "Knife";
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    protected override Vector2 AdjustedGemPos(int i, double x, double y, float gemAngle)
     {
-        base.DrawUI(ref widgetConfig);
+        var even = i % 2 == 0;
+        var x2 = even && Config.Stagger ? 5 : 0;
+        var y2 = !even && Config.Stagger ? 16 : 0;
+
+        var cos = Cos(gemAngle);
+        var sin = Sin(gemAngle);
+
+        return new((float)((x2 * cos) - (y2 * sin) + x),
+                   (float)((y2 * cos) + (x2 * sin) + y));
+    }
+
+    public override string StackTerm => "Knife";
+    public override void DrawUI()
+    {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -271,8 +268,11 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.KazematoiKunaiCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

@@ -41,10 +41,10 @@ public partial class ActionRef
         var frameTex = FrameTex;
         if (texture != null && frameTex != null)
         {
-            ImGui.Image(texture.ImGuiHandle, new Vector2(40 * GlobalScale));
+            ImGui.Image(texture.ImGuiHandle, new(40 * GlobalScale));
             ImGui.SetCursorPos(startPos - (new Vector2(4, 3) * GlobalScale));
 
-            ImGui.Image(frameTex.ImGuiHandle, new Vector2(48 * GlobalScale));
+            ImGui.Image(frameTex.ImGuiHandle, new(48 * GlobalScale));
             ImGui.SameLine();
         }
 

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -287,8 +288,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public sealed class AddersBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(144)] public float Width = 144;
         public float Angle;
         public bool ShowPlate;
@@ -324,8 +323,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
             ShowPlate = config.ShowPlate;
@@ -349,9 +346,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         public AddersBarConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public AddersBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -407,7 +403,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width / 2) + 88, 11.5f));
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -449,8 +445,11 @@ public sealed unsafe class AddersBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
-        widgetConfig.AddersBarCfg = Config;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -458,6 +457,9 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
+
+
+    public override Bounds GetBounds() => new(Frame, Config.ShowPlate ? Plate : Frame);
 
     #endregion
 }

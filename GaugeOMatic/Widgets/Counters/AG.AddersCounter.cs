@@ -318,10 +318,10 @@ public sealed unsafe class AddersCounter : FreeGemCounter
             HideEmpty = config.HideEmpty;
         }
 
-        public AddersCounterConfig()
-        {
-            Spacing = 30;
-        }
+        [JsonIgnore]
+        public override float DefaultSpacing => 30;
+
+        public AddersCounterConfig() { }
     }
 
     public override FreeGemCounterConfig GetConfig => Config;
@@ -347,9 +347,9 @@ public sealed unsafe class AddersCounter : FreeGemCounter
         }
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
-        base.DrawUI(ref widgetConfig);
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
@@ -370,8 +370,11 @@ public sealed unsafe class AddersCounter : FreeGemCounter
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.AddersCounterCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

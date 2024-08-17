@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
@@ -127,8 +128,6 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public sealed class SimpleBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(160)] public float Width = 160;
         public float Angle;
 
@@ -160,8 +159,6 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
 
@@ -180,9 +177,8 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         public SimpleBarConfig() { }
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public SimpleBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -222,7 +218,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
                      .SetWidth(Config.Width);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -258,9 +254,14 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.SimpleBarCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Frame;
 
     #endregion
 }

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -306,8 +307,6 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public sealed class OathBarConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         [DefaultValue(166)] public float Width = 166;
         public float Angle;
         [DefaultValue(true)] public bool ShowFiligree = true;
@@ -346,8 +345,6 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Width = config.Width;
             Angle = config.Angle;
             ShowFiligree = config.ShowFiligree;
@@ -371,9 +368,8 @@ public sealed unsafe class OathBar : GaugeBarWidget
         public OathBarConfig() => MilestoneType = Above;
     }
 
-    public override GaugeBarWidgetConfig GetConfig => Config;
-
     public OathBarConfig Config;
+    public override GaugeBarWidgetConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -451,7 +447,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -499,8 +495,11 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(UpdateFlags.Save)) ApplyConfigs();
-        widgetConfig.OathBarCfg = Config;
+        if (UpdateFlag.HasFlag(UpdateFlags.Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -508,6 +507,8 @@ public sealed unsafe class OathBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
+
+    public override Bounds GetBounds() => new(FrameL, FrameR);
 
     #endregion
 }

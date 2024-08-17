@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -59,22 +61,26 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
                                       .SetAlpha(0)
                                       .SetImageFlag(32)
                                       .SetImageWrap(1)
+                                      .RemoveFlags(SetVisByAlpha)
                                       .DefineTimeline(BarTimeline);
 
         BorderBottom = ImageNodeFromPart(0, 1).SetPos(11, 77)
                                               .SetAlpha(0)
                                               .SetImageFlag(32)
                                               .SetImageWrap(1)
+                                              .RemoveFlags(SetVisByAlpha)
                                               .DefineTimeline(BarTimeline);
 
         TickTop = ImageNodeFromPart(0, 2).SetPos(0,-16)
                                          .SetOrigin(22, 43.5f)
                                          .SetScale(0.5f, 0.15f)
+                                         .RemoveFlags(SetVisByAlpha)
                                          .DefineTimeline(TickTimeline);
 
         TickBottom = ImageNodeFromPart(0, 2).SetPos(0, 38)
                                             .SetOrigin(22, 43.5f)
                                             .SetScale(0.5f, 0.15f)
+                                            .RemoveFlags(SetVisByAlpha)
                                             .DefineTimeline(TickTimeline);
 
         Shine = ImageNodeFromPart(0, 2).SetAlpha(0)
@@ -162,8 +168,6 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public sealed class NinkiBordersConfig : GaugeBarWidgetConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1f)] public float Scale = 1;
         public ColorRGB BorderColor = new(255, 90, 0);
         public ColorRGB TickColor = new(255, 195, 144);
         [DefaultValue(true)] public bool Top = true;
@@ -185,8 +189,6 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             BorderColor = config.BorderColor;
             TickColor = config.TickColor;
             Top = config.Top;
@@ -211,10 +213,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
     {
         WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
 
-
-        //(ushort)Math.Round((prog * 190f) + 10f)
-        BorderTop.SetVis(Config.Top)
-                 .SetRGB((Vector4)Config.BorderColor);
+        BorderTop.SetVis(Config.Top).SetRGB((Vector4)Config.BorderColor);
         TickTop.SetVis(Config.Top).SetRGB((Vector4)Config.TickColor);
 
         Shine.SetRGB(Config.TickColor);
@@ -226,7 +225,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         NumTextNode.ApplyProps(Config.NumTextProps);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -254,8 +253,19 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.NinkiBordersCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
+    }
+
+    public override Bounds GetBounds()
+    {
+        var nodes = new List<CustomNode>();
+        if (Config.Top) nodes.Add(BorderTop);
+        if (Config.Bottom) nodes.Add(BorderBottom);
+        return nodes;
     }
 
     #endregion

@@ -3,9 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -125,22 +123,16 @@ public sealed unsafe class OathGem : StateWidget
 
     #region Configs
 
-    public class OathGemConfig
+    public class OathGemConfig : WidgetTypeConfig
     {
-        public Vector2 Position;
-        [DefaultValue(1)] public float Scale = 1;
         public List<AddRGB> Colors = new();
         public ColorRGB FrameColor = new(100, 100, 100);
 
-        public OathGemConfig(WidgetConfig widgetConfig)
+        public OathGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.OathGemCfg)
         {
             var config = widgetConfig.OathGemCfg;
 
-            if (config == null)
-                return;
-
-            Position = config.Position;
-            Scale = config.Scale;
+            if (config == null) return;
 
             Colors = config.Colors;
             FrameColor = config.FrameColor;
@@ -158,6 +150,7 @@ public sealed unsafe class OathGem : StateWidget
     }
 
     public OathGemConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public override void InitConfigs()
     {
@@ -187,7 +180,7 @@ public sealed unsafe class OathGem : StateWidget
         Frame.SetMultiply(Config.FrameColor);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
@@ -212,8 +205,11 @@ public sealed unsafe class OathGem : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.OathGemCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
 
     #endregion

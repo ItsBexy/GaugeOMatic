@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
@@ -170,22 +170,18 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     #region Configs
 
-    public class HeatOverlayConfig
+    public class HeatOverlayConfig : WidgetTypeConfig
     {
-        public Vector2 Position = new(0, 0);
-        [DefaultValue(1)] public float Scale = 1;
         [DefaultValue(148)] public float Width = 148;
         public List<AddRGB> Colors = new();
         public float Angle;
 
-        public HeatOverlayConfig(WidgetConfig widgetConfig)
+        public HeatOverlayConfig(WidgetConfig widgetConfig) : base(widgetConfig.HeatOverlayCfg)
         {
             var config = widgetConfig.HeatOverlayCfg;
 
             if (config == null) return;
 
-            Position = config.Position;
-            Scale = config.Scale;
             Width = config.Width;
             Colors = config.Colors;
             Angle = config.Angle;
@@ -200,6 +196,7 @@ public sealed unsafe class HeatOverlay : StateWidget
     }
 
     public HeatOverlayConfig Config;
+    public override WidgetTypeConfig GetConfig => Config;
 
     public readonly AddRGB ColorOffset = new(-86, 75, 79);
 
@@ -234,7 +231,7 @@ public sealed unsafe class HeatOverlay : StateWidget
             .SetAddRGB(color + ColorOffset);
     }
 
-    public override void DrawUI(ref WidgetConfig widgetConfig)
+    public override void DrawUI()
     {
         switch (UiTab)
         {
@@ -256,9 +253,14 @@ public sealed unsafe class HeatOverlay : StateWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save)) ApplyConfigs();
-        widgetConfig.HeatOverlayCfg = Config;
+        if (UpdateFlag.HasFlag(Save))
+        {
+            ApplyConfigs();
+            Config.WriteToTracker(Tracker);
+        }
     }
+
+    public override Bounds GetBounds() => Glow;
 
     #endregion
 }
