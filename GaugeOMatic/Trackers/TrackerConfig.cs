@@ -8,6 +8,7 @@ using System.Linq;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.ParamRef;
+using static GaugeOMatic.Widgets.WidgetAttribute;
 using static Newtonsoft.Json.JsonConvert;
 
 namespace GaugeOMatic.Trackers;
@@ -78,4 +79,6 @@ public class TrackerConfig
     }
 
     public void DrawTooltip() => GetDisplayAttr().DrawTooltip(TrackerType, ItemId);
+
+    [JsonIgnore] public string WidgetDisplayName => WidgetList.TryGetValue(WidgetType ?? string.Empty, out var result) ? result.DisplayName : "";
 }

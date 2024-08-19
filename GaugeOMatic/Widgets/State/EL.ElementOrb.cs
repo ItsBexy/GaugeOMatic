@@ -12,29 +12,23 @@ using static GaugeOMatic.Widgets.ElementOrb;
 using static GaugeOMatic.Widgets.ElementOrb.ElementOrbConfig.OrbBase;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Elemental Orb")]
+[WidgetDescription("A widget recreating the orb on BLM's elemental gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | MultiComponent | Replica)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("EL", "Elemental Gauge Replica", 2)]
 public sealed unsafe class ElementOrb : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Elemental Orb",
-        Author = "ItsBexy",
-        Description = "A widget recreating the orb on BLM's elemental gauge.",
-        WidgetTags = State | MultiComponent | Replica,
-        MultiCompData = new("EL", "Elemental Gauge Replica", 2),
-        UiTabOptions = Layout | Colors
-    };
+    public ElementOrb(Tracker tracker) : base(tracker) { }
 
     public override CustomPartsList[] PartsLists { get; } = { BLM0 };
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-    public ElementOrb(Tracker tracker) : base(tracker) { }
 
     #region Nodes
 
@@ -206,18 +200,19 @@ public sealed unsafe class ElementOrb : StateWidget
         }
     }
 
-    public ElementOrbConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private ElementOrbConfig config;
+
+    public override ElementOrbConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -237,12 +232,11 @@ public sealed unsafe class ElementOrb : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Crescent Angle", ref Config.CrescentAngle);
                 break;
             case Colors:
@@ -263,13 +257,6 @@ public sealed unsafe class ElementOrb : StateWidget
                 break;
             default:
                 break;
-        }
-        Heading("Layout");
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

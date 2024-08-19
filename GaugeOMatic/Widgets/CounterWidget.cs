@@ -15,7 +15,7 @@ public abstract class CounterWidget : Widget
 {
     protected CounterWidget(Tracker tracker) : base(tracker) { }
 
-    public abstract override CounterWidgetConfig GetConfig { get; }
+    public abstract override CounterWidgetConfig Config { get; }
 
     public virtual void OnFirstRun(int count, int max) { }
 
@@ -34,7 +34,7 @@ public abstract class CounterWidget : Widget
     public bool FirstRun = true;
 
     public int Max;
-    public int GetMax() => GetConfig.AsTimer ? GetConfig.TimerSize : Tracker.GetCurrentData().MaxCount;
+    public int GetMax() => Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
     public unsafe void SizeChange()
     {
         Detach();
@@ -56,13 +56,13 @@ public abstract class CounterWidget : Widget
         int current;
         int previous;
 
-        if (GetConfig.AsTimer)
+        if (Config.AsTimer)
         {
-            max = GetConfig.TimerSize;
+            max = Config.TimerSize;
             current = (int)Ceiling(Clamp(Tracker.CurrentData.GaugeValue / Tracker.CurrentData.MaxGauge, 0, 1) * max);
             previous = (int)Ceiling(Clamp(Tracker.PreviousData.GaugeValue / Tracker.CurrentData.MaxGauge, 0, 1) * max);
 
-            if (GetConfig.InvertTimer)
+            if (Config.InvertTimer)
             {
                 current = max - current;
                 previous = max - previous;
@@ -113,21 +113,18 @@ public abstract class CounterWidget : Widget
     {
         if (term == "Cooldown") term = "Timer";
 
-        if (ToggleControls($"Use as {term}", ref GetConfig.AsTimer)) SizeChange();
-        if (!GetConfig.AsTimer) return;
+        if (ToggleControls($"Use as {term}", ref Config.AsTimer)) SizeChange();
+        if (!Config.AsTimer) return;
 
-        if (ToggleControls($"Invert {term}", ref GetConfig.InvertTimer)) FirstRun = true;
-        if (IntControls($"{term} Size", ref GetConfig.TimerSize, 1, 60, 1)) SizeChange();
+        if (ToggleControls($"Invert {term}", ref Config.InvertTimer)) FirstRun = true;
+        if (IntControls($"{term} Size", ref Config.TimerSize, 1, 60, 1)) SizeChange();
     }
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref GetConfig.Position);
-                ScaleControls("Scale", ref GetConfig.Scale);
-                break;
             case Behavior:
                 CounterAsTimerControls(Tracker.TermGauge);
                 break;

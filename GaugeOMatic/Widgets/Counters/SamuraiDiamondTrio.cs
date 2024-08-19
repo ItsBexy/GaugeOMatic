@@ -19,7 +19,6 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.SamuraiDiamondTrio;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.IO.Path;
 
@@ -27,20 +26,14 @@ using static System.IO.Path;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Meditation Gems")]
+[WidgetDescription("A counter imitating the Meditation Stack display on Samurai's Kenki Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class SamuraiDiamondTrio : CounterWidget
 {
     public SamuraiDiamondTrio(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Meditation Gems",
-        Author = "ItsBexy",
-        Description = "A counter imitating the Meditation Stack display on Samurai's Kenki Gauge. Appropriate for anything that stacks up to exactly 3.",
-        WidgetTags = Counter | Replica,
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { SAM0, new(AssetFromFile(Combine(PluginDirPath, @"TextureAssets\MedDiamondSingleFrame.tex")),new Vector4(0,0,64,64)) };
 
@@ -53,6 +46,8 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     public List<CustomNode> Pulsars;
     public List<CustomNode> Frames;
     public CustomNode Plate;
+
+    public override Bounds GetBounds() => new Bounds(new List<CustomNode> { Plate }.Concat(Stacks)).GetMaxBox();
 
     public override CustomNode BuildContainer()
     {
@@ -240,14 +235,16 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         public SamuraiDiamondConfig() { }
     }
 
-    public SamuraiDiamondConfig Config;
-    public override CounterWidgetConfig GetConfig => Config;
+    private SamuraiDiamondConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override SamuraiDiamondConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     private static AddRGB GemTintOffset = new(-9, 47, 91);
+
     public override void ApplyConfigs()
     {
         if (Max >= 5)
@@ -297,8 +294,6 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                         if (Max >= 5) IntControls("Plate Position", ref Config.PlatePos, 0, Max - 3, 2);
                     }
                 }
-
-
                 break;
             case Colors:
                 ColorPickerRGB("Gem Color", ref Config.GemTint);
@@ -315,15 +310,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new Bounds(new List<CustomNode> { Plate }.Concat(Stacks)).GetMaxBox();
 
     #endregion
 }

@@ -13,7 +13,6 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.PalettePearl;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -21,20 +20,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Palette Pearls")]
+[WidgetDescription("A counter based on Pictomancer's White/Black Paint stacks.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class PalettePearl : FreeGemCounter
 {
     public PalettePearl(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Palette Pearls",
-        Author = "ItsBexy",
-        Description = "A counter based on Pictomancer's White/Black Paint stacks",
-        WidgetTags = Counter | Replica,
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { PCT1 };
 
@@ -278,12 +271,13 @@ public sealed unsafe class PalettePearl : FreeGemCounter
         public PalettePearlConfig() { }
     }
 
-    public PalettePearlConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private PalettePearlConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override PalettePearlConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -313,13 +307,12 @@ public sealed unsafe class PalettePearl : FreeGemCounter
     }
 
     public override string StackTerm => "Pearl";
+
     public override void DrawUI()
     {
         base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 RadioControls("Base Color", ref Config.BasePearl, new() { 0, 1 }, new() { "White Paint", "Black Paint" });
 
@@ -353,12 +346,6 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

@@ -21,13 +21,13 @@ public abstract class GaugeBarWidget : Widget
 {
     protected GaugeBarWidget(Tracker tracker) : base(tracker) { }
 
-    public abstract override GaugeBarWidgetConfig GetConfig { get; }
-    public NumTextProps NumTextProps => GetConfig.NumTextProps;
-    public bool Invert => GetConfig.Invert;
-    public int AnimDelay => GetConfig.AnimationLength;
+    public abstract override GaugeBarWidgetConfig Config { get; }
+    public NumTextProps NumTextProps => Config.NumTextProps;
+    public bool Invert => Config.Invert;
+    public int AnimDelay => Config.AnimationLength;
 
-    public float Milestone => GetConfig.Milestone;
-    public MilestoneType MilestoneType => GetConfig.MilestoneType;
+    public float Milestone => Config.Milestone;
+    public MilestoneType MilestoneType => Config.MilestoneType;
     public float GainTolerance { get; set; } = 0.049f;
     public float DrainTolerance { get; set; } = 0.049f;
 
@@ -42,7 +42,7 @@ public abstract class GaugeBarWidget : Widget
         Main.SetProgress(prog);
         Gain.SetProgress(0);
         Drain.SetProgress(0);
-        if ((prog <= 0 && GetConfig.HideEmpty) || (prog >= 1 && GetConfig.HideFull)) HideBar(true);
+        if ((prog <= 0 && Config.HideEmpty) || (prog >= 1 && Config.HideFull)) HideBar(true);
     }
 
     // handlers that can be used to trigger animations/behaviours at certain progress points
@@ -51,10 +51,10 @@ public abstract class GaugeBarWidget : Widget
 
     public virtual void OnDecrease(float prog, float prevProg) { }
 
-    public virtual void OnDecreaseToMin() { if (GetConfig.HideEmpty) HideBar(); }
-    public virtual void OnIncreaseFromMin() { if (GetConfig.HideEmpty) RevealBar(); }
-    public virtual void OnDecreaseFromMax() { if (GetConfig.HideFull) RevealBar(); }
-    public virtual void OnIncreaseToMax() { if (GetConfig.HideFull) HideBar(); }
+    public virtual void OnDecreaseToMin() { if (Config.HideEmpty) HideBar(); }
+    public virtual void OnIncreaseFromMin() { if (Config.HideEmpty) RevealBar(); }
+    public virtual void OnDecreaseFromMax() { if (Config.HideFull) RevealBar(); }
+    public virtual void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
 
     public virtual void PlaceTickMark(float prog) { }
 
@@ -104,7 +104,7 @@ public abstract class GaugeBarWidget : Widget
         var prog = CalcProg();
         var prevProg = CalcProg(true);
 
-        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+        if (Config.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
 
         NumTextNode.UpdateValue(current, max);
         PreUpdate(prog, prevProg);
@@ -174,21 +174,21 @@ public abstract class GaugeBarWidget : Widget
 
     public bool HideControls(string labelE, string labelF)
     {
-        var emptyToggle = ToggleControls(labelE, ref GetConfig.HideEmpty);
-        var fullToggle = ToggleControls(labelF, ref GetConfig.HideFull);
+        var emptyToggle = ToggleControls(labelE, ref Config.HideEmpty);
+        var fullToggle = ToggleControls(labelF, ref Config.HideFull);
 
         var isEmpty = Tracker.CurrentData.GaugeValue == 0;
         var isFull = Math.Abs(Tracker.CurrentData.GaugeValue - MaxGauge) < 0.01f;
 
-        if (emptyToggle && (isEmpty || (GetConfig.Invert && isFull)))
+        if (emptyToggle && (isEmpty || (Config.Invert && isFull)))
         {
-            if (GetConfig.HideEmpty) HideBar();
+            if (Config.HideEmpty) HideBar();
             else RevealBar();
         }
 
-        if (fullToggle && ((GetConfig.Invert && isEmpty) || isFull))
+        if (fullToggle && ((Config.Invert && isEmpty) || isFull))
         {
-            if (GetConfig.HideFull) HideBar();
+            if (Config.HideFull) HideBar();
             else RevealBar();
         }
 

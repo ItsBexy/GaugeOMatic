@@ -11,10 +11,8 @@ using static GaugeOMatic.Widgets.BalanceOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -22,21 +20,15 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Balance Gauge Overlay")]
+[WidgetDescription("A glowing gauge bar fitted over the Balance Gauge (or a replica of it).")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent | HasAddonRestrictions | HasClippingMask)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[MultiCompData("BL", "Balance Gauge Replica", 3)]
 public sealed unsafe class BalanceOverlay : GaugeBarWidget
 {
     public BalanceOverlay(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Balance Gauge Overlay",
-        Author = "ItsBexy",
-        Description = "A glowing gauge bar fitted over the Balance Gauge (or a replica of it)",
-        WidgetTags = GaugeBar | MultiComponent | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons,
-        MultiCompData = new("BL", "Balance Gauge Replica", 3)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudRDM0.tex",
@@ -73,6 +65,8 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
     public CustomNode CrystalGlow;
     public CustomNode Tick;
     public CustomNode PlateMask;
+
+    public override Bounds GetBounds() => Plate;
 
     public override CustomNode BuildContainer()
     {
@@ -185,12 +179,13 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
         public BalanceOverlayConfig() { }
     }
 
-    public BalanceOverlayConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private BalanceOverlayConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override BalanceOverlayConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -205,12 +200,9 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 ColorPickerRGBA("Color", ref Config.Color);
                 ColorPickerRGBA("Tick Color", ref Config.TickColor);
@@ -225,15 +217,7 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Plate;
 
     #endregion
 }

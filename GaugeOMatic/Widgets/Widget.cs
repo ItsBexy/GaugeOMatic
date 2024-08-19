@@ -6,14 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Game.ClientState.Conditions.ConditionFlag;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.WidgetAttribute;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Activator;
-using static CustomNodes.CustomNode;
+using static System.Array;
 
 // ReSharper disable VirtualMemberCallInConstructor
 
@@ -27,10 +29,7 @@ public abstract unsafe class Widget : IDisposable
         Tracker = tracker;
         InitConfigs();
 
-        if (!WidgetInfo.AddonPermitted(Tracker.AddonName))
-        {
-            Tracker.AddonName = Tracker.JobModule.AddonOptions.First(a => WidgetInfo.AddonPermitted(a.Name)).Name;
-        }
+        if (!GetAttributes.AddonPermitted(Tracker.AddonName)) Tracker.AddonName = Tracker.JobModule.AddonOptions.First(a => GetAttributes.AddonPermitted(a.Name)).Name;
 
         Addon = (AtkUnitBase*)GameGui.GetAddonByName(Tracker.AddonName);
 
@@ -54,18 +53,19 @@ public abstract unsafe class Widget : IDisposable
                (Widget?)CreateInstance(type, tracker);
     }
 
-    public abstract WidgetInfo WidgetInfo { get; }
     public Tracker Tracker { get; set; }
     public TrackerConfig TrackerConfig => Tracker.TrackerConfig;
     public AtkUnitBase* Addon;
 
-    public abstract WidgetTypeConfig GetConfig { get; }
+    public WidgetAttribute GetAttributes => WidgetList.TryGetValue(GetType().Name, out var widgetInfo)?widgetInfo : new();
+
+    public abstract WidgetTypeConfig Config { get; }
 
     public Animator Animator = new();
     public CustomNode WidgetContainer;
     public CustomNode WidgetRoot;
     public virtual CustomNode BuildContainer() => new(CreateResNode());
-    public virtual CustomPartsList[] PartsLists { get; } = Array.Empty<CustomPartsList>();
+    public virtual CustomPartsList[] PartsLists { get; } = Empty<CustomPartsList>();
 
     public void Dispose()
     {
@@ -89,7 +89,19 @@ public abstract unsafe class Widget : IDisposable
 
     public WidgetUiTab UiTab { get; set; } = Layout;
 
-    public virtual void DrawUI() { }
+    public virtual void DrawUI()
+    {
+        switch (UiTab)
+        {
+            case Layout:
+                PositionControls("Position", ref Config.Position);
+                ScaleControls("Scale", ref Config.Scale);
+                break;
+            default:
+                break;
+        }
+    }
+
     public abstract void Update();
     public abstract void InitConfigs();
     public abstract void ResetConfigs();
@@ -159,17 +171,11 @@ public abstract unsafe class Widget : IDisposable
 
     public virtual Bounds GetBounds() => WidgetRoot.GetDescendants().Where(static n => n.Size.X > 0 && n.Size.Y > 0 && n.Visible).ToList();
 
-    public void DrawBounds(uint col = 0xffffffffu, int thickness = 1)
+    public void DrawBounds(uint col = 0xffffffffu, int thickness = 1) => GetBounds().Draw(col, thickness);
+
+    public virtual void ChangeScale(float amt)
     {
-        var bounds = GetBounds();
-
-        if (bounds.ContainsCursor())
-        {
-            col = 0xff00ff00;
-            thickness = 2;
-        }
-
-        bounds.Draw(col, thickness);
+        Config.Scale += 0.05f * amt;
     }
 }
 

@@ -28,20 +28,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Oath Bar")]
+[WidgetDescription("A recreation of Paladin's Oath Gauge Bar.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica | MultiComponent)]
+[MultiCompData("OA", "Oath Gauge Replica", 2)]
 public sealed unsafe class OathBar : GaugeBarWidget
 {
     public OathBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Oath Bar",
-        Author = "ItsBexy",
-        Description = "A recreation of Paladin's Oath Gauge Bar",
-        WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("OA", "Oath Gauge Replica", 2)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudPLD.tex",
@@ -73,17 +67,16 @@ public sealed unsafe class OathBar : GaugeBarWidget
     public CustomNode FrameL;
     public CustomNode FrameR;
     public LabelTextNode LabelTextNode;
-
     public CustomNode Glow;
     public CustomNode GlowL;
     public CustomNode GlowR;
-
     public CustomNode TickMark;
-
     public CustomNode Effects;
     public CustomNode Halo;
     public CustomNode Shine;
     public CustomNode Streak;
+
+    public override Bounds GetBounds() => new(FrameL, FrameR);
 
     public override CustomNode BuildContainer()
     {
@@ -368,12 +361,13 @@ public sealed unsafe class OathBar : GaugeBarWidget
         public OathBarConfig() => MilestoneType = Above;
     }
 
-    public OathBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private OathBarConfig config;
+
+    public override OathBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.OathBarCfg == null)
         {
             Config.MilestoneType = Above;
@@ -381,7 +375,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -449,11 +443,10 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, Config.ShowFiligree ? 100 : 32, 2000, 1);
                 AngleControls("Angle", ref Config.Angle);
                 RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
@@ -494,12 +487,6 @@ public sealed unsafe class OathBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -507,8 +494,6 @@ public sealed unsafe class OathBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
-
-    public override Bounds GetBounds() => new(FrameL, FrameR);
 
     #endregion
 }

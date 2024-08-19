@@ -11,10 +11,8 @@ using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.TargetReticle;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -22,21 +20,15 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Target Reticle")]
+[WidgetDescription("A revolving reticle that appears while the tracker's condition is met.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
+[WidgetUiTabs(Layout | Colors)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 public sealed unsafe class TargetReticle : StateWidget
 {
     public TargetReticle(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Target Reticle",
-        Author = "ItsBexy",
-        Description = "A revolving reticle that appears while the tracker's condition is met.",
-        WidgetTags = State | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons,
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } =
     {
@@ -53,6 +45,8 @@ public sealed unsafe class TargetReticle : StateWidget
     public CustomNode InnerHalo;
     public CustomNode InnerHaloFill;
     public CustomNode InnerHaloMask;
+
+    public override Bounds GetBounds() => new Bounds(WidgetContainer) - (new Vector2(112.5f) * Config.Scale);
 
     public override CustomNode BuildContainer()
     {
@@ -199,18 +193,19 @@ public sealed unsafe class TargetReticle : StateWidget
         }
     }
 
-    public TargetReticleConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private TargetReticleConfig config;
+
+    public override TargetReticleConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -228,11 +223,10 @@ public sealed unsafe class TargetReticle : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Speed", ref Config.Speed, -200, 200, 1f);
                 break;
             case Colors:
@@ -246,15 +240,7 @@ public sealed unsafe class TargetReticle : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new Bounds(WidgetContainer) - (new Vector2(112.5f) * Config.Scale);
 
     #endregion
 }

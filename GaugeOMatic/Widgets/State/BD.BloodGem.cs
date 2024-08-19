@@ -12,29 +12,23 @@ using static GaugeOMatic.Widgets.BloodGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Blood Gem")]
+[WidgetDescription("A widget recreating the tank stance gem for DRK.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("BD", "Blood Gauge Replica", 1)]
 public sealed unsafe class BloodGem : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Blood Gem",
-        Author = "ItsBexy",
-        Description = "A widget recreating the tank stance gem for DRK.",
-        WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("BD", "Blood Gauge Replica", 1),
-        UiTabOptions = Layout | Colors
-    };
+    public BloodGem(Tracker tracker) : base(tracker) { }
 
     public override CustomPartsList[] PartsLists { get; } = { DRK0 };
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-    public BloodGem(Tracker tracker) : base(tracker) { }
 
     #region Nodes
 
@@ -47,19 +41,19 @@ public sealed unsafe class BloodGem : StateWidget
     public override CustomNode BuildContainer()
     {
         Ring = ImageNodeFromPart(0, 0).SetPos(-16, -19)
-                                      .SetOrigin(48,44)
+                                      .SetOrigin(48, 44)
                                       .SetImageWrap(1);
 
         BlueHalo = ImageNodeFromPart(0, 8).SetOrigin(50, 50)
-                                          .SetAddRGB(-146,9,245)
+                                          .SetAddRGB(-146, 9, 245)
                                           .SetAlpha(0);
 
         Gem = ImageNodeFromPart(0, 11).SetPos(23, 25)
                                       .SetOrigin(28, 28)
                                       .SetImageWrap(1);
 
-        GemWrapper = new CustomNode(CreateResNode(),BlueHalo,Gem).SetPos(-22,-26)
-                                                                 .SetOrigin(50,50);
+        GemWrapper = new CustomNode(CreateResNode(), BlueHalo, Gem).SetPos(-22, -26)
+                                                                 .SetOrigin(50, 50);
 
         PinkHalo = ImageNodeFromPart(0, 9).SetAddRGB(-255)
                                           .SetAlpha(0)
@@ -68,12 +62,53 @@ public sealed unsafe class BloodGem : StateWidget
                                           .SetImageWrap(1)
                                           .SetImageFlag(32);
 
-        return new(CreateResNode(),Ring,GemWrapper,PinkHalo);
+        return new(CreateResNode(), Ring, GemWrapper, PinkHalo);
     }
 
     #endregion
 
     #region Animations
+
+    private void ActivateAnim(AddRGB flashColor, AddRGB gemColor) =>
+        Animator += new Tween[]
+        {
+            new(Gem,
+                new(0) { AddRGB = new(0, -8, -8), MultRGB = new(100, 100, 100), PartId = 11 },
+                new(99.9f) { AddRGB = flashColor, MultRGB = new(100, 80, 80), PartId = 11 },
+                new(100.1f) { AddRGB = gemColor + flashColor, MultRGB = new(100, 80, 80), PartId = 5 },
+                new(175) { AddRGB = gemColor, MultRGB = new(100, 100, 100), PartId = 5 })
+                { Ease = SinInOut },
+
+            new(BlueHalo,
+                new(0) { Scale = 0.5f },
+                new(150) { Scale = 1 })
+        };
+
+    private void BeginHaloSpin()
+    {
+        Animator -= "HaloSpin";
+        Animator += new Tween(BlueHalo,
+                              new(0) { Rotation = 0 },
+                              new(975) { Rotation = 0.785398163397448f },
+                              new(1950) { Rotation = 1.5707963267949f })
+        { Repeat = true, Label = "HaloSpin" };
+    }
+
+    private void BeginHaloPulse(int current)
+    {
+        var haloColor = Config.GetHaloColor(current) + HaloOffset;
+        var haloColor2 = Config.GetHaloColor2(current) + HaloOffset;
+
+        Animator -= "HaloPulse";
+        Animator += new Tween[]
+        {
+            new(BlueHalo,
+                new(0) { Alpha = 229, AddRGB = haloColor },
+                new(975) { Alpha = 255, AddRGB = haloColor2 },
+                new(1950) { Alpha = 229, AddRGB = haloColor })
+                { Repeat = true, Label = "HaloPulse" }
+        };
+    }
 
     #endregion
 
@@ -97,19 +132,7 @@ public sealed unsafe class BloodGem : StateWidget
 
         var flashColor = gemColor.Transform(-80, 0);
 
-        Animator += new Tween[]
-        {
-            new(Gem,
-                new(0) { AddRGB = new(0, -8, -8), MultRGB = new(100, 100, 100), PartId = 11 },
-                new(99.9f) { AddRGB = flashColor, MultRGB = new(100, 80, 80), PartId = 11 },
-                new(100.1f) { AddRGB = gemColor + flashColor, MultRGB = new(100, 80, 80), PartId = 5 },
-                new(175) { AddRGB = gemColor, MultRGB = new(100, 100, 100), PartId = 5 })
-                { Ease = SinInOut },
-
-            new(BlueHalo,
-                new(0) { Scale = 0.5f },
-                new(150) { Scale = 1 })
-        };
+        ActivateAnim(flashColor, gemColor);
 
         BeginHaloSpin();
         BeginHaloPulse(current);
@@ -126,34 +149,8 @@ public sealed unsafe class BloodGem : StateWidget
 
     public override void StateChange(int current, int previous)
     {
-        Animator += new Tween(Gem, new(0,Gem), new(150){AddRGB = Config.GetGemColor(current) + GemOffset});
+        Animator += new Tween(Gem, new(0, Gem), new(150) { AddRGB = Config.GetGemColor(current) + GemOffset });
         BeginHaloPulse(current);
-    }
-
-    private void BeginHaloSpin()
-    {
-        Animator -= "HaloSpin";
-        Animator += new Tween(BlueHalo,
-                              new(0) { Rotation = 0 },
-                              new(975) { Rotation = 0.785398163397448f },
-                              new(1950) { Rotation = 1.5707963267949f })
-                              { Repeat = true, Label = "HaloSpin" };
-    }
-
-    private void BeginHaloPulse(int current)
-    {
-        var haloColor = Config.GetHaloColor(current) + HaloOffset;
-        var haloColor2 = Config.GetHaloColor2(current) + HaloOffset;
-
-        Animator -= "HaloPulse";
-        Animator += new Tween[]
-        {
-            new(BlueHalo,
-                new(0) { Alpha = 229, AddRGB = haloColor },
-                new(975) { Alpha = 255, AddRGB = haloColor2 },
-                new(1950) { Alpha = 229, AddRGB = haloColor })
-                { Repeat = true, Label = "HaloPulse" }
-        };
     }
 
     #endregion
@@ -189,28 +186,29 @@ public sealed unsafe class BloodGem : StateWidget
         public void FillColorLists(int max)
         {
             while (GemColors.Count <= max) GemColors.Add(new(60, -63, -41));
-            while (HaloColors.Count <= max) HaloColors.Add(new(-72,15,174));
+            while (HaloColors.Count <= max) HaloColors.Add(new(-72, 15, 174));
             while (HaloColors2.Count <= max) HaloColors2.Add(new(-222, 24, 423));
         }
     }
 
-    public BloodGemConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private BloodGemConfig config;
+
+    public override BloodGemConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
-    public AddRGB GemOffset = new(-60,63,41);
-    public AddRGB HaloOffset = new(72,-15,-74);
+    public AddRGB GemOffset = new(-60, 63, 41);
+    public AddRGB HaloOffset = new(72, -15, -74);
     public override void ApplyConfigs()
     {
         WidgetContainer.SetPos(Config.Position + new Vector2(14));
@@ -228,12 +226,11 @@ public sealed unsafe class BloodGem : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 ToggleControls("Show Ring", ref Config.Ring);
                 break;
             case Colors:
@@ -253,12 +250,6 @@ public sealed unsafe class BloodGem : StateWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

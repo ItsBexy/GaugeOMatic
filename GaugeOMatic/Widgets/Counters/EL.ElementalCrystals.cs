@@ -13,28 +13,21 @@ using static GaugeOMatic.Widgets.ElementalCrystals;
 using static GaugeOMatic.Widgets.ElementalCrystals.ElementalCrystalConfig.BaseColors;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Elemental Crystals")]
+[WidgetDescription("A counter based on BLM's element stack display.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
+[MultiCompData("EL", "Elemental Gauge Replica", 4)]
 public sealed unsafe class ElementalCrystals : FreeGemCounter
 {
     public ElementalCrystals(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Elemental Crystals",
-        Author = "ItsBexy",
-        Description = "A counter based on BLM's element stack display.",
-        WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("EL", "Elemental Gauge Replica", 4),
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
@@ -155,12 +148,13 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
         public ElementalCrystalConfig() { }
     }
 
-    public ElementalCrystalConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private ElementalCrystalConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override ElementalCrystalConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -183,29 +177,20 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
     }
 
     public override string StackTerm => "Crystal";
+
     public override void DrawUI()
     {
         base.DrawUI();
 
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, true);
                 ColorPickerRGB("Color Modifier", ref Config.CrystalColor);
                 ColorPickerRGB("Glow Color", ref Config.GlowColor);
                 break;
-            case Behavior:
-                break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

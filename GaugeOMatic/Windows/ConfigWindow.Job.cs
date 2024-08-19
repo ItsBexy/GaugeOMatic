@@ -1,4 +1,3 @@
-using Dalamud.Interface;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
@@ -6,11 +5,14 @@ using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System.Collections.Generic;
 using static CustomNodes.CustomNode;
+using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static ImGuiNET.ImGuiKey;
+using static ImGuiNET.ImGuiMouseButton;
 using static ImGuiNET.ImGuiTableColumnFlags;
 using static ImGuiNET.ImGuiTableFlags;
 
@@ -38,13 +40,13 @@ public partial class ConfigWindow
             ImGui.EndTabBar();
         }
 
-        WidgetDragCheck();
+        HandleDrag();
 
         if (UpdateFlag.HasFlag(Rebuild)) jobModule.RebuildTrackerList();
         else if (UpdateFlag.HasFlag(Reset)) jobModule.ResetWidgets();
         else if (UpdateFlag.HasFlag(SoftReset)) jobModule.SoftReset();
 
-        if (UpdateFlag.HasFlag(Save)) jobModule.Save();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) jobModule.Save();
     }
 
     private static void TweakTab(JobModule jobModule)
@@ -82,14 +84,23 @@ public partial class ConfigWindow
 
             TableHeadersRowNoHover(new(1));
 
-            DrawTrackerRows(jobModule);
+            var hoveringOther = DragTarget != null;
+            var hoverBounds = hoveringOther ? DragTarget?.GetBounds() : null;
+
+            foreach (var tracker in jobModule.DrawOrder)
+            {
+                var hovered = HoverCheck(ref hoveringOther, ref hoverBounds, tracker.Widget?.GetBounds(), tracker);
+                DrawTrackerRow(tracker, hovered);
+            }
+
+            hoverBounds?.Draw(new Color.ColorRGB(0, 255, 100).ToABGR, 2);
 
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
-            if (IconButtonWithText("Add", FontAwesomeIcon.Plus, "AddButton")) jobModule.AddBlankTracker();
+            if (IconButtonWithText("Add", Plus, "AddButton")) jobModule.AddBlankTracker();
 
             ImGui.TableNextColumn();
-            if (IconButtonWithText("Presets", FontAwesomeIcon.ObjectGroup,"PresetButton")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
+            if (IconButtonWithText("Presets", ObjectGroup,"PresetButton")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
 
             ImGui.EndTable();
         }
@@ -97,56 +108,45 @@ public partial class ConfigWindow
         ImGui.Spacing();
         ImGui.Spacing();
         ImGui.Spacing();
-        WriteIcon(FontAwesomeIcon.ArrowsUpDownLeftRight,null,new(255,255,255,128));
-        ImGui.TextDisabled("Press Shift to click and drag widgets onscreen");
+        WriteIcon(ArrowsUpDownLeftRight,null,new(255,255,255,128));
+        ImGui.TextDisabled("Shift + Click & Drag to reposition widgets");
+
+        WriteIcon(ExpandAlt, null, new(255, 255, 255, 128));
+        ImGui.TextDisabled("Shift + Scroll to resize widgets");
 
         ImGui.EndTabItem();
     }
 
-    private static void DrawTrackerRows(JobModule jobModule)
-    {
-        var hoveringOther = false;
-        Bounds? hoverBounds = null;
-
-        if (DragTarget != null)
-        {
-            hoveringOther = true;
-            hoverBounds = DragTarget.GetBounds();
-        }
-
-        foreach (var tracker in jobModule.DrawOrder)
-        {
-            DrawTrackerRow(tracker, HoverCheck(ref hoveringOther, ref hoverBounds, tracker.Widget?.GetBounds(), tracker));
-        }
-
-        hoverBounds?.Draw(new Color.ColorRGB(0, 255, 100).ToABGR, 2);
-    }
-
     private static bool HoverCheck(ref bool hoveringOther, ref Bounds? hoverBounds, Bounds? bounds, Tracker tracker)
     {
+        if (!ImGui.IsKeyDown(ModShift)) return false;
+
         var hoveringThis = false;
-        if (ImGui.IsKeyDown(ImGuiKey.ModShift))
+
+        if (!hoveringOther && bounds?.ContainsCursor() == true)
         {
-            if (hoveringOther || bounds?.ContainsCursor() != true)
-            {
-                bounds?.Draw(0xaaffffff);
-            }
-            else
-            {
-                ImGui.SetNextFrameWantCaptureMouse(true);
-                hoveringThis = true;
-                hoverBounds = bounds;
+            ImGui.SetNextFrameWantCaptureMouse(true);
+            hoveringThis = true;
+            hoverBounds = bounds;
 
-                if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-                {
-                    Dragging = true;
-                    DragStart = tracker.Widget?.GetConfig.Position;
-                    DragTarget = tracker.Widget;
-                }
-
-                hoveringOther = true;
+            var wheel = ImGui.GetIO().MouseWheel;
+            if (wheel != 0)
+            {
+                tracker.Widget?.ChangeScale(wheel);
+                tracker.WriteWidgetConfig();
+                UpdateFlag |= UpdateFlags.Save;
             }
+
+            if (ImGui.IsMouseClicked(Left))
+            {
+                Dragging = true;
+                DragStart = tracker.Widget?.Config.Position;
+                DragTarget = tracker.Widget;
+            }
+
+            hoveringOther = true;
         }
+        else bounds?.Draw(0xaaffffff);
 
         return hoveringThis;
     }
@@ -155,13 +155,13 @@ public partial class ConfigWindow
     public static System.Numerics.Vector2? DragStart;
     public static Widget? DragTarget;
 
-    private static void WidgetDragCheck()
+    private static void HandleDrag()
     {
         if (!Dragging) return;
 
         ImGui.SetNextFrameWantCaptureMouse(true);
-        var click = ImGui.IsMouseDown(ImGuiMouseButton.Left);
-        var shift = ImGui.IsKeyDown(ImGuiKey.ModShift);
+        var click = ImGui.IsMouseDown(Left);
+        var shift = ImGui.IsKeyDown(ModShift);
 
         var dragValid = DragTarget != null && DragStart != null;
 
@@ -171,16 +171,16 @@ public partial class ConfigWindow
             {
                 var scale = DragTarget!.WidgetRoot.GetAbsoluteScale();
                 var delta = ImGui.GetMouseDragDelta();
-                DragTarget.GetConfig.Position = DragStart!.Value + (shift ? delta / scale : new(0));
-                DragTarget.ApplyConfigs();
+                DragTarget.Config.Position = DragStart!.Value + (shift ? delta / scale : new(0));
+                DragTarget.Tracker.WriteWidgetConfig();
             }
         }
         else
         {
             if (shift)
             {
-                DragTarget?.GetConfig.WriteToTracker(DragTarget.Tracker);
-                UpdateFlag |= Save;
+                DragTarget?.Tracker.WriteWidgetConfig();
+                UpdateFlag |= UpdateFlags.Save;
             }
 
             Dragging = false;

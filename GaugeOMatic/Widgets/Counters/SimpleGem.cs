@@ -26,22 +26,16 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Simple Gems")]
+[WidgetDescription("A counter based on Simple Mode job gauges.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class SimpleGem : FreeGemCounter
 {
     public SimpleGem(Tracker tracker) : base(tracker) { }
 
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Simple Gems",
-        Author = "ItsBexy",
-        Description = "A counter based on Simple Mode job gauges.",
-        WidgetTags = Counter | Replica,
-        UiTabOptions = Layout | Colors | Behavior
-    };
-
-    public static Vector4[] Coords = {
+    public static readonly Vector4[] Coords = {
         new(0, 0, 64, 64), new(64, 0, 64, 64),        // 0,1   Diamond
         new(0, 64, 64, 64), new(64, 64, 64, 64),      // 2,3   Hollow Diamond
         new(0, 128, 64, 64), new(64, 128, 64, 64),    // 4,5   Chevron
@@ -236,12 +230,13 @@ public sealed unsafe class SimpleGem : FreeGemCounter
         public SimpleGemConfig() { }
     }
 
-    public SimpleGemConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private SimpleGemConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override SimpleGemConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -341,12 +336,6 @@ public sealed unsafe class SimpleGem : FreeGemCounter
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

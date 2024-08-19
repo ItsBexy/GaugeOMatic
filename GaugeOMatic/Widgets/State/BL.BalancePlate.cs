@@ -10,26 +10,20 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalancePlate;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Balance Gauge Backplate")]
+[WidgetDescription("A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(MultiComponent | Replica | State)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("BL", "Balance Gauge Replica", 1)]
 public sealed unsafe class BalancePlate : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Balance Gauge Backplate",
-        Author = "ItsBexy",
-        Description =
-            "A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.",
-        WidgetTags = MultiComponent | Replica | State,
-        MultiCompData = new("BL", "Balance Gauge Replica", 1),
-        UiTabOptions = Layout | Colors
-    };
-
     public override CustomPartsList[] PartsLists { get; } =
     {
         new("ui/uld/JobHudRDM0.tex",
@@ -56,9 +50,7 @@ public sealed unsafe class BalancePlate : StateWidget
             new(150, 0, 34, 144))
     };
 
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public BalancePlate(Tracker tracker) : base(tracker) => SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(WidgetContainer, Config!.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y, ref Animator));
+    public BalancePlate(Tracker tracker) : base(tracker) => SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(WidgetContainer, Config.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y, ref Animator));
 
     #region Nodes
 
@@ -68,6 +60,8 @@ public sealed unsafe class BalancePlate : StateWidget
     public CustomNode Crystal;
     public CustomNode CrystalGlow;
     public CustomNode Star;
+
+    public override Bounds GetBounds() => Plate;
 
     public override CustomNode BuildContainer()
     {
@@ -191,14 +185,15 @@ public sealed unsafe class BalancePlate : StateWidget
         }
     }
 
-    public BalancePlateConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private BalancePlateConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override BalancePlateConfig Config => config;
+
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -215,13 +210,10 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 for (var i = 0; i <= Tracker.CurrentData.MaxState; i++)
                 {
@@ -238,15 +230,7 @@ public sealed unsafe class BalancePlate : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Plate;
 
     #endregion
 }

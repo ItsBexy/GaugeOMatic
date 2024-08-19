@@ -20,7 +20,7 @@ public static class WidgetUI
 {
     [Flags]
     public enum UpdateFlags { Save = 0x1, Reset = 0x2, SoftReset = 0x4, Rebuild = 0x8 }
-    public static UpdateFlags UpdateFlag;
+    internal static UpdateFlags UpdateFlag;
 
     [Flags]
     public enum WidgetUiTab

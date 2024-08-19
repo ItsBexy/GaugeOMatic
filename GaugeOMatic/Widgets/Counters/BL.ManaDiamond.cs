@@ -13,28 +13,21 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.ManaDiamond;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Mana Diamonds")]
+[WidgetDescription("A recreation of Red Mage's Mana Stack counter.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | MultiComponent | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
+[MultiCompData("BL", "Balance Gauge Replica", 4)]
 public sealed unsafe class ManaDiamond : CounterWidget
 {
     public ManaDiamond(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Mana Diamonds",
-        Author = "ItsBexy",
-        Description = "A recreation of Red Mage's Mana Stack counter",
-        WidgetTags = Counter | MultiComponent | Replica,
-        MultiCompData = new("BL", "Balance Gauge Replica", 4),
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudRDM0.tex",
@@ -59,6 +52,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
     public List<CustomNode> Gems = new();
     public List<CustomNode> Glows = new();
     public List<CustomNode> GemContainers = new();
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     public override CustomNode BuildContainer()
     {
@@ -254,14 +249,16 @@ public sealed unsafe class ManaDiamond : CounterWidget
         public ManaDiamondConfig() { }
     }
 
-    public ManaDiamondConfig Config;
-    public override CounterWidgetConfig GetConfig => Config;
+    private ManaDiamondConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override ManaDiamondConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public AddRGB ColorOffset = new(-65, 120, 120);
+
     public override void ApplyConfigs()
     {
         WidgetContainer.SetPos(Config.Position);
@@ -274,8 +271,6 @@ public sealed unsafe class ManaDiamond : CounterWidget
         base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 ColorPickerRGB("Gem Color", ref Config.GemColor);
                 break;
@@ -290,15 +285,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 }

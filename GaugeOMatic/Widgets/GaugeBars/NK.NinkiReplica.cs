@@ -14,7 +14,6 @@ using static GaugeOMatic.Widgets.NinkiReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -22,20 +21,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Ninki Scroll")]
+[WidgetDescription("A recreation of Ninja's Ninki Gauge. Lights up in a different color when it reaches the halfway point, making it great for tracking actions with 2 charges.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent | Replica)]
+[MultiCompData("NK", "Ninki Gauge Replica", 1)]
 public sealed unsafe class NinkiReplica : GaugeBarWidget
 {
     public NinkiReplica(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Ninki Scroll",
-        Author = "ItsBexy",
-        Description = "A recreation of Ninja's Ninki Gauge. Lights up in a different color when it reaches the halfway point, making it great for tracking actions with 2 charges.",
-        WidgetTags = GaugeBar | MultiComponent | Replica,
-        MultiCompData = new("NK", "Ninki Gauge Replica", 1)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudNIN0.tex",
@@ -59,7 +52,6 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     public CustomNode CalligraphyFlash1;
     public CustomNode Cloud1;
     public CustomNode Cloud2;
-
     public CustomNode GaugeBarV;
     public CustomNode GaugeBarH;
     public CustomNode ScrollImage;
@@ -68,14 +60,14 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
     public CustomNode TopBorder;
     public CustomNode BottomBorder;
     public CustomNode CalligraphyFlash2;
-
     public CustomNode DrainV;
     public CustomNode GainV;
     public CustomNode MainV;
-
     public CustomNode DrainH;
     public CustomNode GainH;
     public CustomNode MainH;
+
+    public override Bounds GetBounds() => Scroll;
 
     public override CustomNode BuildContainer()
     {
@@ -322,16 +314,17 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         public NinkiReplicaConfig() { }
     }
 
-    public NinkiReplicaConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private NinkiReplicaConfig config;
+
+    public override NinkiReplicaConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.NinkiReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -358,12 +351,9 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 Heading("Horizontal Section");
 
@@ -390,15 +380,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Scroll;
 
     #endregion
 }

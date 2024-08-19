@@ -13,28 +13,21 @@ using static GaugeOMatic.Widgets.BatteryOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Battery Gauge Overlay")]
+[WidgetDescription("An electrical overlay over the Battery Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("HT", "Heat Gauge Replica", 4)]
 public sealed unsafe class BatteryOverlay : StateWidget
 {
     public BatteryOverlay(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Battery Gauge Overlay",
-        Author = "ItsBexy",
-        Description = "An electrical overlay over the Battery Gauge",
-        WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("HT", "Heat Gauge Replica", 4),
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
@@ -44,16 +37,16 @@ public sealed unsafe class BatteryOverlay : StateWidget
     public CustomNode ClockOverlay;
     public CustomNode Ring;
     public CustomNode Glow;
-
     public CustomNode ElecWrapper1;
     public CustomNode Elec1;
     public CustomNode Elec2;
     public CustomNode Elec3;
-
     public CustomNode ElecWrapper2;
     public CustomNode Elec4;
     public CustomNode Elec5;
     public CustomNode Elec6;
+
+    public override Bounds GetBounds() => ClockOverlay;
 
     public override CustomNode BuildContainer()
     {
@@ -224,18 +217,19 @@ public sealed unsafe class BatteryOverlay : StateWidget
         }
     }
 
-    public BatteryOverlayConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private BatteryOverlayConfig config;
+
+    public override BatteryOverlayConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -261,11 +255,10 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
@@ -284,15 +277,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => ClockOverlay;
 
     #endregion
 }

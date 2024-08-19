@@ -18,7 +18,6 @@ using static GaugeOMatic.Widgets.HutonReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -26,19 +25,13 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Huton Pinwheel")]
+[WidgetDescription("A recreation of Ninja's Huton Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica)]
 public sealed unsafe class HutonReplica : GaugeBarWidget
 {
     public HutonReplica(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Huton Pinwheel",
-        Author = "ItsBexy",
-        Description = "A recreation of Ninja's Huton Gauge.",
-        WidgetTags = GaugeBar | Replica
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new (AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\huton.tex")),
@@ -59,6 +52,8 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     public CustomNode Shuriken;
     public CustomNode Whirl;
     public CustomNode ClockHand;
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     public override CustomNode BuildContainer()
     {
@@ -287,16 +282,17 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
         public HutonReplicaConfig() { }
     }
 
-    public HutonReplicaConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private HutonReplicaConfig config;
+
+    public override HutonReplicaConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.HutonReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -310,12 +306,9 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 ColorPickerRGB("Blade", ref Config.ActiveColor);
                 ColorPickerRGB("Fade", ref Config.FadeColor);
@@ -331,15 +324,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 

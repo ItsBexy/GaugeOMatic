@@ -28,7 +28,7 @@ public abstract class FreeGemCounter : CounterWidget
 {
     protected FreeGemCounter(Tracker tracker) : base(tracker) { }
 
-    public abstract override FreeGemCounterConfig GetConfig { get; }
+    public abstract override FreeGemCounterConfig Config { get; }
 
     public List<CustomNode> Stacks = new();
 
@@ -38,18 +38,18 @@ public abstract class FreeGemCounter : CounterWidget
 
     public void PlaceFreeGems()
     {
-        if (GetConfig.Arrangement == Arc) PlaceGemsInArc();
+        if (Config.Arrangement == Arc) PlaceGemsInArc();
         else PlaceGemsFromList();
     }
 
     public virtual void PlaceGemsFromList()
     {
-        GetConfig.PrepareLists(Stacks.Count);
+        Config.PrepareLists(Stacks.Count);
         WidgetContainer.SetRotation(0);
 
         for (var i = 0; i < Stacks.Count; i++)
         {
-            var gemLayout = GetConfig.LayoutList![i];
+            var gemLayout = Config.LayoutList![i];
             var gemPos = new Vector2(gemLayout.X, gemLayout.Y);
             var gemAngle = gemLayout.Z;
             var scale = GemFlipFactor(gemAngle, 0) * gemLayout.W;
@@ -62,7 +62,7 @@ public abstract class FreeGemCounter : CounterWidget
 
     public virtual void PlaceGemsInArc()
     {
-        var widgetAngle = GetConfig.Angle + (GetConfig.Curve / 2f);
+        var widgetAngle = Config.Angle + (Config.Curve / 2f);
         WidgetContainer.SetRotation(widgetAngle, true);
 
         var posAngle = 0f;
@@ -73,9 +73,9 @@ public abstract class FreeGemCounter : CounterWidget
             var gemAngle = AdjustedGemAngle(i, widgetAngle);
             var gemPos = AdjustedGemPos(i, x, y, Radians(gemAngle));
             var gemScale = GemFlipFactor(gemAngle, widgetAngle) *
-                           Math.Max(0f, float.Lerp(1, GetConfig.ScaleShift, i / 10f));
-            var gemSpacing = GetConfig.Spacing * GetConfig.SpacingModifier *
-                             float.Lerp(1, GetConfig.ScaleShift, (i + 0.5f) / 10f);
+                           Math.Max(0f, float.Lerp(1, Config.ScaleShift, i / 10f));
+            var gemSpacing = Config.Spacing * Config.SpacingModifier *
+                             float.Lerp(1, Config.ScaleShift, (i + 0.5f) / 10f);
 
             Stacks[i].SetPos(gemPos)
                      .SetScale(gemScale)
@@ -84,32 +84,32 @@ public abstract class FreeGemCounter : CounterWidget
             var angleRad = Radians(posAngle);
             x += Cos(angleRad) * gemSpacing;
             y += Sin(angleRad) * gemSpacing;
-            posAngle += GetConfig.Curve;
+            posAngle += Config.Curve;
         }
     }
 
     public void FreeGemControls()
     {
-        RadioControls("Arrangement", ref GetConfig.Arrangement, new() { Arc, Individual }, new() { "Arc", "Individual" });
-        if (GetConfig.Arrangement == Arc)
+        RadioControls("Arrangement", ref Config.Arrangement, new() { Arc, Individual }, new() { "Arc", "Individual" });
+        if (Config.Arrangement == Arc)
         {
             ArcControls();
         }
         else
         {
-            GetConfig.PrepareLists(Stacks.Count);
-            ListHeaderNav(ref GetConfig.ListIndex);
+            Config.PrepareLists(Stacks.Count);
+            ListHeaderNav(ref Config.ListIndex);
             ListControls();
         }
     }
 
     public void ArcControls()
     {
-        if ((ArcMask & 0b10000) > 0) FloatControls("Spacing", ref GetConfig.Spacing, -1000, 1000, 0.5f);
-        if ((ArcMask & 0b01000) > 0) AngleControls($"Angle ({StackTerm})", ref GetConfig.GemAngle);
-        if ((ArcMask & 0b00100) > 0) AngleControls("Angle (Group)", ref GetConfig.Angle);
-        if ((ArcMask & 0b00010) > 0) AngleControls("Curve", ref GetConfig.Curve, true);
-        if ((ArcMask & 0b00001) > 0) ScaleControls("Scale Shift", ref GetConfig.ScaleShift);
+        if ((ArcMask & 0b10000) > 0) FloatControls("Spacing", ref Config.Spacing, -1000, 1000, 0.5f);
+        if ((ArcMask & 0b01000) > 0) AngleControls($"Angle ({StackTerm})", ref Config.GemAngle);
+        if ((ArcMask & 0b00100) > 0) AngleControls("Angle (Group)", ref Config.Angle);
+        if ((ArcMask & 0b00010) > 0) AngleControls("Curve", ref Config.Curve, true);
+        if ((ArcMask & 0b00001) > 0) ScaleControls("Scale Shift", ref Config.ScaleShift);
     }
 
     private void ListHeaderNav(ref int index)
@@ -135,9 +135,8 @@ public abstract class FreeGemCounter : CounterWidget
 
     private bool ListControls()
     {
-
-        var i = GetConfig.ListIndex;
-        var layout = GetConfig.LayoutList![i];
+        var i = Config.ListIndex;
+        var layout = Config.LayoutList![i];
         var pos = new Vector2(layout.X, layout.Y);
 
 
@@ -148,15 +147,13 @@ public abstract class FreeGemCounter : CounterWidget
         var input2 = (ListMask & 0b010) > 0 && AngleControls($"Angle##angle{i}", ref layout.Z);
         var input3 = (ListMask & 0b001) > 0 && ScaleControls($"Scale##scale{i}", ref layout.W);
 
-
-
-        GetConfig.LayoutList[i] = layout;
+        Config.LayoutList[i] = layout;
 
         return input1 || input2 || input3;
     }
 
     protected virtual Vector2 AdjustedGemPos(int i, double x, double y, float gemAngle) => new((float)x, (float)y);
-    protected virtual float AdjustedGemAngle(int i, float widgetAngle) => (GetConfig.Curve * (i - 0.5f)) + GetConfig.GemAngle;
+    protected virtual float AdjustedGemAngle(int i, float widgetAngle) => (Config.Curve * (i - 0.5f)) + Config.GemAngle;
     protected virtual Vector2 GemFlipFactor(float gemAngle, float widgetAngle) => new(1, 1);
 
     public override void DrawUI()

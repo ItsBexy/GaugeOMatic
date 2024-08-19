@@ -28,20 +28,13 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Beast Bar")]
+[WidgetDescription("A recreation of Warrior's Beast Gauge Bar.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica)]
 public sealed unsafe class BeastBar : GaugeBarWidget
 {
     public BeastBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo =>
-        new()
-        {
-            DisplayName = "Beast Bar",
-            Author = "ItsBexy",
-            Description = "A recreation of Warrior's Beast Gauge Bar",
-            WidgetTags = GaugeBar | Replica
-        };
 
     public override CustomPartsList[] PartsLists { get; } = { WAR0 };
 
@@ -53,6 +46,8 @@ public sealed unsafe class BeastBar : GaugeBarWidget
     public CustomNode Frame;
     public CustomNode Glow;
     public LabelTextNode LabelTextNode;
+
+    public override Bounds GetBounds() => Frame;
 
     public override CustomNode BuildContainer()
     {
@@ -227,12 +222,13 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         public BeastBarConfig() => MilestoneType = Above;
     }
 
-    public BeastBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private BeastBarConfig config;
+
+    public override BeastBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.BeastBarCfg == null)
         {
             Config.MilestoneType = Above;
@@ -240,7 +236,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -273,11 +269,10 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
                 break;
@@ -307,12 +302,6 @@ public sealed unsafe class BeastBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -320,8 +309,6 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new List<FontAwesomeIcon> { ArrowRight, ArrowLeft };
-
-    public override Bounds GetBounds() => Frame;
 
     #endregion
 }

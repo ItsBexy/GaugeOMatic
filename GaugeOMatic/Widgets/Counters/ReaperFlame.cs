@@ -10,7 +10,6 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ReaperFlame;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -18,20 +17,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Shroud Flames")]
+[WidgetDescription("A counter imitating the shroud stack display on Reaper's Death Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class ReaperFlame : FreeGemCounter
 {
     public ReaperFlame(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Shroud Flames",
-        Author = "ItsBexy",
-        Description = "A counter imitating the shroud stack display on Reaper's Death Gauge.",
-        WidgetTags = Counter | Replica,
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudRRP1.tex",
@@ -181,16 +174,17 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
         public ReaperFlameConfig() { }
     }
 
-    public ReaperFlameConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private ReaperFlameConfig config;
+
+    public override ReaperFlameConfig Config => config;
 
     public override int ArcMask => 0b10111;
     public override int ListMask => 0b101;
     public override string StackTerm => "Flame";
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -219,12 +213,12 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
 
         for (var i = 0; i < Stacks.Count; i++)
         {
-            var flameScale = float.Lerp(1, GetConfig.ScaleShift, i / 10f);
+            var flameScale = float.Lerp(1, Config.ScaleShift, i / 10f);
 
             Stacks[i].SetPos((float)x, (float)y)
                      .SetScale(Math.Max(0f, flameScale));
 
-            var flameSpacing = GetConfig.Spacing * GetConfig.SpacingModifier * flameScale;
+            var flameSpacing = Config.Spacing * Config.SpacingModifier * flameScale;
 
             x += Cos(angle * (PI / 180)) * flameSpacing;
             y += Sin(angle * (PI / 180)) * flameSpacing;
@@ -238,8 +232,6 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
 
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 ColorPickerRGB("Base Color", ref Config.BaseColor);
                 ColorPickerRGB("Orb Tint", ref Config.OrbColor);
@@ -250,12 +242,6 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

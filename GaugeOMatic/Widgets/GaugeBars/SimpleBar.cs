@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -16,28 +17,20 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleBar;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Simple Bar")]
+[WidgetDescription("A bar in the style of the Simple job gauges.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar)]
 public sealed unsafe class SimpleBar : GaugeBarWidget
 {
     public SimpleBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Simple Bar",
-        Author = "ItsBexy",
-        Description = "A bar in the style of the Simple job gauges.",
-        WidgetTags = GaugeBar
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/Parameter_Gauge.tex",
@@ -57,6 +50,8 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
     public CustomNode Frame;
     public CustomNode Backdrop;
     public LabelTextNode LabelTextNode;
+
+    public override Bounds GetBounds() => Frame;
 
     public override CustomNode BuildContainer()
     {
@@ -177,16 +172,17 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
         public SimpleBarConfig() { }
     }
 
-    public SimpleBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private SimpleBarConfig config;
+
+    public override SimpleBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.SimpleBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -220,11 +216,10 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 50, 2000, 1);
                 AngleControls("Angle", ref Config.Angle);
                 break;
@@ -253,15 +248,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Frame;
 
     #endregion
 }

@@ -87,16 +87,17 @@ public partial class ActionRef
         }
         else
         {
-            count = elapsed == 0 ? maxCount : (int)Math.Floor(elapsed / cooldownTotal * maxCount);
+            var charges = elapsed == 0 ? maxCount : (int)Math.Floor(elapsed / cooldownTotal * maxCount);
 
             var transformCheck = !HasFlag(TransformedButton) || GetBaseAction().GetAdjustedId() == ID;
-            var chargeCheck = !HasFlag(HasCharges) || count != 0;
+            var chargeCheck = !HasFlag(HasCharges) || charges != 0;
             var cooldownCheck = !HasFlag(LongCooldown, exclude: HasCharges) || !(cooldownRemaining > 0);
             var statusCheck = !HasFlag(RequiresStatus) || (ReadyStatus?.TryGetStatus(Self) ?? false);
             var antCheck = !HasFlag(CanGetAnts | ComboBonus) || HasAnts();
             var mpCheck = !HasFlag(CostsMP) || GetActionCost() < ClientState.LocalPlayer?.CurrentMp;
 
             state = transformCheck && cooldownCheck && chargeCheck && statusCheck && antCheck && mpCheck ? 1 : 0;
+            count = HasFlag(HasCharges) ? charges : state;
         }
 
         return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview);

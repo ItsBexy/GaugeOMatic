@@ -17,22 +17,18 @@ using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Simple Timer")]
+[WidgetDescription("It's just timer text. That's it. Nothing else. Hope you like numbers, because you are about to see one on your screen.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar)]
+[WidgetUiTabs(Text)]
 public sealed class SimpleTimer : GaugeBarWidget
 {
     public SimpleTimer(Tracker tracker) : base(tracker) { }
 
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Simple Timer",
-        Author = "ItsBexy",
-        Description = "It's just timer text. That's it. Nothing else. Hope you like numbers, because you are about to see one on your screen.",
-        WidgetTags = GaugeBar,
-        UiTabOptions = Text
-    };
-
     #region Nodes
+
+    public override Bounds GetBounds() => new Bounds(NumTextNode, NumTextNode.BgNode).GetMaxBox() + new Vector2(7, 0);
 
     public override CustomNode BuildContainer()
     {
@@ -55,7 +51,7 @@ public sealed class SimpleTimer : GaugeBarWidget
         var prog = current / max;
         var prevProg = prog;
 
-        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+        if (Config.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
 
         NumTextNode.UpdateValue(current, max);
         Animator.RunTweens();
@@ -82,12 +78,13 @@ public sealed class SimpleTimer : GaugeBarWidget
         public SimpleTimerConfig() { }
     }
 
-    public SimpleTimerConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private SimpleTimerConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override GaugeBarWidgetConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -131,15 +128,13 @@ public sealed class SimpleTimer : GaugeBarWidget
                 break;
         }
 
-        if (UpdateFlag.HasFlag(Save))
-        {
-            Config.NumTextProps = numTextProps;
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
+        if (UpdateFlag.HasFlag(Save)) Config.NumTextProps = numTextProps;
     }
 
-    public override Bounds GetBounds() => new Bounds(NumTextNode, NumTextNode.BgNode).GetMaxBox() + new Vector2(7,0);
+    public override void ChangeScale(float amt)
+    {
+        Config.NumTextProps.FontSize += (byte)amt;
+    }
 
     #endregion
 }

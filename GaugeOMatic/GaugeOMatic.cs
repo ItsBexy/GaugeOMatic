@@ -6,7 +6,7 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows;
 using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.WidgetInfo;
+using static GaugeOMatic.Widgets.WidgetAttribute;
 
 namespace GaugeOMatic;
 

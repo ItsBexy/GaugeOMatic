@@ -12,30 +12,21 @@ using static GaugeOMatic.Widgets.DragonEye;
 using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig.EyeState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
-
-// ReSharper disable All
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Dragon Eye")]
+[WidgetDescription("An indicator recreating the eye on Dragoon's Life of the Dragon gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Behavior)]
+[MultiCompData("DR", "Replica Dragon Gauge", 3)]
 public sealed unsafe class DragonEye : StateWidget
 {
     public DragonEye(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Dragon Eye",
-        Author = "ItsBexy",
-        Description = "An indicator recreating the eye on Dragoon's Life of the Dragon gauge.",
-        WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("DR", "Replica Dragon Gauge", 3),
-        UiTabOptions = Layout | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { DRG0 };
 
@@ -46,6 +37,8 @@ public sealed unsafe class DragonEye : StateWidget
     public CustomNode Eyeball;
     public CustomNode BlackSpot;
     public CustomNode WhiteGlow;
+
+    public override Bounds GetBounds() => EyeFrame;
 
     public override CustomNode BuildContainer()
     {
@@ -78,7 +71,7 @@ public sealed unsafe class DragonEye : StateWidget
                                            .SetImageWrap(1)
                                            .SetAddRGB(200, -200, 0)
                                            .SetAlpha(0);
-                                          
+
         return new CustomNode(CreateResNode(), EyeFrame, EyeBase, Eyeball, BlackSpot, WhiteGlow).SetPos(80, 28).SetOrigin(10, 40);
     }
 
@@ -98,12 +91,12 @@ public sealed unsafe class DragonEye : StateWidget
 
             new(EyeBase,
                 new(0) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, AddRGB = 0, PartId = 15, Alpha = 255 }, //
-                new(65) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, AddRGB = new(0, 0, 23), PartId = 15, Alpha = 255 }, 
-                new(125) { X = 13, Y = 9, ScaleY = 1.3f, Rotation = Radians(3), AddRGB = new(0, 0, 55), PartId = 15, Alpha = 255 }, 
-                new(165) { X = 9, Y = 11, ScaleY = 1.2f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 15, Alpha = 255 }, 
-                new(166) { X = 9, Y = 11, ScaleY = 1.2f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 16, Alpha = 255 }, 
-                new(225) { X = 18, Y = 9, ScaleY = 1.2f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 16, Alpha = 255 }, 
-                new(260) { X = 13, Y = 9, ScaleY = 1.3f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 16, Alpha = 255 }, 
+                new(65) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, AddRGB = new(0, 0, 23), PartId = 15, Alpha = 255 },
+                new(125) { X = 13, Y = 9, ScaleY = 1.3f, Rotation = Radians(3), AddRGB = new(0, 0, 55), PartId = 15, Alpha = 255 },
+                new(165) { X = 9, Y = 11, ScaleY = 1.2f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 15, Alpha = 255 },
+                new(166) { X = 9, Y = 11, ScaleY = 1.2f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 16, Alpha = 255 },
+                new(225) { X = 18, Y = 9, ScaleY = 1.2f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 16, Alpha = 255 },
+                new(260) { X = 13, Y = 9, ScaleY = 1.3f, Rotation = Radians(3), AddRGB = new(0, 0, 80), PartId = 16, Alpha = 255 },
                 new(450) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, AddRGB = 0, PartId = 16, Alpha = 255 }),//
 
             new(WhiteGlow,
@@ -119,8 +112,8 @@ public sealed unsafe class DragonEye : StateWidget
     }
 
     public void HalfToOpen()
-    { 
-        Animator += new Tween[] 
+    {
+        Animator += new Tween[]
         {
             new(EyeFrame,
                 new(0) { X = 0, Y = 0, AddRGB = 0 },
@@ -161,7 +154,7 @@ public sealed unsafe class DragonEye : StateWidget
             new(EyeFrame,
                 new(0) { X = 0, Y = 0, AddRGB = 0 },
                 new(230) { X = 0, Y = 0, AddRGB = new(80, 0, 0) },
-                new(560) { X = 0, Y = 0, AddRGB = 0 }),//
+                new(560) { X = 0, Y = 0, AddRGB = 0 }),
 
             new(EyeBase,
                 new(0) { X = 13, Y = 9, ScaleY = 1.2f, Rotation = Radians(12), Alpha = 128, AddRGB = new(100, 50, 50), PartId = 17 },
@@ -170,17 +163,17 @@ public sealed unsafe class DragonEye : StateWidget
                 new(99) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, Alpha = 153, AddRGB = new(80, 10, 10), PartId = 16 },
                 new(100) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, Alpha = 153, AddRGB = new(80, 10, 10), PartId = 15 },
                 new(275) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, Alpha = 255, AddRGB = 0, PartId = 15 },
-                new(650) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, Alpha = 255, AddRGB = 0, PartId = 15 }),//
+                new(650) { X = 13, Y = 9, ScaleY = 1, Rotation = 0, Alpha = 255, AddRGB = 0, PartId = 15 }),
 
             new(Eyeball,
                 new(0) { X = 29, Y = 6, Scale = 1, Alpha = 255, AddRGB = new(55, 44, 44) },
                 new(100) { X = 29, Y = 6, Scale = 1.5f, Alpha = 255, AddRGB = new(100, -1, -1) },
-                new(400) { X = 29, Y = 6, Scale = 2, Alpha = 0, AddRGB = new(-1, -1, -1) }),//
+                new(400) { X = 29, Y = 6, Scale = 2, Alpha = 0, AddRGB = new(-1, -1, -1) }),
 
             new(BlackSpot,
                 new(0) { Y = 5, Scale = 1, Alpha = 0, AddRGB = new(100, 0, 100) },
                 new(100) { Y = 5, Scale = 2f, Alpha = 175, AddRGB = new(200, 0, 0) },
-                new(300) { Y = 5, Scale = 4, Alpha = 0, AddRGB = new(200, 0, 0) }),//
+                new(300) { Y = 5, Scale = 4, Alpha = 0, AddRGB = new(200, 0, 0) })
         };
 
         WhiteGlow.SetAlpha(0);
@@ -206,7 +199,7 @@ public sealed unsafe class DragonEye : StateWidget
             new(BlackSpot,
                 new(0) { Y = 5, Scale = 1, Alpha = 0, AddRGB = new(100, 0, 100) },
                 new(100) { Y = 5, Scale = 2f, Alpha = 175, AddRGB = new(100, 0, 100) },
-                new(300) { Y = 5, Scale = 4, Alpha = 0, AddRGB = new(100, 0, 200) }), //
+                new(300) { Y = 5, Scale = 4, Alpha = 0, AddRGB = new(100, 0, 200) }) //
         };
 
         Eyeball.SetAlpha(0);
@@ -273,7 +266,7 @@ public sealed unsafe class DragonEye : StateWidget
             new(BlackSpot,
                 new(0) { Y = 5, Scale = 1, Alpha = 0, AddRGB = new(100, 0, 100) },
                 new(100) { Y = 5, Scale = 2f, Alpha = 175, AddRGB = new(200, 0, 0) },
-                new(300) { Y = 5, Scale = 4, Alpha = 0, AddRGB = new(200, 0, 0) }), //
+                new(300) { Y = 5, Scale = 4, Alpha = 0, AddRGB = new(200, 0, 0) }) //
         };
 
         WhiteGlow.SetAlpha(0);
@@ -355,7 +348,7 @@ public sealed unsafe class DragonEye : StateWidget
         public enum EyeState {Closed, HalfOpen, Open}
 
         public override Vector2 DefaultPosition => new(83, 89);
-        
+
         public bool Mirror;
         public List<EyeState> EyeStates = new();
 
@@ -364,12 +357,12 @@ public sealed unsafe class DragonEye : StateWidget
             var config = widgetConfig.DragonEyeCfg;
 
             if (config == null) return;
-            
+
             Mirror = config.Mirror;
             EyeStates = config.EyeStates;
         }
 
-        public DragonEyeConfig() : base() { }
+        public DragonEyeConfig() { }
 
         public void FillLists(int maxState)
         {
@@ -377,22 +370,22 @@ public sealed unsafe class DragonEye : StateWidget
         }
     }
 
-    public DragonEyeConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
-    public void UpdateConfigBase(ref WidgetConfig widgetConfig) => widgetConfig.DragonEyeCfg = Config;
+    private DragonEyeConfig config;
+
+    public override DragonEyeConfig Config => config;
 
     internal static List<DragonEyeConfig.EyeState> EyeStateList = new() { Closed, HalfOpen, Open };
     public List<string> EyeStateNames = new() { "Closed", "Half-Open", "Open" };
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillLists(Tracker.CurrentData.MaxState);
     }
 
@@ -404,12 +397,10 @@ public sealed unsafe class DragonEye : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 ToggleControls("Mirror", ref Config.Mirror);
                 break;
             case Behavior:
@@ -425,15 +416,7 @@ public sealed unsafe class DragonEye : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => EyeFrame;
 
     #endregion
 }

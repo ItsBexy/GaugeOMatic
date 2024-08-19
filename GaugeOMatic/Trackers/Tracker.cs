@@ -132,4 +132,13 @@ public abstract partial class Tracker : IDisposable
 
         return tracker;
     }
+
+    public void WriteWidgetConfig()
+    {
+        Widget?.ApplyConfigs();
+
+        typeof(WidgetConfig).GetProperties()
+                            .FirstOrDefault(prop => prop.PropertyType.Name == Widget?.Config.GetType().Name)?
+                            .SetValue(WidgetConfig, Widget?.Config);
+    }
 }

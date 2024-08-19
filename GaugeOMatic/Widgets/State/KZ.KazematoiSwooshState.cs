@@ -12,28 +12,22 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.KazematoiSwooshState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Kazematoi Swoosh")]
+[WidgetDescription("A state indicator based on the backdrop of NIN's Kazematoi.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | MultiComponent | HasClippingMask)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("KZ", "Kazematoi Replica", 1)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 public sealed unsafe class KazematoiSwooshState : StateWidget
 {
     public KazematoiSwooshState(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Kazematoi Swoosh",
-        Author = "ItsBexy",
-        Description = "A state indicator based on the backdrop of NIN's Kazematoi",
-        WidgetTags = State | MultiComponent,
-        MultiCompData = new("KZ", "Kazematoi Replica", 1),
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { NIN1,
         new("ui/uld/JobHudNIN1Mask.tex",new Vector4(0,0,128,96)),
@@ -47,6 +41,8 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
     public CustomNode ScrollCloud;
     public CustomNode SpinCloud;
     public CustomNode Mask;
+
+    public override Bounds GetBounds() => Mask;
 
     public override CustomNode BuildContainer()
     {
@@ -206,18 +202,19 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
         public bool GetClouds(int state) => Clouds.ElementAtOrDefault(state);
     }
 
-    public KazematoiSwooshStateConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private KazematoiSwooshStateConfig config;
+
+    public override KazematoiSwooshStateConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -241,13 +238,11 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
-
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
@@ -278,15 +273,7 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Mask;
 
     #endregion
 

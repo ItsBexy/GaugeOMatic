@@ -10,28 +10,21 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Parameter Bar Glow")]
+[WidgetDescription("A glowing border over one of the parameter bars")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(HasAddonRestrictions | State)]
+[WidgetUiTabs(Layout | Colors)]
+[AddonRestrictions(true, "_ParameterWidget")]
 public sealed unsafe class ParameterGlow : StateWidget
 {
     public ParameterGlow(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Parameter Bar Glow",
-        Author = "ItsBexy",
-        Description = "A glowing border over one of the parameter bars",
-        WidgetTags = HasAddonRestrictions | State,
-        AllowedAddons = new () { "_ParameterWidget" },
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } =
     {
@@ -42,6 +35,8 @@ public sealed unsafe class ParameterGlow : StateWidget
 
     public CustomNode BarGlow;
     public CustomNode BarGlow2;
+
+    public override Bounds GetBounds() => BarGlow;
 
     public override CustomNode BuildContainer()
     {
@@ -99,12 +94,13 @@ public sealed unsafe class ParameterGlow : StateWidget
         public ParameterGlowConfig() { }
     }
 
-    public ParameterGlowConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private ParameterGlowConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override ParameterGlowConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -131,15 +127,7 @@ public sealed unsafe class ParameterGlow : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => BarGlow;
 
     #endregion
 }

@@ -28,20 +28,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Addersgall Bar")]
+[WidgetDescription("A recreation of Sage's Addersgall Gauge Bar.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica | MultiComponent)]
+[MultiCompData("AG", "Addersgall Gauge Replica", 2)]
 public sealed unsafe class AddersBar : GaugeBarWidget
 {
     public AddersBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Addersgall Bar",
-        Author = "ItsBexy",
-        Description = "A recreation of Sage's Addersgall Gauge Bar",
-        WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("AG", "Addersgall Gauge Replica", 1)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudGFF1.tex",
@@ -68,10 +62,11 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     public CustomNode Frame;
     public CustomNode Plate;
     public LabelTextNode LabelTextNode;
-
     public CustomNode Backdrop;
     public CustomNode MainOverlay;
     public CustomNode Sparkles;
+
+    public override Bounds GetBounds() => new(Frame, Config.ShowPlate ? Plate : Frame);
 
     public override CustomNode BuildContainer()
     {
@@ -246,7 +241,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region UpdateFuncs
 
-    public override void OnIncreaseToMax() { if (GetConfig.HideFull) HideBar(); }
+    public override void OnIncreaseToMax() { if (Config.HideFull) HideBar(); }
 
     public override void PostUpdate(float prog)
     {
@@ -346,16 +341,17 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         public AddersBarConfig() { }
     }
 
-    public AddersBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private AddersBarConfig config;
+
+    public override AddersBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.AddersBarCfg == null && ShouldInvertByDefault) Config.Invert = true;
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -405,11 +401,10 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1);
                 AngleControls("Angle", ref Config.Angle);
                 RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
@@ -444,12 +439,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -457,9 +446,6 @@ public sealed unsafe class AddersBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
                                        new() { ArrowRight, ArrowLeft };
-
-
-    public override Bounds GetBounds() => new(Frame, Config.ShowPlate ? Plate : Frame);
 
     #endregion
 }

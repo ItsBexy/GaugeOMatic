@@ -13,7 +13,6 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -21,20 +20,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Faerie Bar")]
+[WidgetDescription("A slightly curved gauge bar shaped like the Faerie Gauge, but without the decorations.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica | MultiComponent)]
+[MultiCompData("FA", "Faerie Gauge Replica", 2)]
 public sealed unsafe class FaerieLess : GaugeBarWidget
 {
     public FaerieLess(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Faerie Bar",
-        Author = "ItsBexy",
-        Description = "A slightly curved gauge bar shaped like the Faerie Gauge, but without the decorations.",
-        WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("FA", "Faerie Gauge Replica", 2)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { SCH1 };
 
@@ -108,16 +101,17 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
         public FaerieLessConfig() { }
     }
 
-    public FaerieLessConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private FaerieLessConfig config;
+
+    public override FaerieLessConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.FaerieLessCfg == null && ShouldInvertByDefault) Config.Invert = true;
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -160,12 +154,17 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
             default:
                 break;
         }
+    }
 
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
+    public override void ChangeScale(float amt)
+    {
+        var y = Config.Scale.Y;
+        var x = Config.Scale.X;
+
+        var a1 = (y + x) / 2f;
+        var a2 = a1 + (0.05f * amt);
+
+        Config.Scale = new(x / a1 * a2, y / a1 * a2);
     }
 
     #endregion

@@ -13,27 +13,20 @@ using static GaugeOMatic.Widgets.NinkiOverlay;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Ninki Overlay")]
+[WidgetDescription("A glowing gauge bar aura fitted over the shape of the Ninki Gauge (or a replica of it).")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent)]
+[MultiCompData("NK", "Ninki Gauge Replica", 2)]
 public sealed unsafe class NinkiOverlay : GaugeBarWidget
 {
     public NinkiOverlay(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Ninki Overlay",
-        Author = "ItsBexy",
-        Description = "A glowing gauge bar aura fitted over the shape of the Ninki Gauge (or a replica of it).",
-        WidgetTags = GaugeBar | MultiComponent,
-        MultiCompData = new("NK", "Ninki Gauge Replica", 2)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudNIN0.tex",
@@ -47,6 +40,8 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
     public CustomNode Tick;
     public CustomNode Shine;
     public CustomNode Calligraphy;
+
+    public override Bounds GetBounds() => Main;
 
     public override CustomNode BuildContainer()
     {
@@ -111,7 +106,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
         var prog = CalcProg();
         var prevProg = CalcProg(true);
 
-        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+        if (Config.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
         NumTextNode.UpdateValue(current, max);
 
         if (prog > 0 && prevProg == 0) AppearAnim();
@@ -161,16 +156,17 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
         public NinkiOverlayConfig() { }
     }
 
-    public NinkiOverlayConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private NinkiOverlayConfig config;
+
+    public override NinkiOverlayConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.NinkiOverlayCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -186,12 +182,9 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 ColorPickerRGBA("Scroll Color", ref Config.ScrollColor);
                 ColorPickerRGBA("Tick Color", ref Config.TickColor);
@@ -205,15 +198,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Main;
 
     #endregion
 }

@@ -14,7 +14,6 @@ using static GaugeOMatic.Widgets.FreeGemCounterConfig.ArrangementStyle;
 using static GaugeOMatic.Widgets.KazematoiKunai;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -22,21 +21,15 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Kazematoi Kunai")]
+[WidgetDescription("A set of kunai recreating those on the Kazematoi Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
+[MultiCompData("KZ", "Kazematoi Replica", 3)]
 public sealed unsafe class KazematoiKunai : FreeGemCounter
 {
     public KazematoiKunai(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Kazematoi Kunai",
-        Author = "ItsBexy",
-        Description = "A set of kunai recreating those on the Kazematoi Gauge.",
-        WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("KZ", "Kazematoi Replica", 3),
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { NIN1 };
 
@@ -211,12 +204,13 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
         public KazematoiKunaiConfig() { }
     }
 
-    public KazematoiKunaiConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private KazematoiKunaiConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override KazematoiKunaiConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -245,6 +239,7 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
     }
 
     public override string StackTerm => "Knife";
+
     public override void DrawUI()
     {
         base.DrawUI();
@@ -266,12 +261,6 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

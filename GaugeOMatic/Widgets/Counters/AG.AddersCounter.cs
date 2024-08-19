@@ -12,28 +12,22 @@ using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.AddersCounter;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+
+[WidgetName("Addersgall Gems")]
+[WidgetDescription("A set of gems recreating those on the Addersgall Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
+[MultiCompData("AG", "Addersgall Gauge Replica", 2)]
 public sealed unsafe class AddersCounter : FreeGemCounter
 {
     public AddersCounter(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Addersgall Gems",
-        Author = "ItsBexy",
-        Description = "A set of gems recreating those on the Addersgall Gauge.",
-        WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("AG", "Addersgall Gauge Replica", 2),
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudGFF1.tex",
@@ -324,12 +318,13 @@ public sealed unsafe class AddersCounter : FreeGemCounter
         public AddersCounterConfig() { }
     }
 
-    public override FreeGemCounterConfig GetConfig => Config;
+    private AddersCounterConfig config;
 
-    public AddersCounterConfig Config;
+    public override AddersCounterConfig Config => config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -352,8 +347,6 @@ public sealed unsafe class AddersCounter : FreeGemCounter
         base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 ColorPickerRGB("Gem Color", ref Config.GemColor);
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
@@ -368,12 +361,6 @@ public sealed unsafe class AddersCounter : FreeGemCounter
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

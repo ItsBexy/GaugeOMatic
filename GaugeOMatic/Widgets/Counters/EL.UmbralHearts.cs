@@ -13,28 +13,21 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.UmbralHearts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Umbral Hearts")]
+[WidgetDescription("A counter based on BLM's Umbral Heart counter.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
+[MultiCompData("EL", "Elemental Gauge Replica", 5)]
 public sealed unsafe class UmbralHearts : FreeGemCounter
 {
     public UmbralHearts(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Umbral Hearts",
-        Author = "ItsBexy",
-        Description = "A counter based on BLM's Umbral Heart counter",
-        WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("EL", "Elemental Gauge Replica", 5),
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { BLM0 };
 
@@ -146,16 +139,16 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
         public UmbralHeartConfig() { }
     }
 
-    public UmbralHeartConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private UmbralHeartConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override UmbralHeartConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
-
         WidgetContainer.SetPos(Config.Position + new Vector2(19, 22))
                        .SetScale(Config.Scale);
 
@@ -174,22 +167,12 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
         base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 ColorPickerRGB("Color Modifier", ref Config.StackColor);
                 ColorPickerRGB("Glow Color", ref Config.GlowColor);
                 break;
-            case Behavior:
-                break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

@@ -14,7 +14,6 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleCircle;
 using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
@@ -24,20 +23,15 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Simple Circle")]
+[WidgetDescription("It's a circle!")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | HasAddonRestrictions)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 public sealed unsafe class SimpleCircle : GaugeBarWidget
 {
     public SimpleCircle(Tracker tracker) : base(tracker) { }
 
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Simple Circle",
-        Author = "ItsBexy",
-        Description = "It's a circle!",
-        WidgetTags = GaugeBar | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/gatheringcollectable.tex", new Vector4(99, 10, 81, 160) ),
@@ -55,6 +49,8 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
     public CustomNode LeftMask;
     public CustomNode RightMask;
     public CustomNode Halo;
+
+    public override Bounds GetBounds() => new(LeftContainer, RightContainer);
 
     public override CustomNode BuildContainer()
     {
@@ -98,7 +94,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         var current = Tracker.CurrentData.GaugeValue;
         var max = Tracker.CurrentData.MaxGauge;
 
-        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+        if (Config.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
         NumTextNode.UpdateValue(current, max);
 
         if (prog > prevProg)
@@ -174,16 +170,17 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         public SimpleCircleConfig() { }
     }
 
-    public SimpleCircleConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private SimpleCircleConfig config;
+
+    public override SimpleCircleConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.SimpleCircleCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -198,12 +195,9 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 ColorPickerRGBA("Color", ref Config.Color);
                 RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" });
@@ -219,15 +213,7 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new(LeftContainer, RightContainer);
 
     #endregion
 }

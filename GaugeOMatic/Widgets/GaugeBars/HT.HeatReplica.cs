@@ -16,12 +16,17 @@ using static GaugeOMatic.Widgets.HeatReplica;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
+
+[WidgetName("Heat Gauge")]
+[WidgetDescription("A gauge bar based on Machinist's Heat Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica | MultiComponent)]
+[MultiCompData("HT", "Heat Gauge Replica", 1)]
 public unsafe class HeatReplica : GaugeBarWidget
 {
     public HeatReplica(Tracker tracker) : base(tracker)
@@ -29,17 +34,6 @@ public unsafe class HeatReplica : GaugeBarWidget
         SharedEvents.Add("StartHeatGlow", _ => TabBg?.SetPartId(1));
         SharedEvents.Add("StopHeatGlow", _ => TabBg?.SetPartId(0));
     }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Heat Gauge",
-        Author = "ItsBexy",
-        Description = "A gauge bar based on Machinist's Heat Gauge",
-        WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("HT", "Heat Gauge Replica", 1)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
@@ -53,9 +47,10 @@ public unsafe class HeatReplica : GaugeBarWidget
     public CustomNode ClockFace;
     public CustomNode Needle;
     public CustomNode Contents;
-
     public CustomNode Bar;
     public CustomNode Backdrop;
+
+    public override Bounds GetBounds() => new(Barrel, ClockFace);
 
     public override CustomNode BuildContainer()
     {
@@ -224,16 +219,17 @@ public unsafe class HeatReplica : GaugeBarWidget
         public HeatReplicaConfig() { }
     }
 
-    public HeatReplicaConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private HeatReplicaConfig config;
+
+    public override HeatReplicaConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.HeatReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -268,11 +264,10 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 70, 1000, 1);
                 AngleControls("Angle", ref Config.Angle);
                 break;
@@ -304,15 +299,7 @@ public unsafe class HeatReplica : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new(Barrel, ClockFace);
 
     #endregion
 }

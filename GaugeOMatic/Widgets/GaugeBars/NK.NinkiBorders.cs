@@ -16,27 +16,20 @@ using static GaugeOMatic.Widgets.NinkiBorders;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Ninki Borders")]
+[WidgetDescription("A set of gauge bars fitted over the top/bottom borders of the Ninki Gauge (or a replica of it). A tracker can use both bars, or just one.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent)]
+[MultiCompData("NK", "Ninki Gauge Replica", 3)]
 public sealed unsafe class NinkiBorders : GaugeBarWidget
 {
     public NinkiBorders(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Ninki Borders",
-        Author = "ItsBexy",
-        Description = "A set of gauge bars fitted over the top/bottom borders of the Ninki Gauge (or a replica of it). A tracker can use both bars, or just one.",
-        WidgetTags = GaugeBar | MultiComponent,
-        MultiCompData = new("NK", "Ninki Gauge Replica", 3)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudNIN0.tex",
@@ -54,6 +47,14 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
     public CustomNode TickBottom;
     public CustomNode Shine;
     public CustomNode Calligraphy;
+
+    public override Bounds GetBounds()
+    {
+        var nodes = new List<CustomNode>();
+        if (Config.Top) nodes.Add(BorderTop);
+        if (Config.Bottom) nodes.Add(BorderBottom);
+        return nodes;
+    }
 
     public override CustomNode BuildContainer()
     {
@@ -146,7 +147,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         var prog = CalcProg();
         var prevProg = CalcProg(true);
 
-        if (GetConfig.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
+        if (Config.SplitCharges && Tracker.RefType == RefType.Action) AdjustForCharges(ref current, ref max, ref prog, ref prevProg);
         NumTextNode.UpdateValue(current, max);
 
         if (prog > 0 && prevProg == 0) AppearAnim();
@@ -198,16 +199,17 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         public NinkiBordersConfig() { }
     }
 
-    public NinkiBordersConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private NinkiBordersConfig config;
+
+    public override NinkiBordersConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.NinkiBordersCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -227,11 +229,10 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 var borders = new List<bool> { Config.Top, Config.Bottom };
                 if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }))
                 {
@@ -252,20 +253,6 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
-    }
-
-    public override Bounds GetBounds()
-    {
-        var nodes = new List<CustomNode>();
-        if (Config.Top) nodes.Add(BorderTop);
-        if (Config.Bottom) nodes.Add(BorderBottom);
-        return nodes;
     }
 
     #endregion

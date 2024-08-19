@@ -11,6 +11,7 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static ImGuiNET.ImGuiCond;
 using static ImGuiNET.ImGuiTableColumnFlags;
 using static ImGuiNET.ImGuiTableFlags;
 
@@ -35,7 +36,7 @@ public class TrackerWindow : Window, IDisposable
             MinimumSize = new(300f, 300f),
             MaximumSize = new(1100f)
         };
-        SizeCondition = ImGuiCond.Appearing;
+        SizeCondition = Appearing;
     }
 
     public override void Draw()
@@ -90,9 +91,7 @@ public class TrackerWindow : Window, IDisposable
             Tracker.UpdateTracker();
             UpdateFlag |= Save;
         }
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip(
-                $"This will reset to the defaults for {Widget?.WidgetInfo.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
+        if (ImGui.IsItemHovered()) ImGui.SetTooltip($"This will reset to the defaults for {Widget?.GetAttributes.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
 
     }
 
@@ -133,7 +132,7 @@ public class TrackerWindow : Window, IDisposable
         ImGui.Spacing();
         if (ImGui.BeginTabBar("UiTab" + Hash))
         {
-            var tabOptions = Tracker.Widget?.WidgetInfo.UiTabOptions??WidgetUiTab.None;
+            var tabOptions = Tracker.Widget?.GetAttributes.UiTabOptions ?? WidgetUiTab.None;
             DrawTab(tabOptions, "Layout", Layout);
             DrawTab(tabOptions, "Colors", Colors);
             DrawTab(tabOptions, "Text", Text);
@@ -151,6 +150,8 @@ public class TrackerWindow : Window, IDisposable
             Widget?.DrawUI();
 
             if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
+
+            if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
 
             ImGui.EndTable();
         }

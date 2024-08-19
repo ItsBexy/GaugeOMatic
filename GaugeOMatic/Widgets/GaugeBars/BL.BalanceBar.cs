@@ -15,34 +15,27 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Balance Bar")]
+[WidgetDescription("A recreation of a mana bar from Red Mage's Balance Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent | Replica)]
+[MultiCompData("BL", "Balance Gauge Replica", 2)]
 public sealed unsafe class BalanceBar : GaugeBarWidget
 {
     public BalanceBar(Tracker tracker) : base(tracker)
     {
         SharedEvents.Add("SpendShake", _ =>
         {
-            SpendShake(BarContainer!, Config!.FlashColor, 30, 48, ref Animator);
+            SpendShake(BarContainer!, Config.FlashColor, 30, 48, ref Animator);
             SpendShake(BarOverlay!, Config.FlashColor, Config.Side == 0 ? 25 : 59, 40, ref Animator);
         });
     }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Balance Bar",
-        Author = "ItsBexy",
-        Description = "A recreation of a mana bar from Red Mage's Balance Gauge",
-        WidgetTags = GaugeBar | MultiComponent | Replica,
-        MultiCompData = new("BL", "Balance Gauge Replica", 2)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudRDM0.tex",
@@ -271,16 +264,17 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         public BalanceBarConfig() { }
     }
 
-    public BalanceBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private BalanceBarConfig config;
+
+    public override BalanceBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.BalanceBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -308,11 +302,10 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 RadioControls("Side", ref Config.Side, new() { 0u, 1u }, new() { "Left", "Right" });
                 break;
             case Colors:
@@ -338,12 +331,6 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

@@ -3,7 +3,6 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
-using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -16,7 +15,6 @@ using static GaugeOMatic.Widgets.EspritBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
@@ -25,20 +23,14 @@ using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Esprit Bar")]
+[WidgetDescription("A curved bar based on DNC's Esprit Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | HasAddonRestrictions | HasClippingMask)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 public sealed unsafe class EspritBar : GaugeBarWidget
 {
     public EspritBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Esprit Bar",
-        Author = "ItsBexy",
-        Description = "A curved bar based on DNC's Esprit Gauge",
-        WidgetTags = GaugeBar | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { DNC1, CircleMask};
 
@@ -247,12 +239,13 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         public EspritBarConfig() => MilestoneType = Above;
     }
 
-    public EspritBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private EspritBarConfig config;
+
+    public override EspritBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.EspritBarCfg == null)
         {
             Config.MilestoneType = Above;
@@ -260,7 +253,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -294,11 +287,10 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 ToggleControls("Fan Plate", ref Config.ShowPlate);
                 AngleControls("Angle", ref Config.Angle);
                 RadioIcons("Direction", ref Config.Clockwise, new() { true, false }, new() { RedoAlt, UndoAlt });
@@ -328,15 +320,9 @@ public sealed unsafe class EspritBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
-    public override Bounds GetBounds() => FanPlate;
+    // public override Bounds GetBounds() => FanPlate;
 
     #endregion
 }

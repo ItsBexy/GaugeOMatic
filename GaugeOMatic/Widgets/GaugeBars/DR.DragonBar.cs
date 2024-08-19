@@ -17,27 +17,20 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Dragon Spear")]
+[WidgetDescription("A replica of DRG's Life of the Dragon bar.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica | MultiComponent)]
+[MultiCompData("DR", "Replica Dragon Gauge", 1)]
 public sealed unsafe class DragonSpear : GaugeBarWidget
 {
     public DragonSpear(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Dragon Spear",
-        Author = "ItsBexy",
-        Description = "A replica of DRG's Life of the Dragon bar.",
-        WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("DR","Replica Dragon Gauge",1)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { DRG0 };
 
@@ -52,6 +45,8 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
     public CustomNode DragonBg;
     public CustomNode DragonBgPulse;
     public CustomNode DragonBg1Wrap;
+
+    public override Bounds GetBounds() => DragonBg;
 
     public override CustomNode BuildContainer()
     {
@@ -291,12 +286,13 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         public DragonSpearConfig() => HideEmpty = true;
     }
 
-    public DragonSpearConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private DragonSpearConfig config;
+
+    public override DragonSpearConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.DragonSpearCfg == null)
         {
             Config.HideEmpty = true;
@@ -304,7 +300,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -329,11 +325,10 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 ToggleControls("Show Dragon", ref Config.ShowDragon);
                 break;
             case Colors:
@@ -369,15 +364,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => DragonBg;
 
     #endregion
 }

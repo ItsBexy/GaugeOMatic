@@ -11,27 +11,21 @@ using static GaugeOMatic.Widgets.BeastGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Beast Gem")]
+[WidgetDescription("A widget recreating the low-level tank stance gem for MRD / WAR.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica)]
+[WidgetUiTabs(Layout | Colors)]
 public sealed unsafe class BeastGem : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Beast Gem",
-        Author = "ItsBexy",
-        Description = "A widget recreating the low-level tank stance gem for MRD / WAR",
-        WidgetTags = State | Replica,
-        UiTabOptions = Layout | Colors
-    };
-
     public override CustomPartsList[] PartsLists { get; } = { WAR0 };
 
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
     public BeastGem(Tracker tracker) : base(tracker) { }
 
     #region Nodes
@@ -141,18 +135,19 @@ public sealed unsafe class BeastGem : StateWidget
         }
     }
 
-    public BeastGemConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private BeastGemConfig config;
+
+    public override BeastGemConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -169,13 +164,10 @@ public sealed unsafe class BeastGem : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 ColorPickerRGB("Base Tint", ref Config.BaseColor);
 
@@ -187,12 +179,6 @@ public sealed unsafe class BeastGem : StateWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

@@ -16,12 +16,17 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
+
+[WidgetName("Battery Gauge")]
+[WidgetDescription("A gauge bar based on Machinist's Battery Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica | MultiComponent)]
+[MultiCompData("HT", "Heat Gauge Replica", 3)]
 public unsafe class BatteryReplica : GaugeBarWidget
 {
     public BatteryReplica(Tracker tracker) : base(tracker)
@@ -29,17 +34,6 @@ public unsafe class BatteryReplica : GaugeBarWidget
         SharedEvents.Add("StartBatteryGlow", args => BeginOverlayPulse(args?.AddRGB ?? new(0)));
         SharedEvents.Add("StopBatteryGlow", _ => EndOverlayPulse());
     }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Battery Gauge",
-        Author = "ItsBexy",
-        Description = "A gauge bar based on Machinist's Battery Gauge",
-        WidgetTags = GaugeBar | Replica | MultiComponent,
-        MultiCompData = new("HT", "Heat Gauge Replica", 3)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
@@ -50,9 +44,10 @@ public unsafe class BatteryReplica : GaugeBarWidget
     public CustomNode ClockFace;
     public NumTextNode TabTextNode;
     public CustomNode Contents;
-
     public CustomNode Bar;
     public CustomNode Backdrop;
+
+    public override Bounds GetBounds() => new(Barrel, ClockFace);
 
     public override CustomNode BuildContainer()
     {
@@ -249,16 +244,17 @@ public unsafe class BatteryReplica : GaugeBarWidget
         public BatteryReplicaConfig() { }
     }
 
-    public BatteryReplicaConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private BatteryReplicaConfig config;
+
+    public override BatteryReplicaConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.BatteryReplicaCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -294,11 +290,10 @@ public unsafe class BatteryReplica : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 148, 1000, 1);
                 AngleControls("Angle", ref Config.Angle);
                 break;
@@ -330,15 +325,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new(Barrel, ClockFace);
 
     #endregion
 }

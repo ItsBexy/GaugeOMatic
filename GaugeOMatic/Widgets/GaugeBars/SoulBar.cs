@@ -28,19 +28,13 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Soul Bar")]
+[WidgetDescription("A recreation of Reaper's Soul gauge bar.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica)]
 public sealed unsafe class SoulBar : GaugeBarWidget
 {
     public SoulBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Soul Bar",
-        Author = "ItsBexy",
-        Description = "A recreation of Reaper's Soul gauge bar",
-        WidgetTags = GaugeBar | Replica
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { RPR0 };
 
@@ -51,15 +45,15 @@ public sealed unsafe class SoulBar : GaugeBarWidget
     public CustomNode Frame;
     public CustomNode Corners;
     public CustomNode MidMarkers;
-
     public LabelTextNode LabelTextNode;
-
     public CustomNode Backdrop;
     public CustomNode GlowFrame;
     public CustomNode TickMark;
     public CustomNode TickGradient;
     public CustomNode TickLine;
     public CustomNode TickDot;
+
+    public override CustomNode.Bounds GetBounds() => Frame;
 
     public override CustomNode BuildContainer()
     {
@@ -338,12 +332,13 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         public SoulBarConfig() => MilestoneType = Above;
     }
 
-    public SoulBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private SoulBarConfig config;
+
+    public override SoulBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.SoulBarCfg == null)
         {
             Config.MilestoneType = Above;
@@ -351,7 +346,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -408,11 +403,10 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 28, 180, 1);
                 AngleControls("Angle", ref Config.Angle);
                 RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
@@ -465,12 +459,6 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
@@ -478,8 +466,6 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
         Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
         new() { ArrowRight, ArrowLeft };
-
-    public override CustomNode.Bounds GetBounds() => Frame;
 
     #endregion
 }

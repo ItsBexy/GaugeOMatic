@@ -16,26 +16,19 @@ using static GaugeOMatic.Widgets.KenkiKatana;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Kenki Katana")]
+[WidgetDescription("A bar in the style of Samurai's Kenki Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | Replica)]
 public sealed unsafe class KenkiKatana : GaugeBarWidget
 {
     public KenkiKatana(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Kenki Katana",
-        Author = "ItsBexy",
-        Description = "A bar in the style of Samurai's Kenki Gauge.",
-        WidgetTags = GaugeBar | Replica
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { SAM0 };
 
@@ -51,6 +44,8 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     public CustomNode Tassel;
     public CustomNode Glow;
     public CustomNode Effects;
+
+    public override Bounds GetBounds() => new(Blade, Hilt, Tassel);
 
     public override CustomNode BuildContainer()
     {
@@ -251,12 +246,13 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
         }
     }
 
-    public KenkiKatanaConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private KenkiKatanaConfig config;
+
+    public override KenkiKatanaConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.KenkiKatanaCfg == null)
         {
             Config.MilestoneType = MilestoneType.Above;
@@ -265,7 +261,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -295,11 +291,10 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 ToggleControls("Mirror", ref Config.Mirror);
                 break;
@@ -329,16 +324,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
             default:
                 break;
         }
-
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new(Blade, Hilt, Tassel);
 
     #endregion
 }

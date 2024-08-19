@@ -13,28 +13,21 @@ using static GaugeOMatic.Widgets.FaerieFrame.FaerieFrameConfig;
 using static GaugeOMatic.Widgets.FaerieFrame.FaerieFrameConfig.FrameState;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Faerie Frame")]
+[WidgetDescription("A backplate recreating SCH's Faerie gauge (for use with the Faerie Bar Widget)")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(MultiComponent | State | Replica)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("FA", "Faerie Gauge Replica", 1)]
 public sealed unsafe class FaerieFrame : StateWidget
 {
     public FaerieFrame(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Faerie Frame",
-        Author = "ItsBexy",
-        Description = "A glowing border over one of the parameter bars",
-        WidgetTags = MultiComponent | State | Replica,
-        MultiCompData = new("FA", "Faerie Gauge Replica", 1),
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { SCH1 };
 
@@ -295,18 +288,19 @@ public sealed unsafe class FaerieFrame : StateWidget
         }
     }
 
-    public FaerieFrameConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private FaerieFrameConfig config;
+
+    public override FaerieFrameConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillLists(Tracker.CurrentData.MaxState);
     }
 
@@ -326,12 +320,9 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 var maxState = Tracker.CurrentData.MaxState;
 
@@ -352,12 +343,6 @@ public sealed unsafe class FaerieFrame : StateWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

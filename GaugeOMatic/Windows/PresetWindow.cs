@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Windows.ConfigWindow;
 
 namespace GaugeOMatic.Windows;
@@ -180,7 +179,7 @@ public class PresetWindow : Window, IDisposable
                 if (trackerConfig.WidgetType != null)
                 {
                     ImGui.SameLine();
-                    ImGui.Text($"{WidgetList[trackerConfig.WidgetType].DisplayName}");
+                    ImGui.Text($"{trackerConfig.WidgetDisplayName}");
                 }
             }
 

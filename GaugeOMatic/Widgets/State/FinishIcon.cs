@@ -13,7 +13,6 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.FinishIcon;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -21,20 +20,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Finish Icon")]
+[WidgetDescription("A widget recreating DNC's Standard Finish timer.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State)]
+[WidgetUiTabs(Layout | Colors)]
 public sealed unsafe class FinishIcon : StateWidget
 {
     public FinishIcon(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Finish Icon",
-        Author = "ItsBexy",
-        Description = "A widget recreating DNC's Standard Finish timer",
-        WidgetTags = State,
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } =
     {
@@ -46,6 +39,8 @@ public sealed unsafe class FinishIcon : StateWidget
     #region Nodes
 
     public CustomNode Symbol;
+
+    public override Bounds GetBounds() => Symbol;
 
     public override CustomNode BuildContainer()
     {
@@ -147,18 +142,19 @@ public sealed unsafe class FinishIcon : StateWidget
         }
     }
 
-    public FinishIconConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private FinishIconConfig config;
+
+    public override FinishIconConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorList(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorList(Tracker.CurrentData.MaxState);
     }
 
@@ -175,11 +171,10 @@ public sealed unsafe class FinishIcon : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Speed", ref Config.Speed, -200, 200, 1f);
                 RadioControls("Icon", ref Config.Tech, new() { false, true }, new() { "Standard", "Technical" });
                 break;
@@ -196,17 +191,9 @@ public sealed unsafe class FinishIcon : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
     #endregion
-
-    public override Bounds GetBounds() => Symbol;
 }
 
 public partial class WidgetConfig

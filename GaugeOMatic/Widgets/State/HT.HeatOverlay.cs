@@ -13,28 +13,21 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.HeatOverlay;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Heat Gauge Overlay")]
+[WidgetDescription("A glowing overlay over the Heat Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("HT", "Heat Gauge Replica", 2)]
 public sealed unsafe class HeatOverlay : StateWidget
 {
     public HeatOverlay(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Heat Gauge Overlay",
-        Author = "ItsBexy",
-        Description = "A glowing overlay over the Heat Gauge",
-        WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("HT", "Heat Gauge Replica", 2),
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { MCH0 };
 
@@ -46,6 +39,8 @@ public sealed unsafe class HeatOverlay : StateWidget
     public CustomNode Smoke1;
     public CustomNode Smoke2;
     public CustomNode Smoke3;
+
+    public override Bounds GetBounds() => Glow;
 
     public override CustomNode BuildContainer()
     {
@@ -195,20 +190,21 @@ public sealed unsafe class HeatOverlay : StateWidget
         }
     }
 
-    public HeatOverlayConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private HeatOverlayConfig config;
+
+    public override HeatOverlayConfig Config => config;
 
     public readonly AddRGB ColorOffset = new(-86, 75, 79);
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -233,14 +229,12 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 70, 1000, 1);
                 AngleControls("Angle", ref Config.Angle);
-
                 break;
             case Colors:
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
@@ -252,15 +246,7 @@ public sealed unsafe class HeatOverlay : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Glow;
 
     #endregion
 }

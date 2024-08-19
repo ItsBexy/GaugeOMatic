@@ -14,27 +14,20 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Eukrasia Sigil")]
+[WidgetDescription("A widget recreating Sage's Eukrasia indicator.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State)]
+[WidgetUiTabs(Layout | Colors)]
 public sealed unsafe class EukrasiaReplica : StateWidget
 {
     public EukrasiaReplica(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Eukrasia Sigil",
-        Author = "ItsBexy",
-        Description = "A widget recreating Sage's Eukrasia indicator.",
-        WidgetTags = State,
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } =
     {
@@ -57,6 +50,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
     public CustomNode[] Nouliths = new CustomNode[4];
     public CustomNode[] ElectricNouliths = new CustomNode[4];
     public CustomNode Halo;
+
+    public override Bounds GetBounds() => FullActive;
 
     public override CustomNode BuildContainer()
     {
@@ -357,18 +352,19 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         }
     }
 
-    public EukrasiaReplicaConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private EukrasiaReplicaConfig config;
+
+    public override EukrasiaReplicaConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -396,11 +392,10 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 ToggleControls("Show Nouliths", ref Config.ShowNouliths);
                 break;
             case Colors:
@@ -420,15 +415,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => FullActive;
 
     #endregion
 }

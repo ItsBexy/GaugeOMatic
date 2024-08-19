@@ -15,28 +15,21 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.DragonScales;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Dragon Scales")]
+[WidgetDescription("A stack counter recreating DRG's First Minds' Focus counter.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
+[MultiCompData("DR", "Replica Dragon Gauge", 1)]
 public sealed unsafe class DragonScales : CounterWidget
 {
     public DragonScales(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Dragon Scales",
-        Author = "ItsBexy",
-        Description = "A stack counter recreating DRG's First Minds' Focus counter.",
-        WidgetTags = Counter | Replica | MultiComponent,
-        MultiCompData = new("DR", "Replica Dragon Gauge", 1),
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { DRG0 };
 
@@ -50,6 +43,8 @@ public sealed unsafe class DragonScales : CounterWidget
     public List<CustomNode> Glows2 = new();
     public List<CustomNode> Glows3 = new();
     public List<CustomNode> Pierces = new();
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     public override CustomNode BuildContainer()
     {
@@ -278,12 +273,13 @@ public sealed unsafe class DragonScales : CounterWidget
         public DragonScalesConfig() { }
     }
 
-    public DragonScalesConfig Config;
-    public override CounterWidgetConfig GetConfig => Config;
+    private DragonScalesConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override DragonScalesConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public AddRGB ColorOffset = new(40,100,-11);
     public override void ApplyConfigs()
@@ -319,15 +315,7 @@ public sealed unsafe class DragonScales : CounterWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 }

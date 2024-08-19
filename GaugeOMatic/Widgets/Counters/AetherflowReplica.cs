@@ -3,35 +3,28 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AetherflowReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Aetherflow Gems")]
+[WidgetDescription("A recreation of Arcanist/Summoner/Scholar's Aetherflow Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class AetherflowReplica : CounterWidget
 {
     public AetherflowReplica(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Aetherflow Gems",
-        Author = "ItsBexy",
-        Description = "A recreation of Arcanist/Summoner/Scholar's Aetherflow Gauge.",
-        WidgetTags = Counter | Replica,
-        UiTabOptions = Layout|Colors|Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudSCH0.tex",
@@ -54,6 +47,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
     public CustomNode SocketPlate;
     public CustomNode Gems;
 
+    public override Bounds GetBounds() => WidgetContainer;
+
     public override CustomNode BuildContainer()
     {
         Max = GetMax();
@@ -61,7 +56,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         SocketPlate = BuildSocketPlate(Max, out var width);
         Gems = BuildGems(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((width/2f)-1, 37).SetSize(width,74);
+        return new CustomNode(CreateResNode(), SocketPlate, Gems).SetOrigin((width / 2f) - 1, 37).SetSize(width, 74);
     }
 
     private CustomNode BuildSocketPlate(int count, out int width)
@@ -108,13 +103,11 @@ public sealed unsafe class AetherflowReplica : CounterWidget
                                   new(0) { ScaleX = 1.2f, Alpha = 0 },
                                   new(360) { ScaleX = 1, Alpha = 201 },
                                   new(770) { ScaleX = 0.9f, Alpha = 0 })
-                                  { Repeat = true, Ease = SinInOut };
+            { Repeat = true, Ease = SinInOut };
         }
 
         return new(CreateResNode(), gemList);
     }
-
-    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 
@@ -170,7 +163,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         Animator += new Tween(WidgetContainer,
                               new(0) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 },
                               new(150) { ScaleX = downScale, ScaleY = downScale * flipFactor, Alpha = 0 })
-                                  { Ease = SinInOut };
+        { Ease = SinInOut };
     }
 
     private void PlateAppear()
@@ -180,7 +173,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         Animator += new Tween(WidgetContainer,
                                  new(0) { ScaleX = upScale, ScaleY = upScale * flipFactor, Alpha = 0 },
                                  new(200) { ScaleX = Config.Scale, ScaleY = Config.Scale * flipFactor, Alpha = 255 })
-                                 { Ease = SinInOut };
+        { Ease = SinInOut };
     }
 
     #endregion
@@ -196,7 +189,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) PlateVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { PlateAppear(); }}
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { PlateAppear(); } }
 
     #endregion
 
@@ -226,13 +219,13 @@ public sealed unsafe class AetherflowReplica : CounterWidget
         public AetherflowReplicaConfig() { }
     }
 
-    public AetherflowReplicaConfig Config;
-    public override CounterWidgetConfig GetConfig => Config;
+    private AetherflowReplicaConfig config;
 
+    public override AetherflowReplicaConfig Config => config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -275,12 +268,6 @@ public sealed unsafe class AetherflowReplica : CounterWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

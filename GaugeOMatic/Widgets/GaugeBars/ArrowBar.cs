@@ -15,7 +15,6 @@ using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -23,19 +22,13 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Arrow Bar")]
+[WidgetDescription("A Gauge Bar shaped like an arrow.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar)]
 public sealed unsafe class ArrowBar : GaugeBarWidget
 {
     public ArrowBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Arrow Bar",
-        Author = "ItsBexy",
-        Description = "A Gauge Bar shaped like an arrow.",
-        WidgetTags = GaugeBar
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/JobHudBRD0.tex",
@@ -228,16 +221,17 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
         public ArrowBarConfig() { }
     }
 
-    public ArrowBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private ArrowBarConfig config;
+
+    public override ArrowBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.ArrowBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -277,11 +271,10 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 30, 2000, 1);
                 AngleControls("Angle", ref Config.Angle);
                 break;
@@ -303,12 +296,6 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

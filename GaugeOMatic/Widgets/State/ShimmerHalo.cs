@@ -12,10 +12,8 @@ using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ShimmerHalo;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -23,21 +21,15 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Shimmering Halo")]
+[WidgetDescription("A revolving circular aura that appears while the tracker's condition is met.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
+[WidgetUiTabs(Layout | Colors)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 public sealed unsafe class ShimmerHalo : StateWidget
 {
     public ShimmerHalo(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Shimmering Halo",
-        Author = "ItsBexy",
-        Description = "A revolving circular aura that appears while the tracker's condition is met.",
-        WidgetTags = State | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons,
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/gachaeffect03.tex", new Vector4(0, 0, 256, 256), new Vector4(13, 124, 8, 8))
@@ -47,6 +39,8 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
     public CustomNode Halo;
     public CustomNode Fill;
+
+    public override Bounds GetBounds() => Fill;
 
     public override CustomNode BuildContainer()
     {
@@ -172,18 +166,19 @@ public sealed unsafe class ShimmerHalo : StateWidget
         }
     }
 
-    public ShimmerHaloConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private ShimmerHaloConfig config;
+
+    public override ShimmerHaloConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorList(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorList(Tracker.CurrentData.MaxState);
     }
 
@@ -221,15 +216,18 @@ public sealed unsafe class ShimmerHalo : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
-    public override Bounds GetBounds() => Fill;
+    public override void ChangeScale(float amt)
+    {
+        var y = Config.Scale.Y;
+        var x = Config.Scale.X;
+
+        var a1 = (y + x) / 2f;
+        var a2 = a1 + (0.05f * amt);
+
+        Config.Scale = new(x / a1 * a2, y / a1 * a2);
+    }
 
     #endregion
 }

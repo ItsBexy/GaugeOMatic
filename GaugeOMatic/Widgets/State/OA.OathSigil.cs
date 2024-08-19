@@ -13,28 +13,21 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.OathSigil;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Oath Sigil")]
+[WidgetDescription("A glowing winged shield sigil recreating Paladin's tank stance indicator.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica | MultiComponent)]
+[WidgetUiTabs(Layout | Colors)]
+[MultiCompData("OA", "Oath Gauge Replica", 1)]
 public sealed unsafe class OathSigil : StateWidget
 {
     public OathSigil(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Oath Sigil",
-        Author = "ItsBexy",
-        Description = "A glowing winged shield sigil recreating Paladin's tank stance indicator.",
-        WidgetTags = State | Replica | MultiComponent,
-        MultiCompData = new("OA", "Oath Gauge Replica", 1),
-        UiTabOptions = Layout | Colors
-    };
 
     public override CustomPartsList[] PartsLists { get; } =
     {
@@ -49,6 +42,8 @@ public sealed unsafe class OathSigil : StateWidget
     public CustomNode Sigil;
     public CustomNode WingR;
     public CustomNode WingL;
+
+    public override Bounds GetBounds() => SigilWrapper;
 
     public override CustomNode BuildContainer()
     {
@@ -172,18 +167,19 @@ public sealed unsafe class OathSigil : StateWidget
         }
     }
 
-    public OathSigilConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private OathSigilConfig config;
+
+    public override OathSigilConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -206,11 +202,10 @@ public sealed unsafe class OathSigil : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 ToggleControls("Show Wings", ref Config.IncludeWings);
                 break;
             case Colors:
@@ -230,15 +225,7 @@ public sealed unsafe class OathSigil : StateWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => SigilWrapper;
 
     #endregion
 }

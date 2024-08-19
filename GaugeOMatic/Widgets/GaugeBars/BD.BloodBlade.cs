@@ -17,27 +17,20 @@ using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Blood Blade")]
+[WidgetDescription("A bar in the style of DRK's Blood Gauge.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent)]
+[MultiCompData("BD", "Blood Gauge Replica", 2)]
 public sealed unsafe class BloodBlade : GaugeBarWidget
 {
     public BloodBlade(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Blood Blade",
-        Author = "ItsBexy",
-        Description = "A bar in the style of DRK's Blood Gauge",
-        WidgetTags = GaugeBar | MultiComponent,
-        MultiCompData = new("BD", "Blood Gauge Replica", 2)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { DRK0 };
 
@@ -50,6 +43,8 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
     public CustomNode Effects;
     public CustomNode Glow;
     public CustomNode Sigil;
+
+    public override Bounds GetBounds() => new(Frame, Ring);
 
     public override CustomNode BuildContainer()
     {
@@ -216,12 +211,13 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         public BloodBladeConfig() => MilestoneType = Above;
     }
 
-    public BloodBladeConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private BloodBladeConfig config;
+
+    public override BloodBladeConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.BloodBladeCfg == null)
         {
             Config.MilestoneType = Above;
@@ -229,7 +225,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
         }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     private static AddRGB ColorOffset = new(-84, 122, 75);
     public override void ApplyConfigs()
@@ -253,11 +249,10 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 ToggleControls("Show Ring", ref Config.Ring);
                 break;
@@ -288,15 +283,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => new(Frame, Ring);
 
     #endregion
 }

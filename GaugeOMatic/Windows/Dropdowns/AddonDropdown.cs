@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using GaugeOMatic.Trackers;
-using GaugeOMatic.Widgets;
+using System.Collections.Generic;
 
 namespace GaugeOMatic.Windows.Dropdowns;
 
@@ -33,17 +32,16 @@ public class AddonDropdown : Dropdown<string>
         Values.Clear();
         DisplayNames.Clear();
 
-        if (Tracker.WidgetType != null && WidgetInfo.WidgetList.TryGetValue(Tracker.WidgetType, out var wType))
+        var widgetInfo = Tracker.Widget?.GetAttributes;
+
+        var whiteList = widgetInfo?.WhiteList;
+        var blackList = widgetInfo?.BlackList;
+        foreach (var option in addonOptions)
         {
-            var whiteList = wType.AllowedAddons;
-            var blackList = wType.RestrictedAddons;
-            foreach (var option in addonOptions)
-            {
-                if (whiteList is { Count: > 0 } && !whiteList.Contains(option.Name)) continue;
-                if (blackList is { Count: > 0 } && blackList.Contains(option.Name)) continue;
-                Values.Add(option.Name);
-                DisplayNames.Add(option.DisplayName);
-            }
+            if (whiteList is { Count: > 0 } && !whiteList.Contains(option.Name)) continue;
+            if (blackList is { Count: > 0 } && blackList.Contains(option.Name)) continue;
+            Values.Add(option.Name);
+            DisplayNames.Add(option.DisplayName);
         }
 
         Index = Values.IndexOf(Tracker.TrackerConfig.AddonName);

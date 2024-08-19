@@ -11,27 +11,21 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.OathGem;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Oath Gem")]
+[WidgetDescription("A widget recreating the low-level tank stance gem for GLA / PLD")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(State | Replica)]
+[WidgetUiTabs(Layout | Colors)]
 public sealed unsafe class OathGem : StateWidget
 {
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Oath Gem",
-        Author = "ItsBexy",
-        Description = "A widget recreating the low-level tank stance gem for GLA / PLD",
-        WidgetTags = State | Replica,
-        UiTabOptions = Layout | Colors
-    };
-
     public override CustomPartsList[] PartsLists { get; } = { PLD0 };
 
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
     public OathGem(Tracker tracker) : base(tracker) { }
 
     #region Nodes
@@ -149,18 +143,19 @@ public sealed unsafe class OathGem : StateWidget
         }
     }
 
-    public OathGemConfig Config;
-    public override WidgetTypeConfig GetConfig => Config;
+    private OathGemConfig config;
+
+    public override OathGemConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
     public override void ResetConfigs()
     {
-        Config = new();
+        config = new();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
     }
 
@@ -182,13 +177,10 @@ public sealed unsafe class OathGem : StateWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         Config.FillColorLists(Tracker.CurrentData.MaxState);
         switch (UiTab)
         {
-            case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
-                break;
             case Colors:
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
 
@@ -203,12 +195,6 @@ public sealed unsafe class OathGem : StateWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

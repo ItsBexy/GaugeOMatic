@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -13,33 +14,25 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.NumTextProps;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Enochian Bar")]
+[WidgetDescription("A curved bar based on BLM's Enochian timer.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent | Replica | HasAddonRestrictions | HasClippingMask)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[MultiCompData("EL", "Elemental Gauge Replica", 1)]
 public sealed unsafe class EnochianBar : GaugeBarWidget
 {
     public EnochianBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Enochian Bar",
-        Author = "ItsBexy",
-        Description = "A curved bar based on BLM's Enochian timer.",
-        WidgetTags = GaugeBar | MultiComponent | Replica | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons,
-        MultiCompData = new("EL", "Elemental Gauge Replica", 1)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { BLM0, CircleMask };
 
@@ -50,19 +43,18 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
     public CustomNode MainContainer;
     public CustomNode DrainContainer;
     public CustomNode GainContainer;
-
     public CustomNode MainMask;
     public CustomNode DrainMask;
     public CustomNode GainMask;
-
     public CustomNode Backplate;
     public CustomNode Lattice;
     public CustomNode Plate;
     public CustomNode Groove;
     public CustomNode Bar;
-
     public CustomNode ClockHandContainer;
     public CustomNode ClockHand;
+
+    public override Bounds GetBounds() => Lattice;
 
     public override CustomNode BuildContainer()
     {
@@ -248,16 +240,17 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         public EnochianBarConfig() { }
     }
 
-    public EnochianBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private EnochianBarConfig config;
+
+    public override EnochianBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.EnochianBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -296,11 +289,10 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt });
 
@@ -336,12 +328,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(UpdateFlags.Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
 
     private void DimCheck(bool dimEmpty)
@@ -361,8 +347,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
             else RevealBar();
         }
     }
-
-    public override Bounds GetBounds() => Lattice;
 
     #endregion
 }

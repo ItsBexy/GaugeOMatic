@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -11,29 +12,21 @@ using static GaugeOMatic.Widgets.ChakraBar;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Chakra Bar")]
+[WidgetDescription("A stack counter made out of a combination of Monk gauge elements.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class ChakraBar : CounterWidget
 {
     public ChakraBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Chakra Bar",
-        Author = "ItsBexy",
-        Description = "A stack counter made out of a combination of Monk gauge elements.",
-        WidgetTags = Counter,
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new("ui/uld/JobHudMNK0.tex",
@@ -62,6 +55,8 @@ public sealed unsafe class ChakraBar : CounterWidget
     public List<CustomNode> Glows = new();
     public List<CustomNode> ActionLines = new();
     public List<CustomNode> ActionLines2 = new();
+
+    public override Bounds GetBounds() => WidgetContainer;
 
     public override CustomNode BuildContainer()
     {
@@ -289,14 +284,16 @@ public sealed unsafe class ChakraBar : CounterWidget
         public ChakraBarConfig() { }
     }
 
-    public ChakraBarConfig Config;
-    public override CounterWidgetConfig GetConfig => Config;
+    private ChakraBarConfig config;
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override ChakraBarConfig Config => config;
 
-    public override void ResetConfigs() => Config = new();
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
+
+    public override void ResetConfigs() => config = new();
 
     public AddRGB ColorOffset = new(-66, -1, 85);
+
     public override void ApplyConfigs()
     {
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
@@ -333,15 +330,7 @@ public sealed unsafe class ChakraBar : CounterWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => WidgetContainer;
 
     #endregion
 }

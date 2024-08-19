@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Numerics;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -16,28 +17,20 @@ using static GaugeOMatic.Widgets.MahjongRibbon;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
-using static CustomNodes.CustomNode;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Mahjong Ribbon")]
+[WidgetDescription("A gauge bar based on parts of the Mahjong UI.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar)]
 public sealed unsafe class MahjongRibbon : GaugeBarWidget
 {
     public MahjongRibbon(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Mahjong Ribbon",
-        Author = "ItsBexy",
-        Description = "A gauge bar based on parts of the Mahjong UI.",
-        WidgetTags = GaugeBar
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/emjintroparts08.tex",
@@ -53,11 +46,11 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     public CustomNode Frame;
     public LabelTextNode LabelTextNode;
     public CustomNode Contents;
-
     public CustomNode Backdrop;
-
     public CustomNode TickWrapper;
     public CustomNode Tick;
+
+    public override Bounds GetBounds() => Frame;
 
     public override CustomNode BuildContainer()
     {
@@ -272,16 +265,17 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
         public MahjongRibbonConfig() { }
     }
 
-    public MahjongRibbonConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private MahjongRibbonConfig config;
+
+    public override MahjongRibbonConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.MahjongRibbonCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public Vector2 PosAdjust = new(0, -32);
     public override void ApplyConfigs()
@@ -325,11 +319,10 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 FloatControls("Width", ref Config.Width, 64, 1440, 1);
                 AngleControls("Angle", ref Config.Angle);
                 break;
@@ -352,15 +345,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Frame;
 
     #endregion
 }

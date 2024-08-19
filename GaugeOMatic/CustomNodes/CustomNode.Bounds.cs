@@ -45,9 +45,10 @@ public unsafe partial class CustomNode
         }
 
         public static implicit operator Bounds(CustomNode node) => new(node);
+
         public static implicit operator Bounds(List<CustomNode> nodes) => GetConvexHull(nodes);
 
-        public static Bounds operator +(Bounds b, Vector2 v) => new(b.Points.Select(p => p + v)) {IsConvex = b.IsConvex};
+        public static Bounds operator +(Bounds b, Vector2 v) => new(b.Points.Select(p => p + v)) { IsConvex = b.IsConvex };
 
         public static Bounds operator -(Bounds b, Vector2 v) => new(b.Points.Select(p => p - v)) { IsConvex = b.IsConvex };
 

@@ -15,7 +15,6 @@ using static GaugeOMatic.Widgets.InkSlash;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -23,19 +22,13 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("InkSlash Gauge")]
+[WidgetDescription("A gauge bar shaped like a streak of ink.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar)]
 public sealed unsafe class InkSlash : GaugeBarWidget
 {
     public InkSlash(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "InkSlash Gauge",
-        Author = "ItsBexy",
-        Description = "A gauge bar shaped like a streak of ink.",
-        WidgetTags = GaugeBar
-    };
 
     public override CustomPartsList[] PartsLists { get; } = {
         new ("ui/uld/Mobhunt5.tex",
@@ -255,16 +248,28 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         public InkSlashConfig() { }
     }
 
-    public InkSlashConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private InkSlashConfig config;
+
+    public override InkSlashConfig Config => config;
+
+    public override void ChangeScale(float amt)
+    {
+        var y = Config.Scale.Y;
+        var x = Config.Scale.X;
+
+        var a1 = (y + x) / 2f;
+        var a2 = a1 + (0.05f * amt);
+
+        Config.Scale = new(x / a1 * a2, y / a1 * a2);
+    }
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.InkSlashCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public AddRGB ColorOffset = new(-46, 110, 110, 0);
     public AddRGB SplatterOffset = new(-102, 128, 112);
@@ -323,12 +328,6 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

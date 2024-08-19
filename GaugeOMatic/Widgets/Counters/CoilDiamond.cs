@@ -14,7 +14,6 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
 
@@ -22,20 +21,14 @@ using static System.Math;
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Coil Diamonds")]
+[WidgetDescription("A diamond-shaped counter based on VPR's Rattling Coil stacks.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(Counter | Replica)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class CoilDiamond : FreeGemCounter
 {
     public CoilDiamond(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Coil Diamonds",
-        Author = "ItsBexy",
-        Description = "A diamond-shaped counter based on VPR's Rattling Coil stacks",
-        WidgetTags = Counter | Replica,
-        UiTabOptions = Layout | Colors | Behavior
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { VPR0 };
 
@@ -240,14 +233,15 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
         public CoilDiamondConfig() { }
     }
 
-    public CoilDiamondConfig Config;
-    public override FreeGemCounterConfig GetConfig => Config;
+    private CoilDiamondConfig config;
+
+    public override CoilDiamondConfig Config => config;
 
     public AddRGB GemColorOffset = new(-61,92,95);
 
-    public override void InitConfigs() => Config = new(Tracker.WidgetConfig);
+    public override void InitConfigs() => config = new(Tracker.WidgetConfig);
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -277,8 +271,6 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
         base.DrawUI();
         switch (UiTab)
         {
-            case Layout:
-                break;
             case Colors:
                 ColorPickerRGB("Gem Color", ref Config.GemColor);
                 ColorPickerRGB("Glow Color", ref Config.GlowColor);
@@ -294,12 +286,6 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
                 break;
             default:
                 break;
-        }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
         }
     }
 

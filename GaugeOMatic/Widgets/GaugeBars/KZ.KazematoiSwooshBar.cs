@@ -15,31 +15,23 @@ using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.KazematoiSwooshBar;
 using static GaugeOMatic.Widgets.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
-using static GaugeOMatic.Widgets.WidgetInfo;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
 namespace GaugeOMatic.Widgets;
 
+[WidgetName("Kazematoi Bar")]
+[WidgetDescription("A bar based on the backdrop of NIN's Kazematoi.")]
+[WidgetAuthor("ItsBexy")]
+[WidgetTags(GaugeBar | MultiComponent | HasAddonRestrictions | HasClippingMask)]
+[MultiCompData("KZ", "Kazematoi Replica", 2)]
+[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 {
     public KazematoiSwooshBar(Tracker tracker) : base(tracker) { }
-
-    public override WidgetInfo WidgetInfo => GetWidgetInfo;
-
-    public static WidgetInfo GetWidgetInfo { get; } = new()
-    {
-        DisplayName = "Kazematoi Bar",
-        Author = "ItsBexy",
-        Description = "A bar based on the backdrop of NIN's Kazematoi",
-        WidgetTags = GaugeBar | MultiComponent | HasAddonRestrictions,
-        RestrictedAddons = ClipConflictAddons,
-        MultiCompData = new("KZ", "Kazematoi Replica", 2)
-    };
 
     public override CustomPartsList[] PartsLists { get; } = { NIN1,
         new("ui/uld/JobHudNIN1Mask.tex",new Vector4(0,0,128,96)),
@@ -61,6 +53,8 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
     public CustomNode TickMark;
     public CustomNode Flash;
     public LabelTextNode LabelTextNode;
+
+    public override Bounds GetBounds() => Mask;
 
     public override CustomNode BuildContainer()
     {
@@ -318,16 +312,17 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
         public KazematoiSwooshBarConfig() { }
     }
 
-    public KazematoiSwooshBarConfig Config;
-    public override GaugeBarWidgetConfig GetConfig => Config;
+    private KazematoiSwooshBarConfig config;
+
+    public override KazematoiSwooshBarConfig Config => config;
 
     public override void InitConfigs()
     {
-        Config = new(Tracker.WidgetConfig);
+        config = new(Tracker.WidgetConfig);
         if (Tracker.WidgetConfig.KazematoiSwooshBarCfg == null && ShouldInvertByDefault) { Config.Invert = true; }
     }
 
-    public override void ResetConfigs() => Config = new();
+    public override void ResetConfigs() => config = new();
 
     public override void ApplyConfigs()
     {
@@ -349,11 +344,10 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:
-                PositionControls("Position", ref Config.Position);
-                ScaleControls("Scale", ref Config.Scale);
                 AngleControls("Angle", ref Config.Angle);
                 ToggleControls("Mirror", ref Config.Mirror);
                 break;
@@ -375,15 +369,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
             default:
                 break;
         }
-
-        if (UpdateFlag.HasFlag(Save))
-        {
-            ApplyConfigs();
-            Config.WriteToTracker(Tracker);
-        }
     }
-
-    public override Bounds GetBounds() => Mask;
 
     #endregion
 }
