@@ -27,17 +27,16 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent)]
 [MultiCompData("NK", "Ninki Gauge Replica", 3)]
-public sealed unsafe class NinkiBorders : GaugeBarWidget
+public sealed unsafe class NinkiBorders(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public NinkiBorders(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/JobHudNIN0.tex",
              new(0, 252, 208, 20),
              new(0, 272, 208, 16),
              new(256, 152, 20, 88),
              new(0, 196, 196, 56))
-    };
+    ];
 
     #region Nodes
 
@@ -101,25 +100,26 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[]
-    {
+    public KeyFrame[] BarTimeline =>
+    [
         new(0) { Width = 10, Alpha = 0 },
         new(10) { Width = 20, Alpha = Config.BorderColor.A },
         new(95) { Width = 105, Alpha = Config.BorderColor.A * 0.7f },
         new(180) { Width = 190, Alpha = Config.BorderColor.A },
         new(190) { Width = 200, Alpha = Config.BorderColor.A * 0.7f }
-    };
+    ];
 
-    public KeyFrame[] TickTimeline => new KeyFrame[]
-    {
+    public KeyFrame[] TickTimeline =>
+    [
         new(0) { X = 2, Alpha = 0 },
         new(10) { X = 12, Alpha = Config.TickColor.A },
         new(180) { X = 182, Alpha = Config.TickColor.A },
         new(190) { X = 192, Alpha = 0 }
-    };
+    ];
 
     private void AppearAnim() =>
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Calligraphy,
                 new(0) { Scale = 1, Alpha = 70 },
                 new(100) { Scale = 1, Alpha = 160 },
@@ -132,7 +132,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
                 new(0) { ScaleX = 1.15f, ScaleY = 1.5f, Rotation = 0 },
                 new(100) { ScaleX = 3f, ScaleY = 1.2f, Rotation = -0.065f },
                 new(400) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 })
-        };
+        ];
 
     #endregion
 
@@ -234,7 +234,7 @@ public sealed unsafe class NinkiBorders : GaugeBarWidget
         {
             case Layout:
                 var borders = new List<bool> { Config.Top, Config.Bottom };
-                if (ToggleControls("Show", ref borders, new() { "Top", "Bottom" }))
+                if (ToggleControls("Show", ref borders, ["Top", "Bottom"]))
                 {
                     Config.Top = borders[0];
                     Config.Bottom = borders[1];

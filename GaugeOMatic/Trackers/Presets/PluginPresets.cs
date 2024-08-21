@@ -30,8 +30,8 @@ public class PluginPresets
     internal static readonly Preset RDMDefault = new("H4sIAAAAAAAACs2VYU/bMBCG/8rkz1lkx47T9tsoGzCNDa1IA6EK2bHNIpwYJc4mVPW/79wmiJRo2pAofIvufOf3ee1zVuirKDWaoe+Hp+8OtRGt9ShC57XIb3XdoNnVCp14XZ4oNCMJZRH6Uagb7eeuMsUNmq3QB6Vg4dy1ldf13GxiZ64pfOGq8H0BhSyLcYQu4YsmMV5HaJELC7uSmEfoSJdzZ10NIiTlmjBjQMGniz5oKJEYb4M1iO3jRBJOOMTXvajz+7uAMlAUsh1Nl1544dumi0FTWO6qzoXPTh63CrzAkPhYCWk1gPu61etoYET6LCP+0QYlBeVyxwaNJWHibdnApk9tWPwsylLXx8K6cRPSSe8CoY9d2CRxPNnmYgKZDeOXovFwD1HQoqaJyjXALndpH237Iqw82zNqxqUwYRaWUHangyiKN032yp3QyZ7BjcE4IQPw90n6GuQjt/tAWFHl+tsvXVtx38H3owjnJVLBZXhAi/z2YZynjCepohA+LaxuvKv0VuYTpmH7l8BKMjxyk89EeFLgnTiy7vcOlTEkZ2HmdsUOiv5P6/VD7bbj3w8Cj/x2xhQfCNBLuisFu+Q5Y1m2Z+XL9R+brLklVAcAAA==", true) { BuiltIn = true };
     internal static readonly Preset PCTDefault = new("H4sIAAAAAAAACtWUUW/aMBDHvwrycxY5IYaQN0rZ6FQqNJC6adqDSZxgLbEjx5nGEN99Z2NQQ5m0TtU27CdffP87//4HO/RAK4YStJisercsp22pkYdWiqZfmWpQ8nmHHnlWMD2RIucFSnZoyau6ZCteMTXJbWQseEU1l+KeiUJvUBIS7KGHtlqx73qhZA1COzQVdF2yDCVatcxDC9lwk2M+fUQJGfqQ8wklQRD7eO+hiSylgs5yt6CtKTRyDA/SaB2tbfimOAaHudk2+FYKveQ/4G19fDiBtIfGJS+gZAQF5rxkjZYCrmCfQODw0NW2NkCevBLtT0Tcx4liVLeKzaXm+S2jWclBBtSzTApH9L1cz9rsw2KOTefdtzvS7uZRrWfleie9vfe34AckviL6j4zWUrwO+4PWvyMfktEVkb+nImtSWr/S4J/kLvG/06y6g8T+IIaHXHbjHaucF+cDHRCHNTpQXaa0hJKBH43MIh4yuQ4fi+LRYGDxQXS5gY6gLtBT0OcNbUwiSNQ05QKqhdhoj0VhFN8Y28C1Vn0z1+zB5p0Mi8y24jOesWlV6+0Rh8V8cCvAl52Ahp77sNTwh9G42B/jn9EKyvdME+fEyYuJh9HAESf9p8RDP+jCpiwesXPYQfRL2oH9gcBVBzy4IsKgotS2N2+bZ4TjlxPGp5kOuzONCYYVdTCPcIrX4e9jDokPPh2HeggVOtCtuW7I+/bQsSDGZv+PFsxATNUbKjRtOEX7L/ufWZWeIfQIAAA=", true) { BuiltIn = true };
 
-    internal static List<Preset> Presets = new()
-    {
+    internal static List<Preset> Presets =
+    [
         PLDDefault,
         WARDefault,
         DRKDefault,
@@ -57,5 +57,5 @@ public class PluginPresets
         SMNDefault,
         RDMDefault,
         PCTDefault
-    };
+    ];
 }

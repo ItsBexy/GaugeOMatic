@@ -489,6 +489,8 @@ public unsafe partial class CustomNode
             SetCoords(clipNode->PartsList, clipNode->PartId, coords);
         }
 
+        return this;
+
         static void SetCoords(AtkUldPartsList* list, uint partId, Vector4 coords)
         {
             list->Parts[partId].U = (ushort)Floor(coords.X);
@@ -496,8 +498,6 @@ public unsafe partial class CustomNode
             list->Parts[partId].Width = (ushort)Floor(coords.Z);
             list->Parts[partId].Height = (ushort)Floor(coords.W);
         }
-
-        return this;
     }
 
     public CustomNode SetKeyFrameAddRGB(AddRGB add, int a, params int[] keyFrames)

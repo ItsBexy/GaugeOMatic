@@ -24,13 +24,11 @@ namespace GaugeOMatic.Widgets;
 [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
 [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local")]
-public abstract class FreeGemCounter : CounterWidget
+public abstract class FreeGemCounter(Tracker tracker) : CounterWidget(tracker)
 {
-    protected FreeGemCounter(Tracker tracker) : base(tracker) { }
-
     public abstract override FreeGemCounterConfig Config { get; }
 
-    public List<CustomNode> Stacks = new();
+    public List<CustomNode> Stacks = [];
 
     public virtual string StackTerm => "Gem";
     public virtual int ListMask => 0b111;
@@ -90,7 +88,7 @@ public abstract class FreeGemCounter : CounterWidget
 
     public void FreeGemControls()
     {
-        RadioControls("Arrangement", ref Config.Arrangement, new() { Arc, Individual }, new() { "Arc", "Individual" });
+        RadioControls("Arrangement", ref Config.Arrangement, [Arc, Individual], ["Arc", "Individual"]);
         if (Config.Arrangement == Arc)
         {
             ArcControls();
@@ -226,7 +224,7 @@ public abstract class FreeGemCounterConfig : CounterWidgetConfig
     {
         if (LayoutList?.Count >= i) return;
 
-        LayoutList ??= new();
+        LayoutList ??= [];
         while (LayoutList.Count < i) { LayoutList.Add(new(Spacing * SpacingModifier * LayoutList.Count, 0, 0, 1)); }
     }
 }

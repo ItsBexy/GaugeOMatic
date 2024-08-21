@@ -35,7 +35,8 @@ public class PresetWindow : Window, IDisposable
 
     internal static PresetUIData UIData = new();
 
-    public List<Preset> BuildPresetList() => new(PluginPresets.Presets.Concat(Configuration.SavedPresets).OrderBy(static p => p.Name));
+    public List<Preset> BuildPresetList() =>
+        [..PluginPresets.Presets.Concat(Configuration.SavedPresets).OrderBy(static p => p.Name)];
 
     public override void Draw()
     {
@@ -186,6 +187,8 @@ public class PresetWindow : Window, IDisposable
             ImGui.EndTable();
         }
 
+        return;
+
         void AddTrackerButton(TrackerConfig trackerConfig)
         {
             if (ImGuiComponents.IconButton($"##add{trackerConfig.GetHashCode()}", Plus))
@@ -313,7 +316,7 @@ public class PresetWindow : Window, IDisposable
     public struct PresetUIData
     {
         public string? NewPresetName = null;
-        public List<Preset> PresetList = new();
+        public List<Preset> PresetList = [];
         public int PresetSelectedIndex = 0;
         public string ImportHintText { get; set; } = "Paste Here";
         public string ImportString { get; set; } = "";

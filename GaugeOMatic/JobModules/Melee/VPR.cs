@@ -19,29 +19,26 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class VPRModule : JobModule
+public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudRDB0", "JobHudRDB1")
 {
     public override Job Job => VPR;
     public override Job Class => Job.None;
     public override Role Role => Melee;
 
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudRDB1", "Serpent Offerings Gauge"),
         new("JobHudRDB0", "Vipersight"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Rattling Coils", nameof(RattlingCoilTracker)),
         new("Serpent Offerings Gauge", nameof(SerpentGaugeTracker)),
         new("Anguine Tribute", nameof(AnguineTributeTracker))
-    };
-
-    public VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(
-        trackerManager, trackerConfigList, "JobHudRDB0", "JobHudRDB1")
-    { }
+    ];
 
     public override void Save()
     {
@@ -75,7 +72,7 @@ public class VPRModule : JobModule
                     UpdateFlag |= UpdateFlags.Save;
                 }
 
-                RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, new() { false, true }, new() { "3rd Step Only", "All Steps" }, true);
+                RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, [false, true], ["3rd Step Only", "All Steps"], true);
 
                 if (ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
                 if (ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
@@ -173,6 +170,8 @@ public class VPRModule : JobModule
                 RevertSimple();
             }
         }
+
+        return;
 
         void RecolorStandard(AddRGB color)
         {

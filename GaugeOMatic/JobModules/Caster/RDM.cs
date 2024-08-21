@@ -15,25 +15,25 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class RDMModule : JobModule
+public class RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudRDM0")
 {
     public override Job Job => RDM;
     public override Job Class => Job.None;
     public override Role Role => Caster;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudRDM0", "Balance Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Black Mana", nameof(BlackManaTracker)),
         new("White Mana", nameof(WhiteManaTracker)),
         new("Mana Stacks", nameof(ManaStackTracker)),
         new("Balance Crystal", nameof(BalanceCrystalTracker))
-    };
-
-    public RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRDM0") { }
+    ];
 
     public override void Save()
     {

@@ -12,10 +12,13 @@ namespace GaugeOMatic.CustomNodes.Animation;
 
 public class Animator : IDisposable, IEnumerable<Tween>
 {
-    public List<Tween> Tweens = new();
+    public List<Tween> Tweens = [];
 
-    public void RunTweens() => Tweens = new(Tweens.Where(static t => !t.IsStale)
-                                                  .Select(static t => t.Update()));
+    public void RunTweens() => Tweens =
+    [
+        ..Tweens.Where(static t => !t.IsStale)
+                .Select(static t => t.Update())
+    ];
 
     public Animator Add(Tween t)
     {
@@ -52,19 +55,19 @@ public class Animator : IDisposable, IEnumerable<Tween>
 
     public Animator Remove(CustomNode node)
     {
-        Tweens = new(Tweens.Where(t => t.Target != node));
+        Tweens = [..Tweens.Where(t => t.Target != node)];
         return this;
     }
 
     public Animator Remove(string label)
     {
-        Tweens = new(Tweens.Where(t => t.Label != label));
+        Tweens = [..Tweens.Where(t => t.Label != label)];
         return this;
     }
 
     public Animator Remove(string label, params CustomNode[] nodes)
     {
-        Tweens = new(Tweens.Where(t => t.Label != label || !nodes.Contains(t.Target)));
+        Tweens = [..Tweens.Where(t => t.Label != label || !nodes.Contains(t.Target))];
         return this;
     }
 

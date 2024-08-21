@@ -58,33 +58,39 @@ public class TrackerDropdown : BranchingDropdown
     public TrackerDropdown(Tracker tracker)
     {
         Tracker = tracker;
-        StatusOptions = new(StatusData.Where(s => !s.Value.HideFromDropdown && s.Value.CheckJob(Tracker.JobModule))
-                                      .Select(static s => (MenuOption)s.Value)
-                                      .OrderBy(static s => s.Name));
+        StatusOptions =
+        [
+            ..StatusData.Where(s => !s.Value.HideFromDropdown && s.Value.CheckJob(Tracker.JobModule))
+                        .Select(static s => (MenuOption)s.Value)
+                        .OrderBy(static s => s.Name)
+        ];
 
         StatusOptionsUnfiltered = Sheets.AllStatuses;
 
-        ActionOptions = new(ActionData.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
-                                      .Select(static a => (MenuOption)a.Value)
-                                      .OrderBy(static a => a.Name));
+        ActionOptions =
+        [
+            ..ActionData.Where(a => !a.Value.HideFromDropdown && a.Value.CheckJob(Tracker.JobModule))
+                        .Select(static a => (MenuOption)a.Value)
+                        .OrderBy(static a => a.Name)
+        ];
 
-        SubMenus = new()
-        {
+        SubMenus =
+        [
             ("Status Effects", StatusOptions),
             ("Actions", ActionOptions),
             ("Other", ParamOptions)
-        };
+        ];
 
         if (Tracker.JobModule.JobGaugeMenu.Count > 0) SubMenus.Insert(2, ("Job Gauge", Tracker.JobModule.JobGaugeMenu));
     }
 
-    public static string StatusSearchString = "";
-    public static string ActionSearchString = "";
+    internal static string StatusSearchString = "";
+    internal static string ActionSearchString = "";
 
     public override void DrawSubMenu(int i)
     {
         var (label, options) = SubMenus[i];
-        if (!options.Any()) return;
+        if (options.Count == 0) return;
 
         if (!ImGui.BeginMenu($"{label}##{Hash}{label}Menu")) return;
 

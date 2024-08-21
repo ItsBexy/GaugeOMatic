@@ -1,5 +1,4 @@
 using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -24,11 +23,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | MultiComponent | Replica)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("EL", "Elemental Gauge Replica", 2)]
-public sealed unsafe class ElementOrb : StateWidget
+public sealed unsafe class ElementOrb(Tracker tracker) : StateWidget(tracker)
 {
-    public ElementOrb(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
+    public override CustomPartsList[] PartsLists { get; } = [BLM0];
 
     #region Nodes
 
@@ -81,8 +78,8 @@ public sealed unsafe class ElementOrb : StateWidget
     private void SetupPulse(AddRGB orbAdd)
     {
         Animator -= "Pulse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Halo,
                 new(0) { Alpha = 128 },
                 new(630) { Alpha = 128 },
@@ -102,7 +99,7 @@ public sealed unsafe class ElementOrb : StateWidget
                 new(965) { X = -2, Y = -34, Scale = 0.8f, Alpha = 152 },
                 new(1300) { X = 0, Y = -30, Scale = 0.8f, Alpha = 0 })
                 { Repeat = true, Label = "Pulse" }
-        };
+        ];
     }
 
     #endregion
@@ -119,21 +116,21 @@ public sealed unsafe class ElementOrb : StateWidget
         Orb.SetPartId(partId == 0 ? 24 : partId);
         OrbContainer.SetAddRGB(Config.GetOrbModifier(current));
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(OrbContainer, Hidden[0], Visible[630]),
             new(InactiveOrb, Visible[0], Hidden[160]),
             new(Crescent, new(0) { AddRGB = -20, MultRGB = 50 }, new(160) { AddRGB = 0, MultRGB = 100 })
-        };
+        ];
     }
 
     public override void Deactivate(int previous) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(OrbContainer, Visible[0], Hidden[160]),
             new(InactiveOrb, Hidden[0], Visible[160]),
             new(Crescent, new(0) { AddRGB = 0, MultRGB = 100 }, new(160) { AddRGB = -20, MultRGB = 50 })
-        };
+        ];
 
     public override void StateChange(int current, int previous)
     {
@@ -150,10 +147,10 @@ public sealed unsafe class ElementOrb : StateWidget
         public enum OrbBase { Grey = 24, Blue = 1, Red = 2 }
 
         public float CrescentAngle;
-        public List<AddRGB> HaloColors = new();
-        public List<AddRGB> OrbModifiers = new();
-        public List<AddRGB> OrbPulses = new();
-        public List<OrbBase> BaseColors = new();
+        public List<AddRGB> HaloColors = [];
+        public List<AddRGB> OrbModifiers = [];
+        public List<AddRGB> OrbPulses = [];
+        public List<OrbBase> BaseColors = [];
 
         public ElementOrbConfig(WidgetConfig widgetConfig) : base(widgetConfig.ElementOrbCfg)
         {
@@ -249,7 +246,8 @@ public sealed unsafe class ElementOrb : StateWidget
                     var orbMod = Config.OrbModifiers[i];
                     var orbPulse = Config.OrbPulses[i];
                     var haloColor = Config.HaloColors[i];
-                    if (RadioControls($"Base Color##baseColor{i}", ref baseColor, new() { Grey, Red, Blue }, new() { "Grey", "Red", "Blue" })) Config.BaseColors[i] = baseColor;
+                    if (RadioControls($"Base Color##baseColor{i}", ref baseColor, [Grey, Red, Blue],
+                                      ["Grey", "Red", "Blue"])) Config.BaseColors[i] = baseColor;
                     if (ColorPickerRGB($"Color Modifier##orbMod{i}", ref orbMod)) Config.OrbModifiers[i] = orbMod;
                     if (ColorPickerRGB($"Orb Pulse##orbPulse{i}", ref orbPulse)) Config.OrbPulses[i] = orbPulse;
                     if (ColorPickerRGB($"Rim Pulse##rimPulse{i}", ref haloColor)) Config.HaloColors[i] = haloColor;

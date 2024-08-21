@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State)]
 [WidgetUiTabs(Layout | Colors)]
-public sealed unsafe class SenSeal : StateWidget
+public sealed unsafe class SenSeal(Tracker tracker) : StateWidget(tracker)
 {
-    public SenSeal(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { SAM1 };
+    public override CustomPartsList[] PartsLists { get; } = [SAM1];
 
     #region Nodes
 
@@ -111,10 +109,6 @@ public sealed unsafe class SenSeal : StateWidget
 
     #endregion
 
-    #region Animations
-
-    #endregion
-
     #region UpdateFuncs
 
     public override void OnFirstRun(int current)
@@ -130,8 +124,8 @@ public sealed unsafe class SenSeal : StateWidget
 
     public override void Activate(int current)
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(WidgetContainer,
                 new(0, WidgetContainer),
                 new(300) { AddRGB = Config.Colors.ElementAtOrDefault(current) }),
@@ -168,15 +162,15 @@ public sealed unsafe class SenSeal : StateWidget
                 new(0) { Scale = 1, Alpha = 0 },
                 new(125) { Scale = 1, Alpha = 100 },
                 new(300) { Scale = 1.2f, Alpha = 0 })
-        };
+        ];
 
         StartPulse();
     }
 
     public override void Deactivate(int previous)
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(WidgetContainer,
                 new(0, WidgetContainer),
                 new(300) { AddRGB = Config.Colors.ElementAtOrDefault(0) }),
@@ -195,7 +189,7 @@ public sealed unsafe class SenSeal : StateWidget
                 new(0) { Scale = 1, Alpha = 216 },
                 new(225) { Scale = 1.3f, Alpha = 128 },
                 new(450) { Scale = 1.3f, Alpha = 0 })
-        };
+        ];
 
         StopPulse();
     }
@@ -203,8 +197,8 @@ public sealed unsafe class SenSeal : StateWidget
     private void StartPulse()
     {
         Animator -= "Pulse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(SealPulse,
                 new(0) { Scale = 1, Alpha = 0 },
                 new(500) { Scale = 1.2f, Alpha = 152 },
@@ -217,14 +211,14 @@ public sealed unsafe class SenSeal : StateWidget
                 new(950) { Scale = 1.2f, Alpha = 0 },
                 new(1325) { Scale = 1.2f, Alpha = 0 })
                 { Repeat = true, Label = "Pulse", Ease = SinInOut }
-        };
+        ];
     }
 
     private void StopPulse()
     {
         Animator -= "Pulse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(SealPulse,
                 new(0, SealPulse),
                 new(500) { Scale = 1.4f, Alpha = 0 })
@@ -233,7 +227,7 @@ public sealed unsafe class SenSeal : StateWidget
                 new(0, KanjiPulse),
                 new(500) { Scale = 1.2f, Alpha = 0 })
                 { Label = "Pulse" }
-        };
+        ];
     }
 
     public override void StateChange(int current, int previous) => Animator += new Tween(WidgetContainer, new(0,WidgetContainer), new(300){AddRGB = Config.Colors.ElementAtOrDefault(current)});
@@ -244,7 +238,7 @@ public sealed unsafe class SenSeal : StateWidget
 
     public class SenSealConfig : WidgetTypeConfig
     {
-        public List<AddRGB> Colors = new();
+        public List<AddRGB> Colors = [];
         public int Seal;
         [DefaultValue(true)] public bool Kanji = true;
 
@@ -326,7 +320,7 @@ public sealed unsafe class SenSeal : StateWidget
         switch (UiTab)
         {
             case Layout:
-                RadioControls("Seal", ref Config.Seal, new() { 0, 1, 2 }, new() { "Setsu", "Getsu", "Ka" });
+                RadioControls("Seal", ref Config.Seal, [0, 1, 2], ["Setsu", "Getsu", "Ka"]);
                 ToggleControls("Show Kanji", ref Config.Kanji);
                 break;
             case Colors:

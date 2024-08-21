@@ -24,16 +24,15 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent)]
 [MultiCompData("NK", "Ninki Gauge Replica", 2)]
-public sealed unsafe class NinkiOverlay : GaugeBarWidget
+public sealed unsafe class NinkiOverlay(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public NinkiOverlay(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/JobHudNIN0.tex",
              new(0, 0, 256, 100),
              new(256, 152, 20, 88),
              new(0, 196, 196, 56))
-    };
+    ];
 
     #region Nodes
 
@@ -58,24 +57,24 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[]
-    {
+    public KeyFrame[] BarTimeline =>
+    [
         new(0) { Width = 18, Alpha = 0 },
         new(10) { Width = 28, Alpha = Config.ScrollColor.A },
         new(219) { Width = 237, Alpha = Config.ScrollColor.A },
         new(229) { Width = 247, Alpha = Config.ScrollColor.A/2f }
-    };
-    public static KeyFrame[] TickTimeline => new KeyFrame[]
-    {
+    ];
+    public static KeyFrame[] TickTimeline =>
+    [
         new(0) { X = -1, Alpha = 0 },
         new(10) { X = 9, Alpha = 255 },
         new(219) { X = 218, Alpha = 255 },
         new(229) { X = 228, Alpha = 0 }
-    };
+    ];
 
     private void AppearAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Calligraphy,
                 new(0) { Scale = 1, Alpha = 70 },
                 new(100) { Scale = 1, Alpha = 160 },
@@ -88,7 +87,7 @@ public sealed unsafe class NinkiOverlay : GaugeBarWidget
                 new(0) { ScaleX = 1.15f, ScaleY = 1.5f, Rotation = 0 },
                 new(100) { ScaleX = 3f, ScaleY = 1.2f, Rotation = -0.065f },
                 new(400) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 })
-        };
+        ];
 
     #endregion
 

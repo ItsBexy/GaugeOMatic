@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -15,7 +16,7 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SoulBar;
@@ -32,11 +33,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A recreation of Reaper's Soul gauge bar.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica)]
-public sealed unsafe class SoulBar : GaugeBarWidget
+public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public SoulBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { RPR0 };
+    public override CustomPartsList[] PartsLists { get; } = [RPR0];
 
     #region Nodes
 
@@ -114,7 +113,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
+    public KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = Config.Width }];
 
     public override void HideBar(bool instant = false)
     {
@@ -125,10 +124,10 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        var kf = instant ? new[] { 0, 0, 0, 0 } : new[] { 0, 250, 350,450 };
+        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 250, 350,450 };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 },
                 new(kf[1]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
@@ -158,7 +157,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
                 Visible[kf[0]],
                 Hidden[kf[2]])
                 { Ease = SinInOut, Label = "Collapse" }
-        };
+        ];
     }
 
     public override void RevealBar(bool instant = false)
@@ -169,10 +168,10 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 100, 170, 400 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 100, 170, 400 };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
                 new(kf[1]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
@@ -204,7 +203,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
                 Hidden[kf[0]],
                 Visible[kf[2]])
                 { Ease = SinInOut, Label = "Expand" }
-        };
+        ];
 
     }
 
@@ -220,8 +219,8 @@ public sealed unsafe class SoulBar : GaugeBarWidget
         var pulse1 = red ? Config.Pulse1Red + new AddRGB(-57, 115, 96) : Config.Pulse1Teal + new AddRGB(128, -74, -71);
         var pulse2 = red ? Config.Pulse2Red + new AddRGB(-57, 115, 96) : Config.Pulse2Teal + new AddRGB(128, -74, -71);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(GlowFrame,
                 new(0) { Alpha = 76 },
                 Visible[500],
@@ -232,7 +231,7 @@ public sealed unsafe class SoulBar : GaugeBarWidget
                 new(500) { AddRGB = pulse2 },
                 new(1000) { AddRGB = pulse1 })
                 { Ease = SinInOut, Repeat = true, Label = "BarPulse" }
-        };
+        ];
     }
 
     protected override void StopMilestoneAnim()
@@ -409,11 +408,11 @@ public sealed unsafe class SoulBar : GaugeBarWidget
             case Layout:
                 FloatControls("Width", ref Config.Width, 28, 180, 1);
                 AngleControls("Angle", ref Config.Angle);
-                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
+                RadioIcons("Fill Direction", ref Config.Mirror, [false, true], ArrowIcons);
                 break;
             case Colors:
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
-                RadioControls("Base Texture", ref Config.BaseColor, new() { 0, 1 }, new() { "Red", "Teal" }, true);
+                RadioControls("Base Texture", ref Config.BaseColor, [0, 1], ["Red", "Teal"], true);
                 switch (Config.BaseColor)
                 {
                     case 0:
@@ -462,10 +461,10 @@ public sealed unsafe class SoulBar : GaugeBarWidget
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
-        Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
-        Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
-        Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
-        new() { ArrowRight, ArrowLeft };
+        Abs(Config.Angle) > 135 ? [ArrowLeft, ArrowRight] :
+        Config.Angle > 45 ? [ArrowDown, ArrowUp] :
+        Config.Angle < -45 ? [ArrowUp, ArrowDown] :
+        [ArrowRight, ArrowLeft];
 
     #endregion
 }

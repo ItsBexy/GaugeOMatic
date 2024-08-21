@@ -18,24 +18,24 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class NINModule : JobModule
+public class NINModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudNIN0", "JobHudNIN1v70")
 {
     public override Job Job => NIN;
     public override Job Class => ROG;
     public override Role Role => Melee;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudNIN0", "Ninki Gauge"),
         new("JobHudNIN1v70", "Kazematoi"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Ninki Gauge", nameof(NinkiGaugeTracker)),
         new("Kazematoi Stacks", nameof(KazematoiTracker))
-    };
-
-    public NINModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudNIN0", "JobHudNIN1v70") { }
+    ];
 
     public override void Save()
     {

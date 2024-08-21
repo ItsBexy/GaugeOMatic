@@ -12,26 +12,25 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class DNCModule : JobModule
+public class DNCModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudDNC0", "JobHudDNC1")
 {
     public override Job Job => DNC;
     public override Job Class => Job.None;
     public override Role Role => Ranged;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudDNC0", "Step Gauge"),
         new("JobHudDNC1", "Fourfold Feathers"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Fourfold Feathers", nameof(FourfoldTracker)),
         new("Esprit Gauge", nameof(EspritGaugeTracker)),
         new("Dance Steps", nameof(DanceStepTracker))
-    };
-
-    public DNCModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudDNC0", "JobHudDNC1") { }
+    ];
 
     public override void Save()
     {

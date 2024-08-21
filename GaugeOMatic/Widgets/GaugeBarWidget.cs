@@ -17,10 +17,8 @@ namespace GaugeOMatic.Widgets;
 
 public enum MilestoneType { None, Above, Below }
 
-public abstract class GaugeBarWidget : Widget
+public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
 {
-    protected GaugeBarWidget(Tracker tracker) : base(tracker) { }
-
     public abstract override GaugeBarWidgetConfig Config { get; }
     public NumTextProps NumTextProps => Config.NumTextProps;
     public bool Invert => Config.Invert;
@@ -232,7 +230,8 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
 
     public static bool MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone)
     {
-        var r = RadioControls(label, ref milestoneType, new() { MilestoneType.None, Above, Below }, new() { "Never", "Above Threshold", "Below Threshold" });
+        var r = RadioControls(label, ref milestoneType, [MilestoneType.None, Above, Below],
+                              ["Never", "Above Threshold", "Below Threshold"]);
         var p = milestoneType > 0 && PercentControls("Threshold", ref milestone);
 
         return r || p;
@@ -241,6 +240,6 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
     public static bool SplitChargeControls(ref bool splitCharges, RefType refType, int maxCount)
     {
         return refType == RefType.Action && maxCount > 1 &&
-               RadioControls("Cooldown Style", ref splitCharges, new() { false, true }, new() { "All Charges", "Per Charge" });
+               RadioControls("Cooldown Style", ref splitCharges, [false, true], ["All Charges", "Per Charge"]);
     }
 }

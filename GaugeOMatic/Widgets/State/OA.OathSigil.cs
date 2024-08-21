@@ -25,16 +25,14 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("OA", "Oath Gauge Replica", 1)]
-public sealed unsafe class OathSigil : StateWidget
+public sealed unsafe class OathSigil(Tracker tracker) : StateWidget(tracker)
 {
-    public OathSigil(Tracker tracker) : base(tracker) { }
-
     public override CustomPartsList[] PartsLists { get; } =
-    {
+    [
         new("ui/uld/JobHudPLD.tex",
             new (0, 120, 180, 180),  // 0 sigil
             new(316, 306, 78, 52))   // 1 wing
-    };
+    ];
 
     #region Nodes
 
@@ -64,10 +62,6 @@ public sealed unsafe class OathSigil : StateWidget
 
     #endregion
 
-    #region Animations
-
-    #endregion
-
     #region UpdateFuncs
 
     public override void OnFirstRun(int current)
@@ -91,8 +85,8 @@ public sealed unsafe class OathSigil : StateWidget
         WingL.SetMultiply(wingColor);
         WingR.SetMultiply(wingColor);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Sigil,
                 new(0) { Y = 50, Scale = 0, Alpha = 0 },
                 new(160) { Y = 0, Scale = 1, Alpha = 255 }),
@@ -104,13 +98,13 @@ public sealed unsafe class OathSigil : StateWidget
                 new(0) { Scale = 0, Alpha = 0 },
                 new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
                 new(160) { Scale = 1, Alpha = 255 })
-        };
+        ];
 
     }
 
     public override void Deactivate(int previous) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Sigil,
                 new(0) { Y = 0, Scale = 1, Alpha = 255 },
                 new(160) { Y = 50, Scale = 0, Alpha = 0 }),
@@ -122,17 +116,17 @@ public sealed unsafe class OathSigil : StateWidget
                 new(0) { Scale = 1, Alpha = 255 },
                 new(80) { ScaleX = 1, ScaleY = 0.2f, Alpha = 100 },
                 new(160) { Scale = 0, Alpha = 0 })
-        };
+        ];
 
     public override void StateChange(int current, int previous)
     {
         var wingColor = Config.WingColors.ElementAtOrDefault(current);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(SigilWrapper, new(0, SigilWrapper), new(160) { AddRGB = Config.SigilColors.ElementAtOrDefault(current) }),
             new(WingL, new(0, WingL), new(160) { MultRGB = wingColor }),
             new(WingR, new(0, WingR), new(160) { MultRGB = wingColor })
-        };
+        ];
     }
 
     #endregion
@@ -141,8 +135,8 @@ public sealed unsafe class OathSigil : StateWidget
 
     public class OathSigilConfig : WidgetTypeConfig
     {
-        public List<AddRGB> SigilColors = new();
-        public List<ColorRGB> WingColors = new();
+        public List<AddRGB> SigilColors = [];
+        public List<ColorRGB> WingColors = [];
         [DefaultValue(true)] public bool IncludeWings = true;
         public byte BlendMode;
 
@@ -209,7 +203,7 @@ public sealed unsafe class OathSigil : StateWidget
                 ToggleControls("Show Wings", ref Config.IncludeWings);
                 break;
             case Colors:
-                RadioControls("Blend Mode", ref Config.BlendMode, new() { 0, 32 }, new() { "Normal", "Dodge" }, true);
+                RadioControls("Blend Mode", ref Config.BlendMode, new() { 0, 32 }, ["Normal", "Dodge"], true);
 
                 for (var i = 1; i <= Tracker.CurrentData.MaxState; i++)
                 {

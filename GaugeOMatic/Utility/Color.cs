@@ -59,6 +59,8 @@ public static class Color
         public static implicit operator string(ColorRGB c) => ((uint)c).ToString("x");
 
         public readonly uint ToRGBAu => (uint)((R << 24) + (G << 16) + (B << 8) + A);
+        public static ColorRGB FromAGBR(uint u) => new((byte)u,(byte)(u >> 16),(byte)(u >> 8),(byte)(u >> 24));
+
         public readonly uint ToABGR => (uint)((A << 24) + (B << 16) + (G << 8) + R);
 
         public readonly Vector4 AsVec4() => this;
@@ -71,7 +73,7 @@ public static class Color
     /// kinda like <see cref ="ColorRGB"/> but for making Add values color picker friendly.<br/>
     /// also still throws in the alpha because sometimes i want that alongside the Adds
     /// </summary>
-    public struct AddRGB : IColor
+    public struct AddRGB : IColor, IEquatable<AddRGB>
     {
         public short R = 0;
         public short G = 0;
@@ -136,6 +138,12 @@ public static class Color
             (uint)(Math.Clamp(R, -255L, 255L) + 255) +
             ((uint)(Math.Clamp(G, -255L, 255L) + 255u) << 10) +
             ((uint)(Math.Clamp(B, -255L, 255L) + 255u) << 22);
+
+        public readonly bool Equals(AddRGB other) => R == other.R && G == other.G && B == other.B && A == other.A;
+        public override readonly bool Equals(object? obj) => obj is AddRGB other && Equals(other);
+        public override readonly int GetHashCode() => HashCode.Combine(R, G, B, A);
+        public static bool operator ==(AddRGB left, AddRGB right) => left.Equals(right);
+        public static bool operator !=(AddRGB left, AddRGB right) => !left.Equals(right);
     }
 
     public struct ColorSet

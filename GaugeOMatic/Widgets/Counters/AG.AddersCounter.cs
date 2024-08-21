@@ -25,11 +25,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("AG", "Addersgall Gauge Replica", 2)]
-public sealed unsafe class AddersCounter : FreeGemCounter
+public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public AddersCounter(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudGFF1.tex",
             new(88, 56, 36, 44), // 0 frame
             new(124, 56, 20, 24),   // 1 gem (active)
@@ -45,7 +44,7 @@ public sealed unsafe class AddersCounter : FreeGemCounter
             new(100, 148, 50, 50),
             new(150, 148, 50, 50)
             )
-    };
+    ];
 
     #region Nodes
 
@@ -63,10 +62,10 @@ public sealed unsafe class AddersCounter : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks = new();
-        Gems = new();
-        Effects = new();
-        Frames = new();
+        Stacks = [];
+        Gems = [];
+        Effects = [];
+        Frames = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -99,15 +98,6 @@ public sealed unsafe class AddersCounter : FreeGemCounter
 
     private CustomNode BuildEffects()
     {
-        CustomNode CreateHalo() => ImageNodeFromPart(0, 3).SetPos(0, 3)
-                                                          .SetSize(36, 36)
-                                                          .SetScale(0.5f)
-                                                          .SetRotation(1.5707964f)
-                                                          .SetOrigin(18, 18)
-                                                          .SetImageFlag(32)
-                                                          .SetImageWrap(2)
-                                                          .SetAlpha(0);
-
         var streak1 = ImageNodeFromPart(0, 4).SetPos(20, -20)
                                              .SetScale(0.2f, 0.1f)
                                              .SetRotation(1.5707964f)
@@ -154,6 +144,15 @@ public sealed unsafe class AddersCounter : FreeGemCounter
                                              .DefineTimeline();
 
         return new CustomNode(CreateResNode(), CreateHalo(), CreateHalo(), CreateHalo(), streak1, streak2, dot, star1, star2, streak3).SetOrigin(18, 21);
+
+        CustomNode CreateHalo() => ImageNodeFromPart(0, 3).SetPos(0, 3)
+                                                          .SetSize(36, 36)
+                                                          .SetScale(0.5f)
+                                                          .SetRotation(1.5707964f)
+                                                          .SetOrigin(18, 18)
+                                                          .SetImageFlag(32)
+                                                          .SetImageWrap(2)
+                                                          .SetAlpha(0);
     }
 
     #endregion
@@ -165,8 +164,8 @@ public sealed unsafe class AddersCounter : FreeGemCounter
         Animator -= $"GemPulse{i}";
 
         var offset = Config.GemColor + new AddRGB(10, -49, -82);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(gemContainer[0],
                 new(0) { AddRGB = new AddRGB(0, 4, 5) + offset },
                 new(1150) { AddRGB = new AddRGB(9, 45, 54) + offset },
@@ -181,7 +180,7 @@ public sealed unsafe class AddersCounter : FreeGemCounter
                 new(1325) { Alpha = 0, PartId = 3 },
                 new(2300) { Alpha = 0, PartId = 3 })
                 { Repeat = true, Label = $"GemPulse{i}" }
-        };
+        ];
     }
 
     public override void ShowStack(int i)
@@ -189,7 +188,8 @@ public sealed unsafe class AddersCounter : FreeGemCounter
         Stacks[i][0].SetAlpha(0);
         Stacks[i][1].SetAlpha(255);
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Stacks[i][2],
                 new(0) { Alpha = 0, AddRGB = 0 },
                 new(160) { Alpha = 255, AddRGB = Config.GemColor },
@@ -199,12 +199,13 @@ public sealed unsafe class AddersCounter : FreeGemCounter
                 new(0) { Alpha = 255, ScaleX = 1.5f, ScaleY = 1 },
                 new(160) { Alpha = 255, ScaleX = 3, ScaleY = 1 },
                 new(630) { Alpha = 0, ScaleX = 1.5f, ScaleY = 0.2f })
-            };
+        ];
     }
 
     public override void HideStack(int i)
     {
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Stacks[i][0],
                 new(0) { Alpha = 255, AddRGB = 100 },
                 new(420) { Alpha = 255, AddRGB = 0 }),
@@ -261,7 +262,7 @@ public sealed unsafe class AddersCounter : FreeGemCounter
             new(Effects[i][7],
                 new(0) { Y = 0, Scale = 0.8f, Alpha = 255 },
                 new(560) { Y = -10, Scale = 0.3f, Alpha = 0 })
-        };
+        ];
 
     }
 

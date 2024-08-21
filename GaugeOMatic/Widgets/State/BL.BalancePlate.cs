@@ -25,7 +25,7 @@ namespace GaugeOMatic.Widgets;
 public sealed unsafe class BalancePlate : StateWidget
 {
     public override CustomPartsList[] PartsLists { get; } =
-    {
+    [
         new("ui/uld/JobHudRDM0.tex",
             new(0, 0, 116, 208),
             new(186, 3, 26, 124),
@@ -48,7 +48,7 @@ public sealed unsafe class BalancePlate : StateWidget
             new(118, 321, 89, 59),
             new(207, 321, 39, 59),
             new(150, 0, 34, 144))
-    };
+    ];
 
     public BalancePlate(Tracker tracker) : base(tracker) => SharedEvents.Add("SpendShake", _ => BalanceBar.SpendShake(WidgetContainer, Config.GetBGColor(Tracker.CurrentData.State) * 0.25f, Config.Position.X, Config.Position.Y, ref Animator));
 
@@ -156,9 +156,9 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public class BalancePlateConfig : WidgetTypeConfig
     {
-        public List<AddRGB> BGColors = new();
-        public List<AddRGB> CrystalColors = new();
-        public List<AddRGB> FXColors = new();
+        public List<AddRGB> BGColors = [];
+        public List<AddRGB> CrystalColors = [];
+        public List<AddRGB> FXColors = [];
 
         public BalancePlateConfig(WidgetConfig widgetConfig) : base(widgetConfig.BalancePlateCfg)
         {

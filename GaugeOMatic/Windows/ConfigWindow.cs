@@ -82,41 +82,6 @@ public partial class ConfigWindow : Window, IDisposable
 
     private void VerticalTabBar()
     {
-        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab)
-        {
-            var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
-            TextureProvider.GetFromGameIcon(new(GetJobIcon(job))).TryGetWrap(out var tex, out _);
-
-            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
-            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle,new(22)))
-            {
-                Configuration.JobTab = job;
-                Configuration.GeneralTab = Jobs;
-                Configuration.Save();
-            }
-            ImGui.PopStyleColor(3);
-        }
-
-        void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
-        {
-            var active = Configuration.GeneralTab == genTab;
-            TextureProvider.GetFromGameIcon(new(icon)).TryGetWrap(out var tex, out _);
-
-            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
-            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
-            {
-                Configuration.GeneralTab = genTab;
-                Configuration.Save();
-            }
-            ImGui.PopStyleColor(3);
-
-            if (ImGui.IsItemHovered()) ImGui.SetTooltip(tooltip);
-        }
-
-        void TankButton(Job job) => VerticalTabButton(job, (ColorRGB)0x026999ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x052657ff);
-        void HealButton(Job job) => VerticalTabButton(job, (ColorRGB)0x0c723aff, (ColorRGB)0x02992bff, (ColorRGB)0x0a2d23ff);
-        void DPSButton(Job job) => VerticalTabButton(job, (ColorRGB)0xc20c15ff, (ColorRGB)0xe5482fff, (ColorRGB)0x4c0b1cff);
-
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
@@ -162,8 +127,45 @@ public partial class ConfigWindow : Window, IDisposable
         DPSButton(SMN);
         DPSButton(RDM);
         DPSButton(PCT);
+        return;
 
-       // TankButton(BLU);
+        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab)
+        {
+            var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
+            TextureProvider.GetFromGameIcon(new(GetJobIcon(job))).TryGetWrap(out var tex, out _);
+
+            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
+            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle,new(22)))
+            {
+                Configuration.JobTab = job;
+                Configuration.GeneralTab = Jobs;
+                Configuration.Save();
+            }
+            ImGui.PopStyleColor(3);
+        }
+
+        void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
+        {
+            var active = Configuration.GeneralTab == genTab;
+            TextureProvider.GetFromGameIcon(new(icon)).TryGetWrap(out var tex, out _);
+
+            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
+            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
+            {
+                Configuration.GeneralTab = genTab;
+                Configuration.Save();
+            }
+            ImGui.PopStyleColor(3);
+
+            if (ImGui.IsItemHovered()) ImGui.SetTooltip(tooltip);
+        }
+
+        void TankButton(Job job) => VerticalTabButton(job, (ColorRGB)0x026999ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x052657ff);
+
+        void HealButton(Job job) => VerticalTabButton(job, (ColorRGB)0x0c723aff, (ColorRGB)0x02992bff, (ColorRGB)0x0a2d23ff);
+
+        // TankButton(BLU);
+        void DPSButton(Job job) => VerticalTabButton(job, (ColorRGB)0xc20c15ff, (ColorRGB)0xe5482fff, (ColorRGB)0x4c0b1cff);
     }
 
     internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.TabActive);

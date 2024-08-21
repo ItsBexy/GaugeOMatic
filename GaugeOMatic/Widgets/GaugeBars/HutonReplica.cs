@@ -29,11 +29,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A recreation of Ninja's Huton Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica)]
-public sealed unsafe class HutonReplica : GaugeBarWidget
+public sealed unsafe class HutonReplica(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public HutonReplica(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new (AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\huton.tex")),
              new(0, 0, 120, 152),
              new(120, 0, 224, 224),
@@ -41,7 +40,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
              new(120, 224, 144, 160),
              new(264, 224, 80, 80),
              new(0, 384, 288, 288))
-    };
+    ];
 
     #region Nodes
 
@@ -125,8 +124,8 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
     #region Animations
 
     private void AppearAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Puff,
                 new(0) { Scale = 0.2f, Alpha = 0 },
                 new(100) { Scale = 0.9f, Alpha = 255 },
@@ -135,7 +134,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                 new(0) { Scale = 0.9f, Rotation = 0, AddRGB = new(0, 0, 0), Alpha = 255 },
                 new(125) { Scale = 1, Rotation = 1.5256047f, AddRGB = new(0, 48, 77), Alpha = 255 },
                 new(250) { Scale = 1.4f, Rotation = 2.0694206f, Alpha = 0, AddRGB = new(0, 97, 99) })
-        };
+        ];
 
     private void DepleteAnim() =>
         Animator += new Tween(EmptyPinwheel,
@@ -143,8 +142,8 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                               new(250) { Scale = 0.9f, Rotation = 6.283185f, Alpha = 255, AddRGB = new(0, 0, 0) });
 
     private void GainAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Puff,
                 new(0) { Scale = 0.2f, Alpha = 0 },
                 new(100) { Scale = 0.9f, Alpha = 255 },
@@ -157,7 +156,7 @@ public sealed unsafe class HutonReplica : GaugeBarWidget
                 new(0) { Rotation = 0, AddRGB = new(0, 0, 0) },
                 new(275) { Rotation = 5.654867f, AddRGB = new(0, 38, 58) },
                 new(385) { Rotation = 6.283185f, AddRGB = new(0, 0, 0) })
-        };
+        ];
 
 
     private void ShowBlade(int i, AddRGB add, ColorRGB mult) =>

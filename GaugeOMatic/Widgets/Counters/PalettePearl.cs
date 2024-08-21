@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class PalettePearl : FreeGemCounter
+public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public PalettePearl(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { PCT1 };
+    public override CustomPartsList[] PartsLists { get; } = [PCT1];
 
     #region Nodes
 
@@ -54,17 +52,17 @@ public sealed unsafe class PalettePearl : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks = new();
-        Frames = new();
-        Pearls = new();
-        PearlContainers = new();
-        PulseContainers = new();
-        Halos = new();
-        PulseHalos = new();
-        Sparkles = new();
-        Glows = new();
-        PulseGlows = new();
-        Flashes = new();
+        Stacks = [];
+        Frames = [];
+        Pearls = [];
+        PearlContainers = [];
+        PulseContainers = [];
+        Halos = [];
+        PulseHalos = [];
+        Sparkles = [];
+        Glows = [];
+        PulseGlows = [];
+        Flashes = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -92,8 +90,8 @@ public sealed unsafe class PalettePearl : FreeGemCounter
 
         Animator += Config.AnimType switch
         {
-            1 => new Tween[]
-            {
+            1 =>
+            [
                 new(Pearls[i],
                     new(0) { Alpha = 0, Scale = 2.5f, AddRGB = Config.PearlColor },
                     new(130) { Alpha = 255, Scale = 1, AddRGB = Config.PearlColor + 50 },
@@ -110,7 +108,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                     new(0) { Alpha = 0, Scale = 0.7f },
                     new(180) { Alpha = 255, Scale = 1.2f },
                     new(440) { Alpha = 0, Scale = 1.5f })
-            },
+            ],
             _ => new Tween[]
             {
                 new(Pearls[i], new(0) { Alpha = 0, Scale = 1 }, new(300) { Alpha = 255, Scale = 1 }),
@@ -129,7 +127,8 @@ public sealed unsafe class PalettePearl : FreeGemCounter
 
     public override void HideStack(int i)
     {
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Pearls[i],
                 new(0)   { Alpha = 255, Scale=1 },
                 new(300) { Alpha = 0,Scale=2 }),
@@ -138,7 +137,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                 new(135){Alpha=127,Scale=1.5f,AddRGB=Config.Effects2 +100},
                 new(350){Alpha=0,Scale=2,AddRGB=Config.Effects2}
             )
-        };
+        ];
 
         PulseContainers[i].Hide();
     }
@@ -158,8 +157,8 @@ public sealed unsafe class PalettePearl : FreeGemCounter
         Animator -= "Pulse";
         for (var i = 0; i < Stacks.Count; i++)
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(PulseHalos[i],
                     new(0) { Scale = 0.0f, Alpha = 255 },
                     new(240) { Scale = 0.5f, Alpha = 255 },
@@ -171,7 +170,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                     new(240) { Scale = 1.2f, Alpha = 128 },
                     new(1300) { Scale = 1.5f, Alpha = 0 })
                     { Repeat = true, Ease = Linear, Label = "Pulse" }
-            };
+            ];
         }
     }
 
@@ -180,8 +179,8 @@ public sealed unsafe class PalettePearl : FreeGemCounter
        Animator -= "Pulse";
        for (var i = 0; i < Stacks.Count; i++)
        {
-           Animator += new Tween[]
-           {
+           Animator +=
+           [
                new(PulseHalos[i],
                    new(0, PulseHalos[i]),
                    new(500) { Scale = 1.2f, Alpha = 0 })
@@ -190,7 +189,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                    new(0, PulseGlows[i]),
                    new(500) { Scale = 1.5f, Alpha = 0 })
                    { Label = "Pulse" }
-           };
+           ];
        }
     }
 
@@ -314,7 +313,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
         switch (UiTab)
         {
             case Colors:
-                RadioControls("Base Color", ref Config.BasePearl, new() { 0, 1 }, new() { "White Paint", "Black Paint" });
+                RadioControls("Base Color", ref Config.BasePearl, new() { 0, 1 }, ["White Paint", "Black Paint"]);
 
                 if (Config.BasePearl == 0)
                 {
@@ -332,7 +331,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;
             case Behavior:
-                if (RadioControls("Appear Animation", ref Config.AnimType, new() { 0, 1 }, new() { "Type 1", "Type 2" }, true))
+                if (RadioControls("Appear Animation", ref Config.AnimType, new() { 0, 1 }, ["Type 1", "Type 2"], true))
                     for (var i = 0; i < Tracker.CurrentData.Count; i++)
                         ShowStack(i);
 
@@ -342,7 +341,7 @@ public sealed unsafe class PalettePearl : FreeGemCounter
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
                 }
 
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

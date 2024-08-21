@@ -31,11 +31,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class SamuraiDiamondTrio : CounterWidget
+public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(tracker)
 {
-    public SamuraiDiamondTrio(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { SAM0, new(AssetFromFile(Combine(PluginDirPath, @"TextureAssets\MedDiamondSingleFrame.tex")),new Vector4(0,0,64,64)) };
+    public override CustomPartsList[] PartsLists { get; } = [SAM0, new(AssetFromFile(Combine(PluginDirPath, @"TextureAssets\MedDiamondSingleFrame.tex")),new Vector4(0,0,64,64))
+    ];
 
     #region Nodes
 
@@ -64,11 +63,11 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
     {
         var stacks = new List<CustomNode>();
 
-        Gems = new();
-        Glows = new();
-        Glows2 = new();
-        Pulsars = new();
-        Frames = new();
+        Gems = [];
+        Glows = [];
+        Glows2 = [];
+        Pulsars = [];
+        Frames = [];
 
         for (var i = 0; i < Max; i++)
         {
@@ -118,26 +117,28 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
         if (Gems[i].Node->Color.A != 0) return;
         Glows2[i].Show();
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { Scale = 2, Alpha = 0 },
                 new(150) { Scale = 1, Alpha = 255 }),
             Glows[i],
             Pulsars[i]
-        };
+        ];
     }
 
     public override void HideStack(int i)
     {
         for (var j = i; j < Max; j++) Glows2[j].Hide();
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { Scale = 1, Alpha = 255 },
                 new(250) { Scale = 2, Alpha = 0 }),
             Glows[i],
             Pulsars[i]
-        };
+        ];
     }
 
     private void PlateAppear() =>
@@ -305,7 +306,7 @@ public sealed unsafe class SamuraiDiamondTrio : CounterWidget
                     if (Config.HideEmpty && Tracker.CurrentData.Count == 0) PlateVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

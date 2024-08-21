@@ -26,11 +26,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent | Replica)]
 [MultiCompData("NK", "Ninki Gauge Replica", 1)]
-public sealed unsafe class NinkiReplica : GaugeBarWidget
+public sealed unsafe class NinkiReplica(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public NinkiReplica(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/JobHudNIN0.tex",
              new(0, 0, 256, 100),
              new(34, 101, 174, 46),
@@ -44,7 +43,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
              new(256, 152, 20, 88),
              new(29, 101, 178, 46),
              new(280, 152, 40, 44))
-    };
+    ];
 
     #region Nodes
 
@@ -126,14 +125,16 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
         Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
     }
 
-    private KeyFrame[] HTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Max(0.001f, Config.Midpoint)) { Width = 175 }, new(1) { Width = 175 }};
-    private KeyFrame[] VTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(Min(0.999f, Config.Midpoint)) { Width = 0 }, new(1) { Width = 57 }};
+    private KeyFrame[] HTimeline => [new(0) { Width = 0 }, new(Max(0.001f, Config.Midpoint)) { Width = 175 }, new(1) { Width = 175 }
+    ];
+    private KeyFrame[] VTimeline => [new(0) { Width = 0 }, new(Min(0.999f, Config.Midpoint)) { Width = 0 }, new(1) { Width = 57 }
+    ];
 
     public static Tween BorderTween(CustomNode target) => new(target, new(0) { ScaleY = 1.2f, Alpha = 127 }, new(166) { ScaleY = 1f, Alpha = 51 }, new(666) { ScaleY = 1.2f, Alpha = 127 }) { Repeat = true };
 
     private void GaugeFullAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(GaugeBarV,
                 new(0) { AddRGB = 29, MultRGB = 100 },
                 new(50) { AddRGB = 0, MultRGB = 85 },
@@ -141,11 +142,11 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
             new(VSigil,
                 new(0) { Scale = 1, Rotation = 0, Alpha = 134 },
                 new(450) { ScaleX = 2, ScaleY = 1.8f, Rotation = 0.147453292f, Alpha = 0 })
-        };
+        ];
 
     private void GainAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(CalligraphyFlash1,
                 new(0) { Scale = 1, Alpha = 255 },
                 new(150) { Scale = 1.03f, Alpha = 153 },
@@ -155,11 +156,11 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
                 new(75) { AddRGB = new(96, 44, 105) },
                 new(200) { AddRGB = new(49, -20, 176) },
                 new(500) { AddRGB = 0 })
-        };
+        ];
 
     private void MidpointAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(CalligraphyFlash2,
                 new(0) { Scale = 1, Alpha = 110 },
                 new(100) { Scale = 1, Alpha = 255 },
@@ -172,11 +173,11 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
                 new(0) { ScaleX = 1.15f, ScaleY = 0.9f, Rotation = 0 },
                 new(100) { ScaleX = 3f, ScaleY = 1f, Rotation = -0.065f },
                 new(300) { ScaleX = 0.6f, ScaleY = 2f, Rotation = 0 })
-        };
+        ];
 
     private void SpendAnim() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Cloud1,
                 new(0) { ScaleX = 2.65f, ScaleY = 2.15f, Alpha = 204 },
                 new(70) { ScaleX = 2.95f, ScaleY = 2.4f, Alpha = 204 },
@@ -191,7 +192,7 @@ public sealed unsafe class NinkiReplica : GaugeBarWidget
                 new(150) { X = -0.85f, Y = -0.95f },
                 new(200) { X = 0.95f, Y = 0 },
                 new(250) { X = 0, Y = 0 })
-        };
+        ];
 
     #endregion
 

@@ -105,6 +105,8 @@ public partial class ConfigWindow
         CopyWidgetButton(tracker, hash);
         SameLineSquished();
         PasteWidgetButton(tracker, hash);
+        return;
+
         void SettingsButton()
         {
             if (!tracker.Available) IconButtonDisabled($"Settings{hash}", Cog);

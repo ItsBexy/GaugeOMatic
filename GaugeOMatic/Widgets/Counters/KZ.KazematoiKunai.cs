@@ -27,11 +27,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("KZ", "Kazematoi Replica", 3)]
-public sealed unsafe class KazematoiKunai : FreeGemCounter
+public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public KazematoiKunai(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { NIN1 };
+    public override CustomPartsList[] PartsLists { get; } = [NIN1];
 
     #region Nodes
 
@@ -50,11 +48,11 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Slots = new();
-        Stacks = new();
-        Knives = new();
-        Knives1 = new();
-        Knives2 = new();
+        Slots = [];
+        Stacks = [];
+        Knives = [];
+        Knives1 = [];
+        Knives2 = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -78,28 +76,28 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
     private void SetupKnifePulse1(int i)
     {
         Animator -= $"KnifePulse1-{i}";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Knives1[i],
                 new(0) { AddRGB = new(0) },
                 new(480) { AddRGB = new(50) },
                 new(960) { AddRGB = new(0) })
                 { Repeat = true, Label = $"KnifePulse1-{i}" }
-        };
+        ];
     }
 
     private void StopKnifePulse1(int i) => Animator -= $"KnifePulse1-{i}";
 
     private void SetupKnifePulse2(int i)
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Knives2[i][0],
                 new(0) { Alpha=0 },
                 new(650) { Alpha=128 },
                 new(1300) { Alpha=0 })
                 { Repeat = true }
-        };
+        ];
     }
 
     public void PulseAll(int current)
@@ -257,7 +255,7 @@ public sealed unsafe class KazematoiKunai : FreeGemCounter
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

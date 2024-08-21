@@ -3,16 +3,10 @@ using System.Collections.Generic;
 
 namespace GaugeOMatic.Windows.Dropdowns;
 
-public struct AddonOption
+public struct AddonOption(string name, string displayName)
 {
-    public string Name;
-    public string DisplayName;
-
-    public AddonOption(string name, string displayName)
-    {
-        Name = name;
-        DisplayName = displayName;
-    }
+    public string Name = name;
+    public string DisplayName = displayName;
 }
 
 public class AddonDropdown : Dropdown<string>
@@ -23,8 +17,8 @@ public class AddonDropdown : Dropdown<string>
         Prepare(Tracker.JobModule.AddonOptions);
     }
 
-    public sealed override List<string> Values { get; } = new();
-    public sealed override List<string> DisplayNames { get; } = new();
+    public sealed override List<string> Values { get; } = [];
+    public sealed override List<string> DisplayNames { get; } = [];
     public Tracker Tracker;
 
     public void Prepare(List<AddonOption> addonOptions)

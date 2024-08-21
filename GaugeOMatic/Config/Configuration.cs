@@ -20,7 +20,7 @@ public class Configuration : IPluginConfiguration
     [JsonIgnore] public GeneralTab GeneralTab { get; set; } = Jobs;
     [JsonIgnore] public Job JobTab { get; set; } = Current;
 
-    public List<Preset> SavedPresets { get; set; } = new();
+    public List<Preset> SavedPresets { get; set; } = [];
     public int PresetFiltering { get; set; } = 2;
 
     public TrackerConfigs TrackerConfigs { get; set; } = new();

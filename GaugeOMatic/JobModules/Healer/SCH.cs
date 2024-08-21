@@ -15,26 +15,25 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class SCHModule : JobModule
+public class SCHModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudACN0", "JobHudSCH0")
 {
     public override Job Job => SCH;
     public override Job Class => ACN;
     public override Role Role => Healer;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudACN0", "Aetherflow Gauge"),
         new("JobHudSCH0", "Faerie Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu => new()
-    {
+    public override List<MenuOption> JobGaugeMenu =>
+    [
         new("Aetherflow Gauge", nameof(AetherflowSCHGaugeTracker)),
         new("Fae Aether", nameof(FaerieGaugeTracker)),
         new("Seraph Timer", nameof(SeraphTracker))
-    };
-
-    public SCHModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudACN0", "JobHudSCH0") { }
+    ];
 
     public override void Save()
     {
@@ -53,7 +52,7 @@ public class SCHModule : JobModule
         if (!TweakConfigs.SCHHide1)
             RadioControls("While Faerieless: ", ref TweakConfigs.SCH1FaerieLess,
                           new() { 0, 1, 2 },
-                          new() { "Show Gauge Value", "Hide Gauge Value", "Show Dissipation Timer" });
+                          ["Show Gauge Value", "Hide Gauge Value", "Show Dissipation Timer"]);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

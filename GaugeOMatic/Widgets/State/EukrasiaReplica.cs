@@ -25,12 +25,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State)]
 [WidgetUiTabs(Layout | Colors)]
-public sealed unsafe class EukrasiaReplica : StateWidget
+public sealed unsafe class EukrasiaReplica(Tracker tracker) : StateWidget(tracker)
 {
-    public EukrasiaReplica(Tracker tracker) : base(tracker) { }
-
     public override CustomPartsList[] PartsLists { get; } =
-    {
+    [
         new("ui/uld/JobHudGFF0.tex",
             new(0, 0, 36, 56),
             new(36, 0, 36, 56),
@@ -39,7 +37,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
             new(40, 176, 40, 40),
             new(0, 80, 40, 96),
             new(40, 80, 40, 96))
-    };
+    ];
 
     #region Nodes
 
@@ -143,8 +141,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
     private void SetUpLightning(CustomNode elecNoulith)
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(elecNoulith[1],
                 new(0) { Alpha = 255, AddRGB = new(-200, -200, 100), MultRGB = new(0x63) },
                 new(200) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) },
@@ -161,7 +159,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 new(200) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) },
                 new(505) { Alpha = 0, AddRGB = new(-100, -200, 200), MultRGB = new(0x32) })
                 { Repeat = true }
-        };
+        ];
     }
 
     private void NoulithSpin()
@@ -180,8 +178,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var initY = i < 2 ? -30 : -10;
 
         SetupNoulithPulse(i);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Nouliths[i],
                 new(0) { X = initX, Y = initY, AddRGB = new(0), PartId = 1 },
                 new(120) { X = 22, Y = -20, AddRGB = new(50, 80, 80), PartId = 0 },
@@ -194,7 +192,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 new(300) { AddRGB = new(50, 80, 80), Alpha = 255 },
                 new(560) { AddRGB = new(50, 80, 80), Alpha = 255 },
                 new(860) { AddRGB = new(0), Alpha = 0 })
-        };
+        ];
     }
 
     private void SetupNoulithPulse(int i) =>
@@ -236,8 +234,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         var fx = Config.GetNoulithColor(current);
         NoulithSpin();
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(RightHalfInactive, Visible[0], Hidden[600]),
             new(LeftHalfInactive, Visible[0], Hidden[600]),
             new(FullActive, Hidden[0], Visible[560]),
@@ -247,7 +245,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 new(360) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
                 new(660) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
             )
-        };
+        ];
     }
 
     public override void Deactivate(int previous)
@@ -257,8 +255,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
 
         var fx = Config.GetFXColor(previous);
         var color = Config.GetColor(previous);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(RightHalfInactive, Hidden[0], Visible[160]),
             new(LeftHalfInactive, Hidden[0], Visible[160]),
             new(FullActive,
@@ -270,7 +268,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 new(100) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
                 new(200) { Scale = 4, Alpha = 0, AddRGB = fx + ColorOffset }
             )
-        };
+        ];
 
         Animator += Nouliths.Select(static n => new Tween(n, new(0) { AddRGB = new(20, 20, 60), PartId = 0 },
                                                           new(360) { AddRGB = new(0), PartId = 1 })).ToList();
@@ -284,8 +282,8 @@ public sealed unsafe class EukrasiaReplica : StateWidget
         Animator -= "SigilPulse";
         SetupSigilPulse(current);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Halo,
                 new(0) { Scale = 1.4f, Alpha = 255, AddRGB = prevFx + ColorOffset },
                 new(360) { Scale = 3, Alpha = 255, AddRGB = fx + ColorOffset },
@@ -295,7 +293,7 @@ public sealed unsafe class EukrasiaReplica : StateWidget
                 new(0) { AddRGB = prevFx },
                 new(360) { AddRGB = fx }
             )
-        };
+        ];
 
         NoulithSpin();
     }
@@ -307,9 +305,9 @@ public sealed unsafe class EukrasiaReplica : StateWidget
     public class EukrasiaReplicaConfig : WidgetTypeConfig
     {
         [DefaultValue(true)] public bool ShowNouliths = true;
-        public List<AddRGB> Colors = new();
-        public List<AddRGB> FXColors = new();
-        public List<AddRGB> NoulithColors = new();
+        public List<AddRGB> Colors = [];
+        public List<AddRGB> FXColors = [];
+        public List<AddRGB> NoulithColors = [];
 
         public EukrasiaReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.EukrasiaReplicaCfg)
         {

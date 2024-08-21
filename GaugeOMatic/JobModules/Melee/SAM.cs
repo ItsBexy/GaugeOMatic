@@ -13,28 +13,28 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class SAMModule : JobModule
+public class SAMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudSAM0", "JobHudSAM1")
 {
     public override Job Job => SAM;
     public override Job Class => Job.None;
     public override Role Role => Melee;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudSAM0", "Kenki Gauge"),
         new("JobHudSAM1", "Sen Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Kenki Gauge", nameof(KenkiGaugeTracker)),
         new("Meditation Gauge", nameof(MeditationGaugeTracker)),
         new("Sen Gauge - Seal Count", nameof(SenSealTracker)),
         new("Sen Gauge - Setsu Seal", nameof(SenGaugeSetsuTracker)),
         new("Sen Gauge - Getsu Seal", nameof(SenGaugeGetsuTracker)),
         new("Sen Gauge - Ka Seal", nameof(SenGaugeKaTracker))
-    };
-
-    public SAMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudSAM0", "JobHudSAM1") { }
+    ];
 
     public override void Save()
     {

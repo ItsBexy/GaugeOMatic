@@ -3,6 +3,7 @@ using System;
 using static FFXIVClientStructs.FFXIV.Client.Game.ActionManager;
 using static GaugeOMatic.GameData.ActionFlags;
 using static GaugeOMatic.GameData.ActionRef.BarType;
+using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.Trackers.Tracker;
 
@@ -21,12 +22,17 @@ public partial class ActionRef
         var maxCharges = GetMaxCharges();
         var elapsed = GetCooldownElapsed();
         if (elapsed == 0) return maxCharges;
-        return (int)Math.Floor(elapsed / GetCooldownTotal() * maxCharges);
+
+        var cooldownTotal = GetCooldownTotal();
+
+        return (int)Math.Floor(elapsed / cooldownTotal * maxCharges);
     }
 
     public unsafe float GetCooldownTotal()
     {
-        var cooldownLength = ActionManager->GetRecastTime(ActionType.Action, GetAdjustedId());
+        var cooldownLength = CooldownOverrides.TryGetValue(ID, out var cd) ?
+                                 cd.Invoke() :
+                                 ActionManager->GetRecastTime(ActionType.Action, GetAdjustedId());
         if (cooldownLength > 0) LastKnownCooldown = cooldownLength;
         return LastKnownCooldown;
     }
@@ -78,12 +84,12 @@ public partial class ActionRef
                                  StatusTimer => Math.Abs(ReadyStatus!.TryGetStatus(out var status, Self) ? status?.RemainingTime ?? 0 : 0),
                                  ComboTimer => HasAnts() ? ActionManager->Combo.Timer : 0,
                                  _ => cooldownRemaining
-                             } : (float)(preview * maxGauge);
+                             } : (preview.Value * maxGauge)!;
 
         if (preview != null)
         {
             state = (int)Math.Round(preview.Value);
-            count = (int)(preview * maxCount);
+            count = (int)(preview.Value * maxCount)!;
         }
         else
         {

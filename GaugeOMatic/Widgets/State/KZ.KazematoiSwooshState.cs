@@ -25,14 +25,14 @@ namespace GaugeOMatic.Widgets;
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("KZ", "Kazematoi Replica", 1)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
-public sealed unsafe class KazematoiSwooshState : StateWidget
+public sealed unsafe class KazematoiSwooshState(Tracker tracker) : StateWidget(tracker)
 {
-    public KazematoiSwooshState(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { NIN1,
+    public override CustomPartsList[] PartsLists { get; } =
+    [
+        NIN1,
         new("ui/uld/JobHudNIN1Mask.tex",new Vector4(0,0,128,96)),
         new("ui/uld/CruisingEffect.tex",new Vector4(0,0,128,128))
-    };
+    ];
 
     #region Nodes
 
@@ -68,10 +68,6 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
 
         return new CustomNode(CreateResNode(), Backdrop, CloudBox).SetOrigin(69F, 51F);
     }
-
-    #endregion
-
-    #region Animations
 
     #endregion
 
@@ -122,8 +118,8 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
         var curPart = Config.GetBackdropBase(current);
         var prevPart = Config.GetBackdropBase(previous);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Backdrop,
                 new(0) { PartId = prevPart },
                 new(199) { PartId = prevPart },
@@ -152,7 +148,7 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
                     AddRGB = Config.GetCloudColor(current),
                     Alpha = Config.GetClouds(current) ? 64:0
                 })
-        };
+        ];
     }
 
     #endregion
@@ -162,11 +158,11 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
     public class KazematoiSwooshStateConfig : WidgetTypeConfig
     {
         public float Angle;
-        public List<ushort> BackdropBases = new();
-        public List<AddRGB> BackdropTints = new();
-        public List<bool> Clouds = new();
-        public List<AddRGB> CloudColors = new();
-        public List<AddRGB> SweepColors = new();
+        public List<ushort> BackdropBases = [];
+        public List<AddRGB> BackdropTints = [];
+        public List<bool> Clouds = [];
+        public List<AddRGB> CloudColors = [];
+        public List<AddRGB> SweepColors = [];
         public bool HideInactive;
 
         public KazematoiSwooshStateConfig(WidgetConfig widgetConfig) : base(widgetConfig.KazematoiSwooshStateCfg)
@@ -262,7 +258,8 @@ public sealed unsafe class KazematoiSwooshState : StateWidget
                     }
                     if (i != 0 || !Config.HideInactive)
                     {
-                        if (RadioControls($"Base Color##baseColor{i}", ref backdropBase, new() { 1, 0 }, new() { "Violet", "Grey" }, true)) Config.BackdropBases[i] = backdropBase;
+                        if (RadioControls($"Base Color##baseColor{i}", ref backdropBase, new() { 1, 0 },
+                                          ["Violet", "Grey"], true)) Config.BackdropBases[i] = backdropBase;
                         if (ColorPickerRGB($"Backdrop Tint##backdrop{i}", ref backdropTint)) Config.BackdropTints[i] = backdropTint;
                         if (i != 0 && ColorPickerRGB($"Flash Color##sweep{i}", ref sweepColor)) Config.SweepColors[i] = sweepColor;
                         if (i != 0 && ToggleControls($"Show Clouds##clouds{i}", ref clouds)) Config.Clouds[i] = clouds;

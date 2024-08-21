@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -15,7 +16,7 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.OathBar;
@@ -33,11 +34,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica | MultiComponent)]
 [MultiCompData("OA", "Oath Gauge Replica", 2)]
-public sealed unsafe class OathBar : GaugeBarWidget
+public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public OathBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/JobHudPLD.tex",
              new(246, 0, 168, 18),    // 0 blue bar
              new(246, 18, 168, 18),   // 1 grey bar
@@ -56,7 +56,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
              new(246, 36, 102, 102),  // 14 shine
              new(180, 274, 190, 26)   // 15 streak
             )
-    };
+    ];
 
     #region Nodes
 
@@ -142,10 +142,11 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
+    public KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = Config.Width }];
 
     public void Twinkle() =>
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Halo,
                 new(0) { Scale = 1, Alpha = 0 },
                 new(230) { Scale = 3, Alpha = 125 },
@@ -161,15 +162,15 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 new(120) { ScaleX = Config.Width / 166f, Alpha = 255 },
                 new(290) { ScaleX = 0, Alpha = 0 })
                 { Ease = SinInOut }
-        };
+        ];
 
     public override void HideBar(bool instant = false)
     {
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 150, 350 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 150, 350 };
 
         Animator -= "Expand";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(FrameR,
                 new(kf[0]) { Height = 120, Y = 0 },
                 new(kf[1]) { Height = 96, Y = 12 },
@@ -193,18 +194,18 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 Hidden[kf[1]])
                 {Label = "Collapse" },
             new(TickMark, Visible[kf[0]], Hidden[kf[1]])
-};
+        ];
 
         if (kf[2] > 0) Twinkle();
     }
 
     public override void RevealBar(bool instant = false)
     {
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 100, 350 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 100, 350 };
 
         Animator -= "Collapse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(FrameR,
                 new(kf[0]) { Height = 94, Y = 13 },
                 new(kf[1]) { Height = 120, Y = 0 },
@@ -231,7 +232,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 Visible[kf[2]])
                 {Label = "Expand" },
             new(TickMark, Hidden[kf[0]], Visible[kf[1]])
-};
+        ];
 
         if (kf[2] > 0) Twinkle();
     }
@@ -253,7 +254,8 @@ public sealed unsafe class OathBar : GaugeBarWidget
 
         var colorAdjust = new AddRGB(86, 47, -21);
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Glow,
                 new(0) { ScaleX = 1, ScaleY = 1, Alpha = 0 },
                 new(460) { ScaleX = midX, ScaleY = 1.1f, Alpha = 203 },
@@ -266,7 +268,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 new(800) { AddRGB = Config.PulseColor + colorAdjust },
                 new(1600) { AddRGB = Config.PulseColor2 + colorAdjust })
                 { Ease = SinInOut, Repeat = true, Label = "BarPulse" }
-        };
+        ];
     }
 
     protected override void StopMilestoneAnim()
@@ -449,7 +451,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
             case Layout:
                 FloatControls("Width", ref Config.Width, Config.ShowFiligree ? 100 : 32, 2000, 1);
                 AngleControls("Angle", ref Config.Angle);
-                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
+                RadioIcons("Fill Direction", ref Config.Mirror, [false, true], ArrowIcons);
                 ToggleControls("Filigree", ref Config.ShowFiligree);
                 if (Config.ShowFiligree) Config.Width = Max(Config.Width, 100);
                 break;
@@ -467,7 +469,7 @@ public sealed unsafe class OathBar : GaugeBarWidget
                 ToggleControls("Invert Fill", ref Config.Invert);
                 HideControls("Collapse Empty", "Collapse Full");
                 var twinkleEffect = new List<bool> { Config.TwinkleInc, Config.TwinkleDec };
-                if (ToggleControls("Sparkle Effect", ref twinkleEffect, new() { "On Increase", "On Decrease" }))
+                if (ToggleControls("Sparkle Effect", ref twinkleEffect, ["On Increase", "On Decrease"]))
                 {
                     Config.TwinkleInc = twinkleEffect[0];
                     Config.TwinkleDec = twinkleEffect[1];
@@ -490,10 +492,10 @@ public sealed unsafe class OathBar : GaugeBarWidget
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
-        Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
-        Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
-        Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
-                                       new() { ArrowRight, ArrowLeft };
+        Abs(Config.Angle) > 135 ? [ArrowLeft, ArrowRight] :
+        Config.Angle > 45 ? [ArrowDown, ArrowUp] :
+        Config.Angle < -45 ? [ArrowUp, ArrowDown] :
+        [ArrowRight, ArrowLeft];
 
     #endregion
 }

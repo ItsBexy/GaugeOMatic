@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("EL", "Elemental Gauge Replica", 5)]
-public sealed unsafe class UmbralHearts : FreeGemCounter
+public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public UmbralHearts(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
+    public override CustomPartsList[] PartsLists { get; } = [BLM0];
 
     #region Nodes
 
@@ -46,10 +44,10 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks = new();
-        Hearts = new();
-        GlowWrappers = new();
-        Glows = new();
+        Stacks = [];
+        Hearts = [];
+        GlowWrappers = [];
+        Glows = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -76,8 +74,8 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
     #region Animations
 
     public override void ShowStack(int i) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Hearts[i],
                 new(0) { Y = -20, Alpha = 0 },
                 new(200) { Y = 0, Alpha = 200 },
@@ -85,11 +83,11 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
             new(GlowWrappers[i],
                 Hidden[0],
                 Visible[300])
-        };
+        ];
 
     public override void HideStack(int i) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Hearts[i],
                 new(0) { Y = 0, Alpha = 255 },
                 new(200) { Y = -20, Alpha = 255 },
@@ -98,7 +96,7 @@ public sealed unsafe class UmbralHearts : FreeGemCounter
             new(GlowWrappers[i],
                 Visible[0],
                 Hidden[300])
-        };
+        ];
 
     #endregion
 

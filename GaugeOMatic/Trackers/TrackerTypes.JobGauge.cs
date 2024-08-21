@@ -29,6 +29,7 @@ using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSAM0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSAM1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSCH0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSMN0;
+using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudSMN1;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudWAR0;
 using static FFXIVClientStructs.FFXIV.Client.UI.AddonJobHudWHM0;
 using static GaugeOMatic.GameData.JobData.Job;
@@ -93,7 +94,7 @@ public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData
 {
     public override string GaugeAddonName => "JobHudNIN1v70";
     public override string TermCount => "Stacks";
-    public override string[] StateNames => new[] { "Inactive", "Active", "Full" };
+    public override string[] StateNames => ["Inactive", "Active", "Full"];
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
@@ -192,7 +193,7 @@ public sealed unsafe class SenGaugeKaTracker : JobGaugeTracker<SenGaugeData>
 public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
 {
     public override string GaugeAddonName => "JobHudSAM1";
-    public override string[] StateNames => new[] { "None", "Higanbana", "Tenka Goken", "Midare Setsugekka" };
+    public override string[] StateNames => ["None", "Higanbana", "Tenka Goken", "Midare Setsugekka"];
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -441,7 +442,7 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
 {
 
     public override string GaugeAddonName => "JobHudDNC0";
-    public override string[] StateNames => new[] { "None", "Emboite", "Entrechat", "Jete", "Pirouette" };
+    public override string[] StateNames => ["None", "Emboite", "Entrechat", "Jete", "Pirouette"];
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
@@ -488,7 +489,7 @@ public sealed unsafe class ElementTracker : JobGaugeTracker<ElementalGaugeData>
     public override string GaugeAddonName => "JobHudBLM0";
     public override string TermCount => "Element";
     public override string TermGauge => "Timer";
-    public override string[] StateNames => new[] { "None", "Astral Fire", "Umbral Ice" };
+    public override string[] StateNames => ["None", "Astral Fire", "Umbral Ice"];
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null || GaugeData == null ?
@@ -620,6 +621,89 @@ public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
+[TrackerDisplay("Fire Attunement", SMN,"Shows Egi time remaining", "Shows Fire Attunement stacks", "Shows if Ruby/Ifrit is summoned")]
+public sealed unsafe class RubyTracker : JobGaugeTracker<TranceGaugeData>
+{
+    public override string GaugeAddonName => "JobHudSMN1";
+    public override string TermCount => "Stacks";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null) return new(0, 2, 0, 30, 0, 1, preview);
+
+        var egiCheck = GaugeData->CurrentEgi == 1;
+        return new(egiCheck ? GaugeData->Attunement : 0, 2, egiCheck ? GaugeData->EgiTimeLeft : 0, 30, egiCheck ? 1 : 0, 1, preview);
+    }
+}
+
+[TrackerDisplay("Earth Attunement", SMN, "Shows Egi time remaining", "Shows Earth Attunement stacks", "Shows if Topaz/Titan is summoned")]
+public sealed unsafe class TopazTracker : JobGaugeTracker<TranceGaugeData>
+{
+    public override string GaugeAddonName => "JobHudSMN1";
+    public override string TermCount => "Stacks";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null) return new(0, 4, 0, 30, 0, 1, preview);
+
+        var egiCheck = GaugeData->CurrentEgi == 2;
+        return new(egiCheck ? GaugeData->Attunement : 0, 4, egiCheck ? GaugeData->EgiTimeLeft : 0, 30, egiCheck ? 1 : 0, 1, preview);
+    }
+}
+
+[TrackerDisplay("Wind Attunement", SMN, "Shows Egi time remaining", "Shows Wind Attunement charges", "Shows if Emerald/Garuda is summoned")]
+public sealed unsafe class EmeraldTracker : JobGaugeTracker<TranceGaugeData>
+{
+    public override string GaugeAddonName => "JobHudSMN1";
+    public override string TermCount => "Stacks";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null) return new(0, 4, 0, 30, 0, 1, preview);
+
+        var egiCheck = GaugeData->CurrentEgi == 3;
+        return new(egiCheck ? GaugeData->Attunement : 0, 4, egiCheck ? GaugeData->EgiTimeLeft : 0, 30, egiCheck ? 1 : 0, 1, preview);
+    }
+}
+
+[TrackerDisplay("Summon Phase", SMN, null, null, "Shows current summon")]
+public sealed unsafe class SummonTracker : JobGaugeTracker<TranceGaugeData>
+{
+    public override string GaugeAddonName => "JobHudSMN1";
+
+    public override string[] StateNames { get; } =
+    [
+        "Inactive",  //0
+        "Carbuncle", //1
+        "Demi-Bahamut", //2
+        "Bahamut",//3
+        "Phoenix",//4
+        "Solar Bahamut"//5
+    ];
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null) return new(0, 1, 0,15, 0, 5, preview);
+
+        var lux = GaugeData->SolarBahamutEnabled;
+        var baha = GaugeData->BahamutPlateEnabled;
+        var carb = !lux && !baha;
+
+        var state = GaugeData->Phase switch
+        {
+            1 when carb => 1,
+            2 when baha => 2,
+            4 when baha => 3,
+            6 when baha => 4,
+            8 when lux => 5,
+            _ => 0
+        };
+
+        return new(state > 0 ? 1 : 0, 4, GaugeData->SummonTimeLeft, 15, state, 5, preview);
+    }
+
+}
+
 [TrackerDisplay("Mana Stacks", RDM, "Shows the lesser of White or Black Mana", "Shows Mana stack count", "Shows if both gauges are at least 50")]
 public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
 {
@@ -663,7 +747,7 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
 {
 
     public override string GaugeAddonName => "JobHudRDM0";
-    public override string[] StateNames { get; } = { "Neutral", "Excess Black", "Excess White", "Combo Ready" };
+    public override string[] StateNames { get; } = ["Neutral", "Excess Black", "Excess White", "Combo Ready"];
 
     public override TrackerData GetCurrentData(float? preview = null)
     {

@@ -15,7 +15,6 @@ using static GaugeOMatic.Widgets.WidgetAttribute;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Activator;
-using static System.Array;
 
 // ReSharper disable VirtualMemberCallInConstructor
 
@@ -65,7 +64,7 @@ public abstract unsafe class Widget : IDisposable
     public CustomNode WidgetContainer;
     public CustomNode WidgetRoot;
     public virtual CustomNode BuildContainer() => new(CreateResNode());
-    public virtual CustomPartsList[] PartsLists { get; } = Empty<CustomPartsList>();
+    public virtual CustomPartsList[] PartsLists { get; } = [];
 
     public void Dispose()
     {
@@ -152,24 +151,25 @@ public abstract unsafe class Widget : IDisposable
 
     public void ApplyDisplayRules()
     {
+        if (!ClientState.IsPvP && (Tracker.UsePreviewValue || (CheckLevel() && CheckFlags())))
+            Show();
+        else
+            Hide();
+        return;
+
         bool CheckLevel()
         {
             if (!TrackerConfig.LimitLevelRange) return true;
-            if (TrackerConfig.LevelMin == 1 && TrackerConfig.LevelMax == LevelCap) return true;
+            if (TrackerConfig is { LevelMin: 1, LevelMax: LevelCap }) return true;
             var level = ClientState.LocalPlayer?.Level ?? 1;
             return level >= TrackerConfig.LevelMin && level <= TrackerConfig.LevelMax;
         }
 
         bool CheckFlags() => !TrackerConfig.HideOutsideCombatDuty ||
                              Condition.Any(InCombat, BoundByDuty, BoundByDuty56, BoundByDuty95, InDeepDungeon);
-
-        if (!ClientState.IsPvP && (Tracker.UsePreviewValue || (CheckLevel() && CheckFlags())))
-            Show();
-        else
-            Hide();
     }
 
-    public virtual Bounds GetBounds() => WidgetRoot.GetDescendants().Where(static n => n.Size.X > 0 && n.Size.Y > 0 && n.Visible).ToList();
+    public virtual Bounds GetBounds() => WidgetRoot.GetDescendants().Where(static n => n.Size is { X: > 0, Y: > 0 } && n.Visible).ToList();
 
     public void DrawBounds(uint col = 0xffffffffu, int thickness = 1) => GetBounds().Draw(col, thickness);
 

@@ -13,22 +13,19 @@ using GaugeOMatic.Windows.Dropdowns;
 
 namespace GaugeOMatic.JobModules;
 
-public class PLDModule : JobModule
+public class PLDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudPLD0")
 {
     public override Job Job => PLD;
     public override Job Class => GLA;
     public override Role Role => Tank;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudPLD0", "Oath Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
-        new("Oath Gauge", nameof(OathGaugeTracker))
-    };
-
-    public PLDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudPLD0") { }
+    public override List<MenuOption> JobGaugeMenu { get; } = [new("Oath Gauge", nameof(OathGaugeTracker))];
 
     public override void Save()
     {

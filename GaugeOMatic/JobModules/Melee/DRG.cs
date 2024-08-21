@@ -12,23 +12,19 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class DRGModule : JobModule
+public class DRGModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudDRG0")
 {
     public override Job Job => DRG;
     public override Job Class => LNC;
     public override Role Role => Melee;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudDRG0", "Dragon Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
-        new("Firstminds' Focus", nameof(FirstmindsFocusTracker))
-    };
-
-    public DRGModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudDRG0") { }
+    public override List<MenuOption> JobGaugeMenu { get; } = [new("Firstminds' Focus", nameof(FirstmindsFocusTracker))];
 
     public override void Save()
     {

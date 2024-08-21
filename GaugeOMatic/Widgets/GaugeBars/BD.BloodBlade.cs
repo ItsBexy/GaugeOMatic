@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -28,11 +29,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent)]
 [MultiCompData("BD", "Blood Gauge Replica", 2)]
-public sealed unsafe class BloodBlade : GaugeBarWidget
+public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public BloodBlade(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { DRK0 };
+    public override CustomPartsList[] PartsLists { get; } = [DRK0];
 
     #region Nodes
 
@@ -99,7 +98,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 173 }};
+    public static KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = 173 }];
 
     public override void HideBar(bool instant = false)
     {
@@ -124,7 +123,8 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
 
         var sigilColor = new AddRGB(-50,75,-141) + ((Config.PulseColor3 + Config.PulseColor4)/2);
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Main,
                 new (0) { AddRGB = Config.PulseColor + ColorOffset },
                 new(800) { AddRGB = Config.PulseColor2 + ColorOffset },
@@ -142,7 +142,7 @@ public sealed unsafe class BloodBlade : GaugeBarWidget
                 new(200) { Scale = 1, Alpha = 255, AddRGB = sigilColor + new AddRGB(0, 50, 80) },
                 new(325) { ScaleX = 1.1f, Alpha = 0, ScaleY = 1.7f, AddRGB = sigilColor + new AddRGB(-20) })
                 { Ease = SinInOut, Label = "BarPulse" }
-        };
+        ];
     }
 
     protected override void StopMilestoneAnim()

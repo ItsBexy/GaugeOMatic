@@ -8,57 +8,48 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 // ReSharper disable ParameterTypeCanBeEnumerable.Local
+// ReSharper disable SuggestBaseTypeForParameter
 
 namespace GaugeOMatic.Widgets;
 [AttributeUsage(AttributeTargets.Class)]
-public class WidgetNameAttribute : Attribute
+public class WidgetNameAttribute(string name) : Attribute
 {
-    public string Name { get; init; }
-    public WidgetNameAttribute(string name) => Name = name;
+    public string Name { get; init; } = name;
     public static implicit operator string(WidgetNameAttribute a) => a.Name;
 }
 
 [AttributeUsage(AttributeTargets.Class)]
-public class WidgetDescriptionAttribute : Attribute
+public class WidgetDescriptionAttribute(string desc) : Attribute
 {
-    public string Description { get; init; }
-    public WidgetDescriptionAttribute(string desc) => Description = desc;
+    public string Description { get; init; } = desc;
     public static implicit operator string(WidgetDescriptionAttribute a) => a.Description;
 }
 
 [AttributeUsage(AttributeTargets.Class)]
-public class WidgetAuthorAttribute : Attribute
+public class WidgetAuthorAttribute(string author) : Attribute
 {
-    public string Author { get; init; }
-    public WidgetAuthorAttribute(string author) => Author = author;
-
+    public string Author { get; init; } = author;
     public static implicit operator string(WidgetAuthorAttribute a) => a.Author;
 }
 
 [AttributeUsage(AttributeTargets.Class)]
-public class WidgetTagsAttribute : Attribute
+public class WidgetTagsAttribute(WidgetTags tags) : Attribute
 {
-    public WidgetTags Tags { get; init; }
-    public WidgetTagsAttribute(WidgetTags tags) => Tags = tags;
+    public WidgetTags Tags { get; init; } = tags;
     public static implicit operator WidgetTags(WidgetTagsAttribute a) => a.Tags;
 }
 
 [AttributeUsage(AttributeTargets.Class)]
-public class WidgetUiTabsAttribute : Attribute
+public class WidgetUiTabsAttribute(WidgetUiTab tabs) : Attribute
 {
-    public WidgetUiTab Tabs { get; init; }
-    public WidgetUiTabsAttribute(WidgetUiTab tabs) => Tabs = tabs;
+    public WidgetUiTab Tabs { get; init; } = tabs;
     public static implicit operator WidgetUiTab(WidgetUiTabsAttribute a) => a.Tabs;
 }
 
 [AttributeUsage(AttributeTargets.Class)]
-public class MultiCompDataAttribute : Attribute
+public class MultiCompDataAttribute(string key, string groupName, int index) : Attribute
 {
-    public MultiComponentData MultiCompData { get; init; }
-    public MultiCompDataAttribute(string key, string groupName, int index)
-    {
-        MultiCompData = new MultiComponentData(key, groupName, index);
-    }
+    public MultiComponentData MultiCompData { get; init; } = new(key, groupName, index);
 
     public struct MultiComponentData
     {
@@ -77,8 +68,8 @@ public class MultiCompDataAttribute : Attribute
 [AttributeUsage(AttributeTargets.Class)]
 public class AddonRestrictionsAttribute : Attribute
 {
-    public List<string> WhiteList = new();
-    public List<string> BlackList = new();
+    public List<string> WhiteList = [];
+    public List<string> BlackList = [];
 
     public AddonRestrictionsAttribute(bool allowed, params string[] addons)
     {
@@ -98,8 +89,8 @@ public class WidgetAttribute : Attribute
     public WidgetTags WidgetTags { get; init; }
     public MultiComponentData? MultiCompData;
     public WidgetUiTab UiTabOptions { get; set; }
-    public List<string> WhiteList = new(); // only applicable if tagged with HasAddonRestrictions
-    public List<string> BlackList = new(); // only applicable if tagged with HasAddonRestrictions
+    public List<string> WhiteList = []; // only applicable if tagged with HasAddonRestrictions
+    public List<string> BlackList = []; // only applicable if tagged with HasAddonRestrictions
 
     public bool AddonPermitted(string aName) =>
         !WidgetTags.HasFlag(HasAddonRestrictions) ||
@@ -149,11 +140,11 @@ public class WidgetAttribute : Attribute
         }
     }
 
-    private static T? GetAttr<T>(ICustomAttributeProvider type) => (T?)type.GetCustomAttributes(typeof(T), true).FirstOrDefault();
+    private static T? GetAttr<T>(Type type) => (T?)type.GetCustomAttributes(typeof(T), true).FirstOrDefault();
 
-    private static List<T?> GetAttrList<T>(ICustomAttributeProvider type) => type.GetCustomAttributes(typeof(T), true).Select(static a=>(T?)a).ToList();
+    private static List<T?> GetAttrList<T>(Type type) => type.GetCustomAttributes(typeof(T), true).Select(static a=>(T?)a).ToList();
 
-    private static (List<string> whiteList, List<string> blackList) ParseRestrictions(ICustomAttributeProvider type)
+    private static (List<string> whiteList, List<string> blackList) ParseRestrictions(Type type)
     {
         var addonrestrictions = GetAttrList<AddonRestrictionsAttribute>(type);
 

@@ -7,10 +7,10 @@ using static CustomNodes.CustomNodeManager;
 namespace CustomNodes;
 
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
-public unsafe partial class CustomNode : IDisposable
+public unsafe partial class CustomNode(AtkResNode* node, params CustomNode[] children) : IDisposable
 {
-    public AtkResNode* Node;
-    public CustomNode[] Children { get; set; }
+    public AtkResNode* Node = node;
+    public CustomNode[] Children { get; set; } = children;
 
     public byte* TextBuffer;
     public int TextBufferLen;
@@ -72,23 +72,9 @@ public unsafe partial class CustomNode : IDisposable
         }
     }
 
-    public CustomNode(AtkResNode* node)
-    {
-        Node = node;
-        Children = Array.Empty<CustomNode>();
-    }
+    public CustomNode(AtkResNode* node) : this(node, []) { }
 
-    public CustomNode(AtkResNode* node, params CustomNode[] children)
-    {
-        Node = node;
-        Children = children;
-    }
-
-    public CustomNode()
-    {
-        Node = null;
-        Children = Array.Empty<CustomNode>();
-    }
+    public CustomNode() : this(null, []) { }
 
     public int AssembleNodeTree()
     {

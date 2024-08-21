@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -26,11 +27,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A bar in the style of Samurai's Kenki Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica)]
-public sealed unsafe class KenkiKatana : GaugeBarWidget
+public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public KenkiKatana(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { SAM0 };
+    public override CustomPartsList[] PartsLists { get; } = [SAM0];
 
     #region Nodes
 
@@ -94,18 +93,18 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[]
-    {
+    public static KeyFrame[] BarTimeline =>
+    [
         new(0) { Width = 0 },
         new(1) { Width = 276 }
-    };
-    public static KeyFrame[] TickTimeline => new KeyFrame[]
-    {
+    ];
+    public static KeyFrame[] TickTimeline =>
+    [
         new(0) { X = 91, Alpha = 0, ScaleY=1 },
         new(0.05f) { X = 104, Alpha = 255, ScaleY = 1 },
         new(0.95f) { X = 353, Alpha = 255, ScaleY=1 },
         new(1) { X = 367, Alpha = 0,ScaleY=0.6f }
-    };
+    ];
 
     public override void HideBar(bool instant = false)
     {
@@ -132,8 +131,8 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
     protected override void StartMilestoneAnim()
     {
         Animator -= "BarPulse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Effects[0],
                 new(0) { ScaleX = 0, ScaleY = 1, Alpha = 0 },
                 new(225) { ScaleX = 1.2f, ScaleY = 1, Alpha = 255 },
@@ -173,7 +172,7 @@ public sealed unsafe class KenkiKatana : GaugeBarWidget
                 new(860) { AddRGB = Config.PulseColor },
                 new(1360) { AddRGB = Config.PulseColor2 })
                 { Ease = SinInOut, Repeat = true, Label = "BarPulse" }
-        };
+        ];
 
     }
 

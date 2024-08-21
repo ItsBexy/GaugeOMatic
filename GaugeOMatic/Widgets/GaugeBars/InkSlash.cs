@@ -26,11 +26,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A gauge bar shaped like a streak of ink.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar)]
-public sealed unsafe class InkSlash : GaugeBarWidget
+public sealed unsafe class InkSlash(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public InkSlash(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/Mobhunt5.tex",
              new(650, 0, 16, 192),
              new(616, 192, 50, 140)), // smudge
@@ -42,7 +41,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
              new(123, 234, 28, 20),
              new(148, 222, 14, 15),
              new(207, 321, 39, 59))
-    };
+    ];
 
     #region Nodes
 
@@ -110,27 +109,27 @@ public sealed unsafe class InkSlash : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 3 }, new(1) { Height = 188 }};
+    public static KeyFrame[] BarTimeline => [new(0) { Height = 3 }, new(1) { Height = 188 }];
 
     #endregion
 
     #region UpdateFuncs
 
     public override void OnDecreaseToMin() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Tick, Visible[0], Hidden[200]),
             new(Backdrop,
                 new(0) { AddRGB = Config.BackdropColor, Alpha = Config.BackdropColor.A },
                 new(200) { AddRGB = Config.BackdropInactive, Alpha = Config.BackdropInactive.A })
-        };
+        ];
 
     public override void OnIncreaseFromMin() =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Tick, Hidden[0], Visible[200]),
             new(Backdrop, new(0) { AddRGB = Config.BackdropInactive, Alpha = Config.BackdropInactive.A }, new(200) { AddRGB = Config.BackdropColor, Alpha = Config.BackdropColor.A })
-        };
+        ];
 
     public override void PlaceTickMark(float prog) { Tick.SetPos(MainContainer.Node->X - 12 + Main.Node->Height, MainContainer.Node->Y + 10); }
 
@@ -149,8 +148,8 @@ public sealed unsafe class InkSlash : GaugeBarWidget
         var avgScale = (Config.Scale.Y + Config.Scale.X) / 2f;
         var pos = Config.NumTextProps.Position + new Vector2((avgScale * -46.712f) - 30.915f, (avgScale * 0.7827f) + 25.3f);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Bar,
                 new(0) { X = 0, Y = 0, AddRGB = new(0) },
                 new(30) { X = 1.9f, Y = 0.95f, AddRGB = flash * 0.1f },
@@ -202,7 +201,7 @@ public sealed unsafe class InkSlash : GaugeBarWidget
                 new(100) { X = -200, Y = -80, ScaleX = 2f, ScaleY = 4f, Alpha = 255, Rotation = 1.4f },
                 new(200) { X = -200, Y = -80, ScaleX = 2f, ScaleY = 4f, Alpha = 255, Rotation = 1.4f },
                 new(700) { X = -200, Y = -80, ScaleX = 2f, ScaleY = 4f, Alpha = 0, Rotation = 1.4f })
-        };
+        ];
     }
 
     #endregion

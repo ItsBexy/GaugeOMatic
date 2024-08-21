@@ -14,16 +14,10 @@ namespace GaugeOMatic.Utility;
 
 public static class ImGuiHelpy
 {
-    public struct PushableStyleColor
+    public struct PushableStyleColor(ImGuiCol col, Vector4 color)
     {
-        public ImGuiCol ImGuiCol;
-        public Vector4 Color;
-
-        public PushableStyleColor(ImGuiCol col, Vector4 color)
-        {
-            ImGuiCol = col;
-            Color = color;
-        }
+        public ImGuiCol ImGuiCol = col;
+        public Vector4 Color = color;
     }
 
     public static void MulticolorText(params (Vector4 col, string str)[] stringTuples)
@@ -92,7 +86,7 @@ public static class ImGuiHelpy
         }
         var str = iconText;
         if (str.Contains('#'))
-            str = str[..str.IndexOf("#", StringComparison.Ordinal)];
+            str = str[..str.IndexOf('#', StringComparison.Ordinal)];
         ImGui.PushID(label);
         ImGui.PushFont(UiBuilder.IconFont);
         var vector2 = ImGui.CalcTextSize(str);

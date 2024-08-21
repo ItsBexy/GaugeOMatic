@@ -12,26 +12,26 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class RPRModule : JobModule
+public class RPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudRRP0", "JobHudRRP1")
 {
     public override Job Job => RPR;
     public override Job Class => Job.None;
     public override Role Role => Melee;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudRRP0", "Soul Gauge"),
         new("JobHudRRP1", "Death Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Soul Gauge", nameof(SoulGaugeTracker)),
         new("Shroud Gauge", nameof(ShroudGaugeTracker)),
         new("Lemure Shroud", nameof(LemureShroudTracker)),
         new("Void Shroud", nameof(VoidShroudTracker))
-    };
-
-    public RPRModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRRP0", "JobHudRRP1") { }
+    ];
 
     public override void Save()
     {

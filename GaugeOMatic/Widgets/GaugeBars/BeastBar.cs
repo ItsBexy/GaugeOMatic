@@ -5,6 +5,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -16,7 +17,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BeastBar;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -32,11 +33,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A recreation of Warrior's Beast Gauge Bar.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica)]
-public sealed unsafe class BeastBar : GaugeBarWidget
+public sealed unsafe class BeastBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public BeastBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { WAR0 };
+    public override CustomPartsList[] PartsLists { get; } = [WAR0];
 
     #region Nodes
 
@@ -72,16 +71,19 @@ public sealed unsafe class BeastBar : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 6.2818f },
-    new(1) { Width = 172 }};
+    public static KeyFrame[] BarTimeline =>
+    [
+        new(0) { Width = 6.2818f },
+    new(1) { Width = 172 }
+    ];
 
     public override void HideBar(bool instant = false)
     {
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 70, 140 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 70, 140 };
 
         Animator -= "Expand";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 },
                 new(kf[1]) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
@@ -94,15 +96,15 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                 Visible[kf[0]],
                 Hidden[kf[1]])
                 { Label = "Collapse" }
-        };
+        ];
     }
 
     public override void RevealBar(bool instant = false)
     {
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 70, 140 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 70, 140 };
         Animator -= "Collapse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 },
                 new(kf[1]) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
@@ -118,7 +120,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                 Hidden[kf[1]],
                 Visible[kf[2]])
                 { Label ="Expand" }
-        };
+        ];
     }
 
     #endregion
@@ -133,8 +135,8 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         Animator -= "BarPulse";
 
         var colorOffset = new AddRGB(-110, -2, 120);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Main,
                 new(0) { AddRGB = Config.PulseColor + colorOffset },
                 new(325) { AddRGB = Config.PulseColor2 + colorOffset },
@@ -146,7 +148,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
                 Hidden[675],
                 Hidden[1140])
                 { Ease = SinInOut, Repeat = true, Label = "BarPulse" }
-        };
+        ];
     }
 
     protected override void StopMilestoneAnim()
@@ -274,7 +276,7 @@ public sealed unsafe class BeastBar : GaugeBarWidget
         {
             case Layout:
                 AngleControls("Angle", ref Config.Angle);
-                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
+                RadioIcons("Fill Direction", ref Config.Mirror, [false, true], ArrowIcons);
                 break;
             case Colors:
                 ColorPickerRGBA("Backdrop", ref Config.BGColor);
@@ -305,10 +307,10 @@ public sealed unsafe class BeastBar : GaugeBarWidget
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
-        Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
-        Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
-        Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
-                                       new List<FontAwesomeIcon> { ArrowRight, ArrowLeft };
+        Abs(Config.Angle) > 135 ? [ArrowLeft, ArrowRight] :
+        Config.Angle > 45 ? [ArrowDown, ArrowUp] :
+        Config.Angle < -45 ? [ArrowUp, ArrowDown] :
+        [ArrowRight, ArrowLeft];
 
     #endregion
 }

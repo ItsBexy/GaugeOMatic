@@ -8,19 +8,18 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class BLUModule : JobModule
+public class BLUModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudBLU0", "JobHudBLU1")
 {
     public override Job Job => BLU;
     public override Job Class => Job.None;
     public override Role Role => Caster|Limited;
 
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudBLU0", "Elemental Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
-
-    public BLUModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudBLU0", "JobHudBLU1") { }
+    ];
 
     public override void Save()
     {
@@ -28,7 +27,7 @@ public class BLUModule : JobModule
         Configuration.Save();
     }
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new();
+    public override List<MenuOption> JobGaugeMenu { get; } = [];
 
     public override void TweakUI()
     {

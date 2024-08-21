@@ -120,15 +120,6 @@ public class TrackerWindow : Window, IDisposable
 
     private void WidgetOptionTable()
     {
-        void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
-        {
-            if (tabs.HasFlag(uiTab) && ImGui.BeginTabItem($"{label}##{label}Tab{Hash}"))
-            {
-                Tracker.Widget!.UiTab = uiTab;
-                ImGui.EndTabItem();
-            }
-        }
-
         ImGui.Spacing();
         if (ImGui.BeginTabBar("UiTab" + Hash))
         {
@@ -155,6 +146,17 @@ public class TrackerWindow : Window, IDisposable
 
             ImGui.EndTable();
         }
+
+        return;
+
+        void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
+        {
+            if (tabs.HasFlag(uiTab) && ImGui.BeginTabItem($"{label}##{label}Tab{Hash}"))
+            {
+                Tracker.Widget!.UiTab = uiTab;
+                ImGui.EndTabItem();
+            }
+        }
     }
 
     private void DisplayRuleTable()
@@ -164,7 +166,8 @@ public class TrackerWindow : Window, IDisposable
         ImGui.TextColored(new(1, 1, 1, 0.3f), "Display Rules");
         ImGui.TableNextColumn();
 
-        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, new() { false, true }, new() { "Anytime", "Combat / Duty Only" });
+        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, [false, true],
+                                  ["Anytime", "Combat / Duty Only"]);
         var cond2 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange);
         var cond3 = false;
         var cond4 = false;

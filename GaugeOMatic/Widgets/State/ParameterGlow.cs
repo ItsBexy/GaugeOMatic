@@ -22,14 +22,12 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(HasAddonRestrictions | State)]
 [WidgetUiTabs(Layout | Colors)]
 [AddonRestrictions(true, "_ParameterWidget")]
-public sealed unsafe class ParameterGlow : StateWidget
+public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
 {
-    public ParameterGlow(Tracker tracker) : base(tracker) { }
-
     public override CustomPartsList[] PartsLists { get; } =
-    {
+    [
         new("ui/uld/Parameter_Gauge.tex", new Vector4(0, 20, 160, 20) )
-    };
+    ];
 
     #region Nodes
 
@@ -51,10 +49,6 @@ public sealed unsafe class ParameterGlow : StateWidget
 
         return new CustomNode(CreateResNode(), BarGlow, BarGlow2).SetAlpha(0);
     }
-
-    #endregion
-
-    #region Animations
 
     #endregion
 
@@ -119,7 +113,7 @@ public sealed unsafe class ParameterGlow : StateWidget
         switch (UiTab)
         {
             case Layout:
-                RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, new() { "HP", "MP" });
+                RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, ["HP", "MP"]);
                 break;
             case Colors:
                 ColorPickerRGB("Color", ref Config.Color);

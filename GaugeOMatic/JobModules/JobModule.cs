@@ -26,7 +26,7 @@ public abstract class JobModule : IDisposable
     public abstract Role Role { get; }
     public string Abbr => Job.ToString();
 
-    public virtual List<AddonOption> AddonOptions => new() { new("_ParameterWidget", "Parameter Bar") };
+    public virtual List<AddonOption> AddonOptions => [new("_ParameterWidget", "Parameter Bar")];
     public string WatchedAddon0;
     public string? WatchedAddon1;
 

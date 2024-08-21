@@ -1,5 +1,4 @@
 using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -26,16 +25,14 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
 [WidgetUiTabs(Layout | Colors)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
-public sealed unsafe class TargetReticle : StateWidget
+public sealed unsafe class TargetReticle(Tracker tracker) : StateWidget(tracker)
 {
-    public TargetReticle(Tracker tracker) : base(tracker) { }
-
     public override CustomPartsList[] PartsLists { get; } =
-    {
+    [
         new("ui/uld/mycrelicwindowsymbol3.tex",
             new(0, 0, 450, 450),
             new(216,106,20,20))
-    };
+    ];
 
     #region Nodes
 
@@ -91,8 +88,8 @@ public sealed unsafe class TargetReticle : StateWidget
             var startAngle2 = (InnerHalo.Node->Rotation + 6.283185f) % 6.283185f;
             var endAngle2 = startAngle2 + (Config.Speed >= 0 ? -6.283185f : 6.283185f);
 
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Halo,
                     new(0) { Rotation = startAngle },
                     new((int)rotationTime) { Rotation = endAngle })
@@ -101,7 +98,7 @@ public sealed unsafe class TargetReticle : StateWidget
                     new(0) { Rotation = startAngle2 },
                     new((int)(rotationTime*1.2f)) { Rotation = endAngle2 })
                     { Repeat = true, Label = "RotationTween" }
-            };
+            ];
         }
     }
 
@@ -123,8 +120,8 @@ public sealed unsafe class TargetReticle : StateWidget
         InnerHalo.Show();
 
         Animator -= "HaloAlpha";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Halo,
                 new(0) { Alpha = 0, Scale = 0.2f, MultRGB = color },
                 new(400) { Alpha = 255, Scale = 1, MultRGB = color }) { Label = "HaloAlpha" },
@@ -133,7 +130,7 @@ public sealed unsafe class TargetReticle : StateWidget
                 new(200) { Alpha = 255, Scale = 0.6f, MultRGB = color })
                 { Label = "HaloAlpha" }
 
-        };
+        ];
 
         BeginRotation();
     }
@@ -141,7 +138,8 @@ public sealed unsafe class TargetReticle : StateWidget
     public override void Deactivate(int previous)
     {
         Animator -= "HaloAlpha";
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Halo,
                 new(0) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
                 new(200) { Alpha = 0, ScaleX = 1.2f, ScaleY = 1.2f })
@@ -150,19 +148,19 @@ public sealed unsafe class TargetReticle : StateWidget
                 new(0) { Alpha = 255, ScaleX = 0.6f, ScaleY = 0.6f },
                 new(200) { Alpha = 0, ScaleX = 0.2f, ScaleY = 0.2f })
                 { Complete = () => Halo.Hide(), Label = "HaloAlpha" }
-        };
+        ];
     }
 
     public override void StateChange(int current, int previous) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Halo,
                 new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
                 new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) }),
             new(InnerHalo,
                 new(0) { MultRGB = Config.ColorList.ElementAtOrDefault(previous) },
                 new(200) { MultRGB = Config.ColorList.ElementAtOrDefault(current) })
-        };
+        ];
 
     #endregion
 
@@ -171,7 +169,7 @@ public sealed unsafe class TargetReticle : StateWidget
     public class TargetReticleConfig : WidgetTypeConfig
     {
         public float Angle;
-        public List<ColorRGB> ColorList = new();
+        public List<ColorRGB> ColorList = [];
         [DefaultValue(20f)] public float Speed = 20f;
 
         public TargetReticleConfig(WidgetConfig widgetConfig) : base(widgetConfig.TargetReticleCfg)

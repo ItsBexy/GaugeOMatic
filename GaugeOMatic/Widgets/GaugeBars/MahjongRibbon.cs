@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -12,7 +13,7 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MahjongRibbon;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -28,17 +29,16 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A gauge bar based on parts of the Mahjong UI.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar)]
-public sealed unsafe class MahjongRibbon : GaugeBarWidget
+public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public MahjongRibbon(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/emjintroparts08.tex",
              new Vector4(0, 17, 720, 32),
              new Vector4(0, 17, 720, 32) ),
         new ("ui/uld/emjintroparts03.tex", new Vector4(0, 0, 64, 64)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4(256, 152, 20, 88))
-    };
+    ];
 
     #region Nodes
 
@@ -87,15 +87,15 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
+    public KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = Config.Width }];
 
     public override void HideBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
-        var kf = instant ? new[] { 0, 0, 0, 0 } : new[] { 0, 350, 450,200 };
+        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 350, 450,200 };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { X = -halfWidth, Width = Config.Width, Height = 32, AddRGB = 0, Alpha = 255, Y = 0 },
                 new(kf[1]) { X = 0, Width = 0, Height = 32, AddRGB = 50, Alpha = 255, Y = 0 },
@@ -113,7 +113,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]),
             new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]),
             new(Tick, Visible[kf[0]], Hidden[kf[3]])
-        };
+        ];
 
         StopBackdropTween();
     }
@@ -121,10 +121,10 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     public override void RevealBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
-        var kf = instant ? new[] { 0, 0, 0, 0 } : new[] { 0, 100, 350, 200 };
+        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 100, 350, 200 };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Alpha = 0, Y = 16, X = -16, Width = 32, Height = 0, AddRGB = new(200) },
                 new(kf[1]) { Alpha = 255, Y = 0, X = -16, Width = 32, Height = 32, AddRGB = new(255) },
@@ -153,7 +153,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
             new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]),
 
             new(Tick, Hidden[kf[0]], Visible[kf[3]])
-        };
+        ];
 
         StartBackdropTween();
     }
@@ -183,8 +183,8 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
     private void StopBackdropTween()
     {
         Animator -= "ScrollAni";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Main,
                 new(0, Main),
                 new(200) { PartCoords = new(720, 17, 720, 32) })
@@ -193,14 +193,14 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                 new(0, Backdrop),
                 new(200) { PartCoords = new(0, 17, 720, 32) })
                 { Ease = SinInOut, Label = "ScrollAni" }
-        };
+        ];
     }
 
     private void StartBackdropTween()
     {
         Animator -= "ScrollAni";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Main,
                 new(0) { PartCoords = new(0, 17, 720, 32) },
                 new(5000) { PartCoords = new(720, 17, 720, 32) })
@@ -209,7 +209,7 @@ public sealed unsafe class MahjongRibbon : GaugeBarWidget
                 new(0) { PartCoords = new(720, 17, 720, 32) },
                 new(10000) { PartCoords = new(0, 17, 720, 32) })
                 { Repeat = true, Label = "ScrollAni" }
-        };
+        ];
     }
 
     public override void PostUpdate(float prog)

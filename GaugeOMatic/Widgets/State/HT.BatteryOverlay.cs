@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("HT", "Heat Gauge Replica", 4)]
-public sealed unsafe class BatteryOverlay : StateWidget
+public sealed unsafe class BatteryOverlay(Tracker tracker) : StateWidget(tracker)
 {
-    public BatteryOverlay(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
+    public override CustomPartsList[] PartsLists { get; } = [MCH0];
 
     #region Nodes
 
@@ -78,10 +76,6 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     #endregion
 
-    #region Animations
-
-    #endregion
-
     #region UpdateFuncs
 
     public override string SharedEventGroup => "HeatGauge";
@@ -94,8 +88,8 @@ public sealed unsafe class BatteryOverlay : StateWidget
         InvokeSharedEvent("HeatGauge", "StartBatteryGlow", new() { AddRGB = color });
         Animator -= "Pulse";
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Ring,
                 Hidden[0],
                 Visible[225])
@@ -106,7 +100,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
                 Hidden[300],
                 Hidden[1430])
                 { Ease = SinInOut, Repeat = true, Label = "Pulse" }
-        };
+        ];
 
         ElecTweens(Elec1, Elec2, Elec3);
         ElecTweens(Elec4, Elec5, Elec6);
@@ -117,8 +111,8 @@ public sealed unsafe class BatteryOverlay : StateWidget
         var on = new KeyFrame { Alpha = 255, AddRGB = new(-100, -100, 50), MultRGB = new(100) };
         var off = new KeyFrame { Alpha = 0, AddRGB = new(-100, -50, 100), MultRGB = new(50) };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(node1,
                 on[0], off[90], off[359],
                 on[360], off[560], off[769],
@@ -134,7 +128,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
                 on[330], off[500], off[829],
                 on[830], off[1000], off[1430])
                 { Ease = SinInOut, Repeat = true, Label = "Elec" }
-        };
+        ];
     }
 
     public override void Deactivate(int previous)
@@ -143,8 +137,8 @@ public sealed unsafe class BatteryOverlay : StateWidget
         Animator -= "Pulse";
         Animator -= "Elec";
 
-        Animator += new[]
-        {
+        Animator +=
+        [
             new(Ring, Visible[0], Hidden[320]) { Ease = SinInOut },
             FadeOut(Glow),
             FadeOut(Elec1),
@@ -153,7 +147,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
             FadeOut(Elec4),
             FadeOut(Elec5),
             FadeOut(Elec6)
-        };
+        ];
     }
 
     private static Tween FadeOut(CustomNode node) => new(node, new(0, node), Hidden[150])
@@ -167,8 +161,8 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
         InvokeSharedEvent("HeatGauge", "StartBatteryGlow", new() { AddRGB = pulseColor });
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Ring,
                 new(0, Ring),
                 new(250) { AddRGB = ringColor })
@@ -181,7 +175,7 @@ public sealed unsafe class BatteryOverlay : StateWidget
                 new(0, ElecWrapper2),
                 new(250) { AddRGB = elecColor })
                 { Ease = SinInOut }
-        };
+        ];
     }
 
     #endregion
@@ -190,9 +184,9 @@ public sealed unsafe class BatteryOverlay : StateWidget
 
     public class BatteryOverlayConfig : WidgetTypeConfig
     {
-        public List<AddRGB> PulseColors = new();
-        public List<AddRGB> RingColors = new();
-        public List<AddRGB> ElecColors = new();
+        public List<AddRGB> PulseColors = [];
+        public List<AddRGB> RingColors = [];
+        public List<AddRGB> ElecColors = [];
         public float Angle;
 
         public BatteryOverlayConfig(WidgetConfig widgetConfig) : base(widgetConfig.BatteryOverlayCfg)

@@ -35,7 +35,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         SharedEvents.Add("StopBatteryGlow", _ => EndOverlayPulse());
     }
 
-    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
+    public override CustomPartsList[] PartsLists { get; } = [MCH0];
 
     #region Nodes
 
@@ -95,7 +95,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
     }
 
-    public virtual KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 20 }, new(1) { Width = Config.Width }};
+    public virtual KeyFrame[] BarTimeline => [new(0) { Width = 20 }, new(1) { Width = Config.Width }];
 
     protected override void StartMilestoneAnim()
     {
@@ -128,8 +128,8 @@ public unsafe class BatteryReplica : GaugeBarWidget
     private void EndOverlayPulse()
     {
         Animator -= "OverlayPulse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(ClockFace,
                 new(0, ClockFace),
                 new(400) { AddRGB = new(0) })
@@ -138,7 +138,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
                 new(0, ClockFace),
                 new(400) { AddRGB = new(0) })
                 { Ease = SinInOut, Label = "OverlayPulse" }
-        };
+        ];
     }
 
     private void BeginOverlayPulse(AddRGB addRGB)
@@ -298,7 +298,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
                 AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 11, 12 }, new() { "Blue", "Orange" }, true);
+                RadioControls("Base Color", ref Config.BaseColor, new() { 11, 12 }, ["Blue", "Orange"], true);
 
                 if (Config.BaseColor == 12)
                 {

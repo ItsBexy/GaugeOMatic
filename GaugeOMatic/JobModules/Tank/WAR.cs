@@ -12,22 +12,19 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class WARModule : JobModule
+public class WARModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudWAR0")
 {
     public override Job Job => WAR;
     public override Job Class => MRD;
     public override Role Role => Tank;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudWAR0", "Beast Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
-        new("Beast Gauge", nameof(BeastGaugeTracker))
-    };
-
-    public WARModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudWAR0") { }
+    public override List<MenuOption> JobGaugeMenu { get; } = [new("Beast Gauge", nameof(BeastGaugeTracker))];
 
     public override void Save()
     {

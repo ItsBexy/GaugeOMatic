@@ -67,7 +67,7 @@ public partial class ActionRef : ItemRef
             CheckTransformations();
             CheckStatusEffects();
 
-            if (ActionOverrideFuncs.ContainsKey(ID)) ActionOverrideFuncs[ID].Invoke(this);
+            if (ActionOverrideFuncs.TryGetValue(ID, out var func)) func.Invoke(this);
         }
         else
         {
@@ -76,6 +76,8 @@ public partial class ActionRef : ItemRef
             LastKnownCooldown = 2.5f;
             Icon = null;
         }
+
+        return;
 
         void CheckTransformations()
         {

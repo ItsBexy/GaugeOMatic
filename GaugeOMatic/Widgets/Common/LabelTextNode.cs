@@ -2,7 +2,6 @@ using CustomNodes;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNode.CustomNodeFlags;
@@ -14,7 +13,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
 
-namespace GaugeOMatic.Widgets;
+namespace GaugeOMatic.Widgets.Common;
 
 public class LabelTextNode : CustomNode
 {
@@ -30,7 +29,7 @@ public class LabelTextNode : CustomNode
         SetTextColor(0xffffffff, 0x000000ff);
         RemoveFlags(SetVisByAlpha);
 
-        Children = Array.Empty<CustomNode>();
+        Children = [];
     }
 
     public LabelTextNode SetLabelText(string text)
@@ -55,10 +54,10 @@ public class LabelTextNode : CustomNode
 
 public struct LabelTextProps
 {
-    internal static List<AlignmentType> AlignList = new() { Left, Center, Right };
-    internal static List<FontAwesomeIcon> AlignIcons = new() { AlignLeft, AlignCenter, AlignRight };
-    internal static List<FontType> FontList = new() { Axis, MiedingerMed, TrumpGothic, Jupiter };
-    internal static List<string> FontNames = new() { "Axis", "Miedinger Med", "Trump Gothic", "Jupiter" };
+    internal static List<AlignmentType> AlignList = [Left, Center, Right];
+    internal static List<FontAwesomeIcon> AlignIcons = [AlignLeft, AlignCenter, AlignRight];
+    internal static List<FontType> FontList = [Axis, MiedingerMed, TrumpGothic, Jupiter];
+    internal static List<string> FontNames = ["Axis", "Miedinger Med", "Trump Gothic", "Jupiter"];
 
     public string Text;
     [JsonProperty(DefaultValueHandling = Include)] public bool Enabled = false;

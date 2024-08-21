@@ -2,7 +2,6 @@ using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
-using System.Numerics;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
@@ -26,11 +25,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(GaugeBar | MultiComponent | HasAddonRestrictions | HasClippingMask)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 [MultiCompData("BL", "Balance Gauge Replica", 3)]
-public sealed unsafe class BalanceOverlay : GaugeBarWidget
+public sealed unsafe class BalanceOverlay(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public BalanceOverlay(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudRDM0.tex",
             new(0, 0, 116, 208),
             new(186, 3, 26, 124),
@@ -53,11 +51,11 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
             new(118, 321, 89, 59),
             new(207, 321, 39, 59),
             new(150, 0, 34, 144)),
-        new ("ui/uld/JobHudNIN0.tex", new Vector4[] {
+        new ("ui/uld/JobHudNIN0.tex", [
             new(256, 152, 20, 88) // flashing edge
-        }),
+        ]),
         CircleMask
-    };
+    ];
 
     #region Nodes
 
@@ -94,27 +92,27 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] ContainerTimeline => new KeyFrame[]
-    {
+    public static KeyFrame[] ContainerTimeline =>
+    [
         new(0) { Alpha = 0 },
         new(20) { Alpha = 255 },
         new(192) { Alpha = 255 }
-    };
+    ];
 
-    public static KeyFrame[] MaskTimeline => new KeyFrame[]
-    {
+    public static KeyFrame[] MaskTimeline =>
+    [
         new(0) { Y=-6 },
         new(20) {Y=-26 },
         new(192) {Y=-208 }
-    };
+    ];
 
-    public KeyFrame[] TickTimeline => new KeyFrame[]
-    {
+    public KeyFrame[] TickTimeline =>
+    [
         new(0) { Y = 173, Alpha = 0 },
         new(20) { Y = 153, Alpha = Config.TickColor.A },
         new(182) { Y = -9, Alpha = Config.TickColor.A },
         new(192) { Y = -19, Alpha = 0 }
-    };
+    ];
 
     #endregion
 
@@ -143,15 +141,16 @@ public sealed unsafe class BalanceOverlay : GaugeBarWidget
 
     public override void OnIncrease(float prog, float prevProg)
     {
-        Animator += new Tween[]{
+        Animator +=
+        [
             new(CrystalGlow,
-                              new(0) { Rotation = 0 },
-                              new(400) { Rotation = (float)PI*1 }),
+                new(0) { Rotation = 0 },
+                new(400) { Rotation = (float)PI*1 }),
             new(CrystalGlow,
                 new(0) { Alpha = 0, Scale = 0.8f },
                 new(150) { Alpha = 255, Scale = 1.5f },
                 new(400) { Alpha = 0, Scale = 3 })
-        };
+        ];
 
     }
 

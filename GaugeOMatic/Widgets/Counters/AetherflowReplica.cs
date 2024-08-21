@@ -22,11 +22,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class AetherflowReplica : CounterWidget
+public sealed unsafe class AetherflowReplica(Tracker tracker) : CounterWidget(tracker)
 {
-    public AetherflowReplica(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudSCH0.tex",
             new(0, 76, 44, 44),
             new(44, 76, 40, 52),
@@ -40,7 +39,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
             new(0, 76, 44, 44),
             new(44, 76, 40, 52),
             new(0, 120, 44, 32))
-    };
+    ];
 
     #region Nodes
 
@@ -124,8 +123,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
         if (Gems.Children.Length <= i) return;
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { ScaleX = flipFactor, ScaleY = 1, Alpha = 0, AddRGB = -19 },
                 new(120) { ScaleX = flipFactor, ScaleY = 1, Alpha = 255, AddRGB = new(0) }),
@@ -134,7 +133,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
                 new(0) { ScaleX = 3.2f, ScaleY = 0.6f, Alpha = 255, AddRGB = addStep1 },
                 new(90) { ScaleX = 4.9f, ScaleY = 0.6f, Alpha = 255, AddRGB = addStep2 },
                 new(300) { ScaleX = 3, ScaleY = 0.2f, Alpha = 0, AddRGB = addStep3 })
-        };
+        ];
     }
 
     public override void HideStack(int i)
@@ -143,8 +142,8 @@ public sealed unsafe class AetherflowReplica : CounterWidget
 
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { ScaleX = 1 * flipFactor, ScaleY = 1, Alpha = 255 },
                 new(300) { ScaleX = 1.5f * flipFactor, ScaleY = 1.5f, Alpha = 0 }),
@@ -153,7 +152,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
                 new(0) { Scale = 1.1f, Alpha = 135 },
                 new(50) { Scale = 1.1f, Alpha = 176 },
                 new(250) { ScaleX = 2.3f, ScaleY = 2f, Alpha = 0 })
-        };
+        ];
     }
 
     private void PlateVanish()
@@ -255,7 +254,7 @@ public sealed unsafe class AetherflowReplica : CounterWidget
                 AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 1, 0 }, new() { "Pink", "Green" });
+                RadioControls("Base Color", ref Config.BaseColor, [1, 0], ["Pink", "Green"]);
                 ColorPickerRGB("Color Modifier", ref Config.ColorModifier);
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;

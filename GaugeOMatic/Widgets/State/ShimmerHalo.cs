@@ -27,13 +27,12 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
 [WidgetUiTabs(Layout | Colors)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
-public sealed unsafe class ShimmerHalo : StateWidget
+public sealed unsafe class ShimmerHalo(Tracker tracker) : StateWidget(tracker)
 {
-    public ShimmerHalo(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/gachaeffect03.tex", new Vector4(0, 0, 256, 256), new Vector4(13, 124, 8, 8))
-    };
+    ];
 
     #region Nodes
 
@@ -111,13 +110,13 @@ public sealed unsafe class ShimmerHalo : StateWidget
 
         Fill.Show();
         Animator -= "ShimmerAlpha";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Fill,
                 new (0) { Alpha = 0, RGB = color },
                 new(200) { Alpha = 255, RGB = color }
                 ) { Label = "ShimmerAlpha" }
-        };
+        ];
 
         BeginRotation();
     }
@@ -143,7 +142,7 @@ public sealed unsafe class ShimmerHalo : StateWidget
     {
         public new Vector2 Scale = new(1);
         public float Angle;
-        public List<ColorRGB> ColorList = new();
+        public List<ColorRGB> ColorList = [];
         [DefaultValue(20f)] public float Speed = 20f;
 
         public ShimmerHaloConfig(WidgetConfig widgetConfig) : base(widgetConfig.ShimmerHaloCfg)

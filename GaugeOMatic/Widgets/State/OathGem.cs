@@ -1,5 +1,4 @@
 using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -22,11 +21,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | Replica)]
 [WidgetUiTabs(Layout | Colors)]
-public sealed unsafe class OathGem : StateWidget
+public sealed unsafe class OathGem(Tracker tracker) : StateWidget(tracker)
 {
-    public override CustomPartsList[] PartsLists { get; } = { PLD0 };
-
-    public OathGem(Tracker tracker) : base(tracker) { }
+    public override CustomPartsList[] PartsLists { get; } = [PLD0];
 
     #region Nodes
 
@@ -52,8 +49,8 @@ public sealed unsafe class OathGem : StateWidget
     private void AppearAnim(AddRGB adjustedColor)
     {
         var highlight = adjustedColor + new AddRGB(50, 50, 0);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, Scale = 1, AddRGB = highlight },
                 new(100) { Alpha = 180, Scale = 0.95f, AddRGB = adjustedColor },
@@ -63,14 +60,14 @@ public sealed unsafe class OathGem : StateWidget
                 new(0) { PartId = 20, AddRGB = 0 },
                 new(99) { PartId = 20, AddRGB = 0 },
                 new(100) { PartId = 19, AddRGB = adjustedColor })
-        };
+        ];
     }
 
     private void HideAnim(AddRGB adjustedColor)
     {
         var highlight = adjustedColor + new AddRGB(50, 50, 0);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, Scale = 1, AddRGB = highlight },
                 new(100) { Alpha = 180, Scale = 0.95f, AddRGB = adjustedColor },
@@ -81,14 +78,14 @@ public sealed unsafe class OathGem : StateWidget
                 new(99) { PartId = 19, AddRGB = adjustedColor },
                 new(100) { PartId = 20, AddRGB = 0 })
                 { Ease = SinInOut }
-        };
+        ];
     }
 
     private void StateChangeAnim(AddRGB adjustedColor)
     {
         var highlight = adjustedColor + new AddRGB(50, 50, 0);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, Scale = 1, AddRGB = highlight },
                 new(100) { Alpha = 180, Scale = 0.95f, AddRGB = adjustedColor },
@@ -98,7 +95,7 @@ public sealed unsafe class OathGem : StateWidget
                 new(0, Gem),
                 new(200) { AddRGB = adjustedColor })
                 { Ease = SinInOut }
-        };
+        ];
     }
 
     #endregion
@@ -119,7 +116,7 @@ public sealed unsafe class OathGem : StateWidget
 
     public class OathGemConfig : WidgetTypeConfig
     {
-        public List<AddRGB> Colors = new();
+        public List<AddRGB> Colors = [];
         public ColorRGB FrameColor = new(100, 100, 100);
 
         public OathGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.OathGemCfg)

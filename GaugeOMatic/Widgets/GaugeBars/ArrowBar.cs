@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
@@ -11,7 +12,7 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ArrowBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -26,18 +27,17 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A Gauge Bar shaped like an arrow.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar)]
-public sealed unsafe class ArrowBar : GaugeBarWidget
+public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public ArrowBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/JobHudBRD0.tex",
              new(1, 366, 188, 34),
              new(1, 419, 151, 6),
              new(59, 427, 93, 6),
              new(215, 211, 15, 43),
              new(280, 150, 21, 44))
-    };
+    ];
 
     #region Nodes
 
@@ -77,14 +77,15 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width }};
+    public KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = Config.Width }];
 
     public override void HideBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 250, 350 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 250, 350 };
 
-        Animator += new Tween[]{
+        Animator +=
+        [
             new (Frame,
                  new(kf[0]) { X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Alpha = 255, Height = 34 },
                  new(kf[1]) { X = halfWidth - 19, Width = 68, AddRGB = 50, Alpha = 255, Height = 34 },
@@ -105,7 +106,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
             new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]),
             new(NumTextNode, Visible[kf[0]], Hidden[kf[2]])
-        };
+        ];
 
         Bar.SetOrigin(Config.Width, 4);
     }
@@ -113,10 +114,10 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
     public override void RevealBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 50, 150 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 50, 150 };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Alpha = 0, X = -halfWidth - 69, Width = 68, AddRGB = new(200), Height = 26 },
                 new(kf[1]) { Alpha = 255, X = -halfWidth - 69, Width = 68, AddRGB = new(255), Height = 34 },
@@ -137,7 +138,7 @@ public sealed unsafe class ArrowBar : GaugeBarWidget
 
             new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]),
             new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]])
-        };
+        ];
 
         Bar.SetOrigin(0, 4);
     }

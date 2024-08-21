@@ -26,11 +26,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class CoilDiamond : FreeGemCounter
+public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public CoilDiamond(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { VPR0 };
+    public override CustomPartsList[] PartsLists { get; } = [VPR0];
 
     #region Nodes
 
@@ -53,15 +51,15 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks2 = new();
-        Stacks = new();
-        Frames = new();
-        Gems = new();
-        Flashes = new();
-        Pulsars = new();
+        Stacks2 = [];
+        Stacks = [];
+        Frames = [];
+        Gems = [];
+        Flashes = [];
+        Pulsars = [];
 
-        Glows = new();
-        Glows2 = new();
+        Glows = [];
+        Glows2 = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -96,7 +94,8 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
 
          var midAppear = new AddRGB(50);
 
-         Animator += new Tween[] {
+         Animator +=
+         [
              new(Gems[i],
                  new(0)   { Alpha = 0, AddRGB = gemColor },
                  new(165) { Alpha = 255, AddRGB = gemColor + midAppear },
@@ -111,15 +110,15 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
                  new(0)   { Alpha = 255, Scale = 1.5f },
                  new(180) { Alpha = 255, Scale = 1 },
                  new(330) { Alpha = 0, Scale = 1})
-          };
+         ];
 
          Glows2[i].Show();
     }
 
     public override void HideStack(int i)
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { Alpha = 255 },
                 new(165) { Alpha = 0 }),
@@ -127,7 +126,7 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
                 new(0)   { Alpha = 0, Scale = 1 },
                 new(165) { Alpha = 255, Scale = 1 },
                 new(330) { Alpha = 0, Scale = 2})
-        };
+        ];
 
         Glows2[i].Hide();
     }
@@ -147,14 +146,14 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
         Animator -= "Pulse";
         for (var i = 0; i < Stacks.Count; i++)
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Glows2[i],
                     new(0) { Scale = 1, Alpha = 0 },
                     new(250) { Scale = 1.25f, Alpha = 255 },
                     new(1300) { Scale = 1.5f, Alpha = 0 })
                     { Repeat = true, Ease = Linear, Label = "Pulse" }
-            };
+            ];
         }
     }
 
@@ -163,13 +162,13 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
          Animator -= "Pulse";
          for (var i = 0; i < Stacks.Count; i++)
          {
-             Animator += new Tween[]
-             {
+             Animator +=
+             [
                  new(Glows2[i],
                      new(0, Glows2[i]),
                      new(200) { Scale = 1.5f, Alpha = 0 })
                      { Label = "Pulse" }
-             };
+             ];
          }
     }
 
@@ -282,7 +281,7 @@ public sealed unsafe class CoilDiamond : FreeGemCounter
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) AllVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

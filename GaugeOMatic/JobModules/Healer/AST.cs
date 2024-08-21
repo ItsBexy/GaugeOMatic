@@ -12,18 +12,17 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class ASTModule : JobModule
+public class ASTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudAST0")
 {
     public override Job Job => AST;
     public override Job Class => Job.None;
     public override Role Role => Healer;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudAST0", "Arcana Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
-
-    public ASTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudAST0") { }
+    ];
 
     public override void Save()
     {
@@ -31,7 +30,7 @@ public class ASTModule : JobModule
         Configuration.Save();
     }
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new();
+    public override List<MenuOption> JobGaugeMenu { get; } = [];
 
     public override void TweakUI()
     {

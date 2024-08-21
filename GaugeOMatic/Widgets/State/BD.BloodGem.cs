@@ -24,11 +24,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("BD", "Blood Gauge Replica", 1)]
-public sealed unsafe class BloodGem : StateWidget
+public sealed unsafe class BloodGem(Tracker tracker) : StateWidget(tracker)
 {
-    public BloodGem(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { DRK0 };
+    public override CustomPartsList[] PartsLists { get; } = [DRK0];
 
     #region Nodes
 
@@ -70,8 +68,8 @@ public sealed unsafe class BloodGem : StateWidget
     #region Animations
 
     private void ActivateAnim(AddRGB flashColor, AddRGB gemColor) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Gem,
                 new(0) { AddRGB = new(0, -8, -8), MultRGB = new(100, 100, 100), PartId = 11 },
                 new(99.9f) { AddRGB = flashColor, MultRGB = new(100, 80, 80), PartId = 11 },
@@ -82,7 +80,7 @@ public sealed unsafe class BloodGem : StateWidget
             new(BlueHalo,
                 new(0) { Scale = 0.5f },
                 new(150) { Scale = 1 })
-        };
+        ];
 
     private void BeginHaloSpin()
     {
@@ -100,14 +98,14 @@ public sealed unsafe class BloodGem : StateWidget
         var haloColor2 = Config.GetHaloColor2(current) + HaloOffset;
 
         Animator -= "HaloPulse";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(BlueHalo,
                 new(0) { Alpha = 229, AddRGB = haloColor },
                 new(975) { Alpha = 255, AddRGB = haloColor2 },
                 new(1950) { Alpha = 229, AddRGB = haloColor })
                 { Repeat = true, Label = "HaloPulse" }
-        };
+        ];
     }
 
     #endregion
@@ -159,9 +157,9 @@ public sealed unsafe class BloodGem : StateWidget
 
     public class BloodGemConfig : WidgetTypeConfig
     {
-        public List<AddRGB> GemColors = new();
-        public List<AddRGB> HaloColors = new();
-        public List<AddRGB> HaloColors2 = new();
+        public List<AddRGB> GemColors = [];
+        public List<AddRGB> HaloColors = [];
+        public List<AddRGB> HaloColors2 = [];
         public ColorRGB RingColor = new(100, 100, 100);
         public bool Ring;
 

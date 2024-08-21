@@ -27,11 +27,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("EL", "Elemental Gauge Replica", 3)]
-public sealed unsafe class PolyglotGem : FreeGemCounter
+public sealed unsafe class PolyglotGem(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public PolyglotGem(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
+    public override CustomPartsList[] PartsLists { get; } = [BLM0];
 
     #region Nodes
 
@@ -51,19 +49,12 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks = new();
-        Frames = new();
-        GemContainers = new();
-        Gems = new();
-        Glows1 = new();
-        Glows2 = new();
-
-        CustomNode BuildGlowNode() => ImageNodeFromPart(0, 14).SetPos(12, 20)
-                                                              .SetScale(2.2f)
-                                                              .SetOrigin(15, 23)
-                                                              .SetImageFlag(32)
-                                                              .RemoveFlags(SetVisByAlpha)
-                                                              .SetAlpha(0);
+        Stacks = [];
+        Frames = [];
+        GemContainers = [];
+        Gems = [];
+        Glows1 = [];
+        Glows2 = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -82,6 +73,15 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                                       GemContainers[i],
                                       Glows2[i]).SetSize(54, 83).SetOrigin(27.5f, 41.5f));
         }
+
+        return;
+
+        CustomNode BuildGlowNode() => ImageNodeFromPart(0, 14).SetPos(12, 20)
+                                                              .SetScale(2.2f)
+                                                              .SetOrigin(15, 23)
+                                                              .SetImageFlag(32)
+                                                              .RemoveFlags(SetVisByAlpha)
+                                                              .SetAlpha(0);
     }
 
     #endregion
@@ -94,7 +94,8 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
 
         var colorOffset = Config.GemColor + new AddRGB(-27, 78, -50);
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Gems[i],
                 new (0) { ScaleX = 2.5f * flipX, ScaleY = flipY * 2.5f, Alpha = 0, AddRGB = colorOffset + new AddRGB(0) },
                 new(150) { ScaleX = flipX, ScaleY = flipY, Alpha = 255, AddRGB = colorOffset + new AddRGB(0) },
@@ -105,7 +106,7 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                 new (0) { Scale = 1.8f, Alpha = 0 },
                 new (150) { Scale = 1.8f, Alpha = 200 },
                 new (260) { Scale = 2.5f, Alpha = 0 })
-        };
+        ];
 
         Glows2[i].Show();
     }
@@ -114,8 +115,8 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
     {
         var (flipX, flipY) = FlipFactor(i);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { ScaleX = flipX, ScaleY = flipY, Alpha = 255 },
                 new(70) { ScaleX = 1.6f* flipX, ScaleY = 1.6f * flipY, Alpha = 50 },
@@ -124,7 +125,7 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                 new(0) { Scale = 0f, Alpha = 0 },
                 new(150) { Scale = 1.8f, Alpha = 200 },
                 new(260) { Scale = 2.2f, Alpha = 0 })
-        };
+        ];
 
         Glows2[i].Hide();
     }
@@ -146,8 +147,8 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
         Animator -= "Pulse";
         for (var i = 0; i < Stacks.Count; i++)
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(GemContainers[i],
                     new(0) { AddRGB = 0 },
                     new(450) { AddRGB = 148 },
@@ -160,7 +161,7 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                     new(830) { Scale = 2.2f, Alpha = 0 },
                     new(1300) { Scale = 2.2f, Alpha = 0 })
                     { Repeat = true, Ease = SinInOut, Label = "Pulse" }
-            };
+            ];
         }
     }
 
@@ -169,8 +170,8 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
         Animator -= "Pulse";
         for (var i = 0; i < Stacks.Count; i++)
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(GemContainers[i],
                     new(0, GemContainers[i]),
                     new(200) { AddRGB = 0 })
@@ -180,7 +181,7 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                     new(200) { Scale = 2.2f, Alpha = 0 })
                     { Label = "Pulse" }
 
-            };
+            ];
         }
     }
 
@@ -290,7 +291,7 @@ public sealed unsafe class PolyglotGem : FreeGemCounter
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) AllAppear();
                 }
 
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

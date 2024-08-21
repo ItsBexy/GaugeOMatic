@@ -19,8 +19,8 @@ public class TrackerManager : IDisposable
     {
         Configuration = configuration;
 
-        JobModules = new()
-        {
+        JobModules =
+        [
             new PLDModule(this, TrackerConfigs.PLD),
             new WARModule(this, TrackerConfigs.WAR),
             new DRKModule(this, TrackerConfigs.DRK),
@@ -48,7 +48,7 @@ public class TrackerManager : IDisposable
             new PCTModule(this, TrackerConfigs.PCT),
 
             new BLUModule(this, TrackerConfigs.BLU)
-        };
+        ];
 
         Condition.ConditionChange += ApplyDisplayRules;
     }
@@ -93,5 +93,5 @@ public class TrackerConfigs
     public TrackerConfig[] RDM { get; set; } = RDMDefault.Clone().Disable();
     public TrackerConfig[] PCT { get; set; } = PCTDefault.Clone().Disable();
 
-    public TrackerConfig[] BLU { get; set; } = Array.Empty<TrackerConfig>();
+    public TrackerConfig[] BLU { get; set; } = [];
 }

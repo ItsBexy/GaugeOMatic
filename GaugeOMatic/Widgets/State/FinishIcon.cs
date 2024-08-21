@@ -25,16 +25,14 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State)]
 [WidgetUiTabs(Layout | Colors)]
-public sealed unsafe class FinishIcon : StateWidget
+public sealed unsafe class FinishIcon(Tracker tracker) : StateWidget(tracker)
 {
-    public FinishIcon(Tracker tracker) : base(tracker) { }
-
     public override CustomPartsList[] PartsLists { get; } =
-    {
+    [
         new("ui/uld/JobHudDNC0.tex",
             new(168, 136, 56, 56),
             new(224, 136, 56, 56))
-    };
+    ];
 
     #region Nodes
 
@@ -69,10 +67,6 @@ public sealed unsafe class FinishIcon : StateWidget
     }
 
     private void StopRotation() => Animator -= "RotationTween";
-
-    #endregion
-
-    #region Animations
 
     #endregion
 
@@ -119,7 +113,7 @@ public sealed unsafe class FinishIcon : StateWidget
 
     public class FinishIconConfig : WidgetTypeConfig
     {
-        public List<AddRGB> Colors = new();
+        public List<AddRGB> Colors = [];
         [DefaultValue(11.5f)] public float Speed = 11.5f;
         public bool Tech;
 
@@ -176,7 +170,7 @@ public sealed unsafe class FinishIcon : StateWidget
         {
             case Layout:
                 FloatControls("Speed", ref Config.Speed, -200, 200, 1f);
-                RadioControls("Icon", ref Config.Tech, new() { false, true }, new() { "Standard", "Technical" });
+                RadioControls("Icon", ref Config.Tech, [false, true], ["Standard", "Technical"]);
                 break;
             case Colors:
                 var maxState = Tracker.CurrentData.MaxState;

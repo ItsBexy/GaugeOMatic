@@ -2,7 +2,7 @@ using GaugeOMatic.Trackers;
 
 namespace GaugeOMatic.Widgets;
 
-public abstract class StateWidget : Widget
+public abstract class StateWidget(Tracker tracker) : Widget(tracker)
 {
     public bool FirstRun = true;
     public abstract void Activate(int current);
@@ -28,6 +28,4 @@ public abstract class StateWidget : Widget
         PostUpdate();
         Animator.RunTweens();
     }
-
-    protected StateWidget(Tracker tracker) : base(tracker) { }
 }

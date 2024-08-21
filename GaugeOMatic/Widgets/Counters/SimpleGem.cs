@@ -31,11 +31,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class SimpleGem : FreeGemCounter
+public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public SimpleGem(Tracker tracker) : base(tracker) { }
-
-    public static readonly Vector4[] Coords = {
+    public static readonly Vector4[] Coords =
+    [
         new(0, 0, 64, 64), new(64, 0, 64, 64),        // 0,1   Diamond
         new(0, 64, 64, 64), new(64, 64, 64, 64),      // 2,3   Hollow Diamond
         new(0, 128, 64, 64), new(64, 128, 64, 64),    // 4,5   Chevron
@@ -54,13 +53,14 @@ public sealed unsafe class SimpleGem : FreeGemCounter
         new(128, 448, 64, 64), new(192, 448, 64, 64), // 30,31 Horse
         new(0, 512, 64, 64), new(64, 512, 64, 64),    // 32,33 Hex
         new(128, 512, 64, 64), new(192, 512, 64, 64)  // 34,35 Hollow Hex
-    };
+    ];
 
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new(AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\SimpleGems.tex")), Coords),
         new(AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\SimpleGemsSilver.tex")), Coords),
         new(AssetFromFile(Path.Combine(PluginDirPath,@"TextureAssets\SimpleGemsBlack.tex")), Coords)
-    };
+    ];
 
     public static uint GetFramePart(GemShapes shape) =>
         shape switch
@@ -90,8 +90,8 @@ public sealed unsafe class SimpleGem : FreeGemCounter
 
     #region Nodes
 
-    public List<CustomNode> Frames = new();
-    public List<CustomNode> Gems = new();
+    public List<CustomNode> Frames = [];
+    public List<CustomNode> Gems = [];
 
     public override CustomNode BuildContainer()
     {
@@ -104,9 +104,9 @@ public sealed unsafe class SimpleGem : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks = new();
-        Frames = new();
-        Gems = new();
+        Stacks = [];
+        Frames = [];
+        Gems = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -323,7 +323,7 @@ public sealed unsafe class SimpleGem : FreeGemCounter
                 break;
             case Colors:
                 ColorPickerRGB("Gem Color", ref Config.GemColor);
-                RadioControls("Frame Base", ref Config.FrameBase, new() { Brass, Silver, Black }, new() { "Brass", "Silver", "Black" });
+                RadioControls("Frame Base", ref Config.FrameBase, [Brass, Silver, Black], ["Brass", "Silver", "Black"]);
                 ColorPickerRGB("Frame Tint", ref Config.FrameColor);
                 break;
             case Behavior:

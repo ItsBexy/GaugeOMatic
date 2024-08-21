@@ -28,11 +28,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica | MultiComponent)]
 [MultiCompData("DR", "Replica Dragon Gauge", 1)]
-public sealed unsafe class DragonSpear : GaugeBarWidget
+public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public DragonSpear(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { DRG0 };
+    public override CustomPartsList[] PartsLists { get; } = [DRG0];
 
     #region Nodes
 
@@ -113,15 +111,15 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 152 }};
+    public static KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = 152 }];
 
     public override void HideBar(bool instant = false)
     {
 
 
         Animator -= "Fade";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(FrameTop,
                 new(0){ X=23, Y=44, ScaleX=1, AddRGB=-4, PartId=2 },
                 new(instant?0:40){X=51,Y=45,ScaleX=1,AddRGB=-14,PartId=2},
@@ -147,14 +145,14 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
                 Visible[0],
                 Hidden[instant?0:40])
                 {Label = "Fade"}
-        };
+        ];
     }
 
     public override void RevealBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(FrameTop,
                 new(0){X=44,Y=64,ScaleY=1,Alpha=255,PartId=13},
                 new(instant?0:50){X=12,Y=56,ScaleY=2,Alpha=0,PartId=13},
@@ -176,7 +174,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
                 Hidden[instant?0:100],
                 Visible[instant?0:200])
                 {Label = "Fade"}
-        };
+        ];
     }
 
     #endregion
@@ -197,7 +195,8 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
         var p3 = Config.PulseColor3 - new AddRGB((short)(avg - 17));
         var p4 = Config.PulseColor3 - new AddRGB((short)(avg - 32));
 
-        Animator += new Tween[]{
+        Animator +=
+        [
             new(Main,
                 colorFrame1[0],
                 colorFrame2[800],
@@ -215,7 +214,7 @@ public sealed unsafe class DragonSpear : GaugeBarWidget
                 new(450){AddRGB=p4},
                 new(900){AddRGB=p3})
                 { Ease = SinInOut, Repeat = true, Label = "BarPulse" }
-        };
+        ];
 
     }
 

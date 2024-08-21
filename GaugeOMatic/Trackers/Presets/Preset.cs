@@ -7,7 +7,7 @@ using static System.Convert;
 
 namespace GaugeOMatic.Trackers.Presets;
 
-public struct Preset
+public struct Preset : IEquatable<Preset>
 {
     public string Name;
     public TrackerConfig[] Trackers;
@@ -20,7 +20,7 @@ public struct Preset
         if (importStr == null)
         {
             Name = "New Preset";
-            Trackers = Array.Empty<TrackerConfig>();
+            Trackers = [];
         }
         else
         {
@@ -35,7 +35,7 @@ public struct Preset
             {
                 Log.Error($"Error deserializing Preset!\n{ex}");
                 Name = "New Preset";
-                Trackers = Array.Empty<TrackerConfig>();
+                Trackers = [];
             }
         }
     }
@@ -87,4 +87,14 @@ public struct Preset
         foreach (var t in Trackers) t.Enabled = false;
         return this;
     }
+
+    public readonly bool Equals(Preset other) => ExportStr() == other.ExportStr();
+
+    public override readonly bool Equals(object? obj) => obj is Preset other && Equals(other);
+
+    public override readonly int GetHashCode() => 0;
+
+    public static bool operator ==(Preset left, Preset right) => left.Equals(right);
+
+    public static bool operator !=(Preset left, Preset right) => !left.Equals(right);
 }

@@ -42,7 +42,7 @@ public unsafe class Tween
         Target = target;
         IsStale = false;
 
-        KeyFrames = new(keyFrames.OrderBy(static k => k.Time));
+        KeyFrames = [..keyFrames.OrderBy(static k => k.Time)];
         Length = 0;
         foreach (var k in KeyFrames) Length = Math.Max(Length, k.Time);
     }

@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -28,11 +29,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | HasAddonRestrictions | HasClippingMask)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
-public sealed unsafe class EspritBar : GaugeBarWidget
+public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public EspritBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { DNC1, CircleMask};
+    public override CustomPartsList[] PartsLists { get; } = [DNC1, CircleMask];
 
     #region Nodes
 
@@ -81,18 +80,6 @@ public sealed unsafe class EspritBar : GaugeBarWidget
 
     private CustomNode BuildFillNodes()
     {
-        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetPos(1,0)
-                                                        .SetOrigin(83, 82)
-                                                        .SetRotation(-151, true)
-                                                        .DefineTimeline(BarTimeline);
-
-        CustomNode MaskNode() => ClippingMaskFromPart(1,0).SetSize(176,176).SetPos(-4,-88).SetOrigin(88,176).SetScale(2,1);
-
-        static CustomNode FillContainer(CustomNode fill,CustomNode mask) =>
-            new CustomNode(CreateResNode(), fill, mask)
-                .SetSize(168, 70)
-                .SetOrigin(84, 70);
-
         Drain = FillNode();
         Gain = FillNode();
         Main = FillNode();
@@ -106,13 +93,26 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         GainContainer = FillContainer(Gain,GainMask);
 
         return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0, 1).SetSize(168, 70).SetOrigin(0,-1);
+
+        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetPos(1,0)
+                                                        .SetOrigin(83, 82)
+                                                        .SetRotation(-151, true)
+                                                        .DefineTimeline(BarTimeline);
+
+        CustomNode MaskNode() => ClippingMaskFromPart(1,0).SetSize(176,176).SetPos(-4,-88).SetOrigin(88,176).SetScale(2,1);
+
+        static CustomNode FillContainer(CustomNode fill,CustomNode mask) =>
+            new CustomNode(CreateResNode(), fill, mask)
+                .SetSize(168, 70)
+                .SetOrigin(84, 70);
     }
 
     #endregion
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -2.6542183675969f + 0.01f }, new(1) { Rotation = -0.05f }};
+    public static KeyFrame[] BarTimeline => [new(0) { Rotation = -2.6542183675969f + 0.01f }, new(1) { Rotation = -0.05f }
+    ];
 
     protected override void StartMilestoneAnim()
     {
@@ -140,8 +140,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         }
         else
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Fan,
                     new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
                     new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
@@ -150,7 +150,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
                     Hidden[0],
                     Visible[180])
                     { Ease = SinInOut, Label = "Show" }
-            };
+            ];
 
         }
     }
@@ -165,8 +165,8 @@ public sealed unsafe class EspritBar : GaugeBarWidget
         }
         else
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Fan,
                     new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
                     new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
@@ -175,13 +175,9 @@ public sealed unsafe class EspritBar : GaugeBarWidget
                     Visible[0],
                     Hidden[120])
                     { Ease = SinInOut, Label = "Hide" }
-            };
+            ];
         }
     }
-
-    #endregion
-
-    #region UpdateFuncs
 
     #endregion
 
@@ -293,7 +289,7 @@ public sealed unsafe class EspritBar : GaugeBarWidget
             case Layout:
                 ToggleControls("Fan Plate", ref Config.ShowPlate);
                 AngleControls("Angle", ref Config.Angle);
-                RadioIcons("Direction", ref Config.Clockwise, new() { true, false }, new() { RedoAlt, UndoAlt });
+                RadioIcons("Direction", ref Config.Clockwise, [true, false], [RedoAlt, UndoAlt]);
                 break;
             case Colors:
 

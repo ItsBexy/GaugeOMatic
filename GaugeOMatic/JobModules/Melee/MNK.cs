@@ -13,24 +13,20 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class MNKModule : JobModule
+public class MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudMNK0", "JobHudMNK1")
 {
     public override Job Job => MNK;
     public override Job Class => PGL;
     public override Role Role => Melee;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudMNK0", "Beast Chakra Gauge"),
         new("JobHudMNK1", "Chakra Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
-        new("Chakra Gauge", nameof(ChakraGaugeTracker))
-    };
-
-    public MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudMNK0", "JobHudMNK1") { }
+    public override List<MenuOption> JobGaugeMenu { get; } = [new("Chakra Gauge", nameof(ChakraGaugeTracker))];
 
     public override void Save()
     {

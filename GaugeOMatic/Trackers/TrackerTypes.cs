@@ -12,7 +12,7 @@ public abstract partial class Tracker
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public virtual string TermCount => "Count";
     public virtual string TermGauge => "Timer";
-    public virtual string[] StateNames => new[] { "Inactive", "Active" };
+    public virtual string[] StateNames => ["Inactive", "Active"];
 
     public virtual TrackerDisplayAttribute DisplayAttr => (TrackerDisplayAttribute?)GetType().GetCustomAttributes(typeof(TrackerDisplayAttribute), true).FirstOrDefault() ?? new();
 
@@ -30,7 +30,7 @@ public sealed class StatusTracker : Tracker
 
     public override string TermCount => "Stacks";
     public override string TermGauge => "Timer";
-    public override string[] StateNames { get; } = { "Inactive", "Active" };
+    public override string[] StateNames { get; } = ["Inactive", "Active"];
 
     public override TrackerData GetCurrentData(float? preview = null) => StatusRef.GetTrackerData(preview);
 }
@@ -45,7 +45,7 @@ public sealed class ActionTracker : Tracker
 
     public override string TermCount => "Charges";
     public override string TermGauge => "Timer";
-    public override string[] StateNames { get; } = { "Unavailable", "Available" };
+    public override string[] StateNames { get; } = ["Unavailable", "Available"];
 
     public override TrackerData GetCurrentData(float? preview = null) => ActionRef.GetTrackerData(preview);
 }
@@ -57,7 +57,7 @@ public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged
     public override string TermCount => "Count";
     public override string TermGauge => "Gauge";
 
-    public override string[] StateNames { get; } = { "Inactive", "Active" };
+    public override string[] StateNames { get; } = ["Inactive", "Active"];
 
     public abstract string GaugeAddonName { get; }
 
@@ -79,7 +79,7 @@ public class EmptyTracker : Tracker
 
     public override string TermCount => "Count";
     public override string TermGauge => "Timer";
-    public override string[] StateNames { get; } = { "Inactive", "Active" };
+    public override string[] StateNames { get; } = ["Inactive", "Active"];
 
     public override TrackerData GetCurrentData(float? preview = null) => new(0, 1, 0, 1, 0, 1, 0);
 }

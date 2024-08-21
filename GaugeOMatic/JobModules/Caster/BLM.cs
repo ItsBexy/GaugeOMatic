@@ -16,19 +16,18 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class BLMModule : JobModule
+public class BLMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudBLM0", "JobHudBLM1")
 {
     public override Job Job => BLM;
     public override Job Class => THM;
     public override Role Role => Caster;
 
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudBLM0", "Elemental Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
-
-    public BLMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudBLM0", "JobHudBLM1") { }
+    ];
 
     public override void Save()
     {
@@ -36,8 +35,8 @@ public class BLMModule : JobModule
         Configuration.Save();
     }
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Element Status", nameof(ElementTracker)),
         new("Astral Fire", nameof(AstralFireTracker)),
         new("Umbral Ice", nameof(UmbralIceTracker)),
@@ -45,7 +44,7 @@ public class BLMModule : JobModule
         new("Umbral Hearts", nameof(UmbralHeartTracker)),
         new("Paradox", nameof(ParadoxTracker)),
         new("Astral Soul Stacks", nameof(AstralSoulTracker))
-    };
+    ];
 
     public override void TweakUI()
     {

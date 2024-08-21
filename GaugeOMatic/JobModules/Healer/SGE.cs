@@ -12,26 +12,25 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class SGEModule : JobModule
+public class SGEModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudGFF0", "JobHudGFF1")
 {
     public override Job Job => SGE;
     public override Job Class => Job.None;
     public override Role Role => Healer;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudGFF0", "Eukrasia"),
         new("JobHudGFF1", "Addersgall Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu => new()
-    {
+    public override List<MenuOption> JobGaugeMenu =>
+    [
         new("Eukrasia", nameof(EukrasiaTracker)),
         new("Addersgall Gauge", nameof(AddersgallTracker)),
         new("Addersting Counter", nameof(AdderstingTracker))
-    };
-
-    public SGEModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudGFF0", "JobHudGFF1") { }
+    ];
 
     public override void Save()
     {

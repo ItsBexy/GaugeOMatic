@@ -1,5 +1,4 @@
 using CustomNodes;
-using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -22,11 +21,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | Replica)]
 [WidgetUiTabs(Layout | Colors)]
-public sealed unsafe class BeastGem : StateWidget
+public sealed unsafe class BeastGem(Tracker tracker) : StateWidget(tracker)
 {
-    public override CustomPartsList[] PartsLists { get; } = { WAR0 };
-
-    public BeastGem(Tracker tracker) : base(tracker) { }
+    public override CustomPartsList[] PartsLists { get; } = [WAR0];
 
     #region Nodes
 
@@ -45,10 +42,6 @@ public sealed unsafe class BeastGem : StateWidget
 
     #endregion
 
-    #region Animations
-
-    #endregion
-
     #region UpdateFuncs
 
     public override void OnFirstRun(int current)
@@ -59,8 +52,8 @@ public sealed unsafe class BeastGem : StateWidget
     public override void Activate(int current)
     {
         var color = Config.GetColor(current) + new AddRGB(21, 103, 103);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, AddRGB = color, MultRGB = new ColorRGB(100) },
                 new(100) { Alpha = 201, AddRGB = color, MultRGB = new ColorRGB(100) },
@@ -70,12 +63,12 @@ public sealed unsafe class BeastGem : StateWidget
                 new(0) { Alpha = 0 },
                 new(150) { Alpha = 255 })
                 { Ease = SinInOut }
-        };
+        ];
     }
 
     public override void Deactivate(int previous) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, MultRGB = new ColorRGB(100) },
                 new(100) { Alpha = 241, MultRGB = new ColorRGB(50) },
@@ -85,13 +78,13 @@ public sealed unsafe class BeastGem : StateWidget
                 new(0) { Alpha = 255 },
                 new(150) { Alpha = 0 })
                 { Ease = SinInOut }
-        };
+        ];
 
     public override void StateChange(int current, int previous)
     {
         var color = Config.GetColor(current) + new AddRGB(21, 103, 103);
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, AddRGB = color, MultRGB = new ColorRGB(100) },
                 new(100) { Alpha = 201, AddRGB = color, MultRGB = new ColorRGB(100) },
@@ -101,7 +94,7 @@ public sealed unsafe class BeastGem : StateWidget
                 new(0, Gem),
                 new(200) { AddRGB = color })
                 { Ease = SinInOut }
-        };
+        ];
     }
 
     #endregion
@@ -110,7 +103,7 @@ public sealed unsafe class BeastGem : StateWidget
 
     public class BeastGemConfig : WidgetTypeConfig
     {
-        public List<AddRGB> Colors = new();
+        public List<AddRGB> Colors = [];
         public ColorRGB BaseColor = new(100, 100, 100);
 
         public BeastGemConfig(WidgetConfig widgetConfig) : base(widgetConfig.BeastGemCfg)

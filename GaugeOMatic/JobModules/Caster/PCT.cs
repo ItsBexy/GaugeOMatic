@@ -13,26 +13,26 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class PCTModule : JobModule
+public class PCTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudRPM0", "JobHudRPM1")
 {
     public override Job Job => PCT;
     public override Job Class => Job.None;
     public override Role Role => Caster;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudRPM0", "Canvases"),
         new("JobHudRPM1", "Palette Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new() {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Creature Motif Deadline", nameof(CreatureMotifDeadline)),
         new("Weapon Motif Deadline", nameof(WeaponMotifDeadline)),
         new("Landscape Motif Deadline", nameof(LandscapeMotifDeadline)),
         new("Palette Gauge", nameof(PaletteGaugeTracker))
-    };
-
-    public PCTModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudRPM0", "JobHudRPM1") { }
+    ];
 
     public override void Save()
     {

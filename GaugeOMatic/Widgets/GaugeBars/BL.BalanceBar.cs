@@ -37,7 +37,8 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         });
     }
 
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudRDM0.tex",
             new(0, 0, 116, 208),    // 0  Plate
             new(186, 3, 26, 124),   // 1  WhiteBar
@@ -61,7 +62,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
             new(207, 321, 39, 59),  // 19 Freckles
             new(150, 0, 34, 144)    // 20 BarOverlay2
         )
-    };
+    ];
 
     #region Nodes
 
@@ -141,7 +142,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Height = 0 }, new(1) { Height = 124 }};
+    public static KeyFrame[] BarTimeline => [new(0) { Height = 0 }, new(1) { Height = 124 }];
 
     #endregion
 
@@ -170,8 +171,8 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
     {
         if (Config.Side == 0)
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Petal1,
                     new(0) { X = 65, Y = 70, Scale = 0.5f, Rotation = 0.6981317F, Alpha = 255 },
                     new(300) { X = 50, Y = 70, Scale = 1.5f, Rotation = 2.443461F, Alpha = 255 },
@@ -184,12 +185,12 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                     new(0) { X = 45, Y = 70, Scale = 0.5f, Rotation = 0.3490658F, Alpha = 180 },
                     new(125) { X = 30, Y = 80, Scale = 1, Rotation = 0.3490658F, Alpha = 150 },
                     new(460) { X = 15, Y = 90, Scale = 1.5f, Rotation = -0.3490658F, Alpha = 0 })
-            };
+            ];
         }
         else
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Petal1,
                     new(0) { X = 70, Y = 70, Scale = 0.4f, Rotation = -2.544358F, Alpha = 180 },
                     new(160) { X = 80, Y = 96, Scale = 1.4f, Rotation = -1.3918093F, Alpha = 150 },
@@ -202,7 +203,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                     new(0) { X = 70, Y = 60, Scale = 0.2f, Rotation = -1.3916008F, Alpha = 255 },
                     new(210) { X = 80, Y = 80, Scale = 1.5f, Rotation = -0.8393953F, Alpha = 128 },
                     new(470) { X = 90, Y = 84, Scale = 1.2f, Rotation = 0.34906584F, Alpha = 0 })
-            };
+            ];
         }
     }
 
@@ -306,10 +307,10 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         switch (UiTab)
         {
             case Layout:
-                RadioControls("Side", ref Config.Side, new() { 0u, 1u }, new() { "Left", "Right" });
+                RadioControls("Side", ref Config.Side, [0u, 1u], ["Left", "Right"]);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 0u, 1u }, new() { "Light", "Dark" });
+                RadioControls("Base Color", ref Config.BaseColor, [0u, 1u], ["Light", "Dark"]);
                 ColorPickerRGBA("Main Bar", ref Config.MainColor);
                 ColorPickerRGBA("Gain", ref Config.GainColor);
                 ColorPickerRGBA("Drain", ref Config.DrainColor);
@@ -320,7 +321,7 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
                 SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
                 ToggleControls("Invert Fill", ref Config.Invert);
                 var petalEffect = new List<bool> { Config.PetalInc, Config.PetalDec };
-                if (ToggleControls("Petal Effect", ref petalEffect, new() { "On Increase", "On Decrease" }))
+                if (ToggleControls("Petal Effect", ref petalEffect, ["On Increase", "On Decrease"]))
                 {
                     Config.PetalInc = petalEffect[0];
                     Config.PetalDec = petalEffect[1];

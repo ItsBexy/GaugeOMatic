@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica | MultiComponent)]
 [MultiCompData("FA", "Faerie Gauge Replica", 2)]
-public sealed unsafe class FaerieLess : GaugeBarWidget
+public sealed unsafe class FaerieLess(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public FaerieLess(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { SCH1 };
+    public override CustomPartsList[] PartsLists { get; } = [SCH1];
 
     #region Nodes
 
@@ -50,11 +48,7 @@ public sealed unsafe class FaerieLess : GaugeBarWidget
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = 174 }};
-
-    #endregion
-
-    #region UpdateFuncs
+    public static KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = 174 }];
 
     #endregion
 

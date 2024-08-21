@@ -34,7 +34,7 @@ public class NumTextNode : CustomNode
 
         Node = (AtkResNode*)CreateTextNode(" ", 18, 20);
         SetText(" ");
-        Children = new[] { BgNode };
+        Children = [BgNode];
         RemoveFlags(SetVisByAlpha);
     }
 
@@ -55,8 +55,6 @@ public class NumTextNode : CustomNode
 
     public void UpdateValue(float current, float max)
     {
-        static string PrecisionString(int p) => p <= 0 ? "0" : "0.".PadRight(p + 2, '0');
-
         var text = Props.ShowZero ? PrecisionString(0) : " ";
         if (Props.Enabled && current != 0)
         {
@@ -68,6 +66,9 @@ public class NumTextNode : CustomNode
 
         SetText(text);
         UpdateBg(text);
+        return;
+
+        static string PrecisionString(int p) => p <= 0 ? "0" : "0.".PadRight(p + 2, '0');
     }
 
     public unsafe void UpdateBg(string text)
@@ -109,10 +110,11 @@ public class NumTextNode : CustomNode
 
 public struct NumTextProps
 {
-    internal static List<AlignmentType> AlignList = new() { Left, Center, Right };
-    internal static List<FontAwesomeIcon> AlignIcons = new() { FontAwesomeIcon.AlignLeft, FontAwesomeIcon.AlignCenter, FontAwesomeIcon.AlignRight };
-    internal static List<FontType> FontList = new() { Axis, MiedingerMed, Miedinger, TrumpGothic, Jupiter };
-    internal static List<string> FontNames = new() { "Axis", "Miedinger Med", "Miedinger", "Trump Gothic", "Jupiter" };
+    internal static List<AlignmentType> AlignList = [Left, Center, Right];
+    internal static List<FontAwesomeIcon> AlignIcons =
+        [FontAwesomeIcon.AlignLeft, FontAwesomeIcon.AlignCenter, FontAwesomeIcon.AlignRight];
+    internal static List<FontType> FontList = [Axis, MiedingerMed, Miedinger, TrumpGothic, Jupiter];
+    internal static List<string> FontNames = ["Axis", "Miedinger Med", "Miedinger", "Trump Gothic", "Jupiter"];
 
     [JsonProperty(DefaultValueHandling = Include)] public bool Enabled;
     [JsonProperty(DefaultValueHandling = Include)] public Vector2 Position;
@@ -176,7 +178,7 @@ public struct NumTextProps
             RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons);
             IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1);
 
-            RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, true);
+            RadioControls("Precision ", ref numTextProps.Precision, [0, 1, 2], ["0", "1", "2"], true);
             ToggleControls("Invert Value ", ref numTextProps.Invert);
             ToggleControls("Show Zero ", ref numTextProps.ShowZero);
             if (separatorAfter) ImGuiHelpy.TableSeparator(2);

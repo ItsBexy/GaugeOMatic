@@ -27,22 +27,20 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("DR", "Replica Dragon Gauge", 1)]
-public sealed unsafe class DragonScales : CounterWidget
+public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker)
 {
-    public DragonScales(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { DRG0 };
+    public override CustomPartsList[] PartsLists { get; } = [DRG0];
 
     #region Nodes
 
     public CustomNode Frame;
     public CustomNode StackContainer;
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> Scales = new();
-    public List<CustomNode> Glows = new();
-    public List<CustomNode> Glows2 = new();
-    public List<CustomNode> Glows3 = new();
-    public List<CustomNode> Pierces = new();
+    public List<CustomNode> Stacks = [];
+    public List<CustomNode> Scales = [];
+    public List<CustomNode> Glows = [];
+    public List<CustomNode> Glows2 = [];
+    public List<CustomNode> Glows3 = [];
+    public List<CustomNode> Pierces = [];
 
     public override Bounds GetBounds() => WidgetContainer;
 
@@ -74,12 +72,12 @@ public sealed unsafe class DragonScales : CounterWidget
 
     public CustomNode BuildStacks(int count)
     {
-        Stacks = new();
-        Scales = new();
-        Glows = new();
-        Glows2 = new();
-        Glows3 = new();
-        Pierces = new();
+        Stacks = [];
+        Scales = [];
+        Glows = [];
+        Glows2 = [];
+        Glows3 = [];
+        Pierces = [];
 
         var x = 8;
         for (var i = 0; i < count; i++)
@@ -98,8 +96,8 @@ public sealed unsafe class DragonScales : CounterWidget
                                                .SetImageFlag(32)
                                                .SetAlpha(0));
 
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Glows2[i],
                     new(0) { Alpha = 0 },
                     new(675) { Alpha = 34 },
@@ -110,7 +108,7 @@ public sealed unsafe class DragonScales : CounterWidget
                     new(250) { Alpha = 100 },
                     new(800) { Alpha = 0 })
                     { Label = $"Pulse{i}", Ease = SinInOut, Repeat=true }
-            };
+            ];
 
             x += i == 0 ? 28 : 24;
 
@@ -143,15 +141,15 @@ public sealed unsafe class DragonScales : CounterWidget
         var glowColor2 = Config.ScaleColor.Transform(-100,50);
         var glowColor1 = Config.ScaleColor.Transform(-100,40);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glows[i],
                 new(0) { X = glowX + 48, ScaleX = 1, ScaleY = 0, Alpha = 255, AddRGB = glowColor1, Y = 0 },
                 new(100) { X = glowX, Scale = 1, Alpha = 128, AddRGB = glowColor2, Y = 0 },
                 new(225) { X = glowX, Scale = 2, Alpha = 0, AddRGB = glowColor2, Y = 0 },
                 new(275) { X = glowX, Scale = 1, AddRGB = glowColor2, Y = 0 })
                 {Label = $"Appear{i}", Complete = () => Glows2[i].SetVis(true)}
-        };
+        ];
     }
 
     public override void HideStack(int i)
@@ -161,8 +159,8 @@ public sealed unsafe class DragonScales : CounterWidget
         var glowColor1 = Config.ScaleColor.Transform(-140, 200);
         var glowColor2 = Config.ScaleColor.Transform(-200, 255);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Scales[i],
                 new(0) { Alpha = 255 },
                 new(300) { Alpha = 255 },
@@ -179,7 +177,7 @@ public sealed unsafe class DragonScales : CounterWidget
                 new(180) { Y = -10, ScaleX = 1.4f, ScaleY = 1, Alpha = 0 },
                 new(285) { Y = -25, ScaleX = 1.25f, ScaleY = 1, Alpha = 152 },
                 new(530) { Y = -60, ScaleX = 0.6f, ScaleY = 0.8f, Alpha = 0 })
-        };
+        ];
 
         Glows2[i].SetVis(false);
         Glows3[i].SetVis(false);
@@ -310,7 +308,7 @@ public sealed unsafe class DragonScales : CounterWidget
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) FrameAppear();
                 }
 
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

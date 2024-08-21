@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -12,7 +13,7 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleBar;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -28,11 +29,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A bar in the style of the Simple job gauges.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar)]
-public sealed unsafe class SimpleBar : GaugeBarWidget
+public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public SimpleBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/Parameter_Gauge.tex",
              new(0, 0, 160, 20),  // 0 frame
              new(0, 20, 160, 20), // 1 glow
@@ -41,7 +41,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
              new(0, 80, 160, 20), // 4 orange bar
              new(0, 100, 160, 20) // 5 brown bar
         )
-    };
+    ];
 
     #region Nodes
 
@@ -74,7 +74,7 @@ public sealed unsafe class SimpleBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 13 }, new(1) { Width = Config.Width }};
+    public KeyFrame[] BarTimeline => [new(0) { Width = 13 }, new(1) { Width = Config.Width }];
 
     public override void HideBar(bool instant = false)
     {

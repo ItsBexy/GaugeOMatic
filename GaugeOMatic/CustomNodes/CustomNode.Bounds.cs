@@ -29,7 +29,7 @@ public unsafe partial class CustomNode
     {
         public bool IsConvex { get; set; } = false;
 
-        public List<Vector2> Points { get; set; } = new();
+        public List<Vector2> Points { get; set; } = [];
 
         public readonly void Draw(uint col = 0xffffffff, int thickness = 1)
         {
@@ -60,13 +60,13 @@ public unsafe partial class CustomNode
         {
             if (node.Node == null) return;
 
-            Points = new()
-            {
+            Points =
+            [
                 new(0),
                 node.Size with { Y = 0 },
                 node.Size,
                 node.Size with { X = 0 }
-            };
+            ];
 
             var transformNode = node.Node;
             while (transformNode != null)
@@ -148,8 +148,6 @@ public unsafe partial class CustomNode
 
                 points.Sort(static (a, b) => a.X.Equals(b.X) ? a.Y.CompareTo(b.Y) : a.X.CompareTo(b.X));
 
-                static float Cross(Vector2 o, Vector2 a, Vector2 b) => ((a.X - o.X) * (b.Y - o.Y)) - ((a.Y - o.Y) * (b.X - o.X));
-
                 // Build lower hull
                 for (var i = 0; i < n; ++i)
                 {
@@ -165,6 +163,8 @@ public unsafe partial class CustomNode
                 }
 
                 return new(h.Take(k - 1).ToList()) { IsConvex = true };
+
+                static float Cross(Vector2 o, Vector2 a, Vector2 b) => ((a.X - o.X) * (b.Y - o.Y)) - ((a.Y - o.Y) * (b.X - o.X));
             }
 
             #endregion

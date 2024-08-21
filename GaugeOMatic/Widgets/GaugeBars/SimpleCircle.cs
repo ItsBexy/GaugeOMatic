@@ -28,16 +28,14 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | HasAddonRestrictions)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
-public sealed unsafe class SimpleCircle : GaugeBarWidget
+public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public SimpleCircle(Tracker tracker) : base(tracker) { }
-
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/gatheringcollectable.tex", new Vector4(99, 10, 81, 160) ),
         new("ui/uld/cursorlocation.tex", new Vector4(0, 0, 128, 128)),
         BarMask
-    };
+    ];
 
     #region Nodes
 
@@ -200,12 +198,12 @@ public sealed unsafe class SimpleCircle : GaugeBarWidget
         {
             case Colors:
                 ColorPickerRGBA("Color", ref Config.Color);
-                RadioControls("Blend Mode", ref Config.Dodge, new() { false, true }, new() { "Normal", "Dodge" });
+                RadioControls("Blend Mode", ref Config.Dodge, [false, true], ["Normal", "Dodge"]);
                 break;
             case Behavior:
                 SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
                 ToggleControls("Invert Fill", ref Config.Invert);
-                RadioIcons("Direction", ref Config.Direction, new() { CW, CCW, Erode }, new() { Redo, Undo, CircleNotch });
+                RadioIcons("Direction", ref Config.Direction, [CW, CCW, Erode], [Redo, Undo, CircleNotch]);
                 break;
             case Text:
                 NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);

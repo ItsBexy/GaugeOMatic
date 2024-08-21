@@ -12,24 +12,23 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class WHMModule : JobModule
+public class WHMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudWHM0")
 {
     public override Job Job => WHM;
     public override Job Class => CNJ;
     public override Role Role => Healer;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudWHM0", "Healing Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu => new()
-    {
+    public override List<MenuOption> JobGaugeMenu =>
+    [
         new("Lilies", nameof(LilyTracker)),
         new("Blood Lily", nameof(BloodLilyTracker))
-    };
-
-    public WHMModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudWHM0") { }
+    ];
 
     public override void Save()
     {

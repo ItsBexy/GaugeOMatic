@@ -7,10 +7,10 @@ namespace GaugeOMatic.Utility;
 public class Json
 {
     private static readonly JsonConverter[] JsonConverters =
-    {
+    [
         new ColorRGBConverter(),
         new AddRGBConverter()
-    };
+    ];
 
     internal static JsonSerializerSettings JsonSettings = new()
     {

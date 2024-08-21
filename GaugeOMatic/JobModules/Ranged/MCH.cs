@@ -13,25 +13,24 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class MCHModule : JobModule
+public class MCHModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudMCH0")
 {
     public override Job Job => MCH;
     public override Job Class => Job.None;
     public override Role Role => Ranged;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudMCH0", "Heat Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
-        new ("Heat Gauge", nameof(HeatGaugeTracker)),
-        new ("Battery Gauge", nameof(BatteryGaugeTracker)),
-        new ("Automaton Timer", nameof(AutomatonTracker))
-    };
-
-    public MCHModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudMCH0") { }
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
+        new("Heat Gauge", nameof(HeatGaugeTracker)),
+        new("Battery Gauge", nameof(BatteryGaugeTracker)),
+        new("Automaton Timer", nameof(AutomatonTracker))
+    ];
 
     public override void Save()
     {

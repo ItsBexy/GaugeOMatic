@@ -49,16 +49,18 @@ public partial class StatusRef
         { 3842, new(3842, MNK, Self, Self, 15) }, // Wind's Rumination,
         { 3843, new(3843, MNK, Self, Self, 20) }, // Fire's Rumination,
 
-        { 116, new(116, DRG, Self, Self, 5) },      // Life Surge,
-        { 786, new(786, DRG, Self, Self, 20) },     // Battle Litany,
-        { 1243, new(1243, DRG, Self, Self, 15) },   // Dive Ready,
-        { 1863, new(1863, DRG, Self, Self, 30) },   // Draconian Fire,
-        { 1864, new(1864, DRG, Self, Self, 20) },   // Lance Charge,
-        { 2719, new(2719, DRG, Target, Self, 24) }, // Chaotic Spring,
-        { 2720, new(2720, DRG, Self, Self, 30) },   // Power Surge,
-        { 3844, new(3844, DRG, Self, Self, 20) },   // Nastrond Ready,
-        { 3845, new(3845, DRG, Self, Self, 30) },   // Dragon's Flight,
-        { 3846, new(3846, DRG, Self, Self, 20) },   // Starcross REady,
+        { 116, new(116, DRG, Self, Self, 5) },                            // Life Surge,
+        { 786, new(786, DRG, Self, Self, 20) },                           // Battle Litany,
+        { 1243, new(1243, DRG, Self, Self, 15) },                         // Dive Ready,
+        { 1863, new(1863, DRG, Self, Self, 30) },                         // Draconian Fire,
+        { 1864, new(1864, DRG, Self, Self, 20) },                         // Lance Charge,
+        { 2719, new(2719, DRG, Target, Self, 24, seeAlso: [118, 1312]) }, // Chaotic Spring,
+        { 118, new(2719, DRG, Target, Self, 24, seeAlso: [2719, 1312]) {HideFromDropdown = true}}, // Chaos Thrust
+        { 1312, new(2719, DRG, Target, Self, 24, seeAlso: [118, 2719]) {HideFromDropdown = true}},
+        { 2720, new(2720, DRG, Self, Self, 30) },                         // Power Surge,
+        { 3844, new(3844, DRG, Self, Self, 20) },                         // Nastrond Ready,
+        { 3845, new(3845, DRG, Self, Self, 30) },                         // Dragon's Flight,
+        { 3846, new(3846, DRG, Self, Self, 20) },                         // Starcross REady,
 
         { 488, new(488, NIN, Self, Self, 19) },                              // Shade Shift,
         { 496, new(496, NIN, Self, Self, 6) },                               // Mudra,
@@ -73,12 +75,12 @@ public partial class StatusRef
         { 2690, new(2690, NIN, Self, Self, 30) },                            // Raiju Ready,
         { 2723, new(2723, NIN, Self, Self, 45) },                            // Phantom Kamaitachi Ready,
         { 3848, new(3848, NIN, Self, Self, 20) },                            // Shadow Walker,
-        { 638, new(638, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 20, seeAlso: new() { 3849 }) },   // Mug,
-        { 3849, new(3849, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 20, seeAlso: new() { 638 }) },  // Dokumori,
+        { 638, new(638, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 20, seeAlso: [3849]) },   // Mug,
+        { 3849, new(3849, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 20, seeAlso: [638]) },  // Dokumori,
         { 3850, new(3850, NIN, Self, Self, 30) },                            // Higi,
         { 3851, new(3851, NIN, Self, Self, 30) },                            // Tenri Jindo Ready,
-        { 3254, new(3254, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 15, seeAlso: new() { 3906 }) }, // Trick Attack,
-        { 3906, new(3906, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 15, seeAlso: new() { 3254 }) }, // Kunai's Bane,
+        { 3254, new(3254, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 15, seeAlso: [3906]) }, // Trick Attack,
+        { 3906, new(3906, job: NIN, appliedTo: Target, appliedBy: Self, maxtime: 15, seeAlso: [3254]) }, // Kunai's Bane,
 
         { 1228, new(1228, SAM, Target, Self, 60) },                                                                // Higanbana,
         { 1231, new(1231, SAM, Self, Self, 15) },                                                                  // Meditate,
@@ -87,12 +89,12 @@ public partial class StatusRef
         { 1298, new(1298, SAM, Self, Self, 40) },                                                                  // Fugetsu,
         { 1299, new(1299, SAM, Self, Self, 40) },                                                                  // Fuka,
         { 2959, new(2959, SAM, Self, Self, 30) },                                                                  // Ogi Namikiri Ready,
-        { 3852, new(3852, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 4216, 4217, 4218 }) { HideFromDropdown = true } }, // Tsubame-gaeshi Ready,
-        { 4216, new(4216, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 3852, 4217, 4218 }) { HideFromDropdown = true } }, // 
-        { 4217, new(4217, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 3852, 4216, 4218 }) { HideFromDropdown = true } }, // 
-        { 4218, new(4218, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 3852, 4216, 4217 }) },                             // Tsubame-gaeshi,
-        { 3853, new(3853, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 4, seeAlso: new() { 1232 }) },                                          // Tengetsu,
-        { 1232, new(1232, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 4, seeAlso: new() {3853}) },                                            // Third Eye,
+        { 3852, new(3852, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [4216, 4217, 4218]) { HideFromDropdown = true } }, // Tsubame-gaeshi Ready,
+        { 4216, new(4216, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [3852, 4217, 4218]) { HideFromDropdown = true } }, // 
+        { 4217, new(4217, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [3852, 4216, 4218]) { HideFromDropdown = true } }, // 
+        { 4218, new(4218, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [3852, 4216, 4217]) },                             // Tsubame-gaeshi,
+        { 3853, new(3853, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 4, seeAlso: [1232]) },                                          // Tengetsu,
+        { 1232, new(1232, job: SAM, appliedTo: Self, appliedBy: Self, maxtime: 4, seeAlso: [3853]) },                                            // Third Eye,
         { 3854, new(3854, SAM, Self, Self, 8) },                                                                   // Tengetsu's Foresight,
         { 3855, new(3855, SAM, Self, Self, 30) },                                                                  // Zanshin Ready,
         { 3856, new(3856, SAM, Self, Self, 30) },                                                                  // Tendo,
@@ -107,14 +109,14 @@ public partial class StatusRef
         { 2593, new(2593, RPR, Self, Self, 30) },                                                                      // Enshrouded,
         { 2594, new(2594, RPR, Self, Self, 0) },                                                                       // Soulsow,
         { 2595, new(2595, RPR, Self, Self, 10) },                                                                      // Threshold,
-        { 2597, new(2597, RPR, Self, Self, 5, Role.None, new() { 2596 }) },                             // Crest of Time Borrowed,
-        { 2596, new(2596, RPR, Self, Self, 5, Role.None, new() { 2597 }) { HideFromDropdown = true } }, // Crest of Time Borrowed,
+        { 2597, new(2597, RPR, Self, Self, 5, Role.None, [2596]) },                             // Crest of Time Borrowed,
+        { 2596, new(2596, RPR, Self, Self, 5, Role.None, [2597]) { HideFromDropdown = true } }, // Crest of Time Borrowed,
         { 2598, new(2598, RPR, Self, Self, 15) },                                                                      // Crest of Time Returned,
         { 2599, new(2599, RPR, Self, Self, 20) },                                                                      // Arcane Circle,
         { 2600, new(2600, RPR, Self, Self, 5) },                                                                       // Circle of Sacrifice,
         { 2845, new(2845, RPR, Self, Self, 20) },                                                                      // Enhanced Harpe,
-        { 2972, new(2972, job: RPR, appliedTo: Self, appliedBy: Self, maxtime: 6, seeAlso: new() { 2601 }) },                                              // Bloodsown Circle,
-        { 2601, new(2601, job: RPR, appliedTo: Self, appliedBy: Self, maxtime: 6, seeAlso: new() { 2972 }) { HideFromDropdown = true }},
+        { 2972, new(2972, job: RPR, appliedTo: Self, appliedBy: Self, maxtime: 6, seeAlso: [2601]) },                                              // Bloodsown Circle,
+        { 2601, new(2601, job: RPR, appliedTo: Self, appliedBy: Self, maxtime: 6, seeAlso: [2972]) { HideFromDropdown = true }},
         { 3857, new(3857, RPR, Self, Self, 30) }, // Oblatio,
         { 3858, new(3858, RPR, Self, Self, 30) }, // Executioner,
         { 3859, new(3859, RPR, Self, Self, 30) }, // Perfectio Occulta,
@@ -148,10 +150,10 @@ public partial class StatusRef
         { 128, new(128, BRD, Self, Self, 10) },                                                     // Barrage,
         { 141, new(141, BRD, Self, Self, 20) },                                                     // Battle Voice,
         { 866, new(866, BRD, Self, Self, 30) },                                                     // The Warden's Paean,
-        { 1200, new(1200, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: new() { 124 }) },                         // Caustic Bite,
-        { 124, new(124, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: new() { 1200 }) },                          // 
-        { 1201, new(1201, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: new() { 129 }) },                         // Stormbite,
-        { 129, new(129, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: new() { 1201 }) },                          // 
+        { 1200, new(1200, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: [124]) },                         // Caustic Bite,
+        { 124, new(124, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: [1200]) },                          // 
+        { 1201, new(1201, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: [129]) },                         // Stormbite,
+        { 129, new(129, job: BRD, appliedTo: Target, appliedBy: Self, maxtime: 45, seeAlso: [1201]) },                          // 
         { 1202, new(1202, BRD, Self, Self, 15) },                                                   // Nature's Minne,
         { 1932, new(1932, BRD, Self, Self, 10) },                                                   // Army's Muse,
         { 1934, new(1934, BRD, Self, Self, 15) },                                                   // Troubadour,
@@ -159,11 +161,11 @@ public partial class StatusRef
         { 2217, new(2217, BRD, Self, Self, 5) },                                                    // Mage's Ballad,
         { 2218, new(2218, BRD, Self, Self, 5) },                                                    // Army's Paeon,
         { 2692, new(2692, BRD, Self, Self, 10) },                                                   // Blast Arrow Ready,
-        { 2964, new(2964, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: new() { 2722 }) },                          // Radiant Finale,
-        { 2722, new(2722, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: new() { 2964 }){HideFromDropdown = true} }, // 
+        { 2964, new(2964, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: [2722]) },                          // Radiant Finale,
+        { 2722, new(2722, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: [2964]){HideFromDropdown = true} }, // 
         { 3002, new(3002, BRD, Self, Self, 30) },                                                   // Shadowbite Ready,
-        { 3861, new(3861, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 122 }) },                           // Hawk's Eye,
-        { 122, new(122, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 3861 }) },                            // 
+        { 3861, new(3861, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [122]) },                           // Hawk's Eye,
+        { 122, new(122, job: BRD, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [3861]) },                            // 
         { 3862, new(3862, BRD, Self, Self, 30) },                                                   // Resonant Arrow Ready,
         { 3863, new(3863, BRD, Self, Self, 30) },                                                   // Radiant Encore Ready,
 
@@ -171,8 +173,8 @@ public partial class StatusRef
         { 860, new(860, MCH, Target, Self, 5) },                          // Dismantled,
         { 1205, new(1205, MCH, Self, Self, 10) },                         // Flamethrower,
         { 1866, new(1866, MCH, Target, Self, 15) },                       // Bioblaster,
-        { 1946, new(1946, job: MCH, appliedTo: Self, appliedBy: Self, maxtime: 10, seeAlso: new() { 861 }) }, // Wildfire,
-        { 861, new(861, job: MCH, appliedTo: Self, appliedBy: Self, maxtime: 10, seeAlso: new() { 1946 }) },  // 
+        { 1946, new(1946, job: MCH, appliedTo: Self, appliedBy: Self, maxtime: 10, seeAlso: [861]) }, // Wildfire,
+        { 861, new(861, job: MCH, appliedTo: Self, appliedBy: Self, maxtime: 10, seeAlso: [1946]) },  // 
         { 1951, new(1951, MCH, Self, Self, 15) },                         // Tactician,
         { 2688, new(2688, MCH, Self, Self, 10) },                         // Overheated,
         { 3864, new(3864, MCH, Self, Self, 30) },                         // Hypercharged,
@@ -204,8 +206,8 @@ public partial class StatusRef
 
         # region Caster
 
-        { 161, new(161, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: new() { 163 }) { HideFromDropdown = true } },   // Thunder,
-        { 163, new(163, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: new() { 161 }) },                               // 
+        { 161, new(161, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: [163]) { HideFromDropdown = true } },   // Thunder,
+        { 163, new(163, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: [161]) },                               // 
         { 165, new(165, BLM, Self, Self, 30) },                                                         // Firestarter,
         { 168, new(168, BLM, Self, Self, 20) },                                                         // Manaward,
         { 737, new(737, BLM, Self, Self, 30) },                                                         // Ley Lines,
@@ -213,8 +215,8 @@ public partial class StatusRef
         { 1210, new(1210, BLM, Target, Self, 21) },                                                     // Thunder IV,
         { 1211, new(1211, BLM, Self, Self, 15) },                                                       // Triplecast,
         { 3870, new(3870, BLM, Self, Self, 30) },                                                       // Thunderhead,
-        { 3871, new(3871, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: new() { 3872 }) },                            // High Thunder,
-        { 3872, new(3872, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: new() { 3871 }){ HideFromDropdown = true } }, // 
+        { 3871, new(3871, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: [3872]) },                            // High Thunder,
+        { 3872, new(3872, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: [3871]){ HideFromDropdown = true } }, // 
 
         { 304, new(304, SMN, Self, Self, 0) },    // Aetherflow,
         { 1868, new(1868, SMN, Self, Self, 21) }, // Everlasting Flight,
@@ -261,7 +263,7 @@ public partial class StatusRef
 
         # region Tank
 
-        { 74, new(74, job: PLD, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() {3829}) },           // Sentinel,
+        { 74, new(74, job: PLD, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [3829]) },           // Sentinel,
         { 76, new(76, PLD, Self, Self, 20) },                                  // Fight or Flight,
         { 77, new(77, PLD, Self, Self, 10) },                                  // Bulwark,
         { 79, new(79, PLD, Self, Self, 0) },                                   // Iron Will,
@@ -272,15 +274,15 @@ public partial class StatusRef
         { 1368, new(1368, GLA, Self, Self, 30) },                              // Requiescat,
         { 1902, new(1902, GLA, Self, Self, 30) },                              // Atonement Ready,
         { 2673, new(2673, GLA, Self, Self, 30) },                              // Divine Might,
-        { 2674, new(2674, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 728, 1856 }) }, // Sheltron,
-        { 728, new(728, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 2674, 1856 }) },  //
-        { 1856, new(1856, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 728, 2674 }) {HideFromDropdown = true} },
+        { 2674, new(2674, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [728, 1856]) }, // Sheltron,
+        { 728, new(728, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [2674, 1856]) },  //
+        { 1856, new(1856, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [728, 2674]) {HideFromDropdown = true} },
         { 2675, new(2675, GLA, Self, Self, 4) },                        // Knight's Resolve,
         { 2676, new(2676, GLA, Self, Self, 12) },                       // Knight's Benediction,
         { 3019, new(3019, GLA, Self, Self, 30) },                       // Confiteor Ready,
         { 3827, new(3827, GLA, Self, Self, 30) },                       // Supplication Ready,
         { 3828, new(3828, GLA, Self, Self, 30) },                       // Sepulchre Ready,
-        { 3829, new(3829, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() {74})  }, // Guardian,
+        { 3829, new(3829, job: GLA, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [74])  }, // Guardian,
         { 3830, new(3830, GLA, Self, Self, 15)  },                      // Guardian's Will,
         { 3831, new(3831, GLA, Self, Self, 30) },                       // Blade of Honor Ready,
         { 3847, new(3847, GLA, Self, Self, 30) },                       // Goring Blade Ready,
@@ -289,16 +291,16 @@ public partial class StatusRef
         { 89, new(89, WAR, Self, Self, 15) },                            // Vengeance,
         { 91, new(91, WAR, Self, Self, 0) },                             // Defiance,
         { 409, new(409, WAR, Self, Self, 10) },                          // Holmgang,
-        { 1177, new(1177, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 86 }) }, // Inner Release,
-        { 86, new(86, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 1177 }) },   // 
+        { 1177, new(1177, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [86]) }, // Inner Release,
+        { 86, new(86, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [1177]) },   // 
         { 1457, new(1457, WAR, Self, Self, 30) },                        // Shake It Off,
         { 1897, new(1897, WAR, Self, Self, 30) },                        // Nascent Chaos,
         { 2108, new(2108, WAR, Self, Self, 15) },                        // Shake It Off (Over Time),
         { 2624, new(2624, WAR, Self, Self, 30) },                        // Primal Rend Ready,
         { 2663, new(2663, WAR, Self, Self, 15) },                        // Inner Strength,
         { 2677, new(2677, WAR, Self, Self, 60)  },                       // Surging Tempest
-        { 735, new(735, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 2678 }) },  // Raw Intuition / Bloodwhetting,
-        { 2678, new(2678, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 735 }) }, // 
+        { 735, new(735, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [2678]) },  // Raw Intuition / Bloodwhetting,
+        { 2678, new(2678, job: WAR, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [735]) }, // 
         { 2679, new(2679, WAR, Self, Self, 4) },                         // Stem the Flow,
         { 2680, new(2680, WAR, Self, Self, 20) },                        // Stem the Tide,
         { 3832, new(3832, WAR, Self, Self, 15) },                        // Damnation,
@@ -316,8 +318,8 @@ public partial class StatusRef
         { 811, new(811, DRK, Self, Self, 10) },                                                        // Walking Dead,
         { 1178, new(1178, DRK, Self, Self, 7) },                                                       // Blackest Night,
         { 1894, new(1894, DRK, Self, Self, 15) },                                                      // Dark Missionary,
-        { 1972, new(1972, job: DRK, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 3836 }) },                             // Delirium,
-        { 3836, new(3836, job: DRK, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 1972 }) { HideFromDropdown = true } }, // 
+        { 1972, new(1972, job: DRK, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [3836]) },                             // Delirium,
+        { 3836, new(3836, job: DRK, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [1972]) { HideFromDropdown = true } }, // 
         { 2682, new(2682, DRK, Self, Self, 10) },                                                      // Oblation,
         { 3255, new(3255, DRK, Self, Self, 10) },                                                      // Undead Rebirth,
         { 3835, new(3835, DRK, Self, Self, 15) },                                                      // Shadowed Vigil,
@@ -327,8 +329,8 @@ public partial class StatusRef
         { 1831, new(1831, GNB, Self, Self, 20) },                          // No Mercy,
         { 1832, new(1832, GNB, Self, Self, 20) },                          // Camouflage,
         { 1833, new(1833, GNB, Self, Self, 0) },                           // Royal Guard,
-        { 1834, new(1834, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 3838 }) }, // Nebula,
-        { 3838, new(3838, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 1834 }) }, // 
+        { 1834, new(1834, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [3838]) }, // Nebula,
+        { 3838, new(3838, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [1834]) }, // 
         { 1835, new(1835, GNB, Self, Self, 18) },                          // Aurora,
         { 1836, new(1836, GNB, Self, Self, 10) },                          // Superbolide,
         { 1837, new(1837, GNB, Target, Self, 30) },                        // Sonic Break,
@@ -338,8 +340,8 @@ public partial class StatusRef
         { 1843, new(1843, GNB, Self, Self, 10) },                          // Ready to Tear,
         { 1844, new(1844, GNB, Self, Self, 10) },                          // Ready to Gouge,
         { 1898, new(1898, GNB, Self, Self, 30) },                          // Brutal Shell,
-        { 2683, new(2683, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 1840 }) },  // Heart of Corundum,
-        { 1840, new(1840, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: new() { 2683 }) },  // 
+        { 2683, new(2683, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [1840]) },  // Heart of Corundum,
+        { 1840, new(1840, job: GNB, appliedTo: Self, appliedBy: Self, maxtime: 8, seeAlso: [2683]) },  // 
         { 2684, new(2684, GNB, Self, Self, 4) },                           // Clarity of Corundum,
         { 2685, new(2685, GNB, Self, Self, 20) },                          // Catharsis of Corundum,
         { 2686, new(2686, GNB, Self, Self, 10) },                          // Ready to Blast,
@@ -358,20 +360,20 @@ public partial class StatusRef
         { 1217, new(1217, WHM, Self, Self, 12) },                                     // Thin Air,
         { 1218, new(1218, WHM, Self, Self, 15) },                                     // Divine Benison,
         { 1219, new(1219, WHM, Self, Self, 10) },                                     // Confession,
-        { 1871, new(1871, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 143, 144, 798 }) }, // Dia,
-        { 143, new(143, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 1871, 144, 798 }) },  // 
-        { 144, new(144, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 143, 1871, 798 }) },  // 
-        { 798, new(798, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 143, 144, 1871 }) },  // 
+        { 1871, new(1871, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [143, 144, 798]) }, // Dia,
+        { 143, new(143, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [1871, 144, 798]) },  // 
+        { 144, new(144, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [143, 1871, 798]) },  // 
+        { 798, new(798, job: WHM, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [143, 144, 1871]) },  // 
 
-        { 1872, new(1872, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: new() { 1873 }) },                           // Temperance,
-        { 1873, new(1873, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: new() { 1872 }) {HideFromDropdown = true} }, // Temperance,
-        { 1911, new(1911, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 24, seeAlso: new() { 1912 }) },                           // Asylum,
-        { 1912, new(1912, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 24, seeAlso: new() { 1911 }) {HideFromDropdown = true} }, // 
+        { 1872, new(1872, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: [1873]) },                           // Temperance,
+        { 1873, new(1873, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: [1872]) {HideFromDropdown = true} }, // Temperance,
+        { 1911, new(1911, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 24, seeAlso: [1912]) },                           // Asylum,
+        { 1912, new(1912, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 24, seeAlso: [1911]) {HideFromDropdown = true} }, // 
         { 2708, new(2708, WHM, Self, Self, 8) },                                                     // Aquaveil,
         { 2709, new(2709, WHM, Self, Self, 20) },                                                    // Liturgy of the Bell,
         { 3879, new(3879, WHM, Self, Self, 30) },                                                    // Sacred Sight,
-        { 150, new(150, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 3880 }) },                             // Medica III,
-        { 3880, new(3880, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 150 }) },                            // Medica III,
+        { 150, new(150, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [3880]) },                             // Medica III,
+        { 3880, new(3880, job: WHM, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [150]) },                            // Medica III,
         { 3903, new(3903, WHM, Self, Self, 10) },                                                    // Divine Caress,
         { 3881, new(3881, WHM, Self, Self, 30) },                                                    // Divine Grace,
         { 3904, new(3904, WHM, Self, Self, 15) },                                                    // Divine Aura,
@@ -384,20 +386,20 @@ public partial class StatusRef
         { 1220, new(1220, SCH, Self, Self, 45) },                                                   // Excogitation,
         { 1221, new(1221, SCH, Target, Self, 15) },                                                 // Chain Stratagem,
         { 1223, new(1223, SCH, Self, Self, 60) },                                                   // Fey Union,
-        { 1895, new(1895, job: SCH, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 189, 179 }) },                    // Biolysis,
-        { 189, new(189, job: SCH, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 1895, 179 }) },                     // 
-        { 179, new(179, job: SCH, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 189, 1895}) },                      //
+        { 1895, new(1895, job: SCH, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [189, 179]) },                    // Biolysis,
+        { 189, new(189, job: SCH, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [1895, 179]) },                     // 
+        { 179, new(179, job: SCH, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [189, 1895]) },                      //
         { 1896, new(1896, SCH, Self, Self, 15) },                                                   // Recitation,
         { 1917, new(1917, SCH, Self, Self, 30) },                                                   // Seraphic Veil,
         { 2710, new(2710, SCH, Self, Self, 10) },                                                   // Protraction,
         { 3882, new(3882, SCH, Self, Self, 30) },                                                   // Impact Imminent,
         { 3883, new(3883, SCH, Self, Self, 15) },                                                   // Baneful Impaction,
-        { 3884, new(3884, job: SCH, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: new() { 3885 }) },                          // Seraphism,
-        { 3885, new(3885, job: SCH, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: new() { 3884 }) {HideFromDropdown = true}}, // Seraphism,
+        { 3884, new(3884, job: SCH, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: [3885]) },                          // Seraphism,
+        { 3885, new(3885, job: SCH, appliedTo: Self, appliedBy: Self, maxtime: 20, seeAlso: [3884]) {HideFromDropdown = true}}, // Seraphism,
 
         { 815, new(815, AST, Self, Self, 15) },                                                    // Enhanced Benefic II,
-        { 841, new(841, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 1403 }) },                           // Lightspeed,
-        { 1403, new(1403, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 841 }){HideFromDropdown = true} }, // Lightspeed,
+        { 841, new(841, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [1403]) },                           // Lightspeed,
+        { 1403, new(1403, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [841]){HideFromDropdown = true} }, // Lightspeed,
         { 848, new(848, AST, Self, Self, 18) },                                                    // Collective Unconscious,
         { 849, new(849, AST, Self, Self, 5) },                                                     // Collective Unconscious,
         { 956, new(956, AST, Self, Self, 15) },                                                    // Wheel of Fortune,
@@ -405,9 +407,9 @@ public partial class StatusRef
         { 1248, new(1248, AST, Self, Self, 10) },                                                  // Giant Dominance,
         { 1878, new(1878, AST, Self, Self, 15) },                                                  // Divination,
         { 1879, new(1879, AST, Self, Self, 15) },                                                  // Opposition,
-        { 1881, new(1881, job: AST, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 838, 843 }) },                   // Combust,
-        { 838, new(838, job: AST, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 1881, 843 }) },                    // 
-        { 843, new(843, job: AST, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 838, 1881 }) },                    // 
+        { 1881, new(1881, job: AST, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [838, 843]) },                   // Combust,
+        { 838, new(838, job: AST, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [1881, 843]) },                    // 
+        { 843, new(843, job: AST, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [838, 1881]) },                    // 
         { 1889, new(1889, AST, Self, Self, 30) },                                                  // Intersection,
         { 1890, new(1890, AST, Self, Self, 10) },                                                  // Horoscope,
         { 1891, new(1891, AST, Self, Self, 30) },                                                  // Horoscope Helios,
@@ -425,8 +427,8 @@ public partial class StatusRef
         { 3891, new(3891, AST, Self, Self, 15) },                                                  // The Ewer,
         { 3892, new(3892, AST, Self, Self, 30) },                                                  // The Spire,
         { 3893, new(3893, AST, Self, Self, 30) },                                                  // Divining,
-        { 3894, new(3894, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 836 }) },                          // Helios Conjunction,
-        { 836, new(836, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: new() { 3894 }) },                           // 
+        { 3894, new(3894, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [836]) },                          // Helios Conjunction,
+        { 836, new(836, job: AST, appliedTo: Self, appliedBy: Self, maxtime: 30, seeAlso: [3894]) },                           // 
         { 3895, new(3895, AST, Self, Self, 30) },                                                  // Suntouched,
         { 3896, new(3896, AST, Self, Self, 15) },                                                  // Sun Sign,
 
@@ -439,13 +441,13 @@ public partial class StatusRef
         { 2611, new(2611, SGE, Self, Self, 30) },                                  // Zoe,
         { 2612, new(2612, SGE, Self, Self, 15) },                                  // Haima,
         { 2613, new(2613, SGE, Self, Self, 15) },                                  // Panhaima,
-        { 2616, new(2616, job: SGE, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 2614, 2615 }) }, // Eukrasian Dosis,
-        { 2614, new(2614, job: SGE, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 2616, 2615 }) }, // 
-        { 2615, new(2615, job: SGE, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: new() { 2614, 2616 }) }, // 
+        { 2616, new(2616, job: SGE, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [2614, 2615]) }, // Eukrasian Dosis,
+        { 2614, new(2614, job: SGE, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [2616, 2615]) }, // 
+        { 2615, new(2615, job: SGE, appliedTo: Target, appliedBy: Self, maxtime: 30, seeAlso: [2614, 2616]) }, // 
         { 2618, new(2618, SGE, Self, Self, 15) },                                  // Kerachole,
         { 2619, new(2619, SGE, Self, Self, 15) },                                  // Taurochole,
-        { 2620, new(2620, job: SGE, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 2617 }) },         // Physis,
-        { 2617, new(2617, job: SGE, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: new() { 2620 }) },         // Physis,
+        { 2620, new(2620, job: SGE, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [2617]) },         // Physis,
+        { 2617, new(2617, job: SGE, appliedTo: Self, appliedBy: Self, maxtime: 15, seeAlso: [2620]) },         // Physis,
         { 2621, new(2621, SGE, Self, Self, 10) },                                  // Autophysis,
         { 2622, new(2622, SGE, Self, Self, 10) },                                  // Krasis,
         { 2642, new(2642, SGE, Self, Self, 15) },                                  // Haimatinon,

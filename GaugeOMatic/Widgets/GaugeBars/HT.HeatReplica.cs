@@ -35,7 +35,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         SharedEvents.Add("StopHeatGlow", _ => TabBg?.SetPartId(0));
     }
 
-    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
+    public override CustomPartsList[] PartsLists { get; } = [MCH0];
 
     #region Nodes
 
@@ -98,7 +98,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
     }
 
-    public virtual KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 20 }, new(1) { Width = Config.Width }};
+    public virtual KeyFrame[] BarTimeline => [new(0) { Width = 20 }, new(1) { Width = Config.Width }];
 
     protected override void StartMilestoneAnim()
     {
@@ -272,7 +272,7 @@ public unsafe class HeatReplica : GaugeBarWidget
                 AngleControls("Angle", ref Config.Angle);
                 break;
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { 12, 11 }, new() { "Orange", "Blue" }, true);
+                RadioControls("Base Color", ref Config.BaseColor, new() { 12, 11 }, ["Orange", "Blue"], true);
 
                 if (Config.BaseColor == 12)
                 {

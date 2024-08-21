@@ -12,24 +12,27 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class SMNModule : JobModule
+public class SMNModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudSMN0", "JobHudSMN1")
 {
     public sealed override Job Job => SMN;
     public override Job Class => ACN;
     public override Role Role => Caster;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudSMN0", "Aetherflow Gauge"),
         new("JobHudSMN1", "Trance Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu => new()
-    {
-        new("Aetherflow Gauge", nameof(AetherflowSMNGaugeTracker))
-    };
-
-    public SMNModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudSMN0", "JobHudSMN1") { }
+    public override List<MenuOption> JobGaugeMenu =>
+    [
+        new("Aetherflow Gauge", nameof(AetherflowSMNGaugeTracker)),
+        new("Fire Attunement", nameof(RubyTracker)),
+        new("Earth Attunement", nameof(TopazTracker)),
+        new("Wind Attunement", nameof(EmeraldTracker)),
+        new("Summon Phase", nameof(SummonTracker))
+    ];
 
     public override void Save()
     {

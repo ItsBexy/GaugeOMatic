@@ -13,23 +13,19 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class BRDModule : JobModule
+public class BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudBRD0")
 {
     public override Job Job => BRD;
     public override Job Class => ARC;
     public override Role Role => Ranged;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudBRD0", "Song Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
-        new ("Soul Voice Gauge", nameof(SoulVoiceGaugeTracker))
-    };
-
-    public BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudBRD0") { }
+    public override List<MenuOption> JobGaugeMenu { get; } = [new("Soul Voice Gauge", nameof(SoulVoiceGaugeTracker))];
 
     public override void Save()
     {
@@ -66,6 +62,8 @@ public class BRDModule : JobModule
             gauge->GaugeSimple.SoulVoiceContainer->SetPositionFloat(soulVoicePos.X + 10, soulVoicePos.Y + 39);
         }
     }
+
+    public static float BloodletterFix() => ClientState.LocalPlayer?.Level < 84 ? 30f : 45f;
 }
 
 public partial class TweakConfigs

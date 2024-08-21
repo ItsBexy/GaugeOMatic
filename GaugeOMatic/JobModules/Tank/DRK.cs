@@ -12,26 +12,25 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class DRKModule : JobModule
+public class DRKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudDRK0", "JobHudDRK1")
 {
     public override Job Job => DRK;
     public override Job Class => Job.None;
     public override Role Role => Tank;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudDRK0", "Blood Gauge"),
         new("JobHudDRK1", "Darkside Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
         new("Blood Gauge", nameof(BloodGaugeTracker)),
         new("Darkside Gauge", nameof(DarksideGaugeTracker)),
         new("Living Shadow", nameof(LivingShadowTracker))
-    };
-
-    public DRKModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudDRK0", "JobHudDRK1") { }
+    ];
 
     public override void Save()
     {

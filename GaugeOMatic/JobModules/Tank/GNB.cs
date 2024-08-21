@@ -12,23 +12,19 @@ using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;
 
-public class GNBModule : JobModule
+public class GNBModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList)
+    : JobModule(trackerManager, trackerConfigList, "JobHudGNB0")
 {
     public override Job Job => GNB;
     public override Job Class => Job.None;
     public override Role Role => Tank;
-    public override List<AddonOption> AddonOptions => new()
-    {
+    public override List<AddonOption> AddonOptions =>
+    [
         new("JobHudGNB0", "Powder Gauge"),
         new("_ParameterWidget", "Parameter Bar")
-    };
+    ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = new()
-    {
-        new("Powder Gauge", nameof(PowderGaugeTracker))
-    };
-
-    public GNBModule(TrackerManager trackerManager, TrackerConfig[] trackerConfigList) : base(trackerManager, trackerConfigList, "JobHudGNB0") { }
+    public override List<MenuOption> JobGaugeMenu { get; } = [new("Powder Gauge", nameof(PowderGaugeTracker))];
 
     public override void Save()
     {

@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("EL", "Elemental Gauge Replica", 4)]
-public sealed unsafe class ElementalCrystals : FreeGemCounter
+public sealed unsafe class ElementalCrystals(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public ElementalCrystals(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { BLM0 };
+    public override CustomPartsList[] PartsLists { get; } = [BLM0];
 
     #region Nodes
 
@@ -48,11 +46,11 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
 
     private void BuildStacks(int count)
     {
-        Stacks = new();
-        Crystals = new();
-        Glows1 = new();
-        Glows2 = new();
-        StackContents = new();
+        Stacks = [];
+        Crystals = [];
+        Glows1 = [];
+        Glows2 = [];
+        StackContents = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -92,8 +90,8 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
     {
         Glows2[i].Hide();
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(StackContents[i],
                 Visible[0],
                 Hidden[325]),
@@ -101,7 +99,7 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
                 new(0) { Alpha = 0, ScaleX = 1.3f, ScaleY = 1.2f },
                 new(50) { Alpha = 73, ScaleX = 1.2f, ScaleY = 1.1f },
                 new(200) { Alpha = 0, ScaleX = 1, ScaleY = 1 })
-        };
+        ];
     }
 
     #endregion
@@ -185,7 +183,7 @@ public sealed unsafe class ElementalCrystals : FreeGemCounter
         switch (UiTab)
         {
             case Colors:
-                RadioControls("Base Color", ref Config.BaseColor, new() { Ice, Fire }, new() { "Ice", "Fire" }, true);
+                RadioControls("Base Color", ref Config.BaseColor, [Ice, Fire], ["Ice", "Fire"], true);
                 ColorPickerRGB("Color Modifier", ref Config.CrystalColor);
                 ColorPickerRGB("Glow Color", ref Config.GlowColor);
                 break;

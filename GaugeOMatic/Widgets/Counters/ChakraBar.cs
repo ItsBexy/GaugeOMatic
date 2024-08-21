@@ -24,11 +24,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class ChakraBar : CounterWidget
+public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
 {
-    public ChakraBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudMNK0.tex",
             new(0, 3, 62, 58),
             new(62, 3, 36, 58),
@@ -42,19 +41,19 @@ public sealed unsafe class ChakraBar : CounterWidget
             new(173, 81, 46, 46),
             new(176, 130, 64, 64),
             new(89, 199, 68, 5))
-    };
+    ];
 
     #region Nodes
 
     public CustomNode SocketPlate;
     public CustomNode StackContainer;
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> Pearls = new();
-    public List<CustomNode> Lines = new();
-    public List<CustomNode> Rings = new();
-    public List<CustomNode> Glows = new();
-    public List<CustomNode> ActionLines = new();
-    public List<CustomNode> ActionLines2 = new();
+    public List<CustomNode> Stacks = [];
+    public List<CustomNode> Pearls = [];
+    public List<CustomNode> Lines = [];
+    public List<CustomNode> Rings = [];
+    public List<CustomNode> Glows = [];
+    public List<CustomNode> ActionLines = [];
+    public List<CustomNode> ActionLines2 = [];
 
     public override Bounds GetBounds() => WidgetContainer;
 
@@ -93,13 +92,13 @@ public sealed unsafe class ChakraBar : CounterWidget
 
     private CustomNode BuildStacks(int count)
     {
-        Stacks = new();
-        Pearls = new();
-        Lines = new();
-        Rings = new();
-        Glows = new();
-        ActionLines = new();
-        ActionLines2 = new();
+        Stacks = [];
+        Pearls = [];
+        Lines = [];
+        Rings = [];
+        Glows = [];
+        ActionLines = [];
+        ActionLines2 = [];
         for (var i = 0; i < count; i++)
         {
             Pearls.Add(ImageNodeFromPart(1, 0).SetOrigin(19.2f, 19.6f)
@@ -152,8 +151,8 @@ public sealed unsafe class ChakraBar : CounterWidget
     #region Animations
 
     public override void ShowStack(int i) =>
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Pearls[i],
                 new(0) { Alpha = 0, Scale = 0.6f },
                 new(80) { Alpha = 255, Scale = 1 }),
@@ -185,10 +184,11 @@ public sealed unsafe class ChakraBar : CounterWidget
             new(ActionLines2[i],
                 new(0) { Scale = 1.6f, Alpha = 128 },
                 new(200) { Scale = 1, Alpha = 0 })
-        };
+        ];
 
     public override void HideStack(int i) =>
-        Animator += new Tween[] {
+        Animator +=
+        [
 
             new(Pearls[i],
                 new(0) { Alpha = 255, Scale = 1, AddRGB = new AddRGB(0) },
@@ -199,7 +199,7 @@ public sealed unsafe class ChakraBar : CounterWidget
                 new(0) { Alpha = 0, Scale = 0.3f, AddRGB = new(183, 83, -250), MultRGB = new(50) },
                 new(80) { Alpha = 255, Scale = 1, AddRGB = new(100, 0, -250), MultRGB = new(100) },
                 new(300) { Alpha = 0, Scale = 1.2f, AddRGB = new(200, -100, -250), MultRGB = new(50) })
-        };
+        ];
 
     private void PlateAppear() =>
         Animator += new Tween(WidgetContainer,
@@ -325,7 +325,7 @@ public sealed unsafe class ChakraBar : CounterWidget
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

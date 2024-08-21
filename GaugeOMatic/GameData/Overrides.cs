@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GaugeOMatic.JobModules;
 using static GaugeOMatic.GameData.ActionFlags;
 using static GaugeOMatic.GameData.JobData.Role;
 
@@ -374,16 +375,23 @@ internal static class Overrides
     // - if they are available no matter what (ie, the first step in a combo)
     // - if I haven't figured out an automated way to check their availability (ie, resource spenders that don't highlight)
     // - if something is screwy with them
-    public static List<uint> HiddenActions = new()
-    {
-        2261,2263,            // NIN
+    public static List<uint> HiddenActions =
+    [
+        2261, 2263,                               // NIN
         16003, 16191, 16004, 16193, 16194, 16195, // DNC
-        37018 // AST
-    };
+        37018
+    ];
 
     public static Dictionary<uint, Action<ActionRef>> ActionOverrideFuncs = new()
     {
         {3, static a => { a.Icon = 104; a.Role = All; a.SetFlag(Unassignable,false); } } // sprint
+    };
+
+    public static Dictionary<uint, Func<float>> CooldownOverrides = new()
+    {
+        {110, BRDModule.BloodletterFix},
+        {117, BRDModule.BloodletterFix},
+        {36975, BRDModule.BloodletterFix}
     };
 
     public static Dictionary<uint, string> ActionAliases = new()

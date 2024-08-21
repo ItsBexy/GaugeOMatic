@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
@@ -30,11 +31,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(GaugeBar | MultiComponent | Replica | HasAddonRestrictions | HasClippingMask)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
 [MultiCompData("EL", "Elemental Gauge Replica", 1)]
-public sealed unsafe class EnochianBar : GaugeBarWidget
+public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public EnochianBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { BLM0, CircleMask };
+    public override CustomPartsList[] PartsLists { get; } = [BLM0, CircleMask];
 
     #region Nodes
 
@@ -58,9 +57,6 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
 
     public override CustomNode BuildContainer()
     {
-        CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0,-1);
-        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetSize(176,176).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
-
         Lattice = ImageNodeFromPart(0, 8).SetAddRGB(-20).SetMultiply(50).SetImageWrap(1);
         Plate = ImageNodeFromPart(0, 9).SetPos(9, 8).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
         Groove = ImageNodeFromPart(0, 11).SetPos(6, 5).SetAddRGB(-20).SetMultiply(50).SetOrigin(0, 1);
@@ -93,13 +89,17 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         Contents = new CustomNode(CreateResNode(),Contents2).SetOrigin(7,8);
 
         return new(CreateResNode(), Contents, NumTextNode );
+
+        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetSize(176,176).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
+
+        CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0,-1);
     }
 
     #endregion
 
     #region Animations
 
-    public static KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 }};
+    public static KeyFrame[] BarTimeline => [new(0) { Rotation = -1.5707963267949f }, new(1) { Rotation = 0 }];
 
     public override void RevealBar(bool instant = false)
     {
@@ -294,7 +294,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
         {
             case Layout:
                 AngleControls("Angle", ref Config.Angle);
-                RadioIcons("Direction", ref Config.Direction, new() { 0, 1 }, new() { RedoAlt, UndoAlt });
+                RadioIcons("Direction", ref Config.Direction, [0, 1], [RedoAlt, UndoAlt]);
 
                 if (ToggleControls("Force Clock Hand To Top", ref Config.HandOnTop)) UpdateFlag |= Reset;
                 Info("Attempts to force the clock hand to the top layer, above other widgets.\n\nNOTE: Can be finicky, may not always work.");
@@ -312,7 +312,7 @@ public sealed unsafe class EnochianBar : GaugeBarWidget
                 ToggleControls("Invert Fill", ref Config.Invert);
 
                 var emptyBehavior = new List<bool> { Config.DimEmpty, Config.HideEmpty, Config.HideHand };
-                if (ToggleControls("When Empty", ref emptyBehavior, new() { "Dim Bar", "Hide Bar", "Hide Clock Hand" }))
+                if (ToggleControls("When Empty", ref emptyBehavior, ["Dim Bar", "Hide Bar", "Hide Clock Hand"]))
                 {
                     if (Config.HideEmpty != emptyBehavior[1]) HideCheck(emptyBehavior[1]);
                     if (Config.DimEmpty != emptyBehavior[0]) DimCheck(emptyBehavior[0]);

@@ -22,10 +22,8 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar)]
 [WidgetUiTabs(Text)]
-public sealed class SimpleTimer : GaugeBarWidget
+public sealed class SimpleTimer(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public SimpleTimer(Tracker tracker) : base(tracker) { }
-
     #region Nodes
 
     public override Bounds GetBounds() => new Bounds(NumTextNode, NumTextNode.BgNode).GetMaxBox() + new Vector2(7, 0);
@@ -35,10 +33,6 @@ public sealed class SimpleTimer : GaugeBarWidget
         NumTextNode = new();
         return NumTextNode;
     }
-
-    #endregion
-
-    #region Animations
 
     #endregion
 
@@ -118,7 +112,7 @@ public sealed class SimpleTimer : GaugeBarWidget
                 RadioIcons($"Alignment##{label}align", ref numTextProps.Align, AlignList, AlignIcons);
                 IntControls($"Font Size##{label}fontSize", ref numTextProps.FontSize, 1, 100, 1);
 
-                RadioControls("Precision ", ref numTextProps.Precision, new() { 0, 1, 2 }, new() { "0", "1", "2" }, true);
+                RadioControls("Precision ", ref numTextProps.Precision, [0, 1, 2], ["0", "1", "2"], true);
                 ToggleControls("Invert Value ", ref numTextProps.Invert);
                 ToggleControls("Show Zero ", ref numTextProps.ShowZero);
 

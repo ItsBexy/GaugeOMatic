@@ -22,11 +22,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
-public sealed unsafe class ReaperFlame : FreeGemCounter
+public sealed unsafe class ReaperFlame(Tracker tracker) : FreeGemCounter(tracker)
 {
-    public ReaperFlame(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudRRP1.tex",
             new(0, 130, 36, 44),
             new(36, 130, 36, 44),
@@ -37,7 +36,8 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
             new(154, 88, 32, 32),
             new(186, 88, 32, 32),
             new(154, 272, 32, 32),
-            new(154, 238, 60, 34)) }; // horizontal pulsar thing
+            new(154, 238, 60, 34))
+    ]; // horizontal pulsar thing
 
     #region Nodes
 
@@ -59,11 +59,11 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
 
         var stacks = new List<CustomNode>();
 
-        Flames = new();
-        FlameTwins = new();
-        Orbs = new();
-        Halos = new();
-        Pulsars = new();
+        Flames = [];
+        FlameTwins = [];
+        Orbs = [];
+        Halos = [];
+        Pulsars = [];
 
         for (var i = 0; i < count; i++)
         {
@@ -75,11 +75,11 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
 
             var tMod = 1 % 10 * (i % 2 == 0 ? -4 : 4);
 
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Flames[i], new(0) { PartId = 0 }, new(475 + tMod) { PartId = 5 }) { Repeat = true },
                 new(FlameTwins[i], new(0) { PartId = 0 }, new(475 + tMod) { PartId = 5 }) { Repeat = true }
-            };
+            ];
 
             stacks.Add(new CustomNode(CreateResNode(), Flames[i], Orbs[i], Halos[i], Pulsars[i], FlameTwins[i]).SetSize(32, 32));
         }
@@ -94,11 +94,11 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
     {
         Animator -= $"HideAnim{i}";
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Flames[i], new(0) { Alpha = 0, X = -2, Y = -18 }, new(200) { Alpha = 255, X = -2, Y = -18 }),
             new(Orbs[i], Hidden[0], new(20) { Alpha = 170 })
-        };
+        ];
 
         FlameTwins[i].SetAlpha(0);
     }
@@ -106,8 +106,8 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
     public override void HideStack(int i)
     {
         if (Config.SpendAnim == 1)
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(Flames[i],
                     new(0) { X = -2, Y = -18, Alpha = 255 },
                     new(500) { X = -5, Y = -38, Alpha = 0 })
@@ -116,11 +116,11 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
                     new(0) { X = -2, Y = -18, Alpha = 255 },
                     new(500) { X = 1, Y = -2, Alpha = 0 })
                     { Label = $"HideAnim{i}"}
-            };
+            ];
         else Animator += new Tween(Flames[i], Visible[0], Hidden[500]) { Label = $"HideAnim{i}" };
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Orbs[i],
                 new(0) { Alpha = 170 }, Hidden[20])
                 { Label = $"HideAnim{i}"},
@@ -132,7 +132,7 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
                 new(0) { Alpha = 0, ScaleX = 0.5f, ScaleY = 0.55f },
                 new(150) { Alpha = 255, ScaleX = 1.5f, ScaleY = 0f })
                 { Label = $"HideAnim{i}"}
-        };
+        ];
     }
 
     #endregion
@@ -238,7 +238,7 @@ public sealed unsafe class ReaperFlame : FreeGemCounter
                 ColorPickerRGB("Flash Color", ref Config.FlashColor);
                 break;
             case Behavior:
-                RadioControls("Animation", ref Config.SpendAnim, new() { 0, 1 }, new() { "Default", "Divide" });
+                RadioControls("Animation", ref Config.SpendAnim, [0, 1], ["Default", "Divide"]);
                 break;
             default:
                 break;

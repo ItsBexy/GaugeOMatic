@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | Replica | MultiComponent)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("HT", "Heat Gauge Replica", 2)]
-public sealed unsafe class HeatOverlay : StateWidget
+public sealed unsafe class HeatOverlay(Tracker tracker) : StateWidget(tracker)
 {
-    public HeatOverlay(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { MCH0 };
+    public override CustomPartsList[] PartsLists { get; } = [MCH0];
 
     #region Nodes
 
@@ -56,10 +54,6 @@ public sealed unsafe class HeatOverlay : StateWidget
 
     #endregion
 
-    #region Animations
-
-    #endregion
-
     #region UpdateFuncs
 
     public override string SharedEventGroup => "HeatGauge";
@@ -79,8 +73,8 @@ public sealed unsafe class HeatOverlay : StateWidget
         Animator -= "Pulse";
         InvokeSharedEvent("HeatGauge", "StartHeatGlow");
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Glow,
                 new(0) { Alpha = 0, ScaleY = 1 },
                 new(450) { Alpha = 101, ScaleY = 1.04f },
@@ -121,7 +115,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(860) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 },
                 new(960) { ScaleX = 1, ScaleY = 1.4f, Alpha = 0 })
                 { Repeat = true, Label = "Pulse", PerCycle = () => RandomPosition(Smoke3, 0.8f, 1f) }
-        };
+        ];
 
     }
 
@@ -130,7 +124,8 @@ public sealed unsafe class HeatOverlay : StateWidget
         InvokeSharedEvent("HeatGauge", "StopHeatGlow");
 
         Animator -= "Pulse";
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Glow,
                 new(0, Glow),
                 new(450) { Alpha = 0, ScaleY = 1.08f })
@@ -150,7 +145,7 @@ public sealed unsafe class HeatOverlay : StateWidget
                 new(0, Smoke3),
                 new(400) { ScaleY = 1.4f, Alpha = 0 })
                 { Label = "Pulse" }
-        };
+        ];
     }
 
     public override void StateChange(int current, int previous)
@@ -168,7 +163,7 @@ public sealed unsafe class HeatOverlay : StateWidget
     public class HeatOverlayConfig : WidgetTypeConfig
     {
         [DefaultValue(148)] public float Width = 148;
-        public List<AddRGB> Colors = new();
+        public List<AddRGB> Colors = [];
         public float Angle;
 
         public HeatOverlayConfig(WidgetConfig widgetConfig) : base(widgetConfig.HeatOverlayCfg)

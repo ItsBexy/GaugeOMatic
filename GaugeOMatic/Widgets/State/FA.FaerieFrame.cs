@@ -25,11 +25,9 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(MultiComponent | State | Replica)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("FA", "Faerie Gauge Replica", 1)]
-public sealed unsafe class FaerieFrame : StateWidget
+public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
 {
-    public FaerieFrame(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { SCH1 };
+    public override CustomPartsList[] PartsLists { get; } = [SCH1];
 
     #region Nodes
 
@@ -104,10 +102,6 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     #endregion
 
-    #region Animations
-
-    #endregion
-
     #region UpdateFuncs
 
     public override void Update()
@@ -156,14 +150,14 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     private void FaerieToBlank()
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Wings,
                 new(0) { Alpha = 0, AddRGB = 0, MultRGB = new(100, 100, 100) },
                 new(125) { Alpha = 255, AddRGB = GetAdjustedColor(), MultRGB = new(80, 80, 100) }),
             new(FaerieContainer, new(0) { Alpha = 255 }, new(170) { Alpha = 0 })
 
-        };
+        ];
         Seraph.SetAlpha(0);
         FeatherWing.SetAlpha(0);
         Frame.SetMultiply(80, 80, 100);
@@ -171,11 +165,11 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     private void SeraphToBlank()
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(FeatherWing, new(0) { Scale = 1, Alpha = 255 }, new(225) { ScaleX = 1, ScaleY = 1.2f, Alpha = 0 }),
             new(Seraph, new(0) { Alpha = 255 }, new(225) { Alpha = 0 })
-        };
+        ];
         FaerieContainer.SetAlpha(0);
         Wings.SetAddRGB(GetAdjustedColor()).SetAlpha(255);
         Frame.SetMultiply(80, 80, 100);
@@ -184,11 +178,11 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     private void BlankToFaerie()
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Faerie, new(0) { Alpha = 255 }, new(125) { Alpha = 0 }),
             new(FancyWingBG3, new(0) { Alpha = 255 }, new(125) { Alpha = 0 })
-        };
+        ];
         Wings.SetAlpha(0);
         Frame.SetMultiply(100);
         FaerieContainer.SetAddRGB(GetAdjustedColor())
@@ -198,13 +192,13 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     private void SeraphToFaerie()
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(FeatherWing, new(0) { Scale = 1, Alpha = 255 }, new(225) { ScaleX = 1, ScaleY = 1.2f, Alpha = 0 }),
             new(Seraph, new(0) { Alpha = 255 }, new(225) { Alpha = 0 }),
             new(FaerieContainer, new(0) { Alpha = 0, Scale = 1, AddRGB = 0 },
                 new(100) { Alpha = 255, Scale = 1, AddRGB = GetAdjustedColor() })
-        };
+        ];
         Seraph.SetAlpha(0);
         FeatherWing.SetAlpha(0);
         Frame.SetMultiply(100);
@@ -213,12 +207,12 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     private void FaerieToSeraph()
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Seraph, new(0) { Alpha = 0 }, new(170) { Alpha = 255 }),
             new(FeatherWing, new(0) { Alpha = 0, Scale = 1 }, new(170) { Alpha = 255, Scale = 1 }),
             new(FaerieContainer, new(0) { Alpha = 255, Scale = 1, AddRGB = 0 }, new(265) { Alpha = 0, Scale = 1.2f, AddRGB = new(0, 20, 20) })
-        };
+        ];
         Wings.SetAlpha(0);
         Frame.SetMultiply(100);
         SeraphContainer.SetAddRGB(GetSeraphColor());
@@ -226,11 +220,11 @@ public sealed unsafe class FaerieFrame : StateWidget
 
     private void BlankToSeraph()
     {
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Seraph, new(0) { Alpha = 0 }, new(170) { Alpha = 255 }),
             new(FeatherWing, new(0) { Alpha = 0, Scale = 1 }, new(170) { Alpha = 255, Scale = 1 })
-        };
+        ];
         FaerieContainer.SetAlpha(0);
         Wings.SetAlpha(0);
         Frame.SetMultiply(100);
@@ -263,9 +257,9 @@ public sealed unsafe class FaerieFrame : StateWidget
     {
         public enum FrameState { Blank, Faerie, Seraph }
 
-        public List<FrameState> FrameStates = new();
-        public List<AddRGB> FrameColors = new();
-        public List<AddRGB> SeraphColors = new();
+        public List<FrameState> FrameStates = [];
+        public List<AddRGB> FrameColors = [];
+        public List<AddRGB> SeraphColors = [];
 
         public FaerieFrameConfig(WidgetConfig widgetConfig) : base(widgetConfig.FaerieFrameCfg)
         {
@@ -333,7 +327,8 @@ public sealed unsafe class FaerieFrame : StateWidget
                     var frameState = Config.FrameStates[i];
                     var frameColor = Config.FrameColors[i];
                     var seraphColor = Config.SeraphColors[i];
-                    if (RadioControls($"Appearance##appearance{i}", ref frameState, new() { Blank, FrameState.Faerie, FrameState.Seraph }, new() { "Blank", "Faerie", "Seraph" })) Config.FrameStates[i] = frameState;
+                    if (RadioControls($"Appearance##appearance{i}", ref frameState,
+                                      [Blank, FrameState.Faerie, FrameState.Seraph], ["Blank", "Faerie", "Seraph"])) Config.FrameStates[i] = frameState;
                     if (ColorPickerRGB($"Frame Tint##framecolor{i}", ref frameColor)) Config.FrameColors[i] = frameColor;
 
                     if (frameState == FrameState.Seraph)

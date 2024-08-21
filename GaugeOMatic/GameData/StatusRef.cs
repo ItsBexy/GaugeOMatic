@@ -162,7 +162,7 @@ public partial class StatusRef : ItemRef
         if (preview != null)
         {
             state = preview > 0 ? 1 : 0;
-            count = (int)(preview * maxCount);
+            count = (int)(preview.Value * maxCount)!;
             gaugeValue = preview.Value * maxGauge;
         }
         else if (TryGetStatus(out var status, AppliedTo, AppliedBy))

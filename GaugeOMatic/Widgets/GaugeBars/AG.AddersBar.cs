@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
@@ -17,12 +18,13 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+// ReSharper disable SuggestBaseTypeForParameter
 
 #pragma warning disable CS8618
 
@@ -33,11 +35,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | Replica | MultiComponent)]
 [MultiCompData("AG", "Addersgall Gauge Replica", 2)]
-public sealed unsafe class AddersBar : GaugeBarWidget
+public sealed unsafe class AddersBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public AddersBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new ("ui/uld/JobHudGFF1.tex",
              new(0, 24, 200, 32), // frame
              new(0, 0, 200, 24),
@@ -53,7 +54,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
              new(164, 56, 32, 32),
              new(176, 88, 24, 12),
              new(164, 88, 12, 12))
-    };
+    ];
 
     #region Nodes
 
@@ -117,15 +118,16 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
     #region Animations
 
-    public KeyFrame[] BarTimeline => new KeyFrame[] { new(0) { Width = 0 }, new(1) { Width = Config.Width } };
+    public KeyFrame[] BarTimeline => [new(0) { Width = 0 }, new(1) { Width = Config.Width }];
 
     public override void HideBar(bool instant = false)
     {
         var frameWidth = Config.Width + 56;
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 250, 350 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 250, 350 };
 
         Animator -= "Expand";
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(BarFrame,
                 new(kf[0]) { Y = 0 },
                 new(kf[1]) { Y = 1 },
@@ -153,20 +155,20 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             new(Sparkles, Visible[kf[0]], new((int)(kf[1] * 0.6f)) { Alpha = 0 }) { Label = "Collapse" },
             new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]) { Label = "Collapse" },
             new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]) { Label = "Collapse" }
-        };
+        ];
     }
 
     public override void RevealBar(bool instant = false)
     {
         var frameWidth = Config.Width + 56;
 
-        var kf = instant ? new[] { 0, 0, 0 } : new[] { 0, 100, 350 };
+        var kf = instant ? [0, 0, 0] : new[] { 0, 100, 350 };
 
         Animator -= "Collapse";
         BarFrame.SetY(0);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Frame,
                 new(kf[0]) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
                 new(kf[1]) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
@@ -185,10 +187,10 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             new(Sparkles, Hidden[kf[0]], Hidden[200], Visible[kf[2]]) { Label = "Expand" },
             new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "Expand" },
             new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "Expand" }
-        };
+        ];
     }
 
-    private void AnimateSparkles(IReadOnlyList<CustomNode> sparkleNodes)
+    private void AnimateSparkles(CustomNode[] sparkleNodes)
     {
         Animator += new Tween(sparkleNodes[0],
                                  Visible[0],
@@ -198,8 +200,8 @@ public sealed unsafe class AddersBar : GaugeBarWidget
 
         for (var i = 1; i <= 5; i++) sparkleNodes[i].SetImageFlag(32).SetImageWrap(2);
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(sparkleNodes[1],
                 new(0) { X = 6, Scale = 1, Alpha = 0 },
                 new(199) { X = 6, Scale = 1, Alpha = 0 },
@@ -233,7 +235,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             new(sparkleNodes[6],
                 new(0) { PartId = 5 },
                 new(350) { PartId = 7 }) { Repeat = true }
-        };
+        ];
 
     }
 
@@ -407,7 +409,7 @@ public sealed unsafe class AddersBar : GaugeBarWidget
             case Layout:
                 FloatControls("Width", ref Config.Width, Config.ShowPlate ? 144 : 30, 2000, 1);
                 AngleControls("Angle", ref Config.Angle);
-                RadioIcons("Fill Direction", ref Config.Mirror, new() { false, true }, ArrowIcons);
+                RadioIcons("Fill Direction", ref Config.Mirror, [false, true], ArrowIcons);
                 ToggleControls("Backplate", ref Config.ShowPlate);
                 if (Config.ShowPlate) Config.Width = Max(Config.Width, 144);
                 break;
@@ -442,10 +444,10 @@ public sealed unsafe class AddersBar : GaugeBarWidget
     }
 
     private List<FontAwesomeIcon> ArrowIcons =>
-        Abs(Config.Angle) > 135 ? new() { ArrowLeft, ArrowRight } :
-        Config.Angle > 45 ? new() { ArrowDown, ArrowUp } :
-        Config.Angle < -45 ? new() { ArrowUp, ArrowDown } :
-                                       new() { ArrowRight, ArrowLeft };
+        Abs(Config.Angle) > 135 ? [ArrowLeft, ArrowRight] :
+        Config.Angle > 45 ? [ArrowDown, ArrowUp] :
+        Config.Angle < -45 ? [ArrowUp, ArrowDown] :
+        [ArrowRight, ArrowLeft];
 
     #endregion
 }

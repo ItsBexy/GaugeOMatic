@@ -7,12 +7,15 @@ namespace CustomNodes;
 
 public partial class CustomNode
 {
-    public struct Line : IEquatable<Line>
+    public struct Line(Vector2 a, Vector2 b) : IEquatable<Line>
     {
-        public Line(Vector2 a, Vector2 b) { A = a; B = b; }
-        public Vector2 A { get; set; }
-        public Vector2 B { get; set; }
+        public Vector2 A { get; set; } = a;
+        public Vector2 B { get; set; } = b;
         public readonly bool Equals(Line l2) => (A == l2.A && B == l2.B) || (A == l2.B && B == l2.A);
+        public override readonly bool Equals(object? o2) => o2 is Line l2 && ((A == l2.A && B == l2.B) || (A == l2.B && B == l2.A));
+        public override readonly int GetHashCode() => HashCode.Combine(A, B);
+        public static bool operator ==(Line left, Line right) => left.Equals(right);
+        public static bool operator !=(Line left, Line right) => !left.Equals(right);
 
         public readonly bool Intersects(Line l2) => Intersects(l2, out _);
 

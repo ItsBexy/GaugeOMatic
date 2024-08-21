@@ -25,11 +25,10 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(Counter | MultiComponent | Replica)]
 [WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("BL", "Balance Gauge Replica", 4)]
-public sealed unsafe class ManaDiamond : CounterWidget
+public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
 {
-    public ManaDiamond(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = {
+    public override CustomPartsList[] PartsLists { get; } =
+    [
         new("ui/uld/JobHudRDM0.tex",
             new(81, 239, 30, 40),
             new(81, 279, 30, 40),
@@ -39,19 +38,19 @@ public sealed unsafe class ManaDiamond : CounterWidget
             new(71, 323, 45, 57),
             new(0, 323, 32, 57),
             new(84, 323, 32, 57))
-    };
+    ];
 
     #region Nodes
 
     public CustomNode SocketPlate;
     public CustomNode StackContainer;
 
-    public List<CustomNode> Stacks = new();
-    public List<CustomNode> Pulses = new();
-    public List<CustomNode> Halos = new();
-    public List<CustomNode> Gems = new();
-    public List<CustomNode> Glows = new();
-    public List<CustomNode> GemContainers = new();
+    public List<CustomNode> Stacks = [];
+    public List<CustomNode> Pulses = [];
+    public List<CustomNode> Halos = [];
+    public List<CustomNode> Gems = [];
+    public List<CustomNode> Glows = [];
+    public List<CustomNode> GemContainers = [];
 
     public override Bounds GetBounds() => WidgetContainer;
 
@@ -86,12 +85,12 @@ public sealed unsafe class ManaDiamond : CounterWidget
 
     private CustomNode BuildStacks(int count)
     {
-        Stacks = new();
-        Pulses = new();
-        Halos = new();
-        Gems = new();
-        Glows = new();
-        GemContainers = new();
+        Stacks = [];
+        Pulses = [];
+        Halos = [];
+        Gems = [];
+        Glows = [];
+        GemContainers = [];
         for (var i = 0; i < count; i++)
         {
             Pulses.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0).Hide().SetPos(17 + (26 * i), 10));
@@ -115,7 +114,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
     {
         Pulses[i].Show();
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(Halos[i],
                 new(0) { Scale = 1, Alpha = 0 },
                 new(150) { Scale = 1.2f, Alpha = 200 },
@@ -135,15 +135,15 @@ public sealed unsafe class ManaDiamond : CounterWidget
                 new(0) { Scale = 0, Alpha = 0 },
                 new(160) { Scale = 1.8f, Alpha = 200 },
                 new(250) { Scale = 2.2f, Alpha = 0 })
-        };
+        ];
     }
 
     public override void HideStack(int i)
     {
         Pulses[i].Hide();
 
-        Animator += new Tween[]
-        {
+        Animator +=
+        [
             new(Gems[i],
                 new(0) { Scale = 1, Alpha = 255 },
                 new(166) { Scale = 2, Alpha = 0 }),
@@ -151,7 +151,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
                 new(0) { Scale = 1.8f, Alpha = 0 },
                 new(160) { Scale = 1.8f, Alpha = 200 },
                 new(250) { Scale = 2.5f, Alpha = 0 })
-        };
+        ];
     }
 
     private void PlateAppear() =>
@@ -181,7 +181,8 @@ public sealed unsafe class ManaDiamond : CounterWidget
         Animator -= "Pulse";
         foreach (var stack in Stacks)
         {
-            Animator += new Tween[] {
+            Animator +=
+            [
                 new(stack[0],
                     new(0) { Scale = 0, Alpha = 0 },
                     new(390) { Scale = 0f, Alpha = 0 },
@@ -193,7 +194,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
                     new(870) { AddRGB = new(150) },
                     new(1290) { AddRGB = new(0) })
                     { Repeat = true, Ease = SinInOut, Label = "Pulse" }
-            };
+            ];
         }
     }
 
@@ -202,11 +203,11 @@ public sealed unsafe class ManaDiamond : CounterWidget
         Animator -= "Pulse";
         foreach (var stack in Stacks)
         {
-            Animator += new Tween[]
-            {
+            Animator +=
+            [
                 new(stack[1], new(0, stack[1]), new(150) { AddRGB = 0 }) { Label = "Pulse" },
                 new(stack[0], new(0, stack[0]), Hidden[150]) { Label = "Pulse" }
-            };
+            ];
         }
     }
 
@@ -280,7 +281,7 @@ public sealed unsafe class ManaDiamond : CounterWidget
                     if (Config.HideEmpty && ((!Config.AsTimer && Tracker.CurrentData.Count == 0) || (Config.AsTimer && Tracker.CurrentData.GaugeValue == 0))) PlateVanish();
                     if (!Config.HideEmpty && WidgetContainer.Alpha < 255) PlateAppear();
                 }
-                RadioControls("Pulse", ref Config.Pulse, new() { Never, AtMax, Always }, new() { "Never", "At Maximum", "Always" });
+                RadioControls("Pulse", ref Config.Pulse, [Never, AtMax, Always], ["Never", "At Maximum", "Always"]);
                 break;
             default:
                 break;

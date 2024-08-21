@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -13,7 +14,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.KazematoiSwooshBar;
-using static GaugeOMatic.Widgets.LabelTextProps;
+using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -29,14 +30,14 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(GaugeBar | MultiComponent | HasAddonRestrictions | HasClippingMask)]
 [MultiCompData("KZ", "Kazematoi Replica", 2)]
 [AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
-public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
+public sealed unsafe class KazematoiSwooshBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
-    public KazematoiSwooshBar(Tracker tracker) : base(tracker) { }
-
-    public override CustomPartsList[] PartsLists { get; } = { NIN1,
+    public override CustomPartsList[] PartsLists { get; } =
+    [
+        NIN1,
         new("ui/uld/JobHudNIN1Mask.tex",new Vector4(0,0,128,96)),
         new ("ui/uld/JobHudNIN0.tex", new Vector4(256, 152, 20, 88))
-    };
+    ];
 
     #region Nodes
 
@@ -115,10 +116,11 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
 
         Flash = ImageNodeFromPart(0, 1).SetImageFlag(32).SetAlpha(0).SetOrigin(69, 51);
 
-        Animator += new Tween[] {
+        Animator +=
+        [
             new(TickWrapper, new(0) { Alpha = 255 }, new(100) { Alpha = 200 }, new(200) { Alpha = 255 }) { Repeat = true },
             new(TickMark, new(0) { ScaleX = 0.5f }, new(160) { ScaleX = 0.7f }, new(280) { ScaleX = 0.5f }) { Repeat = true }
-        };
+        ];
 
         FillBox = new(CreateResNode(), Main, Mask, TickWrapper);
 
@@ -137,41 +139,38 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
     #region Animations
 
     public static KeyFrame[] BoxTimeline =>
-        new KeyFrame[] {
-            new(0) { X = -88, Y = -50F, Rotation = -0.226892803f },
+    [
+        new(0) { X = -88, Y = -50F, Rotation = -0.226892803f },
             new(25) { X = -65.625f, Y = -69.125F, Rotation = 0.701622359f },
             new(50) { X = -51, Y = -82F, Rotation = 1.944296787f },
             new(75) { X = -44.125f, Y = -88.625F, Rotation = 3.50113048f },
             new(100) { X = -45, Y = -89F, Rotation = 5.372123438f }
-        };
+    ];
 
 
     public static KeyFrame[] Fill1Timeline =>
-        new KeyFrame[]
-        {
-            new(0) { ScaleX = 1, ScaleY = 0.05F },
+    [
+        new(0) { ScaleX = 1, ScaleY = 0.05F },
             new(10) { ScaleX = 0.94F, ScaleY = 0.15F },
             new(20) { ScaleX = 0.94F, ScaleY = 1 },
             new(25) { ScaleX = 1, ScaleY = 1 },
             new(100) { ScaleX = 1, ScaleY = 1 }
-        };
+    ];
 
     public static KeyFrame[] Fill2Timeline =>
-        new KeyFrame[]
-        {
-            new(0) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
+    [
+        new(0) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
             new(29) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
             new(30) { Alpha = 255, ScaleY = 0.7f, ScaleX = 0.05F },
             new(40) { Alpha = 255, ScaleY = 0.7F, ScaleX = 0.23F },
             new(50) { Alpha = 255, ScaleY = 0.85F, ScaleX = 1 },
             new(57) { Alpha = 255, ScaleY = 1, ScaleX = 1 },
             new(100) { Alpha = 255, ScaleY = 1, ScaleX = 1 }
-        };
+    ];
 
     public static KeyFrame[] Fill3Timeline =>
-        new KeyFrame[]
-        {
-            new(0) { Alpha = 0, ScaleX = 0, ScaleY = 0 },
+    [
+        new(0) { Alpha = 0, ScaleX = 0, ScaleY = 0 },
             new(56) { Alpha = 0, ScaleX = 0, ScaleY = 0 },
             new(57) { Alpha = 255, ScaleX = 0.01f, ScaleY = 0.01f },
             new(58) { Alpha = 255, ScaleX = 0.65F, ScaleY = 0.03F },
@@ -182,29 +181,28 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
             new(80) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
             new(90) { Alpha = 255, ScaleX = 1, ScaleY = 1 },
             new(100) { Alpha = 255, ScaleX = 1, ScaleY = 1 }
-        };
+    ];
 
     public static KeyFrame[] Fill4Timeline =>
-        new KeyFrame[]
-        {
-            new(0) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
+    [
+        new(0) { Alpha = 0, ScaleY = 0, ScaleX = 0 },
             new(79) { Alpha = 255, ScaleY = 0, ScaleX = 0 },
             new(80) { Alpha = 255, ScaleY = 0.55F, ScaleX = 0.02F },
             new(85) { Alpha = 255, ScaleY = 0.55F, ScaleX = 0.1F },
             new(90) { Alpha = 255, ScaleY = 0.67F, ScaleX = 0.31F },
             new(95) { Alpha = 255, ScaleY = 0.82F, ScaleX = 0.44F },
             new(100) { Alpha = 255, ScaleY = 0.94F, ScaleX = 1f }
-        };
+    ];
 
     public static KeyFrame[] BgTimeline =>
-        new KeyFrame[] {
-            new(0) { Alpha = 0 },
+    [
+        new(0) { Alpha = 0 },
             new(100) { Alpha = 255 }
-        };
+    ];
 
     public static KeyFrame[] TickTimeline =>
-        new KeyFrame[] {
-            new(0) { X = 95, ScaleY = 0.05f, Alpha = 0 },
+    [
+        new(0) { X = 95, ScaleY = 0.05f, Alpha = 0 },
             new(5) { X = 85, ScaleY = 0.165f, Alpha = 255 },
             new(10) { X = 76, ScaleY = 0.25f, Alpha = 255 },
             new(15) { X = 71, ScaleY = 0.27f, Alpha = 255 },
@@ -225,7 +223,7 @@ public sealed unsafe class KazematoiSwooshBar : GaugeBarWidget
             new(90) { X = 76, ScaleY = 0.57f, Alpha = 255 },
             new(95) { X = 72, ScaleY = 0.62f, Alpha = 255 },
             new(100) { X = 64, ScaleY = 0.67f, Alpha = 0 }
-        };
+    ];
 
     public override void HideBar(bool instant = false)
     {

@@ -34,13 +34,13 @@ public class WidgetDropdown : BranchingDropdown
             AvailableWidgets.Add(widgetType, widgetInfo);
         }
 
-        SubMenus = new()
-        {
+        SubMenus =
+        [
             ("Counters", Counter),
             ("Bars & Timers", GaugeBar),
             ("State Indicators", State),
             ("Multi-Component", MultiComponent)
-        };
+        ];
     }
 
     public override void DrawSubMenu(int i)

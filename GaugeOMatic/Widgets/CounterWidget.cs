@@ -11,10 +11,8 @@ namespace GaugeOMatic.Widgets;
 [SuppressMessage("ReSharper", "VirtualMemberNeverOverridden.Global")]
 [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
 [SuppressMessage("ReSharper", "UnusedParameter.Global")]
-public abstract class CounterWidget : Widget
+public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
 {
-    protected CounterWidget(Tracker tracker) : base(tracker) { }
-
     public abstract override CounterWidgetConfig Config { get; }
 
     public virtual void OnFirstRun(int count, int max) { }

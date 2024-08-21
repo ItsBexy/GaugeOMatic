@@ -289,7 +289,11 @@ public static class WidgetUI
         return ret;
     }
 
-    public static bool PositionControls(string label, ref Vector2 pos) => ControlXY(label, ref pos, -2560, 2560, 1, new() { FontAwesomeIcon.ChevronLeft, FontAwesomeIcon.ChevronRight, FontAwesomeIcon.ChevronUp, FontAwesomeIcon.ChevronDown });
+    public static bool PositionControls(string label, ref Vector2 pos) => ControlXY(label, ref pos, -2560, 2560, 1,
+    [
+        FontAwesomeIcon.ChevronLeft, FontAwesomeIcon.ChevronRight, FontAwesomeIcon.ChevronUp,
+        FontAwesomeIcon.ChevronDown
+    ]);
     public static bool ScaleControls(string label, ref Vector2 scale) => ControlXY(label, ref scale, 0, 10, 0.05f);
     public static bool ScaleControls(string label, ref float scale) => FloatControls(label, ref scale, 0, 10, 0.05f);
 

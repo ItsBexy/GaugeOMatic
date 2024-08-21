@@ -1,5 +1,4 @@
 using GaugeOMatic.Trackers;
-using System;
 using System.Collections.Generic;
 using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.JobData.Job;
@@ -36,7 +35,7 @@ public class ParamRef : ItemRef
         LimitBreak3 = 8
     }
 
-    public static Dictionary<ParamTypes, TrackerDisplayAttribute> Attrs = new()
+    internal static Dictionary<ParamTypes, TrackerDisplayAttribute> Attrs = new()
     {
         { HP,  new("HP", None,61233, barDesc: "Shows HP") },
         { MP, new("MP", None,61233, barDesc: "Shows MP")},
@@ -48,16 +47,16 @@ public class ParamRef : ItemRef
         { LimitBreak3, new("Limit Break 3", None,61233,barDesc: "Shows first limit break segment", counterDesc: "Shows if Limit Break 3 is available", stateDesc: "Shows if Limit Break 3 is available") }
    };
 
-    public static List<MenuOption> ParamOptions = new()
-    {
+    internal static List<MenuOption> ParamOptions =
+    [
         new ParamRef(HP).CreateMenuOption(),
         new ParamRef(MP).CreateMenuOption(),
         new ParamRef(Castbar).CreateMenuOption(),
         new ParamRef(Combo).CreateMenuOption(),
         new ParamRef(GCD).CreateMenuOption()
-    };
+    ];
 
-    public static float LastKnownGCD = 2.5f;
+    private static float LastKnownGCD = 2.5f;
 
     public MenuOption CreateMenuOption() => new(Name, nameof(ParameterTracker), ID) { DisplayAttr = Attrs[ParamType] };
 
@@ -130,7 +129,7 @@ public class ParamRef : ItemRef
                     count = state;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
         }
 
