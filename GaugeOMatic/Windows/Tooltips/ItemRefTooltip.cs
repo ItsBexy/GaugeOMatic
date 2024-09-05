@@ -1,6 +1,7 @@
 using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Trackers.Tracker;
 
@@ -10,15 +11,15 @@ public abstract partial class ItemRef
 {
     public virtual void DrawTooltip()
     {
-        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1));
-        ImGui.BeginTooltip();
+        var col = new ImRaii.Color().Push(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1));
+        var tt = ImRaii.Tooltip();
 
         var startPos = ImGui.GetCursorPos();
 
         DrawTooltipIcon(startPos);
-        ImGui.BeginGroup();
+        var gr = ImRaii.Group();
         TooltipHeaderText();
-        ImGui.EndGroup();
+        gr.Dispose();
 
         ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
 
@@ -26,15 +27,16 @@ public abstract partial class ItemRef
 
         FooterContents();
 
-        ImGui.EndTooltip();
-        ImGui.PopStyleColor(1);
+        tt.Dispose();
+        col.Dispose();
     }
 
     public void WidgetBehaviorTable()
     {
         ImGui.TextDisabled("Widget Behavior");
 
-        ImGui.BeginTable("BehaviorTable", 2);
+
+        var table = ImRaii.Table("BehaviorTable", 2);
 
         ImGui.TableSetupColumn("Widget");
         ImGui.TableSetupColumn("Value");
@@ -62,7 +64,7 @@ public abstract partial class ItemRef
         ImGui.TableNextColumn();
         PrintStateDesc();
 
-        ImGui.EndTable();
+        table.Dispose();
     }
 
     public IDalamudTextureWrap? GetIconTexture()

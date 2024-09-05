@@ -133,7 +133,7 @@ public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
                               new(130) { ScaleX = 1, Alpha = 127 },
                               new(260) { ScaleX = 1.2f, Alpha = 127 },
                               new(460) { ScaleX = 0.2f, Alpha = 0 })
-                              { Repeat = true, Ease = SinInOut };
+        { Repeat = true, Ease = SinInOut };
 
         return new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main, TickMark).SetY(51);
     }
@@ -280,7 +280,7 @@ public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
         Animator += new Tween(Glow,
                               new(0, Glow),
                               new(200) { ScaleX = endX, ScaleY = 1.2f, Alpha = 0 })
-                              { Label = "BarPulse" };
+        { Label = "BarPulse" };
 
         var colorAdjust = new AddRGB(86, 47, -21);
         Main.SetAddRGB(Config.MainColor + colorAdjust);

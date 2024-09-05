@@ -148,7 +148,8 @@ public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
         Animator += new Tween(Main,
                               new(0) { AddRGB = Config.MainColor + new AddRGB(-10) },
                               new(600) { AddRGB = Config.MainColor + new AddRGB(10) },
-                              new(1200) { AddRGB = Config.MainColor + new AddRGB(-10) }) { Ease = SinInOut, Repeat = true };
+                              new(1200) { AddRGB = Config.MainColor + new AddRGB(-10) })
+        { Ease = SinInOut, Repeat = true };
     }
 
     private void AnimateTickmark()
@@ -156,7 +157,8 @@ public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
         Animator += new Tween(Tick,
                               new(0) { ScaleX = 0.4f, ScaleY = 0.2f },
                               new(300) { ScaleX = 0.6f, ScaleY = 0.2f },
-                              new(600) { ScaleX = 0.4f, ScaleY = 0.2f }) { Ease = SinInOut, Repeat = true };
+                              new(600) { ScaleX = 0.4f, ScaleY = 0.2f })
+        { Ease = SinInOut, Repeat = true };
     }
 
     #endregion

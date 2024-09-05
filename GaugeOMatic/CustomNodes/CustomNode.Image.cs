@@ -28,7 +28,7 @@ public unsafe partial class CustomNodeManager
         }
         catch (Exception ex)
         {
-            Log.Error("Failed to create image node!\n"+ex.StackTrace);
+            Log.Error("Failed to create image node!\n" + ex.StackTrace);
             return CreateResNode()->GetAsAtkImageNode();
         }
     }

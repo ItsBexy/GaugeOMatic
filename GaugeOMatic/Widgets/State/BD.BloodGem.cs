@@ -51,7 +51,7 @@ public sealed unsafe class BloodGem(Tracker tracker) : StateWidget(tracker)
                                       .SetImageWrap(1);
 
         GemWrapper = new CustomNode(CreateResNode(), BlueHalo, Gem).SetPos(-22, -26)
-                                                                 .SetOrigin(50, 50);
+                                                                   .SetOrigin(50, 50);
 
         PinkHalo = ImageNodeFromPart(0, 9).SetAddRGB(-255)
                                           .SetAlpha(0)

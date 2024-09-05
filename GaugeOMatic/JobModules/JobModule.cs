@@ -89,7 +89,7 @@ public abstract class JobModule : IDisposable
         return trackerConfig.TrackerType switch
         {
             nameof(StatusTracker) or nameof(ActionTracker) when itemId == 0 => false,
-           // nameof(StatusTracker) => ((StatusRef)itemId).CheckJob(this),
+            // nameof(StatusTracker) => ((StatusRef)itemId).CheckJob(this),
             nameof(ActionTracker) => ((ActionRef)itemId).CheckJob(this),
             _ => true
         };
@@ -168,7 +168,7 @@ public abstract class JobModule : IDisposable
     public static void UpdateHandler(AddonArgs args, Action<IntPtr> applyFunc)
     {
         try { applyFunc(args.Addon); }
-        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({args.AddonName})\n{ex}");}
+        catch (Exception ex) { Log.Error($"Couldn't apply tweaks! ({args.AddonName})\n{ex}"); }
     }
 
     public void BuildWidgets()

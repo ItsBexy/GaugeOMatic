@@ -92,19 +92,19 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
                               new(0) { X = -18, Alpha = 42 },
                               new(390) { X = -17, Alpha = 50 },
                               new(790) { X = -15, Alpha = 0 })
-                              { Repeat = true };
+        { Repeat = true };
 
         Animator += new Tween(TickLine,
                               new(0) { Scale = 1f },
                               new(450) { Scale = 1.2f },
                               new(800) { Scale = 1f })
-                              { Repeat = true, Ease = SinInOut };
+        { Repeat = true, Ease = SinInOut };
 
         Animator += new Tween(TickDot,
                               new(0) { Scale = 0.5f },
                               new(350) { Scale = 0.7f },
                               new(800) { Scale = 0.5f })
-                              { Repeat = true, Ease = SinInOut };
+        { Repeat = true, Ease = SinInOut };
 
         return new CustomNode(CreateResNode(), TickGradient, TickLine, TickDot).SetOrigin(0, 6);
     }
@@ -124,7 +124,7 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
         var cornerWidth = Config.Width + 20;
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 250, 350,450 };
+        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 250, 350, 450 };
 
         Animator +=
         [
@@ -240,7 +240,7 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
         Animator += new Tween(GlowFrame,
                                   new(0, GlowFrame),
                                   Hidden[500])
-                                  { Ease = SinInOut, Label = "BarPulse" };
+        { Ease = SinInOut, Label = "BarPulse" };
 
         var red = Config.BaseColor == 0;
         Main.SetAddRGB(red ? Config.MainColorRed + new AddRGB(-57, 115, 96) : Config.MainColorTeal + new AddRGB(128, -74, -71));
@@ -385,7 +385,7 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
         TickLine.SetAddRGB(red ? Config.TickRed : Config.TickTeal);
         TickDot.SetAddRGB(red ? Config.TickRed : Config.TickTeal);
 
-        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-Config.Width / 2,-7f))
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-Config.Width / 2, -7f))
                      .SetWidth(Config.Width);
 
         PartsLists[0].AtkUldPartsList->Parts[8].Width = (ushort)Clamp(Config.Width, 1, 180);

@@ -48,5 +48,5 @@ public class ASTModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
 
 public partial class TweakConfigs
 {
-   public bool ASTHide0;
+    public bool ASTHide0;
 }

@@ -4,6 +4,7 @@ using ImGuiNET;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static GaugeOMatic.Widgets.WidgetAttribute;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -68,28 +69,31 @@ public class WidgetDropdown : BranchingDropdown
 
     public void MultiCompSubMenu(string label)
     {
-        if (!ImGui.BeginMenu($"{label}##{Hash}{label}Menu")) return;
-
-        foreach (var (key, name) in MultiCompDict)
+        if (ImGui.BeginMenu($"{label}##{Hash}{label}Menu"))
         {
-            ImGui.PushStyleColor(ImGuiCol.Border, new Vector4(0, 0, 0, 0));
-            if (ImGui.BeginMenu($"{name}##{Hash}{label}{key}Menu"))
+            foreach (var (key, name) in MultiCompDict)
             {
-                foreach (var w in AvailableWidgets.Where(w => w.Value.WidgetTags.HasFlag(MultiComponent) && w.Value.MultiCompData?.Key == key)
-                                                  .OrderBy(static w => w.Value.MultiCompData?.Index)
-                                                  .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
+                var col = new ImRaii.Color().Push(ImGuiCol.Border, new Vector4(0));
+                if (ImGui.BeginMenu($"{name}##{Hash}{label}{key}Menu"))
                 {
-                    Tracker.WidgetType = w.Key;
-                    UpdateFlag |= Reset | Save;
+                    foreach (var w in AvailableWidgets
+                                      .Where(w => w.Value.WidgetTags.HasFlag(MultiComponent) &&
+                                                  w.Value.MultiCompData?.Key == key)
+                                      .OrderBy(static w => w.Value.MultiCompData?.Index)
+                                      .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
+                    {
+                        Tracker.WidgetType = w.Key;
+                        UpdateFlag |= Reset | Save;
+                    }
+
+                    ImGui.EndMenu();
                 }
 
-                ImGui.EndMenu();
+                col.Dispose();
             }
 
-            ImGui.PopStyleColor();
+            ImGui.EndMenu();
         }
-
-        ImGui.EndMenu();
     }
 
     public override string DropdownText(string fallback) => WidgetList.TryGetValue(Tracker.WidgetType ?? "", out var attr) ? attr.DisplayName : fallback;

@@ -108,7 +108,6 @@ public sealed unsafe class NinkiReplica(Tracker tracker) : GaugeBarWidget(tracke
         return new CustomNode(CreateResNode(), GaugeBarV, GaugeBarH, ScrollImage, VSigil, Shine, TopBorder, BottomBorder, CalligraphyFlash2).SetSize(256, 100);
     }
 
-
     #endregion
 
     #region Animations
@@ -281,18 +280,18 @@ public sealed unsafe class NinkiReplica(Tracker tracker) : GaugeBarWidget(tracke
         public AddRGB FlashH = new(200, 100, 100);
         public AddRGB FlashH2 = new(100, -100, -50);
         public AddRGB BorderGlow = new(100, -50, -120);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     0xCCCCCCFFu,
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: 0xCCCCCCFFu,
                                                               edgeColor: 0x5534C2FFu,
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Center,
-                                                              invert:    false,
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Center,
+                                                              invert: false,
                                                               precision: 0,
-                                                              showZero:  true);
+                                                              showZero: true);
 
         public NinkiReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.NinkiReplicaCfg)
         {

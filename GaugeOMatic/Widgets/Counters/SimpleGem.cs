@@ -118,7 +118,7 @@ public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
                      .SetOrigin(32, 32)
                      .SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i * 40, 0).SetOrigin(32, 32).SetSize(64,64));
+            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i]).SetPos(i * 40, 0).SetOrigin(32, 32).SetSize(64, 64));
         }
     }
 

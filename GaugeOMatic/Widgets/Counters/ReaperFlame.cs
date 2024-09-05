@@ -111,11 +111,11 @@ public sealed unsafe class ReaperFlame(Tracker tracker) : FreeGemCounter(tracker
                 new(Flames[i],
                     new(0) { X = -2, Y = -18, Alpha = 255 },
                     new(500) { X = -5, Y = -38, Alpha = 0 })
-                    { Label = $"HideAnim{i}"},
+                    { Label = $"HideAnim{i}" },
                 new(FlameTwins[i],
                     new(0) { X = -2, Y = -18, Alpha = 255 },
                     new(500) { X = 1, Y = -2, Alpha = 0 })
-                    { Label = $"HideAnim{i}"}
+                    { Label = $"HideAnim{i}" }
             ];
         else Animator += new Tween(Flames[i], Visible[0], Hidden[500]) { Label = $"HideAnim{i}" };
 

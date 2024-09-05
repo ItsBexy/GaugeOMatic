@@ -125,7 +125,7 @@ public class ParamRef : ItemRef
                 case Combo:
                     maxGauge = 30;
                     gaugeValue = ActionManager->Combo.Timer;
-                    state = gaugeValue > 0 ? 1:0;
+                    state = gaugeValue > 0 ? 1 : 0;
                     count = state;
                     break;
                 default:
@@ -133,6 +133,6 @@ public class ParamRef : ItemRef
             }
         }
 
-        return new(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) {HasLabelOverride = hasLabelOverride,LabelOverride = labelOverride};
+        return new(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) { HasLabelOverride = hasLabelOverride, LabelOverride = labelOverride };
     }
 }

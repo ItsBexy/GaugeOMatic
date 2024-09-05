@@ -64,23 +64,23 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
         for (var i = 0; i < count; i++)
         {
             Frames.Add(ImageNodeFromPart(0, 5));
-            Gems.Add(ImageNodeFromPart(0, 6).SetPos(0,-1).SetOrigin(15,23).SetAlpha(0));
-            Flashes.Add(ImageNodeFromPart(0,8).SetPos(-8,0).SetSize(46,46).SetOrigin(23,23).SetAddRGB(Config.GemColor).SetAlpha(0).SetImageFlag(0x20));
-            Pulsars.Add(ImageNodeFromPart(0,10).SetPos(-14,16).SetSize(58,12).SetOrigin(29,6).SetAddRGB(Config.GemColor).SetAlpha(0).SetImageFlag(0x20));
-            Glows.Add(ImageNodeFromPart(0,7).SetPos(0,-1).SetSize(30,46).SetOrigin(15,23).SetAddRGB(Config.GemColor).SetAlpha(0).SetImageFlag(0x20));
+            Gems.Add(ImageNodeFromPart(0, 6).SetPos(0, -1).SetOrigin(15, 23).SetAlpha(0));
+            Flashes.Add(ImageNodeFromPart(0, 8).SetPos(-8, 0).SetSize(46, 46).SetOrigin(23, 23).SetAddRGB(Config.GemColor).SetAlpha(0).SetImageFlag(0x20));
+            Pulsars.Add(ImageNodeFromPart(0, 10).SetPos(-14, 16).SetSize(58, 12).SetOrigin(29, 6).SetAddRGB(Config.GemColor).SetAlpha(0).SetImageFlag(0x20));
+            Glows.Add(ImageNodeFromPart(0, 7).SetPos(0, -1).SetSize(30, 46).SetOrigin(15, 23).SetAddRGB(Config.GemColor).SetAlpha(0).SetImageFlag(0x20));
 
 
             Stacks2.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i], Flashes[i], Pulsars[i], Glows[i]).SetSize(30, 46));
 
-            Glows2.Add(ImageNodeFromPart(0,7).SetPos(0,-1)
+            Glows2.Add(ImageNodeFromPart(0, 7).SetPos(0, -1)
                                              .SetScale(1.3721743f)
-                                             .SetOrigin(15,23)
+                                             .SetOrigin(15, 23)
                                              .SetImageFlag(0x20)
                                              .SetAlpha(0)
                                              .RemoveFlags(SetVisByAlpha)
-                                             .SetAddRGB(255,-200,-200));
+                                             .SetAddRGB(255, -200, -200));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Stacks2[i], Glows2[i]).SetOrigin(15, 22).SetSize(30,44));
+            Stacks.Add(new CustomNode(CreateResNode(), Stacks2[i], Glows2[i]).SetOrigin(15, 22).SetSize(30, 44));
         }
     }
 
@@ -90,13 +90,13 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
 
     public override void ShowStack(int i)
     {
-         var gemColor = Config.GemColor + GemColorOffset;
+        var gemColor = Config.GemColor + GemColorOffset;
 
-         var midAppear = new AddRGB(50);
+        var midAppear = new AddRGB(50);
 
-         Animator +=
-         [
-             new(Gems[i],
+        Animator +=
+        [
+            new(Gems[i],
                  new(0)   { Alpha = 0, AddRGB = gemColor },
                  new(165) { Alpha = 255, AddRGB = gemColor + midAppear },
                  new(330) { Alpha = 255, AddRGB = gemColor }),
@@ -110,9 +110,9 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
                  new(0)   { Alpha = 255, Scale = 1.5f },
                  new(180) { Alpha = 255, Scale = 1 },
                  new(330) { Alpha = 0, Scale = 1})
-         ];
+        ];
 
-         Glows2[i].Show();
+        Glows2[i].Show();
     }
 
     public override void HideStack(int i)
@@ -159,17 +159,17 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
 
     private void StopPulseAll()
     {
-         Animator -= "Pulse";
-         for (var i = 0; i < Stacks.Count; i++)
-         {
-             Animator +=
-             [
-                 new(Glows2[i],
+        Animator -= "Pulse";
+        for (var i = 0; i < Stacks.Count; i++)
+        {
+            Animator +=
+            [
+                new(Glows2[i],
                      new(0, Glows2[i]),
                      new(200) { Scale = 1.5f, Alpha = 0 })
                      { Label = "Pulse" }
-             ];
-         }
+            ];
+        }
     }
 
     #endregion
@@ -236,7 +236,7 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
 
     public override CoilDiamondConfig Config => config;
 
-    public AddRGB GemColorOffset = new(-61,92,95);
+    public AddRGB GemColorOffset = new(-61, 92, 95);
 
     public override void InitConfigs() => config = new(Tracker.WidgetConfig);
 

@@ -60,13 +60,13 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
         NumTextNode = new();
 
         Tick = ImageNodeFromPart(2, 0).SetAlpha(true).SetOrigin(20, 44).SetPos(0, -27.5f).SetScale(0.8f, 0.55f).SetImageFlag(32);
-        TickWrapper = new CustomNode(CreateResNode(), Tick).SetX(Config.Width/-2);
+        TickWrapper = new CustomNode(CreateResNode(), Tick).SetX(Config.Width / -2);
 
         Animator += new Tween(Tick,
                               new(0) { ScaleY = 0.54f, ScaleX = 0.81f },
                               new(300) { ScaleY = 0.56f, ScaleX = 0.79f },
                               new(600) { ScaleY = 0.54f, ScaleX = 0.81f })
-                              { Repeat = true, Ease = SinInOut };
+        { Repeat = true, Ease = SinInOut };
 
         Contents = new(CreateResNode(), Bar, Frame, TickWrapper);
 
@@ -92,7 +92,7 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
     public override void HideBar(bool instant = false)
     {
         var halfWidth = Config.Width / 2;
-        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 350, 450,200 };
+        var kf = instant ? [0, 0, 0, 0] : new[] { 0, 350, 450, 200 };
 
         Animator +=
         [
@@ -166,7 +166,8 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
     {
         var wid = Max(Drain.Width, Main.Width);
         Tick.SetPos(wid - 20, -27.5f)
-            .SetAlpha(prog switch {
+            .SetAlpha(prog switch
+            {
                 < 0.025f => (byte)(prog * 10200F),
                 > 0.975f => (byte)((1 - prog) * 10200F),
                 _ => 255
@@ -233,16 +234,16 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
         public AddRGB TickColor = "0xD36E27FF";
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 0), new(255), 0x8E6A0CFF, Jupiter, 20, Left);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0),
-                                                              color:     new(255),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0),
+                                                              color: new(255),
                                                               edgeColor: new(0),
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Center,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Center,
+                                                              invert: false);
 
         public MahjongRibbonConfig(WidgetConfig widgetConfig) : base(widgetConfig.MahjongRibbonCfg)
         {
@@ -298,7 +299,7 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
         Backdrop.SetAddRGB(Config.Background, true);
 
         Drain.SetAddRGB(Config.DrainColor, true)
-             .SetOrigin(Config.Width/2f, 16)
+             .SetOrigin(Config.Width / 2f, 16)
              .DefineTimeline(BarTimeline)
              .SetWidth(0);
 
@@ -313,7 +314,7 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
         LabelTextNode.ApplyProps(Config.LabelText, new Vector2(Config.Width / -2, -15));
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(-1, 17));
-        NumTextNode.SetOrigin((NumTextNode.Width / 2) + 1, (NumTextNode.Height / 2) - 1);
+        NumTextNode.SetOrigin((NumTextNode.Width / 2f) + 1, (NumTextNode.Height / 2f) - 1);
 
     }
 

@@ -102,7 +102,7 @@ public sealed unsafe class AetherflowReplica(Tracker tracker) : CounterWidget(tr
                                   new(0) { ScaleX = 1.2f, Alpha = 0 },
                                   new(360) { ScaleX = 1, Alpha = 201 },
                                   new(770) { ScaleX = 0.9f, Alpha = 0 })
-            { Repeat = true, Ease = SinInOut };
+                                  { Repeat = true, Ease = SinInOut };
         }
 
         return new(CreateResNode(), gemList);

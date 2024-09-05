@@ -52,7 +52,7 @@ public unsafe partial class CustomNode
 
         public static Bounds operator -(Bounds b, Vector2 v) => new(b.Points.Select(p => p - v)) { IsConvex = b.IsConvex };
 
-        public Bounds(params Vector2[] points) : this(points.ToList()) {}
+        public Bounds(params Vector2[] points) : this(points.ToList()) { }
 
         public Bounds(IEnumerable<Vector2> points) => Points = points.Distinct().ToList();
 
@@ -86,7 +86,7 @@ public unsafe partial class CustomNode
             IsConvex = true;
         }
 
-        public Bounds(params CustomNode[] nodes) : this(nodes.ToList()) {}
+        public Bounds(params CustomNode[] nodes) : this(nodes.ToList()) { }
 
         public Bounds(IEnumerable<CustomNode> nodes) => this = GetConvexHull(nodes.ToList());
 
@@ -102,72 +102,72 @@ public unsafe partial class CustomNode
 
         #region Hulls
 
-            #region MaxBox
+        #region MaxBox
 
-            public readonly Bounds GetMaxBox()
+        public readonly Bounds GetMaxBox()
+        {
+            float? x1 = null, x2 = null, y1 = null, y2 = null;
+
+            foreach (var p in Points)
             {
-                float? x1 = null, x2 = null, y1 = null, y2 = null;
-
-                foreach (var p in Points)
-                {
-                    x1 = Min(p.X, x1 ?? p.X);
-                    x2 = Max(p.X, x2 ?? p.X);
-                    y1 = Min(p.Y, y1 ?? p.Y);
-                    y2 = Max(p.Y, y2 ?? p.Y);
-                }
-
-                return new(new Vector2(x1 ?? 0, y1 ?? 0),
-                           new Vector2(x2 ?? 0, y1 ?? 0),
-                           new Vector2(x2 ?? 0, y2 ?? 0),
-                           new Vector2(x1 ?? 0, y2 ?? 0))
-                    { IsConvex = true };
+                x1 = Min(p.X, x1 ?? p.X);
+                x2 = Max(p.X, x2 ?? p.X);
+                y1 = Min(p.Y, y1 ?? p.Y);
+                y2 = Max(p.Y, y2 ?? p.Y);
             }
 
-            #endregion
+            return new(new Vector2(x1 ?? 0, y1 ?? 0),
+                       new Vector2(x2 ?? 0, y1 ?? 0),
+                       new Vector2(x2 ?? 0, y2 ?? 0),
+                       new Vector2(x1 ?? 0, y2 ?? 0))
+            { IsConvex = true };
+        }
 
-            #region Convex
+        #endregion
 
-            public readonly Bounds GetConvexHull() => GetConvexHull(Points);
+        #region Convex
 
-            public static Bounds GetConvexHull(List<CustomNode> nodes)
+        public readonly Bounds GetConvexHull() => GetConvexHull(Points);
+
+        public static Bounds GetConvexHull(List<CustomNode> nodes)
+        {
+            if (nodes.Count == 0) { return new(); }
+
+            var points = new List<Vector2>();
+            foreach (var node in nodes) points.AddRange(((Bounds)node).Points);
+
+            return GetConvexHull(points);
+        }
+
+        public static Bounds GetConvexHull(List<Vector2> points)
+        {
+            if (points.Count <= 1) return new(points);
+
+            int n = points.Count, k = 0;
+            var h = new List<Vector2>(new Vector2[2 * n]);
+
+            points.Sort(static (a, b) => a.X.Equals(b.X) ? a.Y.CompareTo(b.Y) : a.X.CompareTo(b.X));
+
+            // Build lower hull
+            for (var i = 0; i < n; ++i)
             {
-                if (nodes.Count == 0) { return new(); }
-
-                var points = new List<Vector2>();
-                foreach (var node in nodes) points.AddRange(((Bounds)node).Points);
-
-                return GetConvexHull(points);
+                while (k >= 2 && Cross(h[k - 2], h[k - 1], points[i]) <= 0) k--;
+                h[k++] = points[i];
             }
 
-            public static Bounds GetConvexHull(List<Vector2> points)
+            // Build upper hull
+            for (int i = n - 2, t = k + 1; i >= 0; i--)
             {
-                if (points.Count <= 1) return new(points);
-
-                int n = points.Count, k = 0;
-                var h = new List<Vector2>(new Vector2[2 * n]);
-
-                points.Sort(static (a, b) => a.X.Equals(b.X) ? a.Y.CompareTo(b.Y) : a.X.CompareTo(b.X));
-
-                // Build lower hull
-                for (var i = 0; i < n; ++i)
-                {
-                    while (k >= 2 && Cross(h[k - 2], h[k - 1], points[i]) <= 0) k--;
-                    h[k++] = points[i];
-                }
-
-                // Build upper hull
-                for (int i = n - 2, t = k + 1; i >= 0; i--)
-                {
-                    while (k >= t && Cross(h[k - 2], h[k - 1], points[i]) <= 0) k--;
-                    h[k++] = points[i];
-                }
-
-                return new(h.Take(k - 1).ToList()) { IsConvex = true };
-
-                static float Cross(Vector2 o, Vector2 a, Vector2 b) => ((a.X - o.X) * (b.Y - o.Y)) - ((a.Y - o.Y) * (b.X - o.X));
+                while (k >= t && Cross(h[k - 2], h[k - 1], points[i]) <= 0) k--;
+                h[k++] = points[i];
             }
 
-            #endregion
+            return new(h.Take(k - 1).ToList()) { IsConvex = true };
+
+            static float Cross(Vector2 o, Vector2 a, Vector2 b) => ((a.X - o.X) * (b.Y - o.Y)) - ((a.Y - o.Y) * (b.X - o.X));
+        }
+
+        #endregion
 
         #endregion
 

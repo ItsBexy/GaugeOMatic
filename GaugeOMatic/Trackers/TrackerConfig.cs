@@ -40,7 +40,8 @@ public class TrackerConfig
     [JsonIgnore] public bool Preview { get; set; }
     [JsonIgnore] public float PreviewValue { get; set; } = 1f;
 
-    [JsonIgnore] public string? WidgetType
+    [JsonIgnore]
+    public string? WidgetType
     {
         get => WidgetConfig.WidgetType;
         set => WidgetConfig.WidgetType = value;

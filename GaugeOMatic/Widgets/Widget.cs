@@ -56,7 +56,7 @@ public abstract unsafe class Widget : IDisposable
     public TrackerConfig TrackerConfig => Tracker.TrackerConfig;
     public AtkUnitBase* Addon;
 
-    public WidgetAttribute GetAttributes => WidgetList.TryGetValue(GetType().Name, out var widgetInfo)?widgetInfo : new();
+    public WidgetAttribute GetAttributes => WidgetList.TryGetValue(GetType().Name, out var widgetInfo) ? widgetInfo : new();
 
     public abstract WidgetTypeConfig Config { get; }
 

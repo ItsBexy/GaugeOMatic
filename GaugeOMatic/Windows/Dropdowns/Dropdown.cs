@@ -3,6 +3,7 @@ using ImGuiNET;
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 
 namespace GaugeOMatic.Windows.Dropdowns;
@@ -44,13 +45,17 @@ public abstract class BranchingDropdown
     {
         var i = 0;
 
-        if (IsOpen) ImGui.PushStyleColor(ImGuiCol.Button, ImGuiHelpy.GetStyleColorVec4(ImGuiCol.ButtonHovered));
+        var col = new ImRaii.Color();
+        if (IsOpen)
+        {
+            col.Push(ImGuiCol.Button, ImGuiHelpy.GetStyleColorVec4(ImGuiCol.ButtonHovered));
+        }
 
         var windowPos = ImGui.GetWindowPos();
         var cursorPos = ImGui.GetCursorPos();
         ImGui.SetNextItemWidth(width * GlobalScale);
         ImGui.Combo($"##{label}{GetHashCode()}FakeCombo", ref i, DropdownText(label));
-        if (IsOpen) ImGui.PopStyleColor(1);
+        col.Dispose();
 
         var popupPos = new Vector2(windowPos.X + cursorPos.X, windowPos.Y + cursorPos.Y + 22f);
         CreateMenuPopup($"##{label}{GetHashCode()}MenuPopup", width * GlobalScale, popupPos);
@@ -60,13 +65,16 @@ public abstract class BranchingDropdown
 
     public void CreateMenuPopup(string label, float width, Vector2 popupPos)
     {
-        IsOpen = ImGui.BeginPopup(label);
-        if (!IsOpen) return;
+        var p = ImRaii.Popup(label);
+        IsOpen = p.Success;
+        if (IsOpen)
+        {
+            ImGui.SetWindowPos(popupPos);
+            ImGui.Button("", new(width - 16f, 0.01f));
+            for (var i = 0; i < SubMenus.Count; i++) DrawSubMenu(i);
+            ImGui.Button("", new(width - 16f, 0.01f));
+        }
 
-        ImGui.SetWindowPos(popupPos);
-        ImGui.Button("", new(width - 16f, 0.01f));
-        for (var i = 0; i < SubMenus.Count; i++) DrawSubMenu(i);
-        ImGui.Button("", new(width - 16f, 0.01f));
-        ImGui.EndPopup();
+        p.Dispose();
     }
 }

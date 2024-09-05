@@ -3,6 +3,7 @@ using GaugeOMatic.Trackers;
 using ImGuiNET;
 using System;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
@@ -21,7 +22,7 @@ public partial class ConfigWindow
         var trackerConfig = tracker.TrackerConfig;
         var index = trackerConfig.Index;
 
-        ImGui.PushStyleColor(ImGuiCol.Text, hovering? new ColorRGB(0, 255, 100): new Vector4(1,1,1,1));
+        var col = new ImRaii.Color().Push(ImGuiCol.Text, hovering ? new ColorRGB(0, 255, 100) : new Vector4(1, 1, 1, 1));
 
         ImGui.TableNextRow();
 
@@ -55,7 +56,7 @@ public partial class ConfigWindow
         ImGui.TableNextColumn();
         PreviewControls(tracker, hash);
 
-        ImGui.PopStyleColor(1);
+        col.Dispose();
 
         if (UpdateFlag.HasFlag(UpdateFlags.Save)) trackerConfig.DisplayAttr = null;
 
@@ -131,7 +132,7 @@ public partial class ConfigWindow
         var spanX = maxX - minX;
 
         var x = lastIndex == 0 ? minX : ((float)index / lastIndex * spanX) + minX;
-        var sizeY = tracker.Window?.Size?.Y ?? workSize.Y/2f;
+        var sizeY = tracker.Window?.Size?.Y ?? workSize.Y / 2f;
         var y = Math.Clamp(ConfigWindowPos.Y + ConfigWindowSize.Y, 0, workSize.Y - sizeY);
         return new(x, y);
     }
@@ -192,11 +193,9 @@ public partial class ConfigWindow
         }
         else
         {
-            ImGui.PushStyleColor(ImGuiCol.Button, 0);
-            ImGui.PushStyleColor(ImGuiCol.ButtonActive, 0);
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, 0);
+            var col = new ImRaii.Color().Push(ImGuiCol.Button, 0).Push(ImGuiCol.ButtonActive, 0).Push(ImGuiCol.ButtonHovered, 0);
             ImGui.Button("", new(120f, 0));
-            ImGui.PopStyleColor(3);
+            col.Dispose();
         }
     }
 
@@ -205,9 +204,9 @@ public partial class ConfigWindow
         var shift = ImGui.IsKeyDown(ModShift);
         if (shift)
         {
-            ImGui.PushStyleColor(ImGuiCol.Text,0xffffffff);
+            var col = new ImRaii.Color().Push(ImGuiCol.Text, 0xffffffff);
             if (ImGuiComponents.IconButton($"Delete{hash}", TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
-            ImGui.PopStyleColor(1);
+            col.Dispose();
         }
         else
         {

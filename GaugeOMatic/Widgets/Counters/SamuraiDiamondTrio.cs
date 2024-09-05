@@ -54,9 +54,9 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
 
         Stacks = BuildStacks();
 
-        Plate = ImageNodeFromPart(0, 10).SetScale(Max>=3?1:0).SetOrigin(51,0);
+        Plate = ImageNodeFromPart(0, 10).SetScale(Max >= 3 ? 1 : 0).SetOrigin(51, 0);
 
-        return new CustomNode(CreateResNode(),Plate,new CustomNode(CreateResNode(), Stacks.ToArray())).SetOrigin(51, 31).SetSize(102,62);
+        return new CustomNode(CreateResNode(), Plate, new CustomNode(CreateResNode(), Stacks.ToArray())).SetOrigin(51, 31).SetSize(102, 62);
     }
 
     private List<CustomNode> BuildStacks()
@@ -71,10 +71,10 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
 
         for (var i = 0; i < Max; i++)
         {
-            Frames.Add(ImageNodeFromPart(1, 0).SetSize(32,32)
+            Frames.Add(ImageNodeFromPart(1, 0).SetSize(32, 32)
                                               .SetImageWrap(2)
-                                              .SetPos(-4,-6)
-                                              .SetOrigin(16,0));
+                                              .SetPos(-4, -6)
+                                              .SetOrigin(16, 0));
 
             Gems.Add(ImageNodeFromPart(0, 11).SetOrigin(12, 10));
 
@@ -102,7 +102,7 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
                                                                new(150) { Alpha = 255, ScaleX = 0.25f, ScaleY = 0.35f },
                                                                new(300) { Alpha = 0, ScaleX = 0.5f, ScaleY = 0.3f }));
 
-            stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i], Glows[i], Glows2[i], Pulsars[i]).SetPos(16 + (23 * i), i % 2 == 0 ? 23 : 17).SetSize(32,32));
+            stacks.Add(new CustomNode(CreateResNode(), Frames[i], Gems[i], Glows[i], Glows2[i], Pulsars[i]).SetPos(16 + (23 * i), i % 2 == 0 ? 23 : 17).SetSize(32, 32));
         }
 
         return stacks;
@@ -262,7 +262,7 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
         WidgetContainer.SetPos(Config.Position);
         WidgetContainer.SetScale(Config.Scale);
         Plate.SetMultiply(Config.PlateTint)
-             .SetScaleX(Config.MirrorPlate?-1:1)
+             .SetScaleX(Config.MirrorPlate ? -1 : 1)
              .SetX(Config.PlatePos * 23f)
              .SetAlpha(!Config.HidePlate);
 
@@ -270,7 +270,7 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
         {
             Frames[i].SetMultiply(Config.PlateTint)
                      .SetAlpha(Config.HidePlate || Max < 3 || i < Config.PlatePos || i > Config.PlatePos + 2)
-                     .SetScaleX(Config.MirrorPlate?-1:1);
+                     .SetScaleX(Config.MirrorPlate ? -1 : 1);
 
             Gems[i].SetAddRGB(Config.GemTint + GemTintOffset);
             Glows[i].SetAddRGB(Config.GemTint + GemTintOffset);

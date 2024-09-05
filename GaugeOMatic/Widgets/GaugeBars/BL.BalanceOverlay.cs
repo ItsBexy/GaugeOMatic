@@ -69,7 +69,7 @@ public sealed unsafe class BalanceOverlay(Tracker tracker) : GaugeBarWidget(trac
     public override CustomNode BuildContainer()
     {
         Plate = ImageNodeFromPart(0, 0).SetImageWrap(2).SetImageFlag(32);
-        PlateMask = ClippingMaskFromPart(2, 1).SetSize(116,416).SetPos(0,-208).DefineTimeline(MaskTimeline);
+        PlateMask = ClippingMaskFromPart(2, 1).SetSize(116, 416).SetPos(0, -208).DefineTimeline(MaskTimeline);
 
         Main = new CustomNode(CreateResNode(), Plate, PlateMask).SetSize(116, 0)
                                                                 .DefineTimeline(ContainerTimeline)
@@ -80,7 +80,7 @@ public sealed unsafe class BalanceOverlay(Tracker tracker) : GaugeBarWidget(trac
         Tick = ImageNodeFromPart(1, 0).SetRotation(1.5707963267949f)
                                       .SetImageFlag(33)
                                       .SetOrigin(20, 44)
-                                      .SetPos(37.5f,-30)
+                                      .SetPos(37.5f, -30)
                                       .DefineTimeline(TickTimeline)
                                       .SetAlpha(0);
         NumTextNode = new();
@@ -128,7 +128,7 @@ public sealed unsafe class BalanceOverlay(Tracker tracker) : GaugeBarWidget(trac
     public override void PlaceTickMark(float prog)
     {
         PlateMask.SetProgress(Main);
-        var yFactor = PlateMask.Y+216;
+        var yFactor = PlateMask.Y + 216;
 
         Tick.SetProgress(Main)
             .SetScaleY(Clamp(yFactor switch

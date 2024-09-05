@@ -1,4 +1,5 @@
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
@@ -36,7 +37,7 @@ public class PresetWindow : Window, IDisposable
     internal static PresetUIData UIData = new();
 
     public List<Preset> BuildPresetList() =>
-        [..PluginPresets.Presets.Concat(Configuration.SavedPresets).OrderBy(static p => p.Name)];
+        [.. PluginPresets.Presets.Concat(Configuration.SavedPresets).OrderBy(static p => p.Name)];
 
     public override void Draw()
     {
@@ -54,17 +55,15 @@ public class PresetWindow : Window, IDisposable
         ImGui.Spacing();
 
         PresetAddUI(module);
-
-        ImGui.EndTabItem();
     }
 
     public void SetUpRenamePopup(ref Preset preset)
     {
-        if (!ImGui.BeginPopup("Rename")) return;
-
+        var p = ImRaii.Popup("Rename");
         var name = UIData.NewPresetName ?? preset.Name;
         ImGui.SetNextItemWidth(180f * GlobalScale);
-        if (ImGui.InputText("##Name", ref name, 40)) UIData.NewPresetName = string.IsNullOrWhiteSpace(name) ? preset.Name : name;
+        if (ImGui.InputText("##Name", ref name, 40))
+            UIData.NewPresetName = string.IsNullOrWhiteSpace(name) ? preset.Name : name;
 
         ImGui.SameLine();
         if (ImGui.Button("Rename##Save"))
@@ -78,12 +77,12 @@ public class PresetWindow : Window, IDisposable
             ImGui.CloseCurrentPopup();
         }
 
-        ImGui.EndPopup();
+        p.Dispose();
     }
 
     public void PresetListUI(JobModule module)
     {
-        ImGui.BeginGroup();
+        var gr = ImRaii.Group();
 
         var filter = Configuration.PresetFiltering;
 
@@ -94,7 +93,7 @@ public class PresetWindow : Window, IDisposable
         ImGui.SameLine();
         if (ImGui.RadioButton("Job Only", ref filter, 2)) { Configuration.PresetFiltering = 2; Configuration.Save(); }
 
-        var presetList = new List<Preset>(UIData.PresetList.Where(p => filter == 0||p.Trackers.Any(t => filter switch
+        var presetList = new List<Preset>(UIData.PresetList.Where(p => filter == 0 || p.Trackers.Any(t => filter switch
         {
             1 => t.JobRoleMatch(module),
             2 => t.JobMatch(module),
@@ -110,7 +109,7 @@ public class PresetWindow : Window, IDisposable
             var selectedPreset = presetList[selectedIndex];
 
             ImGui.SameLine();
-            ImGui.BeginGroup();
+            var gr2 = ImRaii.Group();
 
             var builtIn = selectedPreset.BuiltIn;
 
@@ -144,48 +143,47 @@ public class PresetWindow : Window, IDisposable
             ImGui.SameLine();
             if (ImGuiComponents.IconButtonWithText(PaintRoller, "Overwrite Current")) ApplyPreset(module, selectedPreset.Clone(), true);
 
-            ImGui.EndGroup();
+            gr2.Dispose();
         }
 
-        ImGui.EndGroup();
+        gr.Dispose();
     }
 
     private static void DisplayPresetContents(JobModule module, Preset selectedPreset)
     {
-        if (ImGui.BeginTable("PresetInfo", 2, ImGuiTableFlags.SizingFixedFit))
+        var table = ImRaii.Table("PresetInfo", 2, ImGuiTableFlags.SizingFixedFit);
+
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+        ImGui.TextColored(new(1, 1, 1, 0.6f), "TRACKER");
+
+        ImGui.TableNextColumn();
+        ImGui.TextColored(new(1, 1, 1, 0.6f), "WIDGET");
+
+        foreach (var trackerConfig in selectedPreset.Trackers)
         {
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
-            ImGui.TextColored(new(1, 1, 1, 0.6f), "TRACKER");
+            AddTrackerButton(trackerConfig);
+            ImGui.SameLine();
+
+            ImGuiHelpy.DrawGameIcon(trackerConfig.GetDisplayAttr().GameIcon, 22f);
+            if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
+
+            ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayAttr().Name);
+            if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
             ImGui.TableNextColumn();
-            ImGui.TextColored(new(1, 1, 1, 0.6f), "WIDGET");
+            CopyWidgetButton(trackerConfig);
 
-            foreach (var trackerConfig in selectedPreset.Trackers)
+            if (trackerConfig.WidgetType != null)
             {
-                ImGui.TableNextRow();
-                ImGui.TableNextColumn();
-                AddTrackerButton(trackerConfig);
                 ImGui.SameLine();
-
-                ImGuiHelpy.DrawGameIcon(trackerConfig.GetDisplayAttr().GameIcon, 22f);
-                if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
-
-                ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f), trackerConfig.GetDisplayAttr().Name);
-                if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
-
-                ImGui.TableNextColumn();
-                CopyWidgetButton(trackerConfig);
-
-                if (trackerConfig.WidgetType != null)
-                {
-                    ImGui.SameLine();
-                    ImGui.Text($"{trackerConfig.WidgetDisplayName}");
-                }
+                ImGui.Text($"{trackerConfig.WidgetDisplayName}");
             }
-
-            ImGui.EndTable();
         }
+
+        table.Dispose();
 
         return;
 
@@ -237,7 +235,7 @@ public class PresetWindow : Window, IDisposable
 
     private void PresetAddUI(JobModule module)
     {
-        ImGui.BeginGroup();
+        var gr = ImRaii.Group();
 
         ImGui.TextColored(new(1, 1, 1, 0.6f), "ADD PRESETS");
         var saveName = UIData.SaveName;
@@ -251,7 +249,7 @@ public class PresetWindow : Window, IDisposable
         ImGui.Text("Import a preset from the clipboard:");
         if (ImGuiComponents.IconButtonWithText(SignInAlt, "Import From Clipboard")) ImportNewPreset(ImGui.GetClipboardText());
 
-        ImGui.EndGroup();
+        gr.Dispose();
     }
 
     private void SaveNewPreset(JobModule module, string saveName)

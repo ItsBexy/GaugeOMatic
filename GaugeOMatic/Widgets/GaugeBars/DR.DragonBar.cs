@@ -51,20 +51,20 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
         NumTextNode = new();
 
         DragonBgPulse = ImageNodeFromPart(0, 1).SetImageWrap(1).SetAddRGB(100, -20, -20).SetAlpha(0);
-        DragonBg1Wrap = new CustomNode(CreateResNode(),DragonBgPulse).SetPos(0, 12);
+        DragonBg1Wrap = new CustomNode(CreateResNode(), DragonBgPulse).SetPos(0, 12);
 
         DragonBg = ImageNodeFromPart(0, 1).SetPos(0, 12).SetImageWrap(1).RemoveFlags(SetVisByAlpha);
         DragonLineArt = ImageNodeFromPart(0, 0).SetPos(0, 8).SetImageWrap(1).RemoveFlags(SetVisByAlpha);
 
         Backdrop = ImageNodeFromPart(0, 20).SetPos(0, 4).SetSize(152, 18).SetImageWrap(1);
-        Drain = NineGridFromPart(0, 21,0,2,0,0).SetPos(0, 4).SetAddRGB(-70, -80, 150).DefineTimeline(BarTimeline);
+        Drain = NineGridFromPart(0, 21, 0, 2, 0, 0).SetPos(0, 4).SetAddRGB(-70, -80, 150).DefineTimeline(BarTimeline);
         Gain = NineGridFromPart(0, 21, 0, 2, 0, 0).SetPos(0, 4).SetAddRGB(-70, -80, 150).DefineTimeline(BarTimeline);
         Main = NineGridFromPart(0, 19, 0, 2, 0, 0).SetPos(0, 4).SetAddRGB(-100, 0, 200).DefineTimeline(BarTimeline);
 
-        Bar = new CustomNode(CreateResNode(),Backdrop,Drain,Gain,Main).SetPos(85,70).SetAlpha(0);
+        Bar = new CustomNode(CreateResNode(), Backdrop, Drain, Gain, Main).SetPos(85, 70).SetAlpha(0);
 
         FrameTop = ImageNodeFromPart(0, 13).SetPos(44, 64).SetOrigin(0, 20).SetImageWrap(1);
-        FrameBottom = ImageNodeFromPart(0,12).SetPos(30,64).SetOrigin(0,20).SetImageWrap(1);
+        FrameBottom = ImageNodeFromPart(0, 12).SetPos(30, 64).SetOrigin(0, 20).SetImageWrap(1);
 
         Effects = BuildEffects();
 
@@ -76,7 +76,7 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
                               FrameTop,
                               FrameBottom,
                               Effects,
-                              NumTextNode).SetOrigin(186,70);
+                              NumTextNode).SetOrigin(186, 70);
     }
 
     private CustomNode BuildEffects()
@@ -184,10 +184,10 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
     protected override void StartMilestoneAnim()
     {
         Animator -= "BarPulse";
-        var colorFrame1 = new KeyFrame { AddRGB = Config.PulseColor  };
+        var colorFrame1 = new KeyFrame { AddRGB = Config.PulseColor };
         var colorFrame2 = new KeyFrame { AddRGB = Config.PulseColor2 };
 
-        var avg = (Config.PulseColor3.R+Config.PulseColor3.G+Config.PulseColor3.B)/3f;
+        var avg = (Config.PulseColor3.R + Config.PulseColor3.G + Config.PulseColor3.B) / 3f;
 
 
         var p1 = Config.PulseColor3 - new AddRGB((short)avg);
@@ -240,25 +240,25 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
         public AddRGB BarBg = new(0, 0, 0, 229);
         public ColorRGB FrameColor = new(100, 100, 100);
 
-        public AddRGB MainColor = new(60,-80,-100);
+        public AddRGB MainColor = new(60, -80, -100);
         public AddRGB GainColor = "0xDD7F30FF";
-        public AddRGB DrainColor = new(20,-100,-50);
+        public AddRGB DrainColor = new(20, -100, -50);
 
         public AddRGB PulseColor = "0xE39A63ff";
         public AddRGB PulseColor2 = "0xD16347FF";
         public AddRGB PulseColor3 = "0xB23F57ff";
 
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     new(255),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: new(255),
                                                               edgeColor: "0x9f835bff",
-                                                              showBg:    true,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Center,
-                                                              showZero:  true,
-                                                              invert:    false);
+                                                              showBg: true,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Center,
+                                                              showZero: true,
+                                                              invert: false);
 
         public DragonSpearConfig(WidgetConfig widgetConfig) : base(widgetConfig.DragonSpearCfg)
         {
@@ -306,7 +306,7 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
         WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
-        Backdrop.SetAddRGB(Config.BarBg,true);
+        Backdrop.SetAddRGB(Config.BarBg, true);
         Main.SetAddRGB(Config.MainColor);
         Drain.SetAddRGB(Config.DrainColor);
         Gain.SetAddRGB(Config.GainColor);

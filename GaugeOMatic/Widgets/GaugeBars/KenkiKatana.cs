@@ -56,33 +56,33 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
         Gain = ImageNodeFromPart(0, 2).SetPos(93, 24).SetWidth(0).SetAddRGB(255, 100, -10).SetImageWrap(1).DefineTimeline(BarTimeline);
         Main = ImageNodeFromPart(0, 1).SetPos(93, 24).SetWidth(0).SetImageWrap(1).DefineTimeline(BarTimeline);
 
-        Tick1 = ImageNodeFromPart(0, 5).SetPos(-14, 12).SetScale(1.1f).SetOrigin(16,30).SetImageFlag(32);
+        Tick1 = ImageNodeFromPart(0, 5).SetPos(-14, 12).SetScale(1.1f).SetOrigin(16, 30).SetImageFlag(32);
         Animator += new Tween(Tick1,
                               new(0) { ScaleX = 0.2f, Alpha = 0 },
                               new(130) { ScaleX = 1, Alpha = 128 },
                               new(270) { ScaleX = 1.2f, Alpha = 128 },
                               new(471) { ScaleX = 0.2f, Alpha = 0 })
-                              { Repeat = true };
+        { Repeat = true };
 
         Tick2 = ImageNodeFromPart(0, 5).SetPos(-14, 10).SetScale(1, 0.9f).SetOrigin(16, 30);
 
-        TickWrapper = new CustomNode(CreateResNode(),Tick1,Tick2).SetPos(91,9).DefineTimeline(TickTimeline);
+        TickWrapper = new CustomNode(CreateResNode(), Tick1, Tick2).SetPos(91, 9).DefineTimeline(TickTimeline);
 
-        BladeWrapper = new CustomNode(CreateResNode(),Blade,Drain,Gain,Main,TickWrapper).SetPos(15, -6);
+        BladeWrapper = new CustomNode(CreateResNode(), Blade, Drain, Gain, Main, TickWrapper).SetPos(15, -6);
 
-        Tassel = ImageNodeFromPart(0, 6).SetPos(-7, 28).SetOrigin(15,7);
+        Tassel = ImageNodeFromPart(0, 6).SetPos(-7, 28).SetOrigin(15, 7);
 
         Effects = new(
             CreateResNode(),
-            NineGridFromPart(0,4,0,50,0,50).SetPos(106,40).SetSize(190,26).SetOrigin(95,13).SetScale(2,0).SetAlpha(0),
-            ImageNodeFromPart(0,8).SetPos(172,22).SetScale(3).SetSize(60,60).SetOrigin(30,30).SetAlpha(0).SetImageWrap(1),
-            NineGridFromPart(0,4,0,50,0,50).SetPos(111,76).SetRotation(0.34906587f).SetSize(190,26).SetOrigin(190,13).SetScale(1.4f,0),
-            NineGridFromPart(0,4,0,50,0,50).SetPos(100,76).SetRotation(-0.34906587f).SetSize(190,26).SetOrigin(0,13).SetScale(1.4f,0)
+            NineGridFromPart(0, 4, 0, 50, 0, 50).SetPos(106, 40).SetSize(190, 26).SetOrigin(95, 13).SetScale(2, 0).SetAlpha(0),
+            ImageNodeFromPart(0, 8).SetPos(172, 22).SetScale(3).SetSize(60, 60).SetOrigin(30, 30).SetAlpha(0).SetImageWrap(1),
+            NineGridFromPart(0, 4, 0, 50, 0, 50).SetPos(111, 76).SetRotation(0.34906587f).SetSize(190, 26).SetOrigin(190, 13).SetScale(1.4f, 0),
+            NineGridFromPart(0, 4, 0, 50, 0, 50).SetPos(100, 76).SetRotation(-0.34906587f).SetSize(190, 26).SetOrigin(0, 13).SetScale(1.4f, 0)
             );
 
-        Glow = ImageNodeFromPart(0, 3).SetPos(108, 18).SetOrigin(139,25).SetAlpha(0);
+        Glow = ImageNodeFromPart(0, 3).SetPos(108, 18).SetOrigin(139, 25).SetAlpha(0);
 
-        Sword = new CustomNode(CreateResNode(),Hilt,BladeWrapper,Tassel,Effects,Glow).SetScale(0.85f).SetOrigin(103, 41);
+        Sword = new CustomNode(CreateResNode(), Hilt, BladeWrapper, Tassel, Effects, Glow).SetScale(0.85f).SetOrigin(103, 41);
 
         NumTextNode = new();
         return new CustomNode(CreateResNode(), Sword, NumTextNode).SetOrigin(0, 10);
@@ -111,8 +111,8 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
         Animator -= "Fade";
         Animator += new Tween(WidgetContainer,
                               new(0, WidgetContainer),
-                              Hidden[instant?0:250])
-                              { Label ="Fade", Ease = SinInOut };
+                              Hidden[instant ? 0 : 250])
+        { Label = "Fade", Ease = SinInOut };
     }
 
     public override void RevealBar(bool instant = false)
@@ -121,7 +121,7 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
         Animator += new Tween(WidgetContainer,
                               new(0, WidgetContainer),
                               Visible[instant ? 0 : 250])
-                              { Label = "Fade", Ease = SinInOut };
+        { Label = "Fade", Ease = SinInOut };
     }
 
     #endregion
@@ -196,7 +196,7 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
         public bool Mirror;
 
         public ColorRGB HiltColor = new(100, 100, 100);
-        public AddRGB MainColor = new(160,-24,-27);
+        public AddRGB MainColor = new(160, -24, -27);
         public AddRGB GainColor = new(255, 100, -10);
         public AddRGB DrainColor = new(-100, -100, -40);
 
@@ -205,17 +205,17 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
         public AddRGB PulseColor3 = new(160, 0, 20);
 
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 0), new(255), new(0), MiedingerMed, 18, Center);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     new(255),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: new(255),
                                                               edgeColor: "0x9f835bff",
-                                                              showBg:    true,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  15,
-                                                              align:     Center,
-                                                              showZero:  true,
-                                                              invert:    false);
+                                                              showBg: true,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 15,
+                                                              align: Center,
+                                                              showZero: true,
+                                                              invert: false);
 
         public KenkiKatanaConfig(WidgetConfig widgetConfig) : base(widgetConfig.KenkiKatanaCfg)
         {
@@ -269,8 +269,8 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
         WidgetContainer.SetPos(Config.Position + new Vector2(-15.5F, -6))
                   .SetScale(Config.Scale);
 
-        Sword.SetRotation(Config.Angle,true)
-             .SetScaleX(0.85f*flipFactor);
+        Sword.SetRotation(Config.Angle, true)
+             .SetScaleX(0.85f * flipFactor);
 
         Hilt.SetMultiply(Config.HiltColor);
 
@@ -285,7 +285,7 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
 
         HandleMilestone(CalcProg(), true);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(75,24));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(75, 24));
     }
 
     public override void DrawUI()

@@ -46,16 +46,16 @@ public sealed unsafe class OathSigil(Tracker tracker) : StateWidget(tracker)
     public override CustomNode BuildContainer()
     {
         Sigil = ImageNodeFromPart(0, 0).SetOrigin(90, 90).SetAlpha(0).SetScale(0).SetY(50).SetImageFlag(32);
-        SigilWrapper = new CustomNode(CreateResNode(), Sigil).SetSize(180,180);
+        SigilWrapper = new CustomNode(CreateResNode(), Sigil).SetSize(180, 180);
 
         WingR = ImageNodeFromPart(0, 1).SetPos(107, 42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1);
         WingL = ImageNodeFromPart(0, 1).SetPos(-6, 42).SetOrigin(70, 52).SetScale(0).SetAlpha(0);
 
         Animator += new Tween(Sigil,
-                              new(0) { AddRGB = new(-127,-112,-36) },
+                              new(0) { AddRGB = new(-127, -112, -36) },
                               new(500) { AddRGB = new(-107, -92, -16) },
                               new(960) { AddRGB = new(-127, -112, -36) })
-                              { Repeat = true, Ease = SinInOut };
+        { Repeat = true, Ease = SinInOut };
 
         return new(CreateResNode(), SigilWrapper, WingR, WingL);
     }
@@ -179,7 +179,7 @@ public sealed unsafe class OathSigil(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position+new Vector2(30.5F, 0))
+        WidgetContainer.SetPos(Config.Position + new Vector2(30.5F, 0))
                   .SetScale(Config.Scale);
 
         var state = Tracker.CurrentData.State;

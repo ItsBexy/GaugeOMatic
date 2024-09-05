@@ -59,7 +59,7 @@ public static class Color
         public static implicit operator string(ColorRGB c) => ((uint)c).ToString("x");
 
         public readonly uint ToRGBAu => (uint)((R << 24) + (G << 16) + (B << 8) + A);
-        public static ColorRGB FromAGBR(uint u) => new((byte)u,(byte)(u >> 16),(byte)(u >> 8),(byte)(u >> 24));
+        public static ColorRGB FromAGBR(uint u) => new((byte)u, (byte)(u >> 16), (byte)(u >> 8), (byte)(u >> 24));
 
         public readonly uint ToABGR => (uint)((A << 24) + (B << 16) + (G << 8) + R);
 
@@ -112,8 +112,8 @@ public static class Color
         public static AddRGB operator +(AddRGB a, AddRGB b) => new((short)(a.R + b.R), (short)(a.G + b.G), (short)(a.B + b.B), (byte)Math.Clamp(a.A + b.A, 0, 255));
         public static AddRGB operator -(AddRGB a, AddRGB b) => new((short)(a.R - b.R), (short)(a.G - b.G), (short)(a.B - b.B), (byte)Math.Clamp(a.A - b.A, 0, 255));
         public static AddRGB operator *(AddRGB a, float n) => new((short)(a.R * n), (short)(a.G * n), (short)(a.B * n));
-        public static AddRGB operator *(float n, AddRGB a) => a*n;
-        public static AddRGB operator /(AddRGB a, float n) => a*(1f/n);
+        public static AddRGB operator *(float n, AddRGB a) => a * n;
+        public static AddRGB operator /(AddRGB a, float n) => a * (1f / n);
 
         public readonly Vector4 AsVec4() => this;
         public readonly Vector3 AsVec3() => this;
@@ -125,13 +125,13 @@ public static class Color
             var oldMax = Math.Max(Math.Max(R, G), B);
             var oldMin = Math.Min(Math.Min(R, G), B);
 
-            if (oldMax == oldMin) return new((short)((min+max)/2));
+            if (oldMax == oldMin) return new((short)((min + max) / 2));
 
             var r = (short)(((R - oldMin) / (oldMax - oldMin) * (max - min)) + min);
             var g = (short)(((G - oldMin) / (oldMax - oldMin) * (max - min)) + min);
             var b = (short)(((B - oldMin) / (oldMax - oldMin) * (max - min)) + min);
 
-            return new(r,g,b);
+            return new(r, g, b);
         }
 
         public readonly uint ToBitField() =>
@@ -152,10 +152,11 @@ public static class Color
         public AddRGB Add = new(0, 0, 0);
         public ColorRGB Multiply = new(100, 100, 100);
 
-        public ColorSet() {
-        Base = new(255, 255, 255);
-        Add = new(0, 0, 0);
-        Multiply = new(100, 100, 100);
+        public ColorSet()
+        {
+            Base = new(255, 255, 255);
+            Add = new(0, 0, 0);
+            Multiply = new(100, 100, 100);
         }
 
         public ColorSet(ColorRGB @base, AddRGB add, ColorRGB multiply) : this()
@@ -171,7 +172,8 @@ public static class Color
     {
         public SortedList<uint, ColorRGB> Points;
 
-        public Gradient() {
+        public Gradient()
+        {
             Points = new()
             {
                 {0,new(0,0,0)},

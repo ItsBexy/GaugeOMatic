@@ -82,7 +82,7 @@ public sealed class SimpleTimer(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        NumTextNode.ApplyProps(Config.NumTextProps,Config.Position);
+        NumTextNode.ApplyProps(Config.NumTextProps, Config.Position);
     }
 
     public override void DrawUI()

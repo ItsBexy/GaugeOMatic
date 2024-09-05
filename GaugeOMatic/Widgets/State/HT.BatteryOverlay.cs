@@ -151,7 +151,7 @@ public sealed unsafe class BatteryOverlay(Tracker tracker) : StateWidget(tracker
     }
 
     private static Tween FadeOut(CustomNode node) => new(node, new(0, node), Hidden[150])
-        { Ease = SinInOut, Label = "Pulse" };
+    { Ease = SinInOut, Label = "Pulse" };
 
     public override void StateChange(int current, int previous)
     {

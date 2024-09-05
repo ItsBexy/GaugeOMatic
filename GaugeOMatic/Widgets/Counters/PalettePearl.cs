@@ -76,7 +76,7 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
             Halos.Add(ImageNodeFromPart(0, 14).SetScale(1.2f).SetOrigin(18, 18).SetImageFlag(0x20).SetAlpha(0));
             Flashes.Add(ImageNodeFromPart(0, 13).SetOrigin(18, 18).SetImageFlag(0x20).SetAlpha(0));
             PearlContainers.Add(new CustomNode(CreateResNode(), Pearls[i], PulseContainers[i], Glows[i], Sparkles[i], Halos[i], Flashes[i]).SetSize(36, 36));
-            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], PearlContainers[i]).SetOrigin(18, 18).SetSize(36,36));
+            Stacks.Add(new CustomNode(CreateResNode(), Frames[i], PearlContainers[i]).SetOrigin(18, 18).SetSize(36, 36));
         }
     }
 
@@ -176,12 +176,12 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
 
     private void StopPulseAll()
     {
-       Animator -= "Pulse";
-       for (var i = 0; i < Stacks.Count; i++)
-       {
-           Animator +=
-           [
-               new(PulseHalos[i],
+        Animator -= "Pulse";
+        for (var i = 0; i < Stacks.Count; i++)
+        {
+            Animator +=
+            [
+                new(PulseHalos[i],
                    new(0, PulseHalos[i]),
                    new(500) { Scale = 1.2f, Alpha = 0 })
                    { Label = "Pulse" },
@@ -189,8 +189,8 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
                    new(0, PulseGlows[i]),
                    new(500) { Scale = 1.5f, Alpha = 0 })
                    { Label = "Pulse" }
-           ];
-       }
+            ];
+        }
     }
 
     #endregion
@@ -233,7 +233,7 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
         public bool HideEmpty;
 
         public AddRGB PearlColorW = new(0);
-        public AddRGB Effects1W = new(0,0,150);
+        public AddRGB Effects1W = new(0, 0, 150);
         public AddRGB Effects2W = new(-128, 77, 127);
         public AddRGB PearlColorB = new(103, -22, 122);
         public AddRGB Effects1B = new(150, -150, -50);
@@ -241,7 +241,7 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
 
         [JsonIgnore] public AddRGB PearlColor => BasePearl == 0 ? PearlColorW : PearlColorB + new AddRGB(-103, 22, -122);
         [JsonIgnore] public AddRGB Effects1 => BasePearl == 0 ? Effects1W : Effects1B;
-        [JsonIgnore] public AddRGB Effects2 => BasePearl == 0 ? Effects2W + new AddRGB(128,-77,-127) : Effects2B + new AddRGB(-97,128,-122);
+        [JsonIgnore] public AddRGB Effects2 => BasePearl == 0 ? Effects2W + new AddRGB(128, -77, -127) : Effects2B + new AddRGB(-97, 128, -122);
 
         [DefaultValue(Always)] public CounterPulse Pulse = Always;
 
@@ -283,7 +283,7 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
         WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
-       PlaceFreeGems();
+        PlaceFreeGems();
 
         for (var i = 0; i < Stacks.Count; i++)
         {

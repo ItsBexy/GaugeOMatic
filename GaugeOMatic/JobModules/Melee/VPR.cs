@@ -74,9 +74,9 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
 
                 RadioControls("Apply to:", ref TweakConfigs.VPR0ColorAll, [false, true], ["3rd Step Only", "All Steps"], true);
 
-                if (ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
-                if (ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
-                if (ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral)||ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
+                if (ColorPickerRGB("Flank Venom##VPR0Flank", ref TweakConfigs.VPR0ColorFlank) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorFlank;
+                if (ColorPickerRGB("Hind Venom##VPR0Rear", ref TweakConfigs.VPR0ColorRear) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorRear;
+                if (ColorPickerRGB("Neutral / True North##VPR0Neutral", ref TweakConfigs.VPR0ColorNeutral) || ImGui.IsItemHovered()) TweakConfigs.TestColor = TweakConfigs.VPR0ColorNeutral;
             }
         }
 
@@ -94,12 +94,12 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         VisibilityTweak(TweakConfigs.VPRHide0, gauge->UseSimpleGauge, gaugeIndex[2u], gaugeIndex[10u]);
         ApplyColorCodeTweak(gauge);
 
-        gaugeIndex[2u].SetOrigin(167,0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
+        gaugeIndex[2u].SetOrigin(167, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
         gaugeIndex[9u].SetOrigin(52, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
         gaugeIndex[3u].SetOrigin(38, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
 
         gaugeIndex[16u].SetOrigin(97, 0).SetScaleX(TweakConfigs.VPR0Mirror ? -1 : 1);
-        gaugeIndex[18u].SetX(TweakConfigs.VPR0Mirror?-194:0).SetScaleX(TweakConfigs.VPR0Mirror ? 1 : -1);
+        gaugeIndex[18u].SetX(TweakConfigs.VPR0Mirror ? -194 : 0).SetScaleX(TweakConfigs.VPR0Mirror ? 1 : -1);
 
     }
 
@@ -118,10 +118,10 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
     }
 
     private static ActionRef ReavingFangs => 34609;
-    private static ActionRef FlankAction1 = 34610;
-    private static ActionRef FlankAction2 = 34611;
-    private static ActionRef HindAction1 = 34612;
-    private static ActionRef HindAction2 = 34613;
+    private static ActionRef FlankAction1 => 34610;
+    private static ActionRef FlankAction2 => 34611;
+    private static ActionRef HindAction1 => 34612;
+    private static ActionRef HindAction2 => 34613;
     private static bool FlankAnts => FlankAction1.HasAnts() || FlankAction2.HasAnts();
     private static bool HindAnts => HindAction1.HasAnts() || HindAction2.HasAnts();
 
@@ -152,13 +152,13 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
                                        ? neutral
                                        : ReavingFangs.GetAdjustedId()
                                            switch // check what state the Dread Fangs button is in
-                                           {
-                                               34611 => flank, // flank positional finishers are up
-                                               34613 => rear,  // rear positional finishers are up
-                                               34609 when FlankAnts => flank, // swiftskin is up, a flank positional has ants
-                                               34609 when HindAnts => rear, // swiftskin is up, a rear positional has ants
-                                               _ => neutral
-                                           };
+                                       {
+                                           34611 => flank, // flank positional finishers are up
+                                           34613 => rear,  // rear positional finishers are up
+                                           34609 when FlankAnts => flank, // swiftskin is up, a flank positional has ants
+                                           34609 when HindAnts => rear, // swiftskin is up, a rear positional has ants
+                                           _ => neutral
+                                       };
                 }
 
                 RecolorStandard(appliedColor);
@@ -225,7 +225,6 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
     }
 
 }
-
 
 public partial class TweakConfigs
 {

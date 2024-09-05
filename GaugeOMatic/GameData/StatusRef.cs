@@ -63,7 +63,7 @@ public partial class StatusRef : ItemRef
 
         AppliedTo = appliedTo;
         AppliedBy = appliedBy;
-        MaxStacks = StatusMaxes.TryGetValue(id,out var m) ? m :
+        MaxStacks = StatusMaxes.TryGetValue(id, out var m) ? m :
                     ExcelRow != null ? Math.Max(1, (int)ExcelRow.MaxStacks) : 1;
 
         MaxTime = maxtime;

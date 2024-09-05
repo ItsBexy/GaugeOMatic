@@ -61,10 +61,10 @@ public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
         FeatherWing = ImageNodeFromPart(0, 10).SetPos(16, 80).SetRotation(-90, true).SetAlpha(0);
 
         Animator += new Tween(FeatherWing,
-                              new(0){ AddRGB = 0 },
-                              new(375){ AddRGB = new(20,20,50) },
-                              new(1000){ AddRGB = 0 })
-                              { Repeat = true, Ease = SinInOut };
+                              new(0) { AddRGB = 0 },
+                              new(375) { AddRGB = new(20, 20, 50) },
+                              new(1000) { AddRGB = 0 })
+        { Repeat = true, Ease = SinInOut };
 
         Seraph = ImageNodeFromPart(0, 11).SetPos(3, 94).SetRotation(-90, true).SetAlpha(0);
         SeraphContainer = new(CreateResNode(), FeatherWing, Seraph);
@@ -74,12 +74,12 @@ public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
 
         Faerie = ImageNodeFromPart(0, 5).SetPos(-2, 95).SetRotation(-90, true).SetAlpha(0);
 
-        FancyWingBG = ImageNodeFromPart(0, 9).SetPos(23,54)
-                                             .SetOrigin(2,14)
+        FancyWingBG = ImageNodeFromPart(0, 9).SetPos(23, 54)
+                                             .SetOrigin(2, 14)
                                              .SetImageWrap(2)
                                              .SetRotation(-90, true);
 
-        FancyWingBG2 = ImageNodeFromPart(0, 8).SetPos(10,4)
+        FancyWingBG2 = ImageNodeFromPart(0, 8).SetPos(10, 4)
                                               .SetOrigin(12, 66)
                                               .SetAlpha(0);
 
@@ -88,16 +88,16 @@ public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
 
         Darts = ImageNodeFromPart(0, 6).SetPos(27, 18)
                                        .SetScale(0.5f)
-                                       .SetOrigin(0,52)
+                                       .SetOrigin(0, 52)
                                        .SetImageWrap(1)
                                        .SetAddRGB(0, 200, 20)
                                        .SetAlpha(0);
 
-        FaerieContainer = new CustomNode(CreateResNode(),Wings2,Faerie, FancyWingBG, FancyWingBG2,FancyWingBG3,Darts).SetPos(5,1).SetAlpha(0).SetOrigin(110,48);
+        FaerieContainer = new CustomNode(CreateResNode(), Wings2, Faerie, FancyWingBG, FancyWingBG2, FancyWingBG3, Darts).SetPos(5, 1).SetAlpha(0).SetOrigin(110, 48);
 
-        Sparkles = ImageNodeFromPart(0, 7).SetPos(51,26).SetScale(1.5f,1.7f).SetOrigin(14,8).SetImageWrap(1).SetImageFlag(32).SetAlpha(0);
+        Sparkles = ImageNodeFromPart(0, 7).SetPos(51, 26).SetScale(1.5f, 1.7f).SetOrigin(14, 8).SetImageWrap(1).SetImageFlag(32).SetAlpha(0);
 
-        return new(CreateResNode(),Wings,Frame,SeraphContainer, FaerieContainer,Sparkles);
+        return new(CreateResNode(), Wings, Frame, SeraphContainer, FaerieContainer, Sparkles);
     }
 
     #endregion
@@ -235,7 +235,7 @@ public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
         var curFrameState = Config.FrameStates[current];
 
         Wings.SetAddRGB(GetAdjustedColor()).SetAlpha(curFrameState == Blank);
-        Frame.SetMultiply(curFrameState == Blank? new ColorRGB(80,80,100) : 100);
+        Frame.SetMultiply(curFrameState == Blank ? new ColorRGB(80, 80, 100) : 100);
 
         FaerieContainer.SetAddRGB(GetAdjustedColor())
                        .SetAlpha(curFrameState == FrameState.Faerie).SetScale(1);
@@ -277,8 +277,8 @@ public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
         public void FillLists(int maxState)
         {
             while (FrameStates.Count <= maxState) FrameStates.Add(FrameStates.Count switch { < 1 => Blank, < 2 => FrameState.Faerie, _ => FrameState.Seraph });
-            while (FrameColors.Count <= maxState) FrameColors.Add(FrameColors.Count < 1 ? new(20-69, 10-64, 50-103) : new(-69, -64, -103));
-            while (SeraphColors.Count <= maxState) SeraphColors.Add(new(-128,-47,94));
+            while (FrameColors.Count <= maxState) FrameColors.Add(FrameColors.Count < 1 ? new(20 - 69, 10 - 64, 50 - 103) : new(-69, -64, -103));
+            while (SeraphColors.Count <= maxState) SeraphColors.Add(new(-128, -47, 94));
         }
     }
 

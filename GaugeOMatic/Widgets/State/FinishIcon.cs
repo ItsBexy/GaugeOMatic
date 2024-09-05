@@ -62,7 +62,7 @@ public sealed unsafe class FinishIcon(Tracker tracker) : StateWidget(tracker)
             Animator += new Tween(Symbol,
                                   new(0) { Rotation = startAngle },
                                   new((int)(60000f / rpm)) { Rotation = endAngle })
-                                  { Repeat = true, Label = "RotationTween" };
+            { Repeat = true, Label = "RotationTween" };
         }
     }
 
@@ -89,7 +89,7 @@ public sealed unsafe class FinishIcon(Tracker tracker) : StateWidget(tracker)
         Animator += new Tween(Symbol,
                               new(0) { Alpha = 0, AddRGB = color },
                               new(200) { Alpha = 255, AddRGB = color })
-                              { Label = "SymbolAlpha" };
+        { Label = "SymbolAlpha" };
 
         BeginRotation();
     }
@@ -158,7 +158,7 @@ public sealed unsafe class FinishIcon(Tracker tracker) : StateWidget(tracker)
                   .SetScale(Config.Scale);
 
         Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State))
-              .SetPartId(Config.Tech?1:0);
+              .SetPartId(Config.Tech ? 1 : 0);
 
         if (Symbol.Visible) { BeginRotation(); }
     }

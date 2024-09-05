@@ -51,7 +51,7 @@ public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracke
 
         for (var i = 0; i < count; i++)
         {
-            Hearts.Add(ImageNodeFromPart(0, 5).SetPos(0,-20).SetOrigin(12, 34).SetAlpha(0));
+            Hearts.Add(ImageNodeFromPart(0, 5).SetPos(0, -20).SetOrigin(12, 34).SetAlpha(0));
 
             Glows.Add(ImageNodeFromPart(0, 20).SetScale(1.3f, 1.2f).SetOrigin(12, 34).SetImageWrap(1));
 
@@ -60,12 +60,12 @@ public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracke
                                   new(300) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 152 },
                                   new(630) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
                                   new(960) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
-                                  { Repeat = true, Ease = SinInOut };
+            { Repeat = true, Ease = SinInOut };
 
             Glows[i].UnsetNodeFlags(NodeFlags.UseDepthBasedPriority);
             GlowWrappers.Add(new CustomNode(CreateResNode(), Glows[i]).SetAlpha(0));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Hearts[i], GlowWrappers[i]).SetOrigin(12, 34).SetSize(24,68));
+            Stacks.Add(new CustomNode(CreateResNode(), Hearts[i], GlowWrappers[i]).SetOrigin(12, 34).SetSize(24, 68));
         }
     }
 

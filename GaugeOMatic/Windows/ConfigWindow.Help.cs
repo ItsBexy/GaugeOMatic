@@ -1,4 +1,5 @@
 using Dalamud.Interface;
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 
@@ -10,12 +11,12 @@ public partial class ConfigWindow
     {
         ImGui.TextDisabled("GAUGE-O-MATIC HELP");
 
-        ImGui.BeginTabBar("HelpTabs");
+        var tb = ImRaii.TabBar("HelpTabs");
 
         AboutTab();
         HowToTab();
 
-        ImGui.EndTabBar();
+        tb.Dispose();
 
     }
 
@@ -34,20 +35,15 @@ public partial class ConfigWindow
 
     private static void AboutTab()
     {
-        if (ImGui.BeginTabItem("About the Plugin"))
-        {
-
-            ImGui.TextWrapped(AboutText);
-
-
-
-            ImGui.EndTabItem();
-        }
+        var ti = ImRaii.TabItem("About the Plugin");
+        if (ti) ImGui.TextWrapped(AboutText);
+        ti.Dispose();
     }
 
     private static void HowToTab()
     {
-        if (ImGui.BeginTabItem("How-to"))
+        var ti = ImRaii.TabItem("How-to");
+        if (ti)
         {
             ImGui.TextWrapped("There are two ways to add elements to your job gauge: setting them up manually, or loading a preset.");
 
@@ -110,7 +106,7 @@ public partial class ConfigWindow
 
             ImGui.Text("-Add all elements at once");
             ImGui.SameLine();
-            IconButtonWithText("Add all to...", FontAwesomeIcon.Plus,"dummyAddAll");
+            IconButtonWithText("Add all to...", FontAwesomeIcon.Plus, "dummyAddAll");
 
             ImGui.Text("-Copy a design onto one of your existing trackers");
             ImGui.SameLine();
@@ -135,13 +131,8 @@ public partial class ConfigWindow
             ImGui.TextWrapped("If you've copied a preset from an external source to your clipboard, you can import it by clicking ");
             ImGui.SameLine();
             IconButtonWithText("Import From Clipboard", FontAwesomeIcon.SignInAlt, "dummyImport");
-
-
-
-
-
-            ImGui.EndTabItem();
-
         }
+
+        ti.Dispose();
     }
 }

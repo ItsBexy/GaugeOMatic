@@ -14,7 +14,7 @@ public partial class ActionRef
     public static unsafe ActionManager* ActionManager => Instance();
 
     public int GetMaxCharges() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetMaxCharges(GetAdjustedId(), 0);
-    public int GetActionCost() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetActionCost(ActionType.Action, ID,default,default,default,default);
+    public int GetActionCost() => FFXIVClientStructs.FFXIV.Client.Game.ActionManager.GetActionCost(ActionType.Action, ID, default, default, default, default);
 
     // ReSharper disable once UnusedMember.Global
     public int GetCurrentCharges()
@@ -65,7 +65,7 @@ public partial class ActionRef
 
         var cooldownTotal = GetCooldownTotal();
         var elapsed = GetCooldownElapsed();
-        var cooldownRemaining = elapsed == 0 ? 0 : cooldownTotal - elapsed;
+        var cooldownRemaining = elapsed == 0 || elapsed >= cooldownTotal ? 0 : cooldownTotal - elapsed;
 
         int count;
         var maxCount = GetMaxCharges();
@@ -80,11 +80,11 @@ public partial class ActionRef
         };
 
         var gaugeValue = preview == null ? barType switch
-                             {
-                                 StatusTimer => Math.Abs(ReadyStatus!.TryGetStatus(out var status, Self) ? status?.RemainingTime ?? 0 : 0),
-                                 ComboTimer => HasAnts() ? ActionManager->Combo.Timer : 0,
-                                 _ => cooldownRemaining
-                             } : (preview.Value * maxGauge)!;
+        {
+            StatusTimer => Math.Abs(ReadyStatus!.TryGetStatus(out var status, Self) ? status?.RemainingTime ?? 0 : 0),
+            ComboTimer => HasAnts() ? ActionManager->Combo.Timer : 0,
+            _ => cooldownRemaining
+        } : (preview.Value * maxGauge)!;
 
         if (preview != null)
         {

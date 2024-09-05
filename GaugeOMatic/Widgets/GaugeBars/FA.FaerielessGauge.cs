@@ -64,16 +64,16 @@ public sealed unsafe class FaerieLess(Tracker tracker) : GaugeBarWidget(tracker)
         public ColorRGB DrainColor = new(113, 5, 70);
         public bool Mirror;
 
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     0xffffffff,
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: 0xffffffff,
                                                               edgeColor: 0x288246ff,
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Right,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Right,
+                                                              invert: false);
 
         public FaerieLessConfig(WidgetConfig widgetConfig) : base(widgetConfig.FaerieLessCfg)
         {

@@ -113,7 +113,7 @@ public unsafe class HeatReplica : GaugeBarWidget
                               new(0) { AddRGB = 0, MultRGB = new(90) },
                               new(400) { AddRGB = 30, MultRGB = new(100) },
                               new(800) { AddRGB = 0, MultRGB = new(90) })
-                              { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
+        { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
 
 
     protected override void StopMilestoneAnim()
@@ -129,7 +129,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         Animator += new Tween(target,
                               new(0, target),
                               new(400) { AddRGB = 0, MultRGB = new(100) })
-                              { Ease = SinInOut, Label = "BarPulse" };
+        { Ease = SinInOut, Label = "BarPulse" };
 
     #endregion
 
@@ -175,9 +175,9 @@ public unsafe class HeatReplica : GaugeBarWidget
         [DefaultValue(12)] public ushort BaseColor = 12;
         public AddRGB BackdropColor;
 
-        public AddRGB MainColorOrange = new(91, 52,-27);
+        public AddRGB MainColorOrange = new(91, 52, -27);
         public AddRGB GainColorOrange = new(346, 307, 228);
-        public AddRGB DrainColorOrange = new(-9,-48,-127);
+        public AddRGB DrainColorOrange = new(-9, -48, -127);
 
         public AddRGB MainColorBlue = new(-38, 100, 116);
         public AddRGB GainColorBlue = new(217, 355, 371);
@@ -242,7 +242,7 @@ public unsafe class HeatReplica : GaugeBarWidget
         Backdrop.SetWidth(Config.Width);
 
         var orange = Config.BaseColor == 12;
-        AddRGB colorOffset = orange?new(-91,-52, 27):new(38,-100,-116);
+        AddRGB colorOffset = orange ? new(-91, -52, 27) : new(38, -100, -116);
 
         Main.SetPartId(Config.BaseColor)
             .SetAddRGB(colorOffset + (orange ? Config.MainColorOrange : Config.MainColorBlue))
@@ -259,7 +259,7 @@ public unsafe class HeatReplica : GaugeBarWidget
             .DefineTimeline(BarTimeline)
             .SetWidth(0);
 
-        NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width+6, 74));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width + 6, 74));
     }
 
     public override void DrawUI()

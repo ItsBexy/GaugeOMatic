@@ -61,7 +61,7 @@ public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracke
         LeftContainer = new CustomNode(CreateResNode(), LeftHalf, LeftMask).SetX(-40).SetSize(81, 160);
         RightContainer = new CustomNode(CreateResNode(), RightHalf, RightMask).SetX(40).SetSize(81, 160);
 
-        Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetOrigin(40,40);
+        Circle = new CustomNode(CreateResNode(), LeftContainer, RightContainer).SetOrigin(40, 40);
 
         Halo = ImageNodeFromPart(1, 0).SetOrigin(64, 64).SetPos(-24, 16).SetImageFlag(32).SetAlpha(0);
         NumTextNode = new();
@@ -184,7 +184,7 @@ public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracke
     {
         WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
         Circle.SetMultiply(40).SetAddRGB(Config.Color, true);
-        Halo.SetAddRGB(Config.Color+new AddRGB(30));
+        Halo.SetAddRGB(Config.Color + new AddRGB(30));
         LeftHalf.SetImageFlag((byte)(Config.Dodge ? 0x20 : 0));
         RightHalf.SetImageFlag((byte)(Config.Dodge ? 0x21 : 1));
 

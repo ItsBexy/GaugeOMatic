@@ -338,7 +338,7 @@ internal static class CommonParts
             new(324, 28, 56, 56)     // 11 Inactive Gem
         );
 
-            #endregion
+    #endregion
 
     #region Healer
 

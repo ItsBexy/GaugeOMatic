@@ -10,19 +10,19 @@ public unsafe struct KeyFrame
 {
     public float Time { get; set; } = 0;
 
-    public float? X            { get; set; } = null;
-    public float? Y            { get; set; } = null;
-    public float? Width        { get; set; } = null;
-    public float? Height       { get; set; } = null;
-    public float? ScaleX       { get; set; } = null;
-    public float? ScaleY       { get; set; } = null;
-    public float? Scale        { get; set; } = null;
-    public float? Alpha        { get; set; } = null;
-    public float? Rotation     { get; set; } = null;
-    public ColorRGB? RGB       { get; set; } = null;
-    public AddRGB? AddRGB      { get; set; } = null;
-    public ColorRGB? MultRGB   { get; set; } = null;
-    public ushort? PartId      { get; set; } = null;
+    public float? X { get; set; } = null;
+    public float? Y { get; set; } = null;
+    public float? Width { get; set; } = null;
+    public float? Height { get; set; } = null;
+    public float? ScaleX { get; set; } = null;
+    public float? ScaleY { get; set; } = null;
+    public float? Scale { get; set; } = null;
+    public float? Alpha { get; set; } = null;
+    public float? Rotation { get; set; } = null;
+    public ColorRGB? RGB { get; set; } = null;
+    public AddRGB? AddRGB { get; set; } = null;
+    public ColorRGB? MultRGB { get; set; } = null;
+    public ushort? PartId { get; set; } = null;
     public Vector4? PartCoords { get; set; } = null;
     public float? TimelineProg { get; set; } = null;
 
@@ -69,19 +69,19 @@ public unsafe struct KeyFrame
     public static KeyFrame Interpolate(KeyFrame start, KeyFrame end, float subProg) =>
         new()
         {
-            X            = Interpolate(start.X, end.X, subProg),
-            Y            = Interpolate(start.Y, end.Y, subProg),
-            Width        = Interpolate(start.Width, end.Width, subProg),
-            Height       = Interpolate(start.Height, end.Height, subProg),
-            ScaleX       = Interpolate(start.ScaleX ?? start.Scale, end.ScaleX ?? end.Scale, subProg),
-            ScaleY       = Interpolate(start.ScaleY ?? start.Scale, end.ScaleY ?? end.Scale, subProg),
-            Alpha        = Interpolate(start.Alpha, end.Alpha, subProg),
-            Rotation     = Interpolate(start.Rotation, end.Rotation, subProg),
-            RGB          = Interpolate(start.RGB, end.RGB, subProg),
-            AddRGB       = Interpolate(start.AddRGB, end.AddRGB, subProg),
-            MultRGB      = Interpolate(start.MultRGB, end.MultRGB, subProg),
-            PartId       = Interpolate(start.PartId, end.PartId, subProg),
-            PartCoords   = Interpolate(start.PartCoords, end.PartCoords, subProg),
+            X = Interpolate(start.X, end.X, subProg),
+            Y = Interpolate(start.Y, end.Y, subProg),
+            Width = Interpolate(start.Width, end.Width, subProg),
+            Height = Interpolate(start.Height, end.Height, subProg),
+            ScaleX = Interpolate(start.ScaleX ?? start.Scale, end.ScaleX ?? end.Scale, subProg),
+            ScaleY = Interpolate(start.ScaleY ?? start.Scale, end.ScaleY ?? end.Scale, subProg),
+            Alpha = Interpolate(start.Alpha, end.Alpha, subProg),
+            Rotation = Interpolate(start.Rotation, end.Rotation, subProg),
+            RGB = Interpolate(start.RGB, end.RGB, subProg),
+            AddRGB = Interpolate(start.AddRGB, end.AddRGB, subProg),
+            MultRGB = Interpolate(start.MultRGB, end.MultRGB, subProg),
+            PartId = Interpolate(start.PartId, end.PartId, subProg),
+            PartCoords = Interpolate(start.PartCoords, end.PartCoords, subProg),
             TimelineProg = Interpolate(start.TimelineProg, end.TimelineProg, subProg)
         };
 

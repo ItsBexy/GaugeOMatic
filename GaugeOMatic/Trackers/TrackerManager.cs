@@ -55,7 +55,7 @@ public class TrackerManager : IDisposable
 
     private void ApplyDisplayRules(ConditionFlag flag, bool value)
     {
-       JobModules.Find(static jm => jm.Job == Current || jm.Class == Current)?.ApplyDisplayRules();
+        JobModules.Find(static jm => jm.Job == Current || jm.Class == Current)?.ApplyDisplayRules();
     }
 
     public void Dispose()

@@ -18,9 +18,9 @@ public unsafe class Tween
 
     public static readonly Dictionary<EaseType, Func<float, float>> EaseFuncs = new()
     {
-        { Linear,static p => p},
-        { SinInOut,static p => (float)((-0.5f * Math.Cos(p * Math.PI)) + 0.5f)},
-        { Overshoot,static p => PolyCalc(p, 0, 0.76686507936507d, 2.96130952380954d, -2.72817460317462d)}
+        { Linear, static p => p },
+        { SinInOut, static p => (float)((-0.5f * Math.Cos(p * Math.PI)) + 0.5f) },
+        { Overshoot, static p => PolyCalc(p, 0, 0.76686507936507d, 2.96130952380954d, -2.72817460317462d) }
     };
 
     public CustomNode Target;
@@ -42,7 +42,7 @@ public unsafe class Tween
         Target = target;
         IsStale = false;
 
-        KeyFrames = [..keyFrames.OrderBy(static k => k.Time)];
+        KeyFrames = [.. keyFrames.OrderBy(static k => k.Time)];
         Length = 0;
         foreach (var k in KeyFrames) Length = Math.Max(Length, k.Time);
     }

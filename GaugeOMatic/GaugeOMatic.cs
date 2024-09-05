@@ -24,7 +24,8 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     private IDalamudPluginInterface PluginInterface { get; init; }
     private TrackerManager TrackerManager { get; init; }
 
-    public GaugeOMatic(IDalamudPluginInterface pluginInterface) {
+    public GaugeOMatic(IDalamudPluginInterface pluginInterface)
+    {
         PluginInterface = pluginInterface;
         PluginInterface.Create<Service>();
         PluginDirPath = PluginInterface.AssemblyLocation.DirectoryName!;

@@ -342,7 +342,7 @@ public sealed unsafe class DragonEye(Tracker tracker) : StateWidget(tracker)
 
     public class DragonEyeConfig : WidgetTypeConfig
     {
-        public enum EyeState {Closed, HalfOpen, Open}
+        public enum EyeState { Closed, HalfOpen, Open }
 
         public override Vector2 DefaultPosition => new(83, 89);
 

@@ -232,18 +232,18 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         public bool PetalInc;
         [DefaultValue(true)] public bool PetalDec = true;
         public AddRGB PetalColor = new(124, -125, -125);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0),
-                                                              color:     0xffffffff,
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0),
+                                                              color: 0xffffffff,
                                                               edgeColor: 0x440b00ff,
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Center,
-                                                              invert:    false,
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Center,
+                                                              invert: false,
                                                               precision: 0,
-                                                              showZero:  true);
+                                                              showZero: true);
 
         public BalanceBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.BalanceBarCfg)
         {
@@ -285,12 +285,12 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
         WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale);
 
-        BarContainer.SetScale(left?1:-1, 1);
+        BarContainer.SetScale(left ? 1 : -1, 1);
 
-        BarOverlay.SetPos(left?25:59, 40)
-                  .SetPartId(left?3:20);
+        BarOverlay.SetPos(left ? 25 : 59, 40)
+                  .SetPartId(left ? 3 : 20);
 
-        Main.SetPartId(light?1:2)
+        Main.SetPartId(light ? 1 : 2)
             .SetImageFlag((byte)(light ? 0 : 1))
             .SetAddRGB(Config.MainColor);
 

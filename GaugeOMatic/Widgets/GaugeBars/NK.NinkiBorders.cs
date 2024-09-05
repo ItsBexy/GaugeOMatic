@@ -71,7 +71,7 @@ public sealed unsafe class NinkiBorders(Tracker tracker) : GaugeBarWidget(tracke
                                               .RemoveFlags(SetVisByAlpha)
                                               .DefineTimeline(BarTimeline);
 
-        TickTop = ImageNodeFromPart(0, 2).SetPos(0,-16)
+        TickTop = ImageNodeFromPart(0, 2).SetPos(0, -16)
                                          .SetOrigin(22, 43.5f)
                                          .SetScale(0.5f, 0.15f)
                                          .RemoveFlags(SetVisByAlpha)
@@ -173,16 +173,16 @@ public sealed unsafe class NinkiBorders(Tracker tracker) : GaugeBarWidget(tracke
         public ColorRGB TickColor = new(255, 195, 144);
         [DefaultValue(true)] public bool Top = true;
         [DefaultValue(true)] public bool Bottom = true;
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(227, 30),
-                                                              color:     new(255, 241, 197),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(227, 30),
+                                                              color: new(255, 241, 197),
                                                               edgeColor: new(110, 25, 0),
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  20,
-                                                              align:     Center,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 20,
+                                                              align: Center,
+                                                              invert: false);
 
         public NinkiBordersConfig(WidgetConfig widgetConfig) : base(widgetConfig.NinkiBordersCfg)
         {

@@ -13,7 +13,7 @@ public class BLUModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
 {
     public override Job Job => BLU;
     public override Job Class => Job.None;
-    public override Role Role => Caster|Limited;
+    public override Role Role => Caster | Limited;
 
     public override List<AddonOption> AddonOptions =>
     [

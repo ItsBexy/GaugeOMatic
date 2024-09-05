@@ -82,7 +82,7 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
 
     protected float CalcProg(bool usePrev = false)
     {
-        var prog = (usePrev? PreviousGauge : CurrentGauge) / MaxGauge;
+        var prog = (usePrev ? PreviousGauge : CurrentGauge) / MaxGauge;
         return Invert ? 1 - prog : prog;
     }
 
@@ -93,7 +93,7 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
     public float MaxGauge => Tracker.CurrentData.MaxGauge;
 
     public bool ShouldInvertByDefault => Tracker.RefType == RefType.Action &&
-                                         !ActionRef.ActionData[Tracker.ItemRef?.ID??0].HasFlag(RequiresStatus | ComboBonus);
+                                         !ActionRef.ActionData[Tracker.ItemRef?.ID ?? 0].HasFlag(RequiresStatus | ComboBonus);
 
     public override void Update()
     {
@@ -115,7 +115,8 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
             if (prog - prevProg >= GainTolerance) OnIncrease(prog, prevProg);
             if (prog > 0 && prevProg <= 0) OnIncreaseFromMin();
             if (prog >= 1 && prevProg < 1) OnIncreaseToMax();
-        } else if (prevProg > prog)
+        }
+        else if (prevProg > prog)
         {
             if (prevProg - prog >= DrainTolerance) OnDecrease(prog, prevProg);
             if (prevProg >= 1 && prog < 1) OnDecreaseFromMax();
@@ -165,7 +166,7 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
                    + new Tween(increasing || drain.Node == null ? main : drain,
                                new(0) { TimelineProg = previous },
                                new(time) { TimelineProg = current })
-                                               { Label = "DrainGain" };
+                   { Label = "DrainGain" };
     }
 
     public bool HideControls() => HideControls("Hide Empty", "Hide Full");

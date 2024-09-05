@@ -198,7 +198,7 @@ public sealed unsafe class HutonReplica(Tracker tracker) : GaugeBarWidget(tracke
         if (current - previous >= 5f) GainAnim();
         if (current == 0 && previous > 0) DepleteAnim();
 
-        ClockHand.SetRotation(AdjustProg(current/max));
+        ClockHand.SetRotation(AdjustProg(current / max));
 
         ClockHand.SetVis(active);
         Shuriken.SetVis(active);
@@ -255,16 +255,16 @@ public sealed unsafe class HutonReplica(Tracker tracker) : GaugeBarWidget(tracke
         public ColorRGB FadeColor = new(0x32, 0x32, 0x64);
         public ColorRGB HandColor = new(100);
 
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     0xffffffFFu,
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: 0xffffffFFu,
                                                               edgeColor: 0x000000FFu,
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Center,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Center,
+                                                              invert: false);
 
         public HutonReplicaConfig(WidgetConfig widgetConfig) : base(widgetConfig.HutonReplicaCfg)
         {
@@ -295,8 +295,8 @@ public sealed unsafe class HutonReplica(Tracker tracker) : GaugeBarWidget(tracke
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position-new Vector2(75))
-                  .SetScale(Config.Scale/2f);
+        WidgetContainer.SetPos(Config.Position - new Vector2(75))
+                  .SetScale(Config.Scale / 2f);
 
         ClockHand.SetMultiply(Config.HandColor);
 

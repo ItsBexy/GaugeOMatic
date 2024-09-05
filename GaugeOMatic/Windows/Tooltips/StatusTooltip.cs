@@ -11,7 +11,7 @@ public partial class StatusRef
 {
     public override void TooltipHeaderText()
     {
-        MulticolorText((Plain,Name),(Disabled,$" [{ID}]"));
+        MulticolorText((Plain, Name), (Disabled, $" [{ID}]"));
         ImGui.TextDisabled(AppliedTo == StatusActor.Target ? "On Enemy Target" : "On Self");
     }
 
@@ -51,7 +51,7 @@ public partial class StatusRef
                     ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 2);
                 }
 
-                MulticolorText((Plain,$" {name}"), (Disabled, $" [{id}]"));
+                MulticolorText((Plain, $" {name}"), (Disabled, $" [{id}]"));
 
 
             }

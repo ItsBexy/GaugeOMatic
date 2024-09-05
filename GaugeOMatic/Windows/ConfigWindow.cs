@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
@@ -52,32 +53,31 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Spacing();
 
-        if (ImGui.BeginTable("LayoutTable", 3, SizingFixedFit))
+        var table = ImRaii.Table("LayoutTable", 3, SizingFixedFit);
+
+        ImGui.TableSetupColumn("VertTabBar");
+        ImGui.TableSetupColumn("VertTabBar2");
+        ImGui.TableSetupColumn("body", WidthFixed, 1200f * GlobalScale);
+
+        VerticalTabBar();
+
+        ImGui.TableNextColumn();
+        ImGui.Indent(10);
+
+        switch (Configuration.GeneralTab)
         {
-            ImGui.TableSetupColumn("VertTabBar");
-            ImGui.TableSetupColumn("VertTabBar2");
-            ImGui.TableSetupColumn("body", WidthFixed, 1200f * GlobalScale);
-
-            VerticalTabBar();
-
-            ImGui.TableNextColumn();
-            ImGui.Indent(10);
-
-            switch (Configuration.GeneralTab)
+            case Help:
+                DrawHelpTab();
+                break;
+            default:
             {
-                case Help:
-                    DrawHelpTab();
-                    break;
-                default:
-                {
-                    var jobModule = GetModuleForTab(Configuration.JobTab, JobModules);
-                    if (jobModule != null) DrawJobModuleTab(jobModule);
-                    break;
-                }
+                var jobModule = GetModuleForTab(Configuration.JobTab, JobModules);
+                if (jobModule != null) DrawJobModuleTab(jobModule);
+                break;
             }
-
-            ImGui.EndTable();
         }
+
+        table.Dispose();
     }
 
     private void VerticalTabBar()
@@ -134,14 +134,18 @@ public partial class ConfigWindow : Window, IDisposable
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
             TextureProvider.GetFromGameIcon(new(GetJobIcon(job))).TryGetWrap(out var tex, out _);
 
-            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, tabActive), new(ButtonHovered, tabHovered), new(Button, active ? tabActive : tab));
-            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle,new(22)))
+            var col = new ImRaii.Color().Push(ButtonActive, tabActive)
+                                        .Push(ButtonHovered, tabHovered)
+                                        .Push(Button, active ? tabActive : tab);
+
+            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
             {
                 Configuration.JobTab = job;
                 Configuration.GeneralTab = Jobs;
                 Configuration.Save();
             }
-            ImGui.PopStyleColor(3);
+
+            col.Dispose();
         }
 
         void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
@@ -149,13 +153,17 @@ public partial class ConfigWindow : Window, IDisposable
             var active = Configuration.GeneralTab == genTab;
             TextureProvider.GetFromGameIcon(new(icon)).TryGetWrap(out var tex, out _);
 
-            ImGuiHelpy.PushStyleColorMulti(new(ButtonActive, TabActive), new(ButtonHovered, TabHovered), new(Button, active ? TabActive : Tab));
+            var col = new ImRaii.Color().Push(ButtonActive, TabActive)
+                                        .Push(ButtonHovered, TabHovered)
+                                        .Push(Button, active ? TabActive : Tab);
+
             if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
             {
                 Configuration.GeneralTab = genTab;
                 Configuration.Save();
             }
-            ImGui.PopStyleColor(3);
+
+            col.Dispose();
 
             if (ImGui.IsItemHovered()) ImGui.SetTooltip(tooltip);
         }

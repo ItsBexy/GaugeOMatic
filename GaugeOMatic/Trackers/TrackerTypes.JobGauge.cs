@@ -621,7 +621,7 @@ public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<Aetherflo
                 preview);
 }
 
-[TrackerDisplay("Fire Attunement", SMN,"Shows Egi time remaining", "Shows Fire Attunement stacks", "Shows if Ruby/Ifrit is summoned")]
+[TrackerDisplay("Fire Attunement", SMN, "Shows Egi time remaining", "Shows Fire Attunement stacks", "Shows if Ruby/Ifrit is summoned")]
 public sealed unsafe class RubyTracker : JobGaugeTracker<TranceGaugeData>
 {
     public override string GaugeAddonName => "JobHudSMN1";
@@ -683,7 +683,7 @@ public sealed unsafe class SummonTracker : JobGaugeTracker<TranceGaugeData>
 
     public override TrackerData GetCurrentData(float? preview = null)
     {
-        if (GaugeAddon == null || GaugeData == null) return new(0, 1, 0,15, 0, 5, preview);
+        if (GaugeAddon == null || GaugeData == null) return new(0, 1, 0, 15, 0, 5, preview);
 
         var lux = GaugeData->SolarBahamutEnabled;
         var baha = GaugeData->BahamutPlateEnabled;
@@ -728,7 +728,7 @@ public sealed unsafe class BlackManaTracker : JobGaugeTracker<BalanceGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null
             ? new(0, 2, 0, 100, 0, 1, preview)
-            : new((int)Math.Floor((double)(Math.Min(GaugeData->BlackMana, GaugeData->WhiteMana) / 50)), 2, GaugeData->BlackMana, 100, GaugeData->BlackMana >= 50 ? 1 : 0, 1, preview);
+            : new((int)Math.Floor(Math.Min(GaugeData->BlackMana, GaugeData->WhiteMana) / 50f), 2, GaugeData->BlackMana, 100, GaugeData->BlackMana >= 50 ? 1 : 0, 1, preview);
 }
 
 [TrackerDisplay("White Mana", RDM, "Shows White Mana", "Shows spendable combos", "Shows if White Mana is at least 50")]
@@ -739,7 +739,7 @@ public sealed unsafe class WhiteManaTracker : JobGaugeTracker<BalanceGaugeData>
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null
             ? new(0, 2, 0, 100, 0, 1, preview)
-            : new((int)Math.Floor((double)(GaugeData->WhiteMana / 50)), 2, GaugeData->WhiteMana, 100, GaugeData->WhiteMana >= 50 ? 1 : 0, 1, preview);
+            : new((int)Math.Floor(GaugeData->WhiteMana / 50f), 2, GaugeData->WhiteMana, 100, GaugeData->WhiteMana >= 50 ? 1 : 0, 1, preview);
 }
 
 [TrackerDisplay("Balance Crystal", RDM, null, null, "Shows Combo/Imbalance state")]

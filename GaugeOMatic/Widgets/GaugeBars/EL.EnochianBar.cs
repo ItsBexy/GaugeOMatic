@@ -71,7 +71,7 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
         GainMask = MaskNode();
         MainMask = MaskNode();
 
-        DrainContainer = new CustomNode(CreateResNode(), Drain, DrainMask).SetSize(85, 85).SetPos(0,2);
+        DrainContainer = new CustomNode(CreateResNode(), Drain, DrainMask).SetSize(85, 85).SetPos(0, 2);
         GainContainer = new CustomNode(CreateResNode(), Gain, GainMask).SetSize(85, 85).SetPos(0, 2);
         MainContainer = new CustomNode(CreateResNode(), Main, MainMask).SetSize(85, 85).SetPos(0, 2);
 
@@ -86,13 +86,13 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
         NumTextNode.Node->SetPriority((ushort)(Config.HandOnTop ? 2 : 0));
 
         Contents2 = new CustomNode(CreateResNode(), Backplate, Bar, ClockHandContainer).SetSize(128, 124).SetOrigin(8, 8);
-        Contents = new CustomNode(CreateResNode(),Contents2).SetOrigin(7,8);
+        Contents = new CustomNode(CreateResNode(), Contents2).SetOrigin(7, 8);
 
-        return new(CreateResNode(), Contents, NumTextNode );
+        return new(CreateResNode(), Contents, NumTextNode);
 
-        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetSize(176,176).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
+        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetSize(176, 176).SetScale(0.95f, 0.9f).SetOrigin(-16, -16).SetPos(-10, -8);
 
-        CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0,-1);
+        CustomNode FillNode() => ImageNodeFromPart(0, 10).SetRotation(-1.55768f).SetOrigin(-2, -4).DefineTimeline(BarTimeline).SetPos(0, -1);
     }
 
     #endregion
@@ -124,7 +124,7 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
                               new(150) { AddRGB = 0, MultRGB = new(100) },
                               new(250) { AddRGB = 70, MultRGB = new(100) },
                               new(360) { AddRGB = 0, MultRGB = new(100) })
-                              { Label = "Activate" };
+        { Label = "Activate" };
 
     #endregion
 
@@ -132,8 +132,8 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
 
     public override float AdjustProg(float prog)
     {
-         if (!Config.Smooth) prog = (float)Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
-         return prog;
+        if (!Config.Smooth) prog = (float)Floor(prog * Tracker.CurrentData.MaxGauge) / Tracker.CurrentData.MaxGauge;
+        return prog;
     }
     public override void PreUpdate(float prog, float prevProg) => Config.AnimationLength = Config.Smooth || (prog > prevProg) != Config.Invert ? 250 : 0;
 
@@ -166,8 +166,6 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
         ActivateNode(Bar);
         Activated = true;
     }
-
-
 
     private void DimBar()
     {
@@ -204,16 +202,16 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
         public bool HandOnTop;
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), new(0), Jupiter, 16, Left);
-        protected override NumTextProps NumTextDefault => new(enabled:   false,
-                                                              position:  new(0, 0),
-                                                              color:     new(255),
+        protected override NumTextProps NumTextDefault => new(enabled: false,
+                                                              position: new(0, 0),
+                                                              color: new(255),
                                                               edgeColor: new(0),
-                                                              showBg:    true,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  20,
-                                                              align:     Center,
-                                                              invert:    false);
+                                                              showBg: true,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 20,
+                                                              align: Center,
+                                                              invert: false);
 
         public EnochianBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.EnochianBarCfg)
         {

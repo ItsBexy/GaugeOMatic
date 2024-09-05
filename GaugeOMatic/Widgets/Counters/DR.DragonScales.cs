@@ -50,7 +50,7 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
         Frame = BuildFrame(Max, out var width);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(),Frame,StackContainer).SetOrigin(width/2,21).SetSize(width,42);
+        return new CustomNode(CreateResNode(), Frame, StackContainer).SetOrigin(width / 2f, 21).SetSize(width, 42);
     }
 
 
@@ -59,15 +59,15 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
         var frameNodes = new List<CustomNode> { ImageNodeFromPart(0, 23) };
 
         width = 21;
-        for (var i=0;i<count-1;i++)
+        for (var i = 0; i < count - 1; i++)
         {
-            frameNodes.Add(ImageNodeFromPart(0,24).SetX(width));
+            frameNodes.Add(ImageNodeFromPart(0, 24).SetX(width));
             width += 24;
         }
-        frameNodes.Add(ImageNodeFromPart(0,25).SetX(width));
+        frameNodes.Add(ImageNodeFromPart(0, 25).SetX(width));
         width += 25;
 
-        return new(CreateResNode(),frameNodes.ToArray());
+        return new(CreateResNode(), frameNodes.ToArray());
     }
 
     public CustomNode BuildStacks(int count)
@@ -88,10 +88,10 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
             Glows.Add(CreateGlowNode(x, partId));
             Glows2.Add(CreateGlowNode(x, partId).SetVis(false));
             Glows3.Add(CreateGlowNode(x, partId).SetVis(false));
-            Pierces.Add(ImageNodeFromPart(0,14).SetPos(x-12,0)
-                                               .SetScale(0.6f,0.8f)
-                                               .SetOrigin(28,34)
-                                               .SetAddRGB(20,-100,100)
+            Pierces.Add(ImageNodeFromPart(0, 14).SetPos(x - 12, 0)
+                                               .SetScale(0.6f, 0.8f)
+                                               .SetOrigin(28, 34)
+                                               .SetAddRGB(20, -100, 100)
                                                .SetImageWrap(2)
                                                .SetImageFlag(32)
                                                .SetAlpha(0));
@@ -112,17 +112,17 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
 
             x += i == 0 ? 28 : 24;
 
-            Stacks.Add(new(CreateResNode(), Scales[i], Glows[i],Glows2[i],Glows3[i],Pierces[i]));
+            Stacks.Add(new(CreateResNode(), Scales[i], Glows[i], Glows2[i], Glows3[i], Pierces[i]));
         }
 
-        return new(CreateResNode(),Stacks.ToArray());
+        return new(CreateResNode(), Stacks.ToArray());
     }
 
     private CustomNode CreateGlowNode(int x, ushort part) =>
-        ImageNodeFromPart(0, part).SetPos(x-10, 0)
+        ImageNodeFromPart(0, part).SetPos(x - 10, 0)
                                   .SetImageFlag(32)
                                   .SetOrigin(16, 21)
-                                  .SetAddRGB(Config.ScaleColor.Transform(-160,200))
+                                  .SetAddRGB(Config.ScaleColor.Transform(-160, 200))
                                   .RemoveFlags(SetVisByAlpha)
                                   .SetAlpha(0);
 
@@ -136,10 +136,10 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
 
         Scales[i].SetAlpha(255);
 
-        var glowX = (i == 0 ? 5 : 36 + ((i - 1) * 24))-4;
+        var glowX = (i == 0 ? 5 : 36 + ((i - 1) * 24)) - 4;
 
-        var glowColor2 = Config.ScaleColor.Transform(-100,50);
-        var glowColor1 = Config.ScaleColor.Transform(-100,40);
+        var glowColor2 = Config.ScaleColor.Transform(-100, 50);
+        var glowColor1 = Config.ScaleColor.Transform(-100, 40);
 
         Animator +=
         [
@@ -187,14 +187,14 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
         Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 0, Scale = Config.Scale * 0.75f },
                               new(150) { Alpha = 255, Scale = Config.Scale })
-                              { Ease = SinInOut };
+        { Ease = SinInOut };
 
     private void FrameVanish() =>
         Animator += new Tween(WidgetContainer,
                               new(0) { Alpha = 255, Scale = Config.Scale },
                               new(50) { Alpha = 200, Scale = Config.Scale * 1.05f },
                               new(200) { Alpha = 0, Scale = Config.Scale * 0.75f })
-                              { Ease = SinInOut };
+        { Ease = SinInOut };
 
     #endregion
 
@@ -249,7 +249,7 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
     public class DragonScalesConfig : CounterWidgetConfig
     {
         public float Angle;
-        public AddRGB ScaleColor = new(-40,-100,11);
+        public AddRGB ScaleColor = new(-40, -100, 11);
         public ColorRGB FrameColor = new(100);
         public bool HideEmpty;
         [DefaultValue(AtMax)] public CounterPulse Pulse = AtMax;
@@ -279,7 +279,7 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
 
     public override void ResetConfigs() => config = new();
 
-    public AddRGB ColorOffset = new(40,100,-11);
+    public AddRGB ColorOffset = new(40, 100, -11);
     public override void ApplyConfigs()
     {
         WidgetContainer.SetPos(Config.Position)

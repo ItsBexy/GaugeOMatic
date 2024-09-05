@@ -65,7 +65,7 @@ public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(trac
 
             Knives.Add(new(CreateResNode(), Knives1[i], Knives2[i]));
 
-            Stacks.Add(new CustomNode(CreateResNode(), Slots[i], Knives[i]).SetOrigin(9, 69).SetSize(46,78));
+            Stacks.Add(new CustomNode(CreateResNode(), Slots[i], Knives[i]).SetOrigin(9, 69).SetSize(46, 78));
         }
     }
 
@@ -129,7 +129,7 @@ public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(trac
     public override void HideStack(int i)
     {
         Animator += new Tween(Knives[i],
-                              new(0) { X = 0, Y =0, Alpha = 255 },
+                              new(0) { X = 0, Y = 0, Alpha = 255 },
                               new(90) { X = -15, Y = 32, Alpha = 0 });
     }
 

@@ -79,7 +79,7 @@ public sealed unsafe class InkSlash(Tracker tracker) : GaugeBarWidget(tracker)
                               new(0) { ScaleX = 0.5f, ScaleY = 1.55f },
                               new(600) { ScaleX = 0.5f, ScaleY = 1.6f },
                               new(1000) { ScaleX = 0.5f, ScaleY = 1.55f })
-                              { Repeat = true, Ease = SinInOut };
+        { Repeat = true, Ease = SinInOut };
 
         Backdrop = ImageNodeFromPart(0, 1).SetRotation((float)(PI / 2f))
                                           .SetPos(29, 11)
@@ -212,22 +212,22 @@ public sealed unsafe class InkSlash(Tracker tracker) : GaugeBarWidget(tracker)
     {
         public new Vector2 Scale = new(1, 1);
         public AddRGB BackdropColor = new(-255);
-        public AddRGB BackdropInactive = new(-255,-255,-255, 128);
+        public AddRGB BackdropInactive = new(-255, -255, -255, 128);
         public AddRGB MainColor = new(55, -255, -255);
         public AddRGB GainColor = "0xFF785CFF";
         public AddRGB DrainColor = "0x6A003CFF";
         public float Rotation;
         public AddRGB TickColor = new(255, -100, -162);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     0xFFFFFFFF,
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: 0xFFFFFFFF,
                                                               edgeColor: 0x9B0000FF,
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  20,
-                                                              align:     Center,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 20,
+                                                              align: Center,
+                                                              invert: false);
 
         public InkSlashConfig(WidgetConfig widgetConfig) : base(widgetConfig.InkSlashCfg)
         {
@@ -272,10 +272,10 @@ public sealed unsafe class InkSlash(Tracker tracker) : GaugeBarWidget(tracker)
 
     public AddRGB ColorOffset = new(-46, 110, 110, 0);
     public AddRGB SplatterOffset = new(-102, 128, 112);
-    public Vector2 PosAdjust = new(60,-50);
+    public Vector2 PosAdjust = new(60, -50);
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position+PosAdjust);
+        WidgetContainer.SetPos(Config.Position + PosAdjust);
         Bar.SetScale(Config.Scale);
         Tick.SetAddRGB(Config.TickColor);
 

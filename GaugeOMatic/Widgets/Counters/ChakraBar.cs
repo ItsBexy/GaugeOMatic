@@ -60,10 +60,10 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
     public override CustomNode BuildContainer()
     {
         Max = GetMax();
-        SocketPlate = BuildSocketPlate(Max, out var width).SetOrigin(width / 2, 29);
+        SocketPlate = BuildSocketPlate(Max, out var width).SetOrigin(width / 2f, 29);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(width/2, 29).SetSize(width,58);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(width / 2f, 29).SetSize(width, 58);
     }
 
     private CustomNode BuildSocketPlate(int count, out int width)
@@ -108,14 +108,14 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
                                              .SetScale(4, 0)
                                              .SetPos(-15, 16)
                                              .SetImageFlag(32)
-                                             .SetAddRGB(200, 100,-100)
+                                             .SetAddRGB(200, 100, -100)
                                              .SetMultiply(50));
 
             Rings.Add(ImageNodeFromPart(1, 3).SetOrigin(23, 23)
                                              .SetScale(1.2f)
-                                             .SetPos(-4,-4)
+                                             .SetPos(-4, -4)
                                              .SetImageFlag(32)
-                                             .SetAddRGB(200, -100,-250)
+                                             .SetAddRGB(200, -100, -250)
                                              .SetMultiply(50)
                                              .SetAlpha(0));
 
@@ -127,8 +127,8 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
 
             ActionLines.Add(ImageNodeFromPart(1, 4).SetOrigin(32, 32)
                                                   .SetImageFlag(32)
-                                                  .SetPos(-13,-14)
-                                                  .SetAddRGB(150, 0,-150)
+                                                  .SetPos(-13, -14)
+                                                  .SetAddRGB(150, 0, -150)
                                                   .SetMultiply(70)
                                                   .SetAlpha(0));
 
@@ -205,13 +205,13 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
         Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
                               new(200) { Scale = Config.Scale, Alpha = 255 })
-                              { Ease = SinInOut };
+        { Ease = SinInOut };
 
     private void PlateVanish() =>
         Animator += new Tween(WidgetContainer,
                               new(0) { Scale = Config.Scale, Alpha = 255 },
                               new(150) { Scale = Config.Scale * 0.65f, Alpha = 0 })
-                              { Ease = SinInOut };
+        { Ease = SinInOut };
 
     #endregion
 
@@ -300,7 +300,7 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
 
         WidgetContainer.SetPos(Config.Position)
                   .SetScale(Config.Scale)
-                  .SetRotation(Config.Angle,true);
+                  .SetRotation(Config.Angle, true);
         SocketPlate.SetMultiply(Config.FrameColor).SetScale(flipFactor);
         StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
 

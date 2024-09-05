@@ -45,7 +45,7 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
                               new(0) { Alpha = 0, ScaleX = 1, ScaleY = 1 },
                               new(600) { Alpha = 255, ScaleX = 1.02f, ScaleY = 1.2f },
                               new(1200) { Alpha = 0, ScaleX = 1.05f, ScaleY = 1.6f })
-                              { Repeat = true };
+        { Repeat = true };
 
         return new CustomNode(CreateResNode(), BarGlow, BarGlow2).SetAlpha(0);
     }

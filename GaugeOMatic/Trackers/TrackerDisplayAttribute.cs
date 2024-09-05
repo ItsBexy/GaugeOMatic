@@ -1,3 +1,4 @@
+using Dalamud.Interface.Utility.Raii;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Utility;
 using ImGuiNET;
@@ -35,7 +36,8 @@ public class TrackerDisplayAttribute : Attribute
     }
 
     public TrackerDisplayAttribute(string name, Job job, string? barDesc = null, string? counterDesc = null, string? stateDesc = null, string? footer = null) :
-        this(name, job, GetJobIcon(job), barDesc, counterDesc, stateDesc, footer) { }
+        this(name, job, GetJobIcon(job), barDesc, counterDesc, stateDesc, footer)
+    { }
 
     public TrackerDisplayAttribute(ItemRef i)
     {
@@ -76,17 +78,18 @@ public class TrackerDisplayAttribute : Attribute
         }
     }
 
-    public static void DrawTooltip(uint? icon, string heading, string? w1=null, string? w2 = null, string? w3 = null, string? footer = null)
+    public static void DrawTooltip(uint? icon, string heading, string? w1 = null, string? w2 = null, string? w3 = null, string? footer = null)
     {
-        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1));
-        ImGui.BeginTooltip();
+        var col = new ImRaii.Color().Push(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1));
+        var tt = ImRaii.Tooltip();
 
         var startPos = ImGui.GetCursorPos();
 
         DrawTooltipIcon(icon, startPos);
-        ImGui.BeginGroup();
+
+        var gr = ImRaii.Group();
         ImGui.Text(heading);
-        ImGui.EndGroup();
+        gr.Dispose();
 
         ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
 
@@ -94,15 +97,15 @@ public class TrackerDisplayAttribute : Attribute
 
         if (footer != null) ImGui.TextDisabled(footer);
 
-        ImGui.EndTooltip();
-        ImGui.PopStyleColor(1);
+        tt.Dispose();
+        col.Dispose();
     }
 
     public static void WidgetBehaviorTable(string? barDesc, string? counterDesc, string? stateDesc)
     {
         ImGui.TextDisabled("Widget Behavior");
 
-        ImGui.BeginTable("BehaviorTable", 2);
+        var table = ImRaii.Table("BehaviorTable", 2);
 
         ImGui.TableSetupColumn("Widget");
         ImGui.TableSetupColumn("Value");
@@ -134,7 +137,7 @@ public class TrackerDisplayAttribute : Attribute
             ImGui.Text(stateDesc);
         }
 
-        ImGui.EndTable();
+        table.Dispose();
     }
 
     private static void DrawTooltipIcon(uint? iconId, Vector2 startPos)

@@ -84,7 +84,7 @@ public class WidgetAttribute : Attribute
     internal static Dictionary<string, WidgetAttribute> WidgetList = new();
 
     public string DisplayName { get; init; } = null!;
-    public string? Author { get;  init; }
+    public string? Author { get; init; }
     public string? Description { get; init; }
     public WidgetTags WidgetTags { get; init; }
     public MultiComponentData? MultiCompData;
@@ -126,14 +126,14 @@ public class WidgetAttribute : Attribute
         {
             var (whiteList, blackList) = ParseRestrictions(type);
 
-            var widgetAttr = new WidgetAttribute(displayName:   GetAttr<WidgetNameAttribute>(type) ?? "???",
-                                                 author:        GetAttr<WidgetAuthorAttribute>(type) ?? "",
-                                                 description:   GetAttr<WidgetDescriptionAttribute>(type) ?? "",
-                                                 widgetTags:    GetAttr<WidgetTagsAttribute>(type) ?? WidgetTags.None,
+            var widgetAttr = new WidgetAttribute(displayName: GetAttr<WidgetNameAttribute>(type) ?? "???",
+                                                 author: GetAttr<WidgetAuthorAttribute>(type) ?? "",
+                                                 description: GetAttr<WidgetDescriptionAttribute>(type) ?? "",
+                                                 widgetTags: GetAttr<WidgetTagsAttribute>(type) ?? WidgetTags.None,
                                                  multiCompData: GetAttr<MultiCompDataAttribute>(type)?.MultiCompData,
-                                                 uiTabOptions:  GetAttr<WidgetUiTabsAttribute>(type) ?? All,
-                                                 whiteList:     whiteList,
-                                                 blackList:     blackList);
+                                                 uiTabOptions: GetAttr<WidgetUiTabsAttribute>(type) ?? All,
+                                                 whiteList: whiteList,
+                                                 blackList: blackList);
 
             WidgetList.Add(type.Name, widgetAttr);
             Log.Verbose($"Added Widget Option: {widgetAttr.DisplayName}");
@@ -142,7 +142,7 @@ public class WidgetAttribute : Attribute
 
     private static T? GetAttr<T>(Type type) => (T?)type.GetCustomAttributes(typeof(T), true).FirstOrDefault();
 
-    private static List<T?> GetAttrList<T>(Type type) => type.GetCustomAttributes(typeof(T), true).Select(static a=>(T?)a).ToList();
+    private static List<T?> GetAttrList<T>(Type type) => type.GetCustomAttributes(typeof(T), true).Select(static a => (T?)a).ToList();
 
     private static (List<string> whiteList, List<string> blackList) ParseRestrictions(Type type)
     {
@@ -167,20 +167,20 @@ public enum WidgetTags
     None = 0,
 
     // format tags
-    Counter              = 0x1,
-    GaugeBar             = 0x2,
-    State                = 0x4,
+    Counter = 0x1,
+    GaugeBar = 0x2,
+    State = 0x4,
     // ReSharper disable once UnusedMember.Global
-    HasJobRestrictions   = 0x10,
+    HasJobRestrictions = 0x10,
     HasAddonRestrictions = 0x20, // is only designed to appear on certain HUD elements
 
-    Replica              = 0x40,  // Designed to recreate (in full or in part) the appearance of an existing job gauge
-    MultiComponent       = 0x80,
+    Replica = 0x40,  // Designed to recreate (in full or in part) the appearance of an existing job gauge
+    MultiComponent = 0x80,
 
     // ReSharper disable once UnusedMember.Global
-    Special              = 0x100,
+    Special = 0x100,
 
-    HasClippingMask      = 0x200,
+    HasClippingMask = 0x200,
 
-    Exclude              = 0x1000 // never show this Widget as an option. for WIP widgets
+    Exclude = 0x1000 // never show this Widget as an option. for WIP widgets
 }

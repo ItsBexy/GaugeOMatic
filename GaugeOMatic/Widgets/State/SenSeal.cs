@@ -49,12 +49,12 @@ public sealed unsafe class SenSeal(Tracker tracker) : StateWidget(tracker)
     {
         InactiveSeal = ImageNodeFromPart(0, 3);
 
-        ActiveSeal = ImageNodeFromPart(0, 0).SetOrigin(40,40)
+        ActiveSeal = ImageNodeFromPart(0, 0).SetOrigin(40, 40)
                                             .SetImageWrap(1)
                                             .SetAlpha(0);
 
         WhiteHalo = ImageNodeFromPart(0, 19).SetPos(12, 12)
-                                            .SetOrigin(27,27)
+                                            .SetOrigin(27, 27)
                                             .SetAlpha(0);
 
         SealGlow = ImageNodeFromPart(0, 15).SetOrigin(40, 40)
@@ -93,7 +93,7 @@ public sealed unsafe class SenSeal(Tracker tracker) : StateWidget(tracker)
                                              .SetAlpha(0)
                                              .RemoveFlags(SetVisByAlpha);
 
-        Glow2Container = new(CreateResNode(),SealPulse,KanjiPulse);
+        Glow2Container = new(CreateResNode(), SealPulse, KanjiPulse);
 
         return new CustomNode(CreateResNode(),
                               InactiveSeal,
@@ -230,7 +230,7 @@ public sealed unsafe class SenSeal(Tracker tracker) : StateWidget(tracker)
         ];
     }
 
-    public override void StateChange(int current, int previous) => Animator += new Tween(WidgetContainer, new(0,WidgetContainer), new(300){AddRGB = Config.Colors.ElementAtOrDefault(current)});
+    public override void StateChange(int current, int previous) => Animator += new Tween(WidgetContainer, new(0, WidgetContainer), new(300) { AddRGB = Config.Colors.ElementAtOrDefault(current) });
 
     #endregion
 

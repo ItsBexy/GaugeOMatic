@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.UiBuilder;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
@@ -45,7 +46,8 @@ public static class WidgetUI
     {
         LabelColumn(label);
 
-        if (ImGui.Checkbox($"##Bool{label}", ref b)) {
+        if (ImGui.Checkbox($"##Bool{label}", ref b))
+        {
             UpdateFlag |= Save;
             return true;
         }
@@ -279,7 +281,8 @@ public static class WidgetUI
 
             if (i > 0) SameLineSquished();
 
-            if (IconButton($"{label}{option}{i}", icon, 16f, val is not null && val.Equals(option) ? activeColor : buttonColor)) {
+            if (IconButton($"{label}{option}{i}", icon, 16f, val is not null && val.Equals(option) ? activeColor : buttonColor))
+            {
                 val = option;
                 UpdateFlag |= Save;
                 ret = true;
@@ -302,7 +305,6 @@ public static class WidgetUI
         ImGui.SetNextItemWidth(90f * GlobalScale);
         var input1 = ImGui.DragInt($"##{label}Drag", ref val, step, min, max);
         if (input1) val = Math.Clamp(val, min, max);
-
 
         ImGui.PushButtonRepeat(true);
 
@@ -363,24 +365,24 @@ public static class WidgetUI
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
-        ImGui.PushStyleColor(Text, new Vector4(1, 1, 1, 0.3f));
+        var col = new ImRaii.Color().Push(Text, new Vector4(1, 1, 1, 0.3f));
         ImGui.Text(headingText);
-        ImGui.PopStyleColor();
+        col.Dispose();
     }
 
     public static void Info(string helpText)
     {
         ImGui.SameLine();
-        ImGui.PushFont(IconFont);
+        var f = ImRaii.PushFont(IconFont);
         ImGui.TextDisabled(FontAwesomeIcon.QuestionCircle.ToIconString());
-        ImGui.PopFont();
+        f.Dispose();
         if (ImGui.IsItemHovered())
         {
-            ImGui.BeginTooltip();
-            ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+            var tt = ImRaii.Tooltip();
+            var wrap = ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f);
             ImGui.TextUnformatted(helpText);
-            ImGui.PopTextWrapPos();
-            ImGui.EndTooltip();
+            wrap.Dispose();
+            tt.Dispose();
         }
     }
 

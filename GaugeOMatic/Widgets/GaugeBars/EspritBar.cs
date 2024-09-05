@@ -88,20 +88,20 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
         GainMask = MaskNode();
         MainMask = MaskNode();
 
-        MainContainer = FillContainer(Main,MainMask);
-        DrainContainer = FillContainer(Drain,DrainMask);
-        GainContainer = FillContainer(Gain,GainMask);
+        MainContainer = FillContainer(Main, MainMask);
+        DrainContainer = FillContainer(Drain, DrainMask);
+        GainContainer = FillContainer(Gain, GainMask);
 
-        return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0, 1).SetSize(168, 70).SetOrigin(0,-1);
+        return new CustomNode(CreateResNode(), DrainContainer, GainContainer, MainContainer).SetPos(0, 1).SetSize(168, 70).SetOrigin(0, -1);
 
-        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetPos(1,0)
+        CustomNode FillNode() => ImageNodeFromPart(0, 0).SetPos(1, 0)
                                                         .SetOrigin(83, 82)
                                                         .SetRotation(-151, true)
                                                         .DefineTimeline(BarTimeline);
 
-        CustomNode MaskNode() => ClippingMaskFromPart(1,0).SetSize(176,176).SetPos(-4,-88).SetOrigin(88,176).SetScale(2,1);
+        CustomNode MaskNode() => ClippingMaskFromPart(1, 0).SetSize(176, 176).SetPos(-4, -88).SetOrigin(88, 176).SetScale(2, 1);
 
-        static CustomNode FillContainer(CustomNode fill,CustomNode mask) =>
+        static CustomNode FillContainer(CustomNode fill, CustomNode mask) =>
             new CustomNode(CreateResNode(), fill, mask)
                 .SetSize(168, 70)
                 .SetOrigin(84, 70);
@@ -121,7 +121,7 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
                                   new(0) { AddRGB = Config.PulseColor2 - Config.MainColor },
                                   new(800) { AddRGB = Config.PulseColor - Config.MainColor },
                                   new(1600) { AddRGB = Config.PulseColor2 - Config.MainColor })
-                                  { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
+        { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
     }
 
     protected override void StopMilestoneAnim()
@@ -195,7 +195,7 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
         public AddRGB GainColor = new(-80, 30, 160);
         public AddRGB DrainColor = new(-50, -140, -70);
         public AddRGB PulseColor = new(280, 100, -110);
-        public AddRGB PulseColor2 = new(0,-120,-255);
+        public AddRGB PulseColor2 = new(0, -120, -255);
 
         public LabelTextProps LabelText = new(string.Empty, false, new(0, 32), new(255), 0x8E6A0CFF, Jupiter, 16, Left);
         protected override NumTextProps NumTextDefault => new(enabled: true,
@@ -259,7 +259,7 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
                   .SetScale(Config.Scale);
 
         Fan.SetScaleX(flipFactor)
-           .SetRotation(Config.Angle,true);
+           .SetRotation(Config.Angle, true);
 
         FanPlate.SetVis(Config.ShowPlate)
                 .SetMultiply(Config.FrameColor);

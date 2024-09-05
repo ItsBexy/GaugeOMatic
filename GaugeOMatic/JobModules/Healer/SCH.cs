@@ -85,7 +85,7 @@ public class SCHModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
                 break;
             case 2:
                 show = StatusData[791].TryGetStatus(out var buff, Self) || summoned;
-                dissTimer = (int)Math.Abs(buff?.RemainingTime??0);
+                dissTimer = (int)Math.Abs(buff?.RemainingTime ?? 0);
                 break;
             default:
                 show = true;
@@ -100,7 +100,7 @@ public class SCHModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         var textSimple = (CustomNode)gauge->GaugeSimple.FaeValueDisplay->AtkTextNode;
         if (dissTimer > 0)
         {
-            textStandard.SetText(dissTimer.ToString()).SetTextColor(0xD7D7D7FF,0x316381FF);
+            textStandard.SetText(dissTimer.ToString()).SetTextColor(0xD7D7D7FF, 0x316381FF);
             textSimple.SetText(dissTimer.ToString()).SetTextColor(0xD7D7D7FF, 0x316381FF);
         }
         else

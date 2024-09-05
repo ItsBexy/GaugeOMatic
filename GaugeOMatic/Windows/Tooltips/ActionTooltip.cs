@@ -75,7 +75,8 @@ public partial class ActionRef
             ImGui.TextColored(Yellow, ReadyStatus?.Name ?? "?");
             SameLineSquished();
             ImGui.TextColored(Plain, "timer");
-        } else if (barType == ComboTimer) ImGui.Text("Shows combo time remaining for this action");
+        }
+        else if (barType == ComboTimer) ImGui.Text("Shows combo time remaining for this action");
         else ImGui.Text($"Shows recast time remaining ({LastKnownCooldown}s)");
     }
 

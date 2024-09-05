@@ -1,4 +1,5 @@
 using Dalamud.Interface;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using GaugeOMatic.Config;
 using GaugeOMatic.Trackers;
@@ -22,7 +23,7 @@ public class TrackerWindow : Window, IDisposable
     public Configuration Configuration;
     public Tracker Tracker;
     public Widget? Widget;
-    public string Hash => Tracker.GetHashCode()+"-"+Widget?.GetHashCode();
+    public string Hash => Tracker.GetHashCode() + "-" + Widget?.GetHashCode();
 
     public TrackerWindow(Tracker tracker, Widget widget, Configuration configuration, string name) : base(name)
     {
@@ -54,7 +55,7 @@ public class TrackerWindow : Window, IDisposable
 
     private void HeaderTable()
     {
-        if (!ImGui.BeginTable("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX)) return;
+        var table = ImRaii.Table("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX);
 
         ImGui.TableSetupColumn("Labels", WidthFixed, 60f * GlobalScale);
 
@@ -66,7 +67,7 @@ public class TrackerWindow : Window, IDisposable
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiHelpy.TextRightAligned("Pinned to:",true);
+        ImGuiHelpy.TextRightAligned("Pinned to:", true);
         ImGui.TableNextColumn();
         if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
         {
@@ -79,7 +80,8 @@ public class TrackerWindow : Window, IDisposable
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
-        ImGui.EndTable();
+        table.Dispose();
+
         ImGui.TextDisabled("Widget Settings");
         ImGui.SameLine();
 
@@ -91,6 +93,7 @@ public class TrackerWindow : Window, IDisposable
             Tracker.UpdateTracker();
             UpdateFlag |= Save;
         }
+
         if (ImGui.IsItemHovered()) ImGui.SetTooltip($"This will reset to the defaults for {Widget?.GetAttributes.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
 
     }
@@ -113,7 +116,7 @@ public class TrackerWindow : Window, IDisposable
         if (preview)
         {
             ImGui.SetNextItemWidth(153f * GlobalScale);
-            if (ImGui.SliderFloat($"##PreviewSlider{Tracker.GetHashCode()}", ref previewValue, 0, 1f,""))
+            if (ImGui.SliderFloat($"##PreviewSlider{Tracker.GetHashCode()}", ref previewValue, 0, 1f, ""))
                 Tracker.TrackerConfig.PreviewValue = previewValue;
         }
     }
@@ -121,7 +124,9 @@ public class TrackerWindow : Window, IDisposable
     private void WidgetOptionTable()
     {
         ImGui.Spacing();
-        if (ImGui.BeginTabBar("UiTab" + Hash))
+
+        var tb = ImRaii.TabBar("UiTab" + Hash);
+        if (tb)
         {
             var tabOptions = Tracker.Widget?.GetAttributes.UiTabOptions ?? WidgetUiTab.None;
             DrawTab(tabOptions, "Layout", Layout);
@@ -130,31 +135,33 @@ public class TrackerWindow : Window, IDisposable
             DrawTab(tabOptions, "Behavior", Behavior);
         }
 
-        if (ImGui.BeginTable($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip))
-        {
-            ImGui.TableSetupColumn("Labels",WidthStretch,0.75f);
-            ImGui.TableSetupColumn("Controls", WidthStretch, 1);
+        tb.Dispose();
 
-            ImGui.Spacing();
-            ImGui.Spacing();
+        var table = ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip);
 
-            Widget?.DrawUI();
+        ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
+        ImGui.TableSetupColumn("Controls", WidthStretch, 1);
 
-            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
+        ImGui.Spacing();
+        ImGui.Spacing();
 
-            if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
+        Widget?.DrawUI();
 
-            ImGui.EndTable();
-        }
+        if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
+
+        if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
+
+        table.Dispose();
 
         return;
 
         void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
         {
-            if (tabs.HasFlag(uiTab) && ImGui.BeginTabItem($"{label}##{label}Tab{Hash}"))
+            if (tabs.HasFlag(uiTab))
             {
-                Tracker.Widget!.UiTab = uiTab;
-                ImGui.EndTabItem();
+                var ti = ImRaii.TabItem($"{label}##{label}Tab{Hash}");
+                if (ti) Tracker.Widget!.UiTab = uiTab;
+                ti.Dispose();
             }
         }
     }
@@ -176,7 +183,7 @@ public class TrackerWindow : Window, IDisposable
             var min = Tracker.TrackerConfig.LevelMin;
             var max = Tracker.TrackerConfig.LevelMax;
             cond3 = IntControls("Minimum Level", ref min, 1, max, 1);
-            if (cond3) { Tracker.TrackerConfig.LevelMin = min;}
+            if (cond3) { Tracker.TrackerConfig.LevelMin = min; }
             cond4 = IntControls("Maximum Level", ref max, min, LevelCap, 1);
             if (cond4) { Tracker.TrackerConfig.LevelMax = max; }
         }

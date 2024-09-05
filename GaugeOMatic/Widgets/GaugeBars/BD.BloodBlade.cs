@@ -49,8 +49,8 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
     {
         Backdrop = ImageNodeFromPart(0, 4).SetPos(0, 36).SetImageWrap(2).SetSize(173, 16);
 
-        Drain = NineGridFromPart(0,3,0,3,0,3).SetPos(0,36)
-                                             .SetSize(0,16)
+        Drain = NineGridFromPart(0, 3, 0, 3, 0, 3).SetPos(0, 36)
+                                             .SetSize(0, 16)
                                              .DefineTimeline(BarTimeline);
 
         Gain = NineGridFromPart(0, 3, 0, 3, 0, 3).SetPos(0, 36)
@@ -65,7 +65,7 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
                                        .SetImageWrap(1);
 
         Ring = ImageNodeFromPart(0, 0).SetPos(-89, 0)
-                                      .SetOrigin(48,44)
+                                      .SetOrigin(48, 44)
                                       .SetImageWrap(1);
 
         Sigil = ImageNodeFromPart(0, 7).SetPos(61, -4)
@@ -88,8 +88,8 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
                                Main,
                                Frame,
                                Ring,
-                               Effects).SetPos(87,-5)
-                                       .SetOrigin(-44,43);
+                               Effects).SetPos(87, -5)
+                                       .SetOrigin(-44, 43);
 
         return new(CreateResNode(), Sword, NumTextNode);
     }
@@ -103,13 +103,13 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
     public override void HideBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label ="Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
     }
 
     public override void RevealBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant?0:250]) { Label = "Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
     }
 
     #endregion
@@ -121,7 +121,7 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
         Animator -= "BarPulse";
         Glow.SetAlpha(255);
 
-        var sigilColor = new AddRGB(-50,75,-141) + ((Config.PulseColor3 + Config.PulseColor4)/2);
+        var sigilColor = new AddRGB(-50, 75, -141) + ((Config.PulseColor3 + Config.PulseColor4) / 2);
 
         Animator +=
         [
@@ -164,26 +164,26 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
         public AddRGB BGColor = new(0, 0, 0, 229);
         public ColorRGB FrameColor = new(100, 100, 100);
         public AddRGB MainColor = new(84, -122, -75);
-        public AddRGB GainColor = new(200,-20,-20);
-        public AddRGB DrainColor = new(-50,-50,150);
+        public AddRGB GainColor = new(200, -20, -20);
+        public AddRGB DrainColor = new(-50, -50, 150);
 
-        public AddRGB PulseColor = new (84, -122, -75);
-        public AddRGB PulseColor2 = new (84, -122, -75);
-        public AddRGB PulseColor3 = new(50,-100,81);
-        public AddRGB PulseColor4 = new(50,-50,200);
+        public AddRGB PulseColor = new(84, -122, -75);
+        public AddRGB PulseColor2 = new(84, -122, -75);
+        public AddRGB PulseColor3 = new(50, -100, 81);
+        public AddRGB PulseColor4 = new(50, -50, 200);
 
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 0), new(255), new(0), MiedingerMed, 18, Center);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     new(255),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: new(255),
                                                               edgeColor: "0x440b00ff",
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      Jupiter,
-                                                              fontSize:  23,
-                                                              align:     Center,
-                                                              showZero:  true,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: Jupiter,
+                                                              fontSize: 23,
+                                                              align: Center,
+                                                              showZero: true,
+                                                              invert: false);
 
         public BloodBladeConfig(WidgetConfig widgetConfig) : base(widgetConfig.BloodBladeCfg)
         {
@@ -244,7 +244,7 @@ public sealed unsafe class BloodBlade(Tracker tracker) : GaugeBarWidget(tracker)
         Frame.SetMultiply(Config.FrameColor);
         Ring.SetMultiply(Config.FrameColor).SetAlpha(Config.Ring);
 
-        NumTextNode.ApplyProps(Config.NumTextProps,new(42,35));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(42, 35));
     }
 
     public override void DrawUI()

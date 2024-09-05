@@ -136,7 +136,7 @@ public sealed unsafe class EukrasiaReplica(Tracker tracker) : StateWidget(tracke
                               new(0) { AddRGB = color },
                               new(560) { AddRGB = color + new AddRGB(30, 30, 100) + fxColor },
                               new(1000) { AddRGB = color })
-            { Ease = SinInOut, Repeat = true, Label = "SigilPulse" };
+        { Ease = SinInOut, Repeat = true, Label = "SigilPulse" };
     }
 
     private void SetUpLightning(CustomNode elecNoulith)
@@ -200,7 +200,7 @@ public sealed unsafe class EukrasiaReplica(Tracker tracker) : StateWidget(tracke
                               new(0) { AddRGB = new(0) },
                               new(360) { AddRGB = new(20, 20, 60) },
                               new(1000) { AddRGB = new(0) })
-                              { Repeat = true, Ease = SinInOut, Label = "NoulithPulse" };
+        { Repeat = true, Ease = SinInOut, Label = "NoulithPulse" };
 
     #endregion
 

@@ -74,7 +74,7 @@ public sealed unsafe class BeastBar(Tracker tracker) : GaugeBarWidget(tracker)
     public static KeyFrame[] BarTimeline =>
     [
         new(0) { Width = 6.2818f },
-    new(1) { Width = 172 }
+        new(1) { Width = 172 }
     ];
 
     public override void HideBar(bool instant = false)

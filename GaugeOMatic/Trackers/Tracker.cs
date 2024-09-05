@@ -94,7 +94,7 @@ public abstract partial class Tracker : IDisposable
     public void UpdateValues()
     {
         PreviousData = CurrentData;
-        CurrentData = GetCurrentData(UsePreviewValue? TrackerConfig.PreviewValue : null);
+        CurrentData = GetCurrentData(UsePreviewValue ? TrackerConfig.PreviewValue : null);
     }
 
     public void UpdateTracker()
@@ -116,8 +116,8 @@ public abstract partial class Tracker : IDisposable
         {
             tracker.ItemRef = trackerConfig.TrackerType switch
             {
-                nameof(ActionTracker)    => (ActionRef)trackerConfig.ItemId,
-                nameof(StatusTracker)    => (StatusRef)trackerConfig.ItemId,
+                nameof(ActionTracker) => (ActionRef)trackerConfig.ItemId,
+                nameof(StatusTracker) => (StatusRef)trackerConfig.ItemId,
                 nameof(ParameterTracker) => (ParamRef)trackerConfig.ItemId,
                 _ => null
             };

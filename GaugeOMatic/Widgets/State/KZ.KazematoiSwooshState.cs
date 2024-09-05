@@ -141,12 +141,12 @@ public sealed unsafe class KazematoiSwooshState(Tracker tracker) : StateWidget(t
                 new(0)
                 {
                     AddRGB = Config.GetCloudColor(previous),
-                    Alpha = Config.GetClouds(previous) ? 64:0
+                    Alpha = Config.GetClouds(previous) ? 64 : 0
                 },
                 new(400)
                 {
                     AddRGB = Config.GetCloudColor(current),
-                    Alpha = Config.GetClouds(current) ? 64:0
+                    Alpha = Config.GetClouds(current) ? 64 : 0
                 })
         ];
     }

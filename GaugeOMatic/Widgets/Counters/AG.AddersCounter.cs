@@ -81,7 +81,7 @@ public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(track
                                               .SetImageFlag(32)
                                               .SetAlpha(0);
 
-            var effectOverlay = ImageNodeFromPart(1, 3).SetPos(-7,-4)
+            var effectOverlay = ImageNodeFromPart(1, 3).SetPos(-7, -4)
                                                        .SetScale(0.5f, 0.6f)
                                                        .SetOrigin(25, 25)
                                                        .SetImageWrap(2)
@@ -288,7 +288,7 @@ public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(track
 
     public override void OnDecreaseToMin() { if (Config.HideEmpty) AllVanish(); }
 
-    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { AllAppear(); }}
+    public override void OnIncreaseFromMin() { if (Config.HideEmpty || WidgetContainer.Alpha < 255) { AllAppear(); } }
 
     #endregion
 
@@ -329,7 +329,7 @@ public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(track
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position+new Vector2(-48,-38))
+        WidgetContainer.SetPos(Config.Position + new Vector2(-48, -38))
                        .SetScale(Config.Scale);
 
         PlaceFreeGems();

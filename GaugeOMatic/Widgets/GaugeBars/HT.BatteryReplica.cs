@@ -109,7 +109,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
                               new(0) { AddRGB = 0, MultRGB = new(90) },
                               new(400) { AddRGB = 30, MultRGB = new(100) },
                               new(800) { AddRGB = 0, MultRGB = new(90) })
-                              { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
+        { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
 
     protected override void StopMilestoneAnim()
     {
@@ -123,7 +123,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         Animator += new Tween(target,
                               new(0, target),
                               new(400) { AddRGB = 0, MultRGB = new(100) })
-                              { Ease = SinInOut, Label = "BarPulse" };
+        { Ease = SinInOut, Label = "BarPulse" };
 
     private void EndOverlayPulse()
     {
@@ -148,12 +148,12 @@ public unsafe class BatteryReplica : GaugeBarWidget
                               new(0) { AddRGB = new(0) },
                               new(400) { AddRGB = addRGB },
                               new(780) { AddRGB = new(0) })
-                              { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
+        { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
         Animator += new Tween(Barrel,
                               new(0) { AddRGB = new(0) },
                               new(400) { AddRGB = addRGB },
                               new(780) { AddRGB = new(0) })
-                              { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
+        { Repeat = true, Ease = SinInOut, Label = "OverlayPulse" };
     }
 
     #endregion
@@ -177,7 +177,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
         {
             <= 0 => 0,
             >= 25 => gainA,
-            _ => (byte)(gainDiff * (gainA/25f))
+            _ => (byte)(gainDiff * (gainA / 25f))
         });
 
         Drain.SetAlpha(drainDiff switch
@@ -200,9 +200,9 @@ public unsafe class BatteryReplica : GaugeBarWidget
         [DefaultValue(11)] public ushort BaseColor = 11;
         public AddRGB BackdropColor;
 
-        public AddRGB MainColorOrange = new(91, 52,-27);
+        public AddRGB MainColorOrange = new(91, 52, -27);
         public AddRGB GainColorOrange = new(346, 307, 228);
-        public AddRGB DrainColorOrange = new(-9,-48,-127);
+        public AddRGB DrainColorOrange = new(-9, -48, -127);
 
         public AddRGB MainColorBlue = new(-38, 100, 116);
         public AddRGB GainColorBlue = new(217, 355, 371);
@@ -285,7 +285,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
             .DefineTimeline(BarTimeline)
             .SetWidth(0);
 
-        NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width+6, 74));
+        NumTextNode.ApplyProps(Config.NumTextProps, new(Config.Width + 6, 74));
     }
 
     public override void DrawUI()

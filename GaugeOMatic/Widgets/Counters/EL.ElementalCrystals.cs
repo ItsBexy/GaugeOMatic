@@ -60,15 +60,15 @@ public sealed unsafe class ElementalCrystals(Tracker tracker) : FreeGemCounter(t
             StackContents.Add(new CustomNode(CreateResNode(),
                                              Crystals[i],
                                              Glows1[i],
-                                             new (CreateResNode(), Glows2[i])).SetAlpha(0));
+                                             new(CreateResNode(), Glows2[i])).SetAlpha(0));
 
             Animator += new Tween(Glows2[i],
                                   new(0) { ScaleX = 1, ScaleY = 1, Alpha = 0 },
                                   new(450) { ScaleX = 1.2f, ScaleY = 1.1f, Alpha = 101 },
                                   new(950) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 },
                                   new(1600) { ScaleX = 1.3f, ScaleY = 1.2f, Alpha = 0 })
-                                  { Repeat = true, Ease = SinInOut, Label = "Pulse" };
-            Stacks.Add(new CustomNode(CreateResNode(), StackContents[i]).SetOrigin(10, 24).SetSize(20,48));
+            { Repeat = true, Ease = SinInOut, Label = "Pulse" };
+            Stacks.Add(new CustomNode(CreateResNode(), StackContents[i]).SetOrigin(10, 24).SetSize(20, 48));
         }
     }
 

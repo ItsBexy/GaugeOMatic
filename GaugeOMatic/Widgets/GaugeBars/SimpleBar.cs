@@ -79,7 +79,7 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
     public override void HideBar(bool instant = false)
     {
         Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant?0:250]) { Label ="Fade", Ease = SinInOut };
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
 
     }
 
@@ -96,13 +96,13 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
     protected override void StartMilestoneAnim()
     {
         Animator -= "BarPulse";
-        var colorFrame1 = new KeyFrame { AddRGB = Config.PulseColor  };
+        var colorFrame1 = new KeyFrame { AddRGB = Config.PulseColor };
         var colorFrame2 = new KeyFrame { AddRGB = Config.PulseColor2 };
         Animator += new Tween(Main,
                               colorFrame1[0],
                               colorFrame2[800],
                               colorFrame1[1600])
-                              { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
+        { Ease = SinInOut, Repeat = true, Label = "BarPulse" };
 
     }
 
@@ -136,17 +136,17 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
         public AddRGB PulseColor2 = "0xD16347FF";
 
         public LabelTextProps LabelTextProps = new(string.Empty, false, new(0, 0), new(255), new(0), MiedingerMed, 18, Center);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(0, 0),
-                                                              color:     new(255),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(0, 0),
+                                                              color: new(255),
                                                               edgeColor: "0x9f835bff",
-                                                              showBg:    true,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  18,
-                                                              align:     Right,
-                                                              showZero:  true,
-                                                              invert:    false);
+                                                              showBg: true,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 18,
+                                                              align: Right,
+                                                              showZero: true,
+                                                              invert: false);
 
         public SimpleBarConfig(WidgetConfig widgetConfig) : base(widgetConfig.SimpleBarCfg)
         {
@@ -189,10 +189,10 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
         WidgetContainer.SetPos(Config.Position + new Vector2(48, 27))
                   .SetScale(Config.Scale);
 
-        var flipFactor = Abs(Config.Angle) > 90 ? -1:1;
+        var flipFactor = Abs(Config.Angle) > 90 ? -1 : 1;
 
         Frame.SetWidth(Config.Width)
-             .SetOrigin(Config.Width/2, 10)
+             .SetOrigin(Config.Width / 2, 10)
              .SetScaleX(flipFactor)
              .SetMultiply(Config.FrameColor);
 
@@ -209,7 +209,7 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
         Drain.SetAddRGB(Config.DrainColor + new AddRGB(-127, -42, 126)).SetWidth(0).DefineTimeline(BarTimeline);
 
 
-        NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width/2)-71, 26));
+        NumTextNode.ApplyProps(Config.NumTextProps, new((Config.Width / 2) - 71, 26));
         LabelTextNode.ApplyProps(Config.LabelTextProps, new(Config.Width / -2, -7))
                      .SetWidth(Config.Width);
     }

@@ -53,7 +53,7 @@ public sealed unsafe class TargetReticle(Tracker tracker) : StateWidget(tracker)
         InnerHaloFill = ImageNodeFromPart(0, 1).SetScale(23).SetImageFlag(32);
         InnerHaloMask = ClippingMaskFromPart(0, 0);
 
-        Halo = new CustomNode(CreateResNode(),HaloFill, HaloMask).RemoveFlags(SetVisByAlpha)
+        Halo = new CustomNode(CreateResNode(), HaloFill, HaloMask).RemoveFlags(SetVisByAlpha)
                                                                  .SetAlpha(0)
                                                                  .SetOrigin(225, 225)
                                                                  .SetPos(-225, -225);
@@ -66,7 +66,7 @@ public sealed unsafe class TargetReticle(Tracker tracker) : StateWidget(tracker)
 
         BeginRotation();
 
-        return new CustomNode(CreateResNode(), Halo, InnerHalo).SetSize(450,450);
+        return new CustomNode(CreateResNode(), Halo, InnerHalo).SetSize(450, 450);
     }
 
     #endregion
@@ -210,7 +210,7 @@ public sealed unsafe class TargetReticle(Tracker tracker) : StateWidget(tracker)
     public override void ApplyConfigs()
     {
         WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale*0.5f)
+                  .SetScale(Config.Scale * 0.5f)
                   .SetRotation(Config.Angle * 0.0174532925199433f);
 
         Halo.SetMultiply(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));

@@ -337,7 +337,7 @@ public sealed unsafe class KazematoiSwooshBar(Tracker tracker) : GaugeBarWidget(
         TickMark.SetRGB(Config.TickColor);
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(65, 53));
-        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-43,100));
+        LabelTextNode.ApplyProps(Config.LabelTextProps, new(-43, 100));
     }
 
     public override void DrawUI()

@@ -131,16 +131,16 @@ public sealed unsafe class NinkiOverlay(Tracker tracker) : GaugeBarWidget(tracke
     {
         public AddRGB ScrollColor = new(80, 30, -70, 90);
         public ColorRGB TickColor = new(255, 164, 93);
-        protected override NumTextProps NumTextDefault => new(enabled:   true,
-                                                              position:  new(227, 58),
-                                                              color:     new(255, 241, 197),
+        protected override NumTextProps NumTextDefault => new(enabled: true,
+                                                              position: new(227, 58),
+                                                              color: new(255, 241, 197),
                                                               edgeColor: new(110, 25, 0),
-                                                              showBg:    false,
-                                                              bgColor:   new(0),
-                                                              font:      MiedingerMed,
-                                                              fontSize:  20,
-                                                              align:     Center,
-                                                              invert:    false);
+                                                              showBg: false,
+                                                              bgColor: new(0),
+                                                              font: MiedingerMed,
+                                                              fontSize: 20,
+                                                              align: Center,
+                                                              invert: false);
 
         public NinkiOverlayConfig(WidgetConfig widgetConfig) : base(widgetConfig.NinkiOverlayCfg)
         {

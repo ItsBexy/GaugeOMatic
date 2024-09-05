@@ -55,19 +55,19 @@ public class Animator : IDisposable, IEnumerable<Tween>
 
     public Animator Remove(CustomNode node)
     {
-        Tweens = [..Tweens.Where(t => t.Target != node)];
+        Tweens = [.. Tweens.Where(t => t.Target != node)];
         return this;
     }
 
     public Animator Remove(string label)
     {
-        Tweens = [..Tweens.Where(t => t.Label != label)];
+        Tweens = [.. Tweens.Where(t => t.Label != label)];
         return this;
     }
 
     public Animator Remove(string label, params CustomNode[] nodes)
     {
-        Tweens = [..Tweens.Where(t => t.Label != label || !nodes.Contains(t.Target))];
+        Tweens = [.. Tweens.Where(t => t.Label != label || !nodes.Contains(t.Target))];
         return this;
     }
 

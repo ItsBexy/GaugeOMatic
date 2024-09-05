@@ -181,7 +181,7 @@ public sealed unsafe class HeatOverlay(Tracker tracker) : StateWidget(tracker)
 
         public void FillColorLists(int max)
         {
-            while (Colors.Count <= max) Colors.Add(new(86,-75,-79));
+            while (Colors.Count <= max) Colors.Add(new(86, -75, -79));
         }
     }
 
@@ -217,8 +217,8 @@ public sealed unsafe class HeatOverlay(Tracker tracker) : StateWidget(tracker)
 
         var state = Tracker.CurrentData.State;
         var color = Config.Colors.ElementAtOrDefault(state);
-        Glow.SetWidth(Config.Width+80)
-            .SetOrigin((Config.Width+80)/2, 53)
+        Glow.SetWidth(Config.Width + 80)
+            .SetOrigin((Config.Width + 80) / 2, 53)
             .SetAddRGB(color + ColorOffset);
     }
 

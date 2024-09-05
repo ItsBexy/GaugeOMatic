@@ -60,7 +60,7 @@ public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
         SocketPlate = BuildSocketPlate(Max, out var width);
         StackContainer = BuildStacks(Max);
 
-        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(width/2, 30.5f).SetSize(width,61);
+        return new CustomNode(CreateResNode(), SocketPlate, StackContainer).SetOrigin(width / 2f, 30.5f).SetSize(width, 61);
     }
 
     private CustomNode BuildSocketPlate(int count, out int size)
@@ -94,7 +94,7 @@ public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
         for (var i = 0; i < count; i++)
         {
             Pulses.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0).Hide().SetPos(17 + (26 * i), 10));
-            Halos.Add(ImageNodeFromPart(0, 2).SetPos(-15,-10).SetOrigin(30, 30).SetAlpha(0));
+            Halos.Add(ImageNodeFromPart(0, 2).SetPos(-15, -10).SetOrigin(30, 30).SetAlpha(0));
             Gems.Add(ImageNodeFromPart(0, 0).SetOrigin(15, 20));
             Glows.Add(ImageNodeFromPart(0, 1).SetOrigin(15, 18).SetAlpha(0));
 
@@ -158,13 +158,13 @@ public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
         Animator += new Tween(WidgetContainer,
                                  new(0) { Scale = Config.Scale * 1.65f, Alpha = 0 },
                                  new(200) { Scale = Config.Scale, Alpha = 255 })
-                                 { Ease = SinInOut };
+        { Ease = SinInOut };
 
     private void PlateVanish() =>
         Animator += new Tween(WidgetContainer,
                                  new(0) { Scale = Config.Scale, Alpha = 255 },
-                                 new(150) { Scale = Config.Scale*0.65f, Alpha = 0 })
-                                 { Ease = SinInOut };
+                                 new(150) { Scale = Config.Scale * 0.65f, Alpha = 0 })
+        { Ease = SinInOut };
 
     #endregion
 

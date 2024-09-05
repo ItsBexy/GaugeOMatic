@@ -4,22 +4,15 @@ using Dalamud.Interface.Textures.TextureWraps;
 using ImGuiNET;
 using System;
 using System.Numerics;
+using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static ImGuiNET.ImGuiCol;
-// ReSharper disable UnusedMethodReturnValue.Global
-// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility;
 
 public static class ImGuiHelpy
 {
-    public struct PushableStyleColor(ImGuiCol col, Vector4 color)
-    {
-        public ImGuiCol ImGuiCol = col;
-        public Vector4 Color = color;
-    }
-
     public static void MulticolorText(params (Vector4 col, string str)[] stringTuples)
     {
         var y = ImGui.GetCursorPosY();
@@ -34,31 +27,31 @@ public static class ImGuiHelpy
         }
     }
 
-    public static void PushStyleColorMulti(params PushableStyleColor[] styles)
-    {
-        foreach (var style in styles) ImGui.PushStyleColor(style.ImGuiCol, style.Color);
-    }
-
     public static void IconButtonDisabled(FontAwesomeIcon icon) => IconButtonDisabled("", icon);
 
     public static void IconButtonDisabled(string label, FontAwesomeIcon icon)
     {
         var grey15 = new Vector4(1, 1, 1, 0.15f);
-        PushStyleColorMulti(new(Button, grey15),
-                            new(ButtonActive, grey15),
-                            new(ButtonHovered, grey15),
-                            new(Text, new(1, 1, 1, 0.35f)));
+        var grey35 = new Vector4(1, 1, 1, 0.35f);
+        var col = new ImRaii.Color().Push(Button, grey15)
+                                    .Push(ButtonActive, grey15)
+                                    .Push(ButtonHovered, grey15)
+                                    .Push(Text, grey35);
 
         ImGuiComponents.IconButton(label, icon);
-        ImGui.PopStyleColor(4);
+        col.Dispose();
     }
 
     public static void TableHeadersRowNoHover(Vector4 textColor)
     {
         var black = new Vector4(0);
-        PushStyleColorMulti(new(HeaderHovered, black), new(HeaderActive, black), new(TableHeaderBg, black), new(Text, textColor));
+        var col = new ImRaii.Color().Push(HeaderHovered, black)
+                                    .Push(HeaderActive, black)
+                                    .Push(TableHeaderBg, black)
+                                    .Push(Text, textColor);
+
         ImGui.TableHeadersRow();
-        ImGui.PopStyleColor(4);
+        col.Dispose();
     }
 
     public static bool IconButton(string label, FontAwesomeIcon icon, float minWidth = 15f, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null)
@@ -68,27 +61,17 @@ public static class ImGuiHelpy
         defaultColor ??= GetStyleColorVec4(Button);
         activeColor ??= GetStyleColorVec4(ButtonActive);
         hoveredColor ??= GetStyleColorVec4(ButtonHovered);
-        var count = 0;
-        if (defaultColor.HasValue)
-        {
-            ImGui.PushStyleColor(Button, defaultColor.Value);
-            ++count;
-        }
-        if (activeColor.HasValue)
-        {
-            ImGui.PushStyleColor(ButtonActive, activeColor.Value);
-            ++count;
-        }
-        if (hoveredColor.HasValue)
-        {
-            ImGui.PushStyleColor(ButtonHovered, hoveredColor.Value);
-            ++count;
-        }
+
+        var col = new ImRaii.Color().Push(Button, defaultColor.Value)
+                                    .Push(ButtonActive, activeColor.Value)
+                                    .Push(ButtonHovered, hoveredColor.Value);
+
         var str = iconText;
-        if (str.Contains('#'))
-            str = str[..str.IndexOf('#', StringComparison.Ordinal)];
-        ImGui.PushID(label);
-        ImGui.PushFont(UiBuilder.IconFont);
+        if (str.Contains('#')) str = str[..str.IndexOf('#', StringComparison.Ordinal)];
+
+        var l = ImRaii.PushId(label);
+
+        var f = ImRaii.PushFont(UiBuilder.IconFont);
         var vector2 = ImGui.CalcTextSize(str);
 
         var diff = 0f;
@@ -98,7 +81,7 @@ public static class ImGuiHelpy
             vector2.X = minWidth;
         }
 
-        ImGui.PopFont();
+        f.Dispose();
         var windowDrawList = ImGui.GetWindowDrawList();
         var cursorScreenPos = ImGui.GetCursorScreenPos();
         var x1 = vector2.X + (ImGui.GetStyle().FramePadding.X * 2f);
@@ -109,17 +92,18 @@ public static class ImGuiHelpy
         var x2 = (double)cursorScreenPos.X;
         var style = ImGui.GetStyle();
         var x3 = (double)style.FramePadding.X;
-        var x4 = x2 + x3 + (diff/2);
+        var x4 = x2 + x3 + (diff / 2);
         var y1 = (double)cursorScreenPos.Y;
         style = ImGui.GetStyle();
         var y2 = (double)style.FramePadding.Y;
         var y3 = y1 + y2;
         local = new((float)x4, (float)y3);
-        ImGui.PushFont(UiBuilder.IconFont);
+
+        var f2 = ImRaii.PushFont(UiBuilder.IconFont);
         windowDrawList.AddText(pos, ImGui.GetColorU32(Text), str);
-        ImGui.PopFont();
-        ImGui.PopID();
-        if (count > 0) ImGui.PopStyleColor(count);
+        f2.Dispose();
+        l.Dispose();
+        col.Dispose();
         return flag;
     }
 
@@ -145,94 +129,52 @@ public static class ImGuiHelpy
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() - ((ImGui.GetFontSize() / -6f) + 7f));
     }
 
-    public static void SameLineWrappable(float max)
-    {
-        ImGui.SameLine();
-        if (ImGui.GetCursorPosX() > max) ImGui.NewLine();
-    }
-
     public static void WriteIcon(FontAwesomeIcon icon, string? iconHoverText = null, ColorRGB? iconColor = null)
     {
-        var gottaPop = false;
-        if (iconColor.HasValue)
-        {
-            ImGui.PushStyleColor(Text, (Vector4)iconColor);
-            gottaPop = true;
-        }
-        ImGui.PushFont(UiBuilder.IconFont);
+        var col = new ImRaii.Color();
+        var f = new ImRaii.Font().Push(UiBuilder.IconFont);
         var str = icon.ToIconString();
         var adjust = (14 - ImGui.CalcTextSize(str).X) / 2;
 
+        if (iconColor.HasValue) col.Push(Text, (Vector4)iconColor);
+
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
-        ImGui.Text(icon.ToIconString());
-        ImGui.PopFont();
-        if (gottaPop) ImGui.PopStyleColor();
-        if (iconHoverText != null && ImGui.IsItemHovered()) Tooltip(iconHoverText);
-        ImGui.SameLine();
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
-
-    }
-
-    // ReSharper disable once UnusedMember.Global
-    public static void WriteIconText(FontAwesomeIcon icon, string text, string? iconHoverText = null, ColorRGB? iconColor = null, ColorRGB? textColor = null)
-    {
-        var gottaPop = false;
-        if (iconColor.HasValue)
-        {
-            ImGui.PushStyleColor(Text, (Vector4)iconColor);
-            gottaPop = true;
-        }
-
-        ImGui.PushFont(UiBuilder.IconFont);
-
-        var str = icon.ToIconString();
-        var adjust = (14 - ImGui.CalcTextSize(str).X)/2;
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
-
         ImGui.Text(str);
-        ImGui.PopFont();
-        if (gottaPop) { ImGui.PopStyleColor(); gottaPop = false; }
 
-        if (textColor.HasValue)
-        {
-            ImGui.PushStyleColor(Text, (Vector4)textColor);
-            gottaPop = true;
-        }
+        f.Dispose();
+        col.Dispose();
+
         if (iconHoverText != null && ImGui.IsItemHovered()) Tooltip(iconHoverText);
-
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + adjust);
-        ImGui.Text(text);
-
-        if (gottaPop) { ImGui.PopStyleColor(); }
     }
 
     public static void Tooltip(string tooltipText)
     {
-        ImGui.BeginTooltip();
-        ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35f);
+        var tt = ImRaii.Tooltip();
+        var wrap = ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f);
         ImGui.TextUnformatted(tooltipText);
-        ImGui.PopTextWrapPos();
-        ImGui.EndTooltip();
+        wrap.Dispose();
+        tt.Dispose();
     }
 
     public static bool IconButtonWithText(string text, FontAwesomeIcon icon, string id, float? width = null, ColorRGB? color = null)
     {
         width *= GlobalScale;
-        var pushed = 0;
+        var col = new ImRaii.Color();
         if (color.HasValue)
         {
-            pushed++;
-            ImGui.PushStyleColor(Button, (Vector4)color);
+            col.Push(Button, (Vector4)color);
         }
-        ImGui.PushID(id);
-        ImGui.PushFont(UiBuilder.IconFont);
+
+        var i = ImRaii.PushId(id);
+        var f = ImRaii.PushFont(UiBuilder.IconFont);
 
         var iconStr = icon.ToIconString();
         var iconStrSize = ImGui.CalcTextSize(iconStr);
         var adjust = ((16 * GlobalScale) - iconStrSize.X) / 2;
 
-        ImGui.PopFont();
+        f.Dispose();
 
         var textSize = ImGui.CalcTextSize(text);
         var windowDrawList = ImGui.GetWindowDrawList();
@@ -245,14 +187,14 @@ public static class ImGuiHelpy
         var frameHeight = ImGui.GetFrameHeight();
         var button = ImGui.Button(string.Empty, new(x, frameHeight));
         var pos1 = new Vector2(cursorScreenPos.X + ImGui.GetStyle().FramePadding.X + adjust, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
-        ImGui.PushFont(UiBuilder.IconFont);
+
+        var f2 = ImRaii.PushFont(UiBuilder.IconFont);
         windowDrawList.AddText(pos1, ImGui.GetColorU32(Text), iconStr);
-        ImGui.PopFont();
+        f2.Dispose();
         var pos2 = new Vector2(pos1.X + iconStrSize.X + num + textAdjust - 8f, cursorScreenPos.Y + ImGui.GetStyle().FramePadding.Y);
         windowDrawList.AddText(pos2, ImGui.GetColorU32(Text), text);
-        ImGui.PopID();
-
-        if (pushed > 0) ImGui.PopStyleColor(pushed);
+        i.Dispose();
+        col.Dispose();
         return button;
     }
 
@@ -274,16 +216,7 @@ public static class ImGuiHelpy
         }
     }
 
-    public static void TextRightAligned(string text, Vector4 color)
-    {
-        var w = ImGui.CalcTextSize(text).X;
-        var space = ImGui.GetColumnWidth();
-        ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (space - w));
-
-        ImGui.TextColored(color, text);
-    }
-
-    public static void DrawGameIcon(uint trackerGameIcon, float height, bool active=true)
+    public static void DrawGameIcon(uint trackerGameIcon, float height, bool active = true)
     {
         var startPos = ImGui.GetCursorPosX();
 
@@ -297,11 +230,11 @@ public static class ImGuiHelpy
             var margin = (adjustedHeight - width) / 2f;
 
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + margin);
-            ImGui.Image(tex.ImGuiHandle, new(width, adjustedHeight),new(0),new(1),new(1,1,1,active?1:0.3f));
+            ImGui.Image(tex.ImGuiHandle, new(width, adjustedHeight), new(0), new(1), new(1, 1, 1, active ? 1 : 0.3f));
             ImGui.SameLine();
         }
 
-        ImGui.SetCursorPosX(startPos+(30*GlobalScale));
+        ImGui.SetCursorPosX(startPos + (30 * GlobalScale));
     }
 
     public static IDalamudTextureWrap? GetGameIconTexture(uint? id)
