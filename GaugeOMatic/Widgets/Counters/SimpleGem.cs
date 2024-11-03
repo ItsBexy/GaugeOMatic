@@ -95,7 +95,7 @@ public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
 
     public override CustomNode BuildContainer()
     {
-        Max = Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
+        Max = GetMax();
 
         BuildStacks(Max);
 
