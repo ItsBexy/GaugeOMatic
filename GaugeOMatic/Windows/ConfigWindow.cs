@@ -53,31 +53,30 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Spacing();
 
-        var table = ImRaii.Table("LayoutTable", 3, SizingFixedFit);
-
-        ImGui.TableSetupColumn("VertTabBar");
-        ImGui.TableSetupColumn("VertTabBar2");
-        ImGui.TableSetupColumn("body", WidthFixed, 1200f * GlobalScale);
-
-        VerticalTabBar();
-
-        ImGui.TableNextColumn();
-        ImGui.Indent(10);
-
-        switch (Configuration.GeneralTab)
+        using (ImRaii.Table("LayoutTable", 3, SizingFixedFit))
         {
-            case Help:
-                DrawHelpTab();
-                break;
-            default:
+            ImGui.TableSetupColumn("VertTabBar");
+            ImGui.TableSetupColumn("VertTabBar2");
+            ImGui.TableSetupColumn("body", WidthFixed, 1200f * GlobalScale);
+
+            VerticalTabBar();
+
+            ImGui.TableNextColumn();
+            ImGui.Indent(10);
+
+            switch (Configuration.GeneralTab)
             {
-                var jobModule = GetModuleForTab(Configuration.JobTab, JobModules);
-                if (jobModule != null) DrawJobModuleTab(jobModule);
-                break;
+                case Help:
+                    DrawHelpTab();
+                    break;
+                default:
+                {
+                    var jobModule = GetModuleForTab(Configuration.JobTab, JobModules);
+                    if (jobModule != null) DrawJobModuleTab(jobModule);
+                    break;
+                }
             }
         }
-
-        table.Dispose();
     }
 
     private void VerticalTabBar()
@@ -134,18 +133,17 @@ public partial class ConfigWindow : Window, IDisposable
             var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
             TextureProvider.GetFromGameIcon(new(GetJobIcon(job))).TryGetWrap(out var tex, out _);
 
-            var col = new ImRaii.Color().Push(ButtonActive, tabActive)
-                                        .Push(ButtonHovered, tabHovered)
-                                        .Push(Button, active ? tabActive : tab);
-
-            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
+        using (ImRaii.PushColor(ButtonActive, tabActive)
+                     .Push(ButtonHovered, tabHovered)
+                     .Push(Button, active ? tabActive : tab))
             {
-                Configuration.JobTab = job;
-                Configuration.GeneralTab = Jobs;
-                Configuration.Save();
+                if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
+                {
+                    Configuration.JobTab = job;
+                    Configuration.GeneralTab = Jobs;
+                    Configuration.Save();
+                }
             }
-
-            col.Dispose();
         }
 
         void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
@@ -153,17 +151,16 @@ public partial class ConfigWindow : Window, IDisposable
             var active = Configuration.GeneralTab == genTab;
             TextureProvider.GetFromGameIcon(new(icon)).TryGetWrap(out var tex, out _);
 
-            var col = new ImRaii.Color().Push(ButtonActive, TabActive)
-                                        .Push(ButtonHovered, TabHovered)
-                                        .Push(Button, active ? TabActive : Tab);
-
-            if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
+            using (ImRaii.PushColor(ButtonActive, TabActive)
+                         .Push(ButtonHovered, TabHovered)
+                         .Push(Button, active ? TabActive : Tab))
             {
-                Configuration.GeneralTab = genTab;
-                Configuration.Save();
+                if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
+                {
+                    Configuration.GeneralTab = genTab;
+                    Configuration.Save();
+                }
             }
-
-            col.Dispose();
 
             if (ImGui.IsItemHovered()) ImGui.SetTooltip(tooltip);
         }

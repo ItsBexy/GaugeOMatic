@@ -5,6 +5,8 @@ using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System.Collections.Generic;
+using System.Numerics;
+using Dalamud.Interface;
 using static CustomNodes.CustomNode;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
@@ -34,13 +36,11 @@ public partial class ConfigWindow
     public static void DrawJobModuleTab(JobModule jobModule)
     {
         UpdateFlag = 0;
-        var tb = ImRaii.TabBar(jobModule.Abbr + "Tabs");
-        if (tb)
+        using (ImRaii.TabBar(jobModule.Abbr + "Tabs"))
         {
             TrackerTab(jobModule);
             TweakTab(jobModule);
         }
-        tb.Dispose();
 
         HandleDrag();
 
@@ -53,62 +53,60 @@ public partial class ConfigWindow
 
     private static void TweakTab(JobModule jobModule)
     {
-        var ti = ImRaii.TabItem($"Tweaks##{jobModule.Abbr}TweaksTab");
+        using var ti = ImRaii.TabItem($"Tweaks##{jobModule.Abbr}TweaksTab");
         if (ti)
         {
             JobModuleTab = JobModuleTabs.Tweaks;
 
-            var table = ImRaii.Table($"{jobModule.Abbr}TweaksTable", 2, SizingFixedFit);
+            using (ImRaii.Table($"{jobModule.Abbr}TweaksTable", 2, SizingFixedFit))
+            {
+                ImGui.TableSetupColumn("Labels", WidthFixed, 200 * GlobalScale);
+                ImGui.TableSetupColumn("Options", WidthStretch);
 
-            ImGui.TableSetupColumn("Labels", WidthFixed, 200 * GlobalScale);
-            ImGui.TableSetupColumn("Options", WidthStretch);
-
-            jobModule.TweakUI();
-
-            table.Dispose();
+                jobModule.TweakUI();
+            }
         }
-        ti.Dispose();
     }
 
     private static void TrackerTab(JobModule jobModule)
     {
-        var ti = ImRaii.TabItem("Trackers");
+        using var ti = ImRaii.TabItem("Trackers");
+
         if (ti)
         {
             JobModuleTab = JobModuleTabs.Trackers;
 
-            var table = ImRaii.Table($"{jobModule.Abbr}TrackerTable", 7, SizingFixedFit);
-
-            ImGui.TableSetupColumn("");
-            ImGui.TableSetupColumn("Tracker");
-            ImGui.TableSetupColumn("");
-            ImGui.TableSetupColumn("Widget");
-            ImGui.TableSetupColumn("");
-            ImGui.TableSetupColumn("Pinned to");
-            ImGui.TableSetupColumn("Test");
-
-            TableHeadersRowNoHover(new(1));
-
-            var hoveringOther = DragTarget != null;
-            var hoverBounds = hoveringOther ? DragTarget?.GetBounds() : null;
-
-            foreach (var tracker in jobModule.DrawOrder)
+            using (ImRaii.Table($"{jobModule.Abbr}TrackerTable", 7, SizingFixedFit))
             {
-                var hovered = HoverCheck(ref hoveringOther, ref hoverBounds, tracker.Widget?.GetBounds(), tracker);
-                DrawTrackerRow(tracker, hovered);
+                ImGui.TableSetupColumn("");
+                ImGui.TableSetupColumn("Tracker");
+                ImGui.TableSetupColumn("");
+                ImGui.TableSetupColumn("Widget");
+                ImGui.TableSetupColumn("");
+                ImGui.TableSetupColumn("Pinned to");
+                ImGui.TableSetupColumn("Test");
+
+                TableHeadersRowNoHover(new(1));
+
+                var hoveringOther = DragTarget != null;
+                var hoverBounds = hoveringOther ? DragTarget?.GetBounds() : null;
+
+                foreach (var tracker in jobModule.DrawOrder)
+                {
+                    var hovered = HoverCheck(ref hoveringOther, ref hoverBounds, tracker.Widget?.GetBounds(), tracker);
+                    DrawTrackerRow(tracker, hovered);
+                }
+
+                hoverBounds?.Draw(new Color.ColorRGB(0, 255, 100).ToABGR, 2);
+
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                if (IconButtonWithText(Plus,"Add##addBlank")) jobModule.AddBlankTracker();
+
+                ImGui.TableNextColumn();
+                if (IconButtonWithText(ObjectGroup,"Presets##openPresets")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
+
             }
-
-            hoverBounds?.Draw(new Color.ColorRGB(0, 255, 100).ToABGR, 2);
-
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            if (IconButtonWithText("Add", Plus, "AddButton")) jobModule.AddBlankTracker();
-
-            ImGui.TableNextColumn();
-            if (IconButtonWithText("Presets", ObjectGroup, "PresetButton"))
-                GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
-
-            table.Dispose();
 
             ImGui.Spacing();
             ImGui.Spacing();
@@ -118,9 +116,8 @@ public partial class ConfigWindow
 
             WriteIcon(ExpandAlt, null, new(255, 255, 255, 128));
             ImGui.TextDisabled("Shift + Scroll to resize widgets");
-        }
 
-        ti.Dispose();
+        }
     }
 
     private static bool HoverCheck(ref bool hoveringOther, ref Bounds? hoverBounds, Bounds? bounds, Tracker tracker)

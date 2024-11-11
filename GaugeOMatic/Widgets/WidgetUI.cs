@@ -230,9 +230,9 @@ public static class WidgetUI
         ImGui.SetNextItemWidth(92f * GlobalScale);
 
         if (ImGui.ColorEdit4($"##{label}RGB", ref baseColor, PickerFlags)) UpdateFlag |= Save;
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         if (ImGui.ColorEdit3($"##{label}AddRGB", ref add, PickerFlags | NoInputs)) UpdateFlag |= Save;
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         if (ImGui.ColorEdit3($"##{label}MultiplyRGB", ref multiply, PickerFlags | NoInputs)) UpdateFlag |= Save;
 
 
@@ -279,9 +279,9 @@ public static class WidgetUI
             var option = options[i];
             var icon = icons[i];
 
-            if (i > 0) SameLineSquished();
+            if (i > 0) ImGui.SameLine(0,3);
 
-            if (IconButton($"{label}{option}{i}", icon, 16f, val is not null && val.Equals(option) ? activeColor : buttonColor))
+            if (IconButton($"{label}{option}{i}", icon, 22f, val is not null && val.Equals(option) ? activeColor : buttonColor))
             {
                 val = option;
                 UpdateFlag |= Save;
@@ -308,11 +308,11 @@ public static class WidgetUI
 
         ImGui.PushButtonRepeat(true);
 
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         var input2 = IconButton($"##{label}ButtonDown", icon1);
         if (input2) val = Math.Clamp(val - step, min, max);
 
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         var input3 = IconButton($"##{label}ButtonUp", icon2);
         if (input3) val = Math.Clamp(val + step, min, max);
 
@@ -330,10 +330,10 @@ public static class WidgetUI
         var input1 = ImGui.DragFloat($"##{label}Drag", ref val, step, min, max, format);
 
         ImGui.PushButtonRepeat(true);
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         var input2 = IconButton($"##{label}ButtonDown", icon1);
         if (input2) val = Math.Clamp(val - step, min, max);
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         var input3 = IconButton($"##{label}ButtonUp", icon2);
         if (input3) val = Math.Clamp(val + step, min, max);
         ImGui.PopButtonRepeat();
@@ -365,24 +365,29 @@ public static class WidgetUI
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
 
-        var col = new ImRaii.Color().Push(Text, new Vector4(1, 1, 1, 0.3f));
-        ImGui.Text(headingText);
-        col.Dispose();
+        using (ImRaii.PushColor(Text, new Vector4(1, 1, 1, 0.3f)))
+        {
+            ImGui.Text(headingText);
+        }
     }
 
     public static void Info(string helpText)
     {
         ImGui.SameLine();
-        var f = ImRaii.PushFont(IconFont);
-        ImGui.TextDisabled(FontAwesomeIcon.QuestionCircle.ToIconString());
-        f.Dispose();
+        using (ImRaii.PushFont(IconFont))
+        {
+            ImGui.TextDisabled(FontAwesomeIcon.QuestionCircle.ToIconString());
+        }
+
         if (ImGui.IsItemHovered())
         {
-            var tt = ImRaii.Tooltip();
-            var wrap = ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f);
-            ImGui.TextUnformatted(helpText);
-            wrap.Dispose();
-            tt.Dispose();
+            using (ImRaii.Tooltip())
+            {
+                using (ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f))
+                {
+                    ImGui.TextUnformatted(helpText);
+                }
+            }
         }
     }
 

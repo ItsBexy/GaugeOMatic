@@ -80,64 +80,64 @@ public class TrackerDisplayAttribute : Attribute
 
     public static void DrawTooltip(uint? icon, string heading, string? w1 = null, string? w2 = null, string? w3 = null, string? footer = null)
     {
-        var col = new ImRaii.Color().Push(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1));
-        var tt = ImRaii.Tooltip();
+        using (ImRaii.PushColor(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1)))
+        {
+            using (ImRaii.Tooltip())
+            {
+                var startPos = ImGui.GetCursorPos();
 
-        var startPos = ImGui.GetCursorPos();
+                DrawTooltipIcon(icon, startPos);
 
-        DrawTooltipIcon(icon, startPos);
+                using (ImRaii.Group())
+                {
+                    ImGui.Text(heading);
+                }
 
-        var gr = ImRaii.Group();
-        ImGui.Text(heading);
-        gr.Dispose();
+                ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
 
-        ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
+                if (w1 != null || w2 != null || w3 != null) WidgetBehaviorTable(w1, w2, w3);
 
-        if (w1 != null || w2 != null || w3 != null) WidgetBehaviorTable(w1, w2, w3);
-
-        if (footer != null) ImGui.TextDisabled(footer);
-
-        tt.Dispose();
-        col.Dispose();
+                if (footer != null) ImGui.TextDisabled(footer);
+            }
+        }
     }
 
     public static void WidgetBehaviorTable(string? barDesc, string? counterDesc, string? stateDesc)
     {
         ImGui.TextDisabled("Widget Behavior");
 
-        var table = ImRaii.Table("BehaviorTable", 2);
-
-        ImGui.TableSetupColumn("Widget");
-        ImGui.TableSetupColumn("Value");
-
-        if (barDesc != null)
+        using (ImRaii.Table("BehaviorTable", 2))
         {
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            ImGui.Text("Bar / Timer:");
-            ImGui.TableNextColumn();
-            ImGui.Text(barDesc);
-        }
+            ImGui.TableSetupColumn("Widget");
+            ImGui.TableSetupColumn("Value");
 
-        if (counterDesc != null)
-        {
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            ImGui.Text("Counter:");
-            ImGui.TableNextColumn();
-            ImGui.Text(counterDesc);
-        }
+            if (barDesc != null)
+            {
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                ImGui.Text("Bar / Timer:");
+                ImGui.TableNextColumn();
+                ImGui.Text(barDesc);
+            }
 
-        if (stateDesc != null)
-        {
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            ImGui.Text("State Indicator:");
-            ImGui.TableNextColumn();
-            ImGui.Text(stateDesc);
-        }
+            if (counterDesc != null)
+            {
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                ImGui.Text("Counter:");
+                ImGui.TableNextColumn();
+                ImGui.Text(counterDesc);
+            }
 
-        table.Dispose();
+            if (stateDesc != null)
+            {
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                ImGui.Text("State Indicator:");
+                ImGui.TableNextColumn();
+                ImGui.Text(stateDesc);
+            }
+        }
     }
 
     private static void DrawTooltipIcon(uint? iconId, Vector2 startPos)

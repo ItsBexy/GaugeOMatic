@@ -11,60 +11,59 @@ public abstract partial class ItemRef
 {
     public virtual void DrawTooltip()
     {
-        var col = new ImRaii.Color().Push(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1));
-        var tt = ImRaii.Tooltip();
+        using (ImRaii.PushColor(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1)))
+        {
+            using (ImRaii.Tooltip())
+            {
+                var startPos = ImGui.GetCursorPos();
 
-        var startPos = ImGui.GetCursorPos();
+                DrawTooltipIcon(startPos);
+                using (ImRaii.Group())
+                {
+                    TooltipHeaderText();
+                }
 
-        DrawTooltipIcon(startPos);
-        var gr = ImRaii.Group();
-        TooltipHeaderText();
-        gr.Dispose();
+                ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
 
-        ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
+                WidgetBehaviorTable();
 
-        WidgetBehaviorTable();
-
-        FooterContents();
-
-        tt.Dispose();
-        col.Dispose();
+                FooterContents();
+            }
+        }
     }
 
     public void WidgetBehaviorTable()
     {
         ImGui.TextDisabled("Widget Behavior");
 
+        using (ImRaii.Table("BehaviorTable", 2))
+        {
+            ImGui.TableSetupColumn("Widget");
+            ImGui.TableSetupColumn("Value");
 
-        var table = ImRaii.Table("BehaviorTable", 2);
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("Bar / Timer:");
 
-        ImGui.TableSetupColumn("Widget");
-        ImGui.TableSetupColumn("Value");
+            ImGui.TableNextColumn();
+            PrintBarTimerDesc();
 
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        ImGui.Text("Bar / Timer:");
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("Counter:");
 
-        ImGui.TableNextColumn();
-        PrintBarTimerDesc();
+            ImGui.TableNextColumn();
+            if (UseCounterAsState())
+                PrintStateDesc();
+            else
+                PrintCounterDesc();
 
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        ImGui.Text("Counter:");
-
-        ImGui.TableNextColumn();
-        if (UseCounterAsState())
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGui.Text("State Indicator:");
+            ImGui.TableNextColumn();
             PrintStateDesc();
-        else
-            PrintCounterDesc();
-
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        ImGui.Text("State Indicator:");
-        ImGui.TableNextColumn();
-        PrintStateDesc();
-
-        table.Dispose();
+        }
     }
 
     public IDalamudTextureWrap? GetIconTexture()

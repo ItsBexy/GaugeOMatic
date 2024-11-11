@@ -66,14 +66,14 @@ public partial class ActionRef
         if (barType == StatusTimer)
         {
             ImGui.TextColored(Plain, "Shows");
-            SameLineSquished();
+            ImGui.SameLine(0,3);
             if (ReadyStatus?.Icon != null)
             {
                 DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize());
-                SameLineSquished();
+                ImGui.SameLine(0,3);
             }
             ImGui.TextColored(Yellow, ReadyStatus?.Name ?? "?");
-            SameLineSquished();
+            ImGui.SameLine(0,3);
             ImGui.TextColored(Plain, "timer");
         }
         else if (barType == ComboTimer) ImGui.Text("Shows combo time remaining for this action");
@@ -94,11 +94,11 @@ public partial class ActionRef
         {
 
             ImGui.TextColored(Plain, "•");
-            SameLineSquished();
+            ImGui.SameLine(0,3);
             if (ReadyStatus?.Icon != null)
             {
                 DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize());
-                SameLineSquished();
+                ImGui.SameLine(0,3);
             }
             MulticolorText((Yellow, readyStatus), (Plain, "is active"));
         }

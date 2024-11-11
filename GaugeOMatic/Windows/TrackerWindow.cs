@@ -55,38 +55,37 @@ public class TrackerWindow : Window, IDisposable
 
     private void HeaderTable()
     {
-        var table = ImRaii.Table("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX);
-
-        ImGui.TableSetupColumn("Labels", WidthFixed, 60f * GlobalScale);
-
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        ImGuiHelpy.TextRightAligned("Widget");
-        ImGui.TableNextColumn();
-        Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f);
-
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-        ImGuiHelpy.TextRightAligned("Pinned to:", true);
-        ImGui.TableNextColumn();
-        if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
+        using (ImRaii.Table("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX))
         {
-            Tracker.AddonName = Tracker.AddonDropdown.CurrentSelection;
-            UpdateFlag |= Reset | Save;
+            ImGui.TableSetupColumn("Labels", WidthFixed, 60f * GlobalScale);
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGuiHelpy.TextRightAligned("Widget");
+            ImGui.TableNextColumn();
+            Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f);
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            ImGuiHelpy.TextRightAligned("Pinned to:", true);
+            ImGui.TableNextColumn();
+            if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
+            {
+                Tracker.AddonName = Tracker.AddonDropdown.CurrentSelection;
+                UpdateFlag |= Reset | Save;
+            }
+
+            PreviewControls();
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
         }
-
-        PreviewControls();
-
-        ImGui.TableNextRow();
-        ImGui.TableNextColumn();
-
-        table.Dispose();
 
         ImGui.TextDisabled("Widget Settings");
         ImGui.SameLine();
 
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetColumnWidth() - (80 * GlobalScale));
-        if (ImGuiHelpy.IconButtonWithText("Default", FontAwesomeIcon.UndoAlt, $"##{Hash}Default", 80f))
+        if (ImGuiHelpy.IconButtonWithText(FontAwesomeIcon.UndoAlt,"Default",null, null, null,new(80f,0)))
         {
             Widget?.ResetConfigs();
             Widget?.ApplyConfigs();
@@ -125,8 +124,7 @@ public class TrackerWindow : Window, IDisposable
     {
         ImGui.Spacing();
 
-        var tb = ImRaii.TabBar("UiTab" + Hash);
-        if (tb)
+        using (ImRaii.TabBar("UiTab" + Hash))
         {
             var tabOptions = Tracker.Widget?.GetAttributes.UiTabOptions ?? WidgetUiTab.None;
             DrawTab(tabOptions, "Layout", Layout);
@@ -135,23 +133,20 @@ public class TrackerWindow : Window, IDisposable
             DrawTab(tabOptions, "Behavior", Behavior);
         }
 
-        tb.Dispose();
+        using (ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip))
+        {
+            ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
+            ImGui.TableSetupColumn("Controls", WidthStretch, 1);
 
-        var table = ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip);
+            ImGui.Spacing();
+            ImGui.Spacing();
 
-        ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
-        ImGui.TableSetupColumn("Controls", WidthStretch, 1);
+            Widget?.DrawUI();
 
-        ImGui.Spacing();
-        ImGui.Spacing();
+            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
 
-        Widget?.DrawUI();
-
-        if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
-
-        if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
-
-        table.Dispose();
+            if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
+        }
 
         return;
 
@@ -159,9 +154,8 @@ public class TrackerWindow : Window, IDisposable
         {
             if (tabs.HasFlag(uiTab))
             {
-                var ti = ImRaii.TabItem($"{label}##{label}Tab{Hash}");
+                using var ti = ImRaii.TabItem($"{label}##{label}Tab{Hash}");
                 if (ti) Tracker.Widget!.UiTab = uiTab;
-                ti.Dispose();
             }
         }
     }

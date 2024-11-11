@@ -45,27 +45,28 @@ public abstract class BranchingDropdown
     {
         var i = 0;
 
-        var col = new ImRaii.Color();
-        if (IsOpen)
+        Vector2 windowPos;
+        Vector2 cursorPos;
+        using (ImRaii.PushColor(ImGuiCol.Button,ImGuiHelpy.GetStyleColorVec4(ImGuiCol.ButtonHovered),IsOpen))
         {
-            col.Push(ImGuiCol.Button, ImGuiHelpy.GetStyleColorVec4(ImGuiCol.ButtonHovered));
+            windowPos = ImGui.GetWindowPos();
+            cursorPos = ImGui.GetCursorPos();
+            ImGui.SetNextItemWidth(width * GlobalScale);
+            ImGui.Combo($"##{label}{GetHashCode()}FakeCombo", ref i, DropdownText(label));
         }
-
-        var windowPos = ImGui.GetWindowPos();
-        var cursorPos = ImGui.GetCursorPos();
-        ImGui.SetNextItemWidth(width * GlobalScale);
-        ImGui.Combo($"##{label}{GetHashCode()}FakeCombo", ref i, DropdownText(label));
-        col.Dispose();
 
         var popupPos = new Vector2(windowPos.X + cursorPos.X, windowPos.Y + cursorPos.Y + 22f);
         CreateMenuPopup($"##{label}{GetHashCode()}MenuPopup", width * GlobalScale, popupPos);
 
-        if (ImGui.IsItemClicked()) ImGui.OpenPopup($"##{label}{GetHashCode()}MenuPopup");
+        if (ImGui.IsItemClicked())
+        {
+            ImGui.OpenPopup($"##{label}{GetHashCode()}MenuPopup");
+        }
     }
 
     public void CreateMenuPopup(string label, float width, Vector2 popupPos)
     {
-        var p = ImRaii.Popup(label);
+        using var p = ImRaii.Popup(label);
         IsOpen = p.Success;
         if (IsOpen)
         {
@@ -74,7 +75,5 @@ public abstract class BranchingDropdown
             for (var i = 0; i < SubMenus.Count; i++) DrawSubMenu(i);
             ImGui.Button("", new(width - 16f, 0.01f));
         }
-
-        p.Dispose();
     }
 }

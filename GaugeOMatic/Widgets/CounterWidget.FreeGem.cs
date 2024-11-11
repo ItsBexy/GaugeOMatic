@@ -121,9 +121,9 @@ public abstract class FreeGemCounter(Tracker tracker) : CounterWidget(tracker)
         if (index <= 0) ImGuiHelpy.IconButtonDisabled(ChevronLeft);
         else if (ImGuiHelpy.IconButton("##decrement", ChevronLeft)) index--;
 
-        ImGuiHelpy.SameLineSquished();
+        ImGui.SameLine(0,3);
         ImGui.Text($"{StackTerm} #{index + 1}");
-        ImGuiHelpy.SameLineSquished();
+        ImGui.SameLine(0,3);
 
         if (index >= Stacks.Count - 1) ImGuiHelpy.IconButtonDisabled(ChevronRight);
         else if (ImGuiHelpy.IconButton("##increment", ChevronRight)) index++;

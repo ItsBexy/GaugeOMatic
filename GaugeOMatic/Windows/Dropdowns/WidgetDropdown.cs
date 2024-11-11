@@ -73,23 +73,23 @@ public class WidgetDropdown : BranchingDropdown
         {
             foreach (var (key, name) in MultiCompDict)
             {
-                var col = new ImRaii.Color().Push(ImGuiCol.Border, new Vector4(0));
-                if (ImGui.BeginMenu($"{name}##{Hash}{label}{key}Menu"))
+                using (ImRaii.PushColor(ImGuiCol.Border, new Vector4(0)))
                 {
-                    foreach (var w in AvailableWidgets
-                                      .Where(w => w.Value.WidgetTags.HasFlag(MultiComponent) &&
-                                                  w.Value.MultiCompData?.Key == key)
-                                      .OrderBy(static w => w.Value.MultiCompData?.Index)
-                                      .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
+                    if (ImGui.BeginMenu($"{name}##{Hash}{label}{key}Menu"))
                     {
-                        Tracker.WidgetType = w.Key;
-                        UpdateFlag |= Reset | Save;
+                        foreach (var w in AvailableWidgets
+                                          .Where(w => w.Value.WidgetTags.HasFlag(MultiComponent) &&
+                                                      w.Value.MultiCompData?.Key == key)
+                                          .OrderBy(static w => w.Value.MultiCompData?.Index)
+                                          .Where(static w => ImGui.MenuItem(w.Value.DisplayName)))
+                        {
+                            Tracker.WidgetType = w.Key;
+                            UpdateFlag |= Reset | Save;
+                        }
+
+                        ImGui.EndMenu();
                     }
-
-                    ImGui.EndMenu();
                 }
-
-                col.Dispose();
             }
 
             ImGui.EndMenu();

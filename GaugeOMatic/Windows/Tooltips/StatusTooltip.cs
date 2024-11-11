@@ -47,7 +47,7 @@ public partial class StatusRef
                 if (icon != null)
                 {
                     DrawGameIcon(icon.Value, 22f);
-                    SameLineSquished();
+                    ImGui.SameLine(0,3);
                     ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 2);
                 }
 

@@ -1,5 +1,7 @@
+using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
+using GaugeOMatic.Utility;
 using ImGuiNET;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 
@@ -11,13 +13,11 @@ public partial class ConfigWindow
     {
         ImGui.TextDisabled("GAUGE-O-MATIC HELP");
 
-        var tb = ImRaii.TabBar("HelpTabs");
-
-        AboutTab();
-        HowToTab();
-
-        tb.Dispose();
-
+        using (ImRaii.TabBar("HelpTabs"))
+        {
+            AboutTab();
+            HowToTab();
+        }
     }
 
     public const string AboutText =
@@ -35,14 +35,13 @@ public partial class ConfigWindow
 
     private static void AboutTab()
     {
-        var ti = ImRaii.TabItem("About the Plugin");
+        using var ti = ImRaii.TabItem("About the Plugin");
         if (ti) ImGui.TextWrapped(AboutText);
-        ti.Dispose();
     }
 
     private static void HowToTab()
     {
-        var ti = ImRaii.TabItem("How-to");
+        using var ti = ImRaii.TabItem("How-to");
         if (ti)
         {
             ImGui.TextWrapped("There are two ways to add elements to your job gauge: setting them up manually, or loading a preset.");
@@ -52,7 +51,7 @@ public partial class ConfigWindow
 
             ImGui.Text("1) Click ");
             ImGui.SameLine();
-            IconButtonWithText("Add", FontAwesomeIcon.Plus, "dummyAdd");
+            IconButtonWithText(FontAwesomeIcon.Plus,"Add",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
 
             ImGui.Spacing();
             ImGui.Text("2) Select a tracker to use. There are three categories:");
@@ -106,7 +105,7 @@ public partial class ConfigWindow
 
             ImGui.Text("-Add all elements at once");
             ImGui.SameLine();
-            IconButtonWithText("Add all to...", FontAwesomeIcon.Plus, "dummyAddAll");
+            IconButtonWithText(FontAwesomeIcon.Plus,"Add all to...##dummyAddAll",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
 
             ImGui.Text("-Copy a design onto one of your existing trackers");
             ImGui.SameLine();
@@ -114,7 +113,7 @@ public partial class ConfigWindow
 
             ImGui.Text("-Replace your current settings with the contents of the preset.");
             ImGui.SameLine();
-            IconButtonWithText("Overwrite Current", FontAwesomeIcon.PaintRoller, "dummyOverwrite");
+            IconButtonWithText(FontAwesomeIcon.PaintRoller,"Overwrite Current##dummyOverwrite",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
 
 
             ImGui.Indent(-30f);
@@ -126,13 +125,11 @@ public partial class ConfigWindow
             ImGui.TextDisabled("ADDING PRESETS");
             ImGui.TextWrapped("To save your current options as a preset, simply type in a name and click");
             ImGui.SameLine();
-            IconButtonWithText("Save", FontAwesomeIcon.Save, "dummySave");
+            IconButtonWithText(FontAwesomeIcon.Save,"Save##dummySave",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
 
             ImGui.TextWrapped("If you've copied a preset from an external source to your clipboard, you can import it by clicking ");
             ImGui.SameLine();
-            IconButtonWithText("Import From Clipboard", FontAwesomeIcon.SignInAlt, "dummyImport");
+            IconButtonWithText(FontAwesomeIcon.SignInAlt,"Import From Clipboard##dummyImport");
         }
-
-        ti.Dispose();
     }
 }

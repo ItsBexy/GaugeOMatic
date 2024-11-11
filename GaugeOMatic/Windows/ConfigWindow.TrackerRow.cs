@@ -22,41 +22,40 @@ public partial class ConfigWindow
         var trackerConfig = tracker.TrackerConfig;
         var index = trackerConfig.Index;
 
-        var col = new ImRaii.Color().Push(ImGuiCol.Text, hovering ? new ColorRGB(0, 255, 100) : new Vector4(1, 1, 1, 1));
+        using (ImRaii.PushColor(ImGuiCol.Text, hovering ? new ColorRGB(0, 255, 100) : new Vector4(1, 1, 1, 1)))
+        {
+            ImGui.TableNextRow();
 
-        ImGui.TableNextRow();
+            ImGui.TableNextColumn();
 
-        ImGui.TableNextColumn();
+            DeleteButton(tracker, hash);
+            ImGui.SameLine(0,3);
+            EnabledCheckbox(tracker, hash);
 
-        DeleteButton(tracker, hash);
-        SameLineSquished();
-        EnabledCheckbox(tracker, hash);
+            ImGui.TableNextColumn();
 
-        ImGui.TableNextColumn();
+            var attr = tracker.DisplayAttr;
+            DrawGameIcon(attr.GameIcon, 22f, trackerConfig.Enabled);
 
-        var attr = tracker.DisplayAttr;
-        DrawGameIcon(attr.GameIcon, 22f, trackerConfig.Enabled);
+            if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
-        if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
+            tracker.TrackerDropdown.Draw("[ Track... ]", 180f);
 
-        tracker.TrackerDropdown.Draw("[ Track... ]", 180f);
+            ImGui.TableNextColumn();
+            LayerControls(tracker, hash, index);
 
-        ImGui.TableNextColumn();
-        LayerControls(tracker, hash, index);
+            ImGui.TableNextColumn();
+            tracker.WidgetMenuTable.Draw("[Select Widget]", 200f);
 
-        ImGui.TableNextColumn();
-        tracker.WidgetMenuTable.Draw("[Select Widget]", 200f);
+            ImGui.TableNextColumn();
+            WidgetControls(tracker, hash, index);
 
-        ImGui.TableNextColumn();
-        WidgetControls(tracker, hash, index);
+            ImGui.TableNextColumn();
+            AddonDropdown(tracker, hash);
 
-        ImGui.TableNextColumn();
-        AddonDropdown(tracker, hash);
-
-        ImGui.TableNextColumn();
-        PreviewControls(tracker, hash);
-
-        col.Dispose();
+            ImGui.TableNextColumn();
+            PreviewControls(tracker, hash);
+        }
 
         if (UpdateFlag.HasFlag(UpdateFlags.Save)) trackerConfig.DisplayAttr = null;
 
@@ -66,15 +65,15 @@ public partial class ConfigWindow
     private static void LayerControls(Tracker tracker, int hash, int index)
     {
         BumpUpButton(tracker, hash, index);
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         BumpDownButton(tracker, hash, index);
-        SameLineSquished();
+        ImGui.SameLine(0,3);
     }
 
     private static void BumpUpButton(Tracker tracker, int hash, int index)
     {
         if (index == 0) IconButtonDisabled($"BumpUp{hash}", ChevronUp);
-        else if (ImGuiComponents.IconButton($"BumpUp{hash}", ChevronUp))
+        else if (Utility.DalamudComponents.ImGuiComponents.IconButton($"BumpUp{hash}", ChevronUp))
         {
             var swapWith = tracker.JobModule.TrackerList.Find(t => t.TrackerConfig.Index == index - 1);
             if (swapWith == null) return;
@@ -88,7 +87,7 @@ public partial class ConfigWindow
     private static void BumpDownButton(Tracker tracker, int hash, int index)
     {
         if (index == tracker.JobModule.TrackerList.Count - 1) IconButtonDisabled($"BumpDown{hash}", ChevronDown);
-        else if (ImGuiComponents.IconButton($"BumpDown{hash}", ChevronDown))
+        else if (Utility.DalamudComponents.ImGuiComponents.IconButton($"BumpDown{hash}", ChevronDown))
         {
             var swapWith = tracker.JobModule.TrackerList.Find(t => t.TrackerConfig.Index == index + 1);
             if (swapWith == null) return;
@@ -102,16 +101,16 @@ public partial class ConfigWindow
     private static void WidgetControls(Tracker tracker, int hash, int index)
     {
         SettingsButton();
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         CopyWidgetButton(tracker, hash);
-        SameLineSquished();
+        ImGui.SameLine(0,3);
         PasteWidgetButton(tracker, hash);
         return;
 
         void SettingsButton()
         {
             if (!tracker.Available) IconButtonDisabled($"Settings{hash}", Cog);
-            else if (ImGuiComponents.IconButton($"Settings{hash}", Cog) && tracker.Window != null)
+            else if (Utility.DalamudComponents.ImGuiComponents.IconButton($"Settings{hash}", Cog) && tracker.Window != null)
             {
                 tracker.Window.PositionCondition = ImGuiCond.FirstUseEver;
                 tracker.Window.IsOpen = !tracker.Window.IsOpen;
@@ -139,7 +138,7 @@ public partial class ConfigWindow
 
     private static void CopyWidgetButton(Tracker tracker, int hash)
     {
-        if (ImGuiComponents.IconButton($"CopyWidget{hash}", Copy))
+        if (Utility.DalamudComponents.ImGuiComponents.IconButton($"CopyWidget{hash}", Copy))
         {
             tracker.TrackerConfig.CleanUp();
             WidgetClipType = tracker.WidgetType;
@@ -155,7 +154,7 @@ public partial class ConfigWindow
     {
         if (!string.IsNullOrEmpty(WidgetClipType) && tracker.WidgetMenuTable.AvailableWidgets.ContainsKey(WidgetClipType))
         {
-            if (ImGuiComponents.IconButton($"PasteWidget{hash}", PaintRoller))
+            if (Utility.DalamudComponents.ImGuiComponents.IconButton($"PasteWidget{hash}", PaintRoller))
             {
                 tracker.WidgetConfig = WidgetClipboard!;
                 UpdateFlag |= Reset | UpdateFlags.Save;
@@ -193,9 +192,12 @@ public partial class ConfigWindow
         }
         else
         {
-            var col = new ImRaii.Color().Push(ImGuiCol.Button, 0).Push(ImGuiCol.ButtonActive, 0).Push(ImGuiCol.ButtonHovered, 0);
-            ImGui.Button("", new(120f, 0));
-            col.Dispose();
+            using (ImRaii.PushColor(ImGuiCol.Button, 0)
+                         .Push(ImGuiCol.ButtonActive, 0)
+                         .Push(ImGuiCol.ButtonHovered, 0))
+            {
+                ImGui.Button("", new(120f, 0));
+            }
         }
     }
 
@@ -204,9 +206,10 @@ public partial class ConfigWindow
         var shift = ImGui.IsKeyDown(ModShift);
         if (shift)
         {
-            var col = new ImRaii.Color().Push(ImGuiCol.Text, 0xffffffff);
-            if (ImGuiComponents.IconButton($"Delete{hash}", TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
-            col.Dispose();
+            using (ImRaii.PushColor(ImGuiCol.Text, 0xffffffff))
+            {
+                if (Utility.DalamudComponents.ImGuiComponents.IconButton($"Delete{hash}", TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
+            }
         }
         else
         {
