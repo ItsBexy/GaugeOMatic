@@ -161,7 +161,7 @@ public abstract unsafe class Widget : IDisposable
         {
             if (!TrackerConfig.LimitLevelRange) return true;
             if (TrackerConfig is { LevelMin: 1, LevelMax: LevelCap }) return true;
-            var level = ClientState.LocalPlayer?.Level ?? 1;
+            var level = GameData.FrameworkData.LocalPlayer?.Level ?? 1;
             return level >= TrackerConfig.LevelMin && level <= TrackerConfig.LevelMax;
         }
 

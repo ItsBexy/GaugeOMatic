@@ -1,4 +1,5 @@
 using ImGuiNET;
+// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility.DalamudComponents;
 

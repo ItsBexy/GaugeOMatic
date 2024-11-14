@@ -1,7 +1,6 @@
-using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
-using GaugeOMatic.Utility;
+using GaugeOMatic.Utility.DalamudComponents;
 using ImGuiNET;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 
@@ -51,7 +50,7 @@ public partial class ConfigWindow
 
             ImGui.Text("1) Click ");
             ImGui.SameLine();
-            IconButtonWithText(FontAwesomeIcon.Plus,"Add",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
+            ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Plus,"Add##dummyAdd");
 
             ImGui.Spacing();
             ImGui.Text("2) Select a tracker to use. There are three categories:");
@@ -105,7 +104,7 @@ public partial class ConfigWindow
 
             ImGui.Text("-Add all elements at once");
             ImGui.SameLine();
-            IconButtonWithText(FontAwesomeIcon.Plus,"Add all to...##dummyAddAll",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
+            ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Plus,"Add all to...##dummyAddAll");
 
             ImGui.Text("-Copy a design onto one of your existing trackers");
             ImGui.SameLine();
@@ -113,7 +112,7 @@ public partial class ConfigWindow
 
             ImGui.Text("-Replace your current settings with the contents of the preset.");
             ImGui.SameLine();
-            IconButtonWithText(FontAwesomeIcon.PaintRoller,"Overwrite Current##dummyOverwrite",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
+            ImGuiComponents.IconButtonWithText(FontAwesomeIcon.PaintRoller,"Overwrite Current##dummyOverwrite");
 
 
             ImGui.Indent(-30f);
@@ -125,11 +124,11 @@ public partial class ConfigWindow
             ImGui.TextDisabled("ADDING PRESETS");
             ImGui.TextWrapped("To save your current options as a preset, simply type in a name and click");
             ImGui.SameLine();
-            IconButtonWithText(FontAwesomeIcon.Save,"Save##dummySave",(Color.ColorRGB?)null, null, null,new Vector2((float?)null??0,0));
+            ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Save,"Save##dummySave");
 
             ImGui.TextWrapped("If you've copied a preset from an external source to your clipboard, you can import it by clicking ");
             ImGui.SameLine();
-            IconButtonWithText(FontAwesomeIcon.SignInAlt,"Import From Clipboard##dummyImport");
+            ImGuiComponents.IconButtonWithText(FontAwesomeIcon.SignInAlt,"Import From Clipboard##dummyImport");
         }
     }
 }

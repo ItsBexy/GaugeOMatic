@@ -4,6 +4,7 @@ using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GaugeOMatic.GameData;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -63,7 +64,7 @@ public class BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         }
     }
 
-    public static float BloodletterFix() => ClientState.LocalPlayer?.Level < 84 ? 30f : 45f;
+    public static float BloodletterFix() => FrameworkData.LocalPlayer?.Level < 84 ? 30f : 45f;
 }
 
 public partial class TweakConfigs

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using static Dalamud.Interface.UiBuilder;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
@@ -370,25 +369,4 @@ public static class WidgetUI
             ImGui.Text(headingText);
         }
     }
-
-    public static void Info(string helpText)
-    {
-        ImGui.SameLine();
-        using (ImRaii.PushFont(IconFont))
-        {
-            ImGui.TextDisabled(FontAwesomeIcon.QuestionCircle.ToIconString());
-        }
-
-        if (ImGui.IsItemHovered())
-        {
-            using (ImRaii.Tooltip())
-            {
-                using (ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f))
-                {
-                    ImGui.TextUnformatted(helpText);
-                }
-            }
-        }
-    }
-
 }

@@ -1,12 +1,13 @@
-using Dalamud.Interface.Components;
 using GaugeOMatic.Trackers;
 using ImGuiNET;
 using System;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
+using GaugeOMatic.Utility.DalamudComponents;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Utility.DalamudComponents.ImGuiComponents;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
@@ -73,7 +74,7 @@ public partial class ConfigWindow
     private static void BumpUpButton(Tracker tracker, int hash, int index)
     {
         if (index == 0) IconButtonDisabled($"BumpUp{hash}", ChevronUp);
-        else if (Utility.DalamudComponents.ImGuiComponents.IconButton($"BumpUp{hash}", ChevronUp))
+        else if (IconButton($"BumpUp{hash}", ChevronUp))
         {
             var swapWith = tracker.JobModule.TrackerList.Find(t => t.TrackerConfig.Index == index - 1);
             if (swapWith == null) return;
@@ -87,7 +88,7 @@ public partial class ConfigWindow
     private static void BumpDownButton(Tracker tracker, int hash, int index)
     {
         if (index == tracker.JobModule.TrackerList.Count - 1) IconButtonDisabled($"BumpDown{hash}", ChevronDown);
-        else if (Utility.DalamudComponents.ImGuiComponents.IconButton($"BumpDown{hash}", ChevronDown))
+        else if (IconButton($"BumpDown{hash}", ChevronDown))
         {
             var swapWith = tracker.JobModule.TrackerList.Find(t => t.TrackerConfig.Index == index + 1);
             if (swapWith == null) return;
@@ -110,7 +111,7 @@ public partial class ConfigWindow
         void SettingsButton()
         {
             if (!tracker.Available) IconButtonDisabled($"Settings{hash}", Cog);
-            else if (Utility.DalamudComponents.ImGuiComponents.IconButton($"Settings{hash}", Cog) && tracker.Window != null)
+            else if (IconButton($"Settings{hash}", Cog) && tracker.Window != null)
             {
                 tracker.Window.PositionCondition = ImGuiCond.FirstUseEver;
                 tracker.Window.IsOpen = !tracker.Window.IsOpen;
@@ -138,7 +139,7 @@ public partial class ConfigWindow
 
     private static void CopyWidgetButton(Tracker tracker, int hash)
     {
-        if (Utility.DalamudComponents.ImGuiComponents.IconButton($"CopyWidget{hash}", Copy))
+        if (IconButton($"CopyWidget{hash}", Copy))
         {
             tracker.TrackerConfig.CleanUp();
             WidgetClipType = tracker.WidgetType;
@@ -154,7 +155,7 @@ public partial class ConfigWindow
     {
         if (!string.IsNullOrEmpty(WidgetClipType) && tracker.WidgetMenuTable.AvailableWidgets.ContainsKey(WidgetClipType))
         {
-            if (Utility.DalamudComponents.ImGuiComponents.IconButton($"PasteWidget{hash}", PaintRoller))
+            if (IconButton($"PasteWidget{hash}", PaintRoller))
             {
                 tracker.WidgetConfig = WidgetClipboard!;
                 UpdateFlag |= Reset | UpdateFlags.Save;
@@ -208,7 +209,7 @@ public partial class ConfigWindow
         {
             using (ImRaii.PushColor(ImGuiCol.Text, 0xffffffff))
             {
-                if (Utility.DalamudComponents.ImGuiComponents.IconButton($"Delete{hash}", TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
+                if (ImGuiComponents.IconButton($"Delete{hash}", TrashAlt, (ColorRGB)0xb9222aff, (ColorRGB)0xf87942ff, (ColorRGB)0xd75440ff)) tracker.JobModule.RemoveTracker(tracker);
             }
         }
         else

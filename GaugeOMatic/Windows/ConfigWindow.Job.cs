@@ -2,11 +2,11 @@ using Dalamud.Interface.Utility.Raii;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
+using GaugeOMatic.Utility.DalamudComponents;
 using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System.Collections.Generic;
 using System.Numerics;
-using Dalamud.Interface;
 using static CustomNodes.CustomNode;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
@@ -101,10 +101,10 @@ public partial class ConfigWindow
 
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
-                if (IconButtonWithText(Plus,"Add##addBlank")) jobModule.AddBlankTracker();
+                if (ImGuiComponents.IconButtonWithText(Plus,"Add##addBlank")) jobModule.AddBlankTracker();
 
                 ImGui.TableNextColumn();
-                if (IconButtonWithText(ObjectGroup,"Presets##openPresets")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
+                if (ImGuiComponents.IconButtonWithText(ObjectGroup,"Presets##openPresets")) GaugeOMatic.PresetWindow.IsOpen = !GaugeOMatic.PresetWindow.IsOpen;
 
             }
 
@@ -116,7 +116,6 @@ public partial class ConfigWindow
 
             WriteIcon(ExpandAlt, null, new(255, 255, 255, 128));
             ImGui.TextDisabled("Shift + Scroll to resize widgets");
-
         }
     }
 
@@ -154,9 +153,9 @@ public partial class ConfigWindow
         return hoveringThis;
     }
 
-    public static bool Dragging;
-    public static System.Numerics.Vector2? DragStart;
-    public static Widget? DragTarget;
+    internal static bool Dragging;
+    internal static Vector2? DragStart;
+    internal static Widget? DragTarget;
 
     private static void HandleDrag()
     {

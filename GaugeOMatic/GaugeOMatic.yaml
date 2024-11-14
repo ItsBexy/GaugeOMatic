@@ -1,0 +1,7 @@
+name: Gauge-O-Matic
+author: ItsBexy
+description: |-
+  Gauge-O-Matic allows you to customize your job gauges by adding extra counters, bars, and indicators in a variety of styles
+punchline: Enhance and customize job gauges.
+repo_url: https://github.com/ItsBexy/GaugeOMatic
+dalamud_api_level: 11

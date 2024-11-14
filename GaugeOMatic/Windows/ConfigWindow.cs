@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
+using GaugeOMatic.Utility.DalamudComponents;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
@@ -87,64 +88,36 @@ public partial class ConfigWindow : Window, IDisposable
         // GeneralButton("Settings", Cog, Settings, "General Settings");
         GeneralButton(66313, Help, "Help");
 
-        ImGui.Spacing();
-        ImGui.Spacing();
-
-        TankButton(PLD);
-        TankButton(WAR);
-        TankButton(DRK);
-        TankButton(GNB);
-        ImGui.Spacing();
-        ImGui.Spacing();
-        DPSButton(MNK);
-        DPSButton(DRG);
-        DPSButton(NIN);
-        DPSButton(SAM);
-        DPSButton(RPR);
-        DPSButton(VPR);
+        var jobTab = Configuration.JobTab;
+        var input = false;
 
         ImGui.Spacing();
         ImGui.Spacing();
-
-        // VerticalTabButton(CRP, (ColorRGB)0x6a5d53ff, (ColorRGB)0x887e71ff, (ColorRGB)0x2e2523ff, "DoH");
-        // VerticalTabButton(MIN, (ColorRGB)0x6a5d53ff, (ColorRGB)0x887e71ff, (ColorRGB)0x2e2523ff, "DoL");
+        input |= ImGuiComponents.GameIconButtonSelect("tankJobs",ref jobTab,JobIconZip(PLD,WAR,DRK,GNB),new(26),new(30),1, (ColorRGB)0x052657ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x026999ff);
+        ImGui.Spacing();
+        ImGui.Spacing();
+        input |= ImGuiComponents.GameIconButtonSelect("meleeJobs",ref jobTab,JobIconZip(MNK,DRG,NIN,SAM,RPR,VPR),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
 
         ImGui.TableNextColumn();
 
-        HealButton(WHM);
-        HealButton(SCH);
-        HealButton(AST);
-        HealButton(SGE);
+
+        input |= ImGuiComponents.GameIconButtonSelect("healerJobs",ref jobTab,JobIconZip(WHM,SCH,AST,SGE),new(26),new(30),1, (ColorRGB)0x0a2d23ff, (ColorRGB)0x02992bff,(ColorRGB)0x0c723aff);
         ImGui.Spacing();
         ImGui.Spacing();
-        DPSButton(BRD);
-        DPSButton(MCH);
-        DPSButton(DNC);
+        input |= ImGuiComponents.GameIconButtonSelect("rangedJobs",ref jobTab,JobIconZip(BRD,MCH,DNC),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
         ImGui.Spacing();
         ImGui.Spacing();
-        DPSButton(BLM);
-        DPSButton(SMN);
-        DPSButton(RDM);
-        DPSButton(PCT);
+        input |= ImGuiComponents.GameIconButtonSelect("casterJobs",ref jobTab,JobIconZip(BLM,SMN,RDM,PCT),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
+
+        if (input)
+        {
+            Configuration.GeneralTab = Jobs;
+            Configuration.JobTab = jobTab;
+        }
+
         return;
 
-        void VerticalTabButton(Job job, Vector4 tabActive, Vector4 tabHovered, Vector4 tab)
-        {
-            var active = Configuration.GeneralTab == Jobs && Configuration.JobTab == job;
-            TextureProvider.GetFromGameIcon(new(GetJobIcon(job))).TryGetWrap(out var tex, out _);
-
-        using (ImRaii.PushColor(ButtonActive, tabActive)
-                     .Push(ButtonHovered, tabHovered)
-                     .Push(Button, active ? tabActive : tab))
-            {
-                if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
-                {
-                    Configuration.JobTab = job;
-                    Configuration.GeneralTab = Jobs;
-                    Configuration.Save();
-                }
-            }
-        }
+        static IEnumerable<KeyValuePair<uint, Job>> JobIconZip(params Job[] jobs) => jobs.Select(static j => new KeyValuePair<uint, Job>(GetJobIcon(j),j));
 
         void GeneralButton(uint icon, GeneralTab genTab, string tooltip)
         {
@@ -155,7 +128,7 @@ public partial class ConfigWindow : Window, IDisposable
                          .Push(ButtonHovered, TabHovered)
                          .Push(Button, active ? TabActive : Tab))
             {
-                if (tex != null && ImGui.ImageButton(tex.ImGuiHandle, new(22)))
+                if (tex != null && ImGuiComponents.GameIconButton(66313,"Help",new(22),new Vector2(30)))
                 {
                     Configuration.GeneralTab = genTab;
                     Configuration.Save();
@@ -164,14 +137,8 @@ public partial class ConfigWindow : Window, IDisposable
 
             if (ImGui.IsItemHovered()) ImGui.SetTooltip(tooltip);
         }
-
-        void TankButton(Job job) => VerticalTabButton(job, (ColorRGB)0x026999ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x052657ff);
-
-        void HealButton(Job job) => VerticalTabButton(job, (ColorRGB)0x0c723aff, (ColorRGB)0x02992bff, (ColorRGB)0x0a2d23ff);
-
-        // TankButton(BLU);
-        void DPSButton(Job job) => VerticalTabButton(job, (ColorRGB)0xc20c15ff, (ColorRGB)0xe5482fff, (ColorRGB)0x4c0b1cff);
     }
+
 
     internal static Vector4 TabActive = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.TabActive);
     internal static Vector4 Tab = ImGuiHelpy.GetStyleColorVec4(ImGuiCol.Tab);

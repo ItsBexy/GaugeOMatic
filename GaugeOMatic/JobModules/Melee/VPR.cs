@@ -7,6 +7,8 @@ using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using Dalamud.Interface;
+using GaugeOMatic.Utility.DalamudComponents;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -53,13 +55,13 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         if (!TweakConfigs.VPRHide0)
         {
             ToggleControls("Mirror Highlights", ref TweakConfigs.VPR0Mirror);
-            Info("Reverses the left/right position of the gauge highlights.\n" +
-                 "Useful if you keep your Steel Fangs button on the right-hand side.");
+            ImGuiComponents.HelpMarker("Reverses the left/right position of the gauge highlights.\n" +
+                                       "Useful if you keep your Steel Fangs button on the right-hand side.",FontAwesomeIcon.QuestionCircle);
 
             LabelColumn("Color-Code Highlights");
 
             if (ImGui.Checkbox("##BoolColor-Code Vipersight", ref TweakConfigs.VPR0ColorCode)) UpdateFlag |= UpdateFlags.Save;
-            Info("Changes the gauge's highlight color to indicate your next positional.");
+            ImGuiComponents.HelpMarker("Changes the gauge's highlight color to indicate your next positional.",FontAwesomeIcon.QuestionCircle);
 
             if (TweakConfigs.VPR0ColorCode)
             {
@@ -84,7 +86,7 @@ public class VPRModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         ToggleControls("Hide Serpent Offerings Gauge", ref TweakConfigs.VPRHide1);
 
         ToggleControls("Ready to Reawaken Cue", ref TweakConfigs.VPR1ReawakenCue);
-        Info("Cues the gauge to become highlighted after pressing\nSerpent's Ire and gaining Ready to Reawaken");
+        ImGuiComponents.HelpMarker("Cues the gauge to become highlighted after pressing\nSerpent's Ire and gaining Ready to Reawaken",FontAwesomeIcon.QuestionCircle);
     }
 
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)

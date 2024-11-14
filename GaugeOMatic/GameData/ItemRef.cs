@@ -11,7 +11,7 @@ public abstract partial class ItemRef
     public uint ID;
     public string Name = string.Empty;
     public bool HideFromDropdown;
-    public ushort? Icon { get; set; }
+    public uint? Icon { get; set; }
 
     public bool CheckJob(Job job, Job jobClass, Role role) => job == Job || (jobClass != None && jobClass == Job) || Role.HasFlag(role);
 

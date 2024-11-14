@@ -231,6 +231,7 @@ public partial class StatusRef
         { 2853, new(2853, SMN, Self, Self, 0) },  // Titan's Favor,
         { 3873, new(3873, SMN, Self, Self, 30) }, // Ruby's Glimmer,
         { 3874, new(3874, SMN, Self, Self, 30) }, // Refulgent Lux,
+        //TODO: find 'Crimson Strike Ready'
 
         { 1234, new(1234, RDM, Self, Self, 30) }, // Verfire Ready,
         { 1235, new(1235, RDM, Self, Self, 30) }, // Verstone Ready,

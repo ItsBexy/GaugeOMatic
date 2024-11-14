@@ -3,7 +3,8 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
-using static FFXIVClientStructs.FFXIV.Client.UI.UIModule;
+using Dalamud.Interface;
+using GaugeOMatic.Utility.DalamudComponents;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -46,7 +47,7 @@ public class RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         Heading("Balance Gauge");
         ToggleControls("Hide Balance Gauge", ref TweakConfigs.RDMHide0);
         ToggleControls("Magicked Swordplay Cue", ref TweakConfigs.RDM0SwordplayCue);
-        Info("Cues the gauge to become highlighted after pressing\nManification and gaining the Magicked Swordplay buff");
+        ImGuiComponents.HelpMarker("Cues the gauge to become highlighted after pressing\nManification and gaining the Magicked Swordplay buff",FontAwesomeIcon.QuestionCircle);
     }
 
     public bool SwordplayStatePrev;
@@ -68,7 +69,7 @@ public class RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
 
         if (SwordplayStateCurrent)
         {
-            if (!SwordplayStatePrev) PlaySound(78);
+            if (!SwordplayStatePrev) UIGlobals.PlaySoundEffect(78);
             if (gauge->DataCurrent.BlackMana < 50 || gauge->DataCurrent.WhiteMana < 50) JobUiData->SetValue(3, 0, true);
         }
     }

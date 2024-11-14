@@ -73,27 +73,27 @@ public class ParamRef : ItemRef
 
         var hasLabelOverride = false;
         string? labelOverride = null;
-        if (ClientState.LocalPlayer != null)
+        if (FrameworkData.LocalPlayer != null)
         {
             switch (ParamType)
             {
                 case HP:
-                    maxGauge = ClientState.LocalPlayer.MaxHp;
-                    gaugeValue = preview != null ? preview.Value * maxGauge : ClientState.LocalPlayer.CurrentHp;
+                    maxGauge = FrameworkData.LocalPlayer.MaxHp;
+                    gaugeValue = preview != null ? preview.Value * maxGauge : FrameworkData.LocalPlayer.CurrentHp;
                     break;
                 case MP:
-                    maxGauge = ClientState.LocalPlayer.MaxMp;
-                    gaugeValue = preview != null ? preview.Value * maxGauge : ClientState.LocalPlayer.CurrentMp;
+                    maxGauge = FrameworkData.LocalPlayer.MaxMp;
+                    gaugeValue = preview != null ? preview.Value * maxGauge : FrameworkData.LocalPlayer.CurrentMp;
                     break;
                 case Castbar:
                 {
                     hasLabelOverride = true;
-                    if (ClientState.LocalPlayer.IsCasting)
+                    if (FrameworkData.LocalPlayer.IsCasting)
                     {
-                        maxGauge = ClientState.LocalPlayer.TotalCastTime;
-                        gaugeValue = ClientState.LocalPlayer.CurrentCastTime;
+                        maxGauge = FrameworkData.LocalPlayer.TotalCastTime;
+                        gaugeValue = FrameworkData.LocalPlayer.CurrentCastTime;
 
-                        labelOverride = Sheets.ActionSheet?.GetRow(ClientState.LocalPlayer.CastActionId)?.Name ?? " ";
+                        labelOverride = Sheets.ActionSheet?.GetRowOrDefault(FrameworkData.LocalPlayer.CastActionId)?.Name.ToString() ?? " ";
                         state = 1;
                         count = 1;
                     }

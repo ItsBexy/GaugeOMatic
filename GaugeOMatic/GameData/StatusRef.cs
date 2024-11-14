@@ -1,16 +1,13 @@
-using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.ClientState.Statuses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.Sheets;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.Trackers.Tracker;
 using DalamudStatus = Dalamud.Game.ClientState.Statuses.Status;
-using StatusExcelRow = Lumina.Excel.GeneratedSheets2.Status;
+using StatusExcelRow = Lumina.Excel.Sheets.Status;
 
 namespace GaugeOMatic.GameData;
 
@@ -53,23 +50,23 @@ public partial class StatusRef : ItemRef
     {
         ID = id;
         ExcelRow = StatusSheet?.GetRow(ID);
-        Name = StatusAliases.TryGetValue(ID, out var alias) ? alias : ExcelRow != null ? ExcelRow.Name : "Unknown";
+        Name = StatusAliases.TryGetValue(ID, out var alias) ? alias : ExcelRow != null ? ExcelRow.Value.Name.ToString() : "Unknown";
 
-        var excelJob = GetJobByCategory(ExcelRow?.ClassJobCategory.Row ?? 0);
+        var excelJob = GetJobByCategory(ExcelRow?.ClassJobCategory.RowId ?? 0);
         Job = excelJob != Job.None ? excelJob : job;
         Role = role;
 
-        Icon = (ushort?)ExcelRow?.Icon;
+        Icon = ExcelRow?.Icon ?? 66313;
 
         AppliedTo = appliedTo;
         AppliedBy = appliedBy;
         MaxStacks = StatusMaxes.TryGetValue(id, out var m) ? m :
-                    ExcelRow != null ? Math.Max(1, (int)ExcelRow.MaxStacks) : 1;
+                    ExcelRow != null ? Math.Max(1, (int)ExcelRow.Value.MaxStacks) : 1;
 
         MaxTime = maxtime;
         SeeAlso = seeAlso;
 
-        if (MaxStacks > 1 && Icon != null) Icon = (ushort?)(Icon.Value + (MaxStacks - 1));
+        if (MaxStacks > 1 && Icon != null) Icon = (uint?)(Icon.Value + (MaxStacks - 1));
     }
 
     public StatusRef() { }
@@ -89,7 +86,7 @@ public partial class StatusRef : ItemRef
                 return true;
             case Self:
             {
-                var playerId = ClientState.LocalPlayer?.GameObjectId;
+                var playerId = FrameworkData.LocalPlayer?.GameObjectId;
                 return sourceId == playerId || sourceOwnerId == playerId;
             }
             case Party:
@@ -101,7 +98,7 @@ public partial class StatusRef : ItemRef
             }
             case Target:
             {
-                var target = ClientState.LocalPlayer?.TargetObject?.GameObjectId;
+                var target = FrameworkData.LocalPlayer?.TargetObject?.GameObjectId;
                 if (sourceId == target || sourceOwnerId == target) return true;
                 break;
             }
@@ -112,7 +109,7 @@ public partial class StatusRef : ItemRef
 
     public bool TryGetStatus(out DalamudStatus? result, StatusActor appliedTo, StatusActor appliedBy = Self)
     {
-        var statusList = appliedTo == Self ? PlayerStatus : TargetStatus;
+        var statusList = appliedTo == Self ? FrameworkData.PlayerStatus : FrameworkData.EnemyStatus;
 
         if (statusList != null)
         {
@@ -141,15 +138,9 @@ public partial class StatusRef : ItemRef
 
     public bool TryGetStatus(StatusActor appliedTo, StatusActor appliedBy = Self)
     {
-        var statusList = appliedTo == Self ? PlayerStatus : TargetStatus;
+        var statusList = appliedTo == Self ? FrameworkData.PlayerStatus : FrameworkData.EnemyStatus;
         return statusList != null && (statusList.Any(StatusMatch(ID, appliedBy)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
     }
-
-    public static StatusList? PlayerStatus => ClientState.LocalPlayer?.StatusList;
-    public static StatusList? TargetStatus =>
-        ClientState.LocalPlayer?.TargetObject?.ObjectKind == BattleNpc
-            ? ((IBattleNpc)ClientState.LocalPlayer.TargetObject).StatusList
-            : null;
 
     public override TrackerData GetTrackerData(float? preview)
     {

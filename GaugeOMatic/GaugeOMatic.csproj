@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.8.0.9</Version>
+    <Version>0.8.1.0</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -63,7 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="2.1.13" />
+    <PackageReference Update="DalamudPackager" Version="11.0.0" />
   </ItemGroup>
 
 </Project>

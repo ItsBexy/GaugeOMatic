@@ -100,7 +100,7 @@ public partial class ActionRef
             var cooldownCheck = !HasFlag(LongCooldown, exclude: HasCharges) || !(cooldownRemaining > 0);
             var statusCheck = !HasFlag(RequiresStatus) || (ReadyStatus?.TryGetStatus(Self) ?? false);
             var antCheck = !HasFlag(CanGetAnts | ComboBonus) || HasAnts();
-            var mpCheck = !HasFlag(CostsMP) || GetActionCost() < ClientState.LocalPlayer?.CurrentMp;
+            var mpCheck = !HasFlag(CostsMP) || GetActionCost() < FrameworkData.LocalPlayer?.CurrentMp;
 
             state = transformCheck && cooldownCheck && chargeCheck && statusCheck && antCheck && mpCheck ? 1 : 0;
             count = HasFlag(HasCharges) ? charges : state;

@@ -9,6 +9,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 
 using ImGuiNET;
+// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility.DalamudComponents;
 

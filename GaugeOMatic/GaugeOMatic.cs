@@ -47,6 +47,8 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
         WindowSystem.AddWindow(ConfigWindow);
         WindowSystem.AddWindow(PresetWindow);
 
+        Framework.Update += GameData.FrameworkData.UpdatePlayerData;
+
         CommandManager.AddHandler(CommandName, new(OnCommand) { HelpMessage = "Open Gauge-O-Matic Settings" });
     }
 
@@ -54,6 +56,7 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     {
         PluginInterface.UiBuilder.Draw -= DrawWindows;
         PluginInterface.UiBuilder.OpenConfigUi -= OpenConfigWindow;
+        Framework.Update -= GameData.FrameworkData.UpdatePlayerData;
 
         TrackerManager.Dispose();
 

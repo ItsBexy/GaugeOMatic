@@ -4,6 +4,8 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
+using Dalamud.Interface;
+using GaugeOMatic.Utility.DalamudComponents;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -41,7 +43,7 @@ public class MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         if (!TweakConfigs.MNKHide0)
         {
             ToggleControls("Reverse Order", ref TweakConfigs.MNK0Reverse);
-            Info("Reverses the order of the Beast Chakras. Useful if you\nprefer to arrange your combo buttons from right to left.");
+            ImGuiComponents.HelpMarker("Reverses the order of the Beast Chakras. Useful if you\nprefer to arrange your combo buttons from right to left.",FontAwesomeIcon.QuestionCircle);
         }
 
         Heading("Chakra Gauge");

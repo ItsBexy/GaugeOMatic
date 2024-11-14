@@ -6,6 +6,8 @@ using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using Dalamud.Interface;
+using GaugeOMatic.Utility.DalamudComponents;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -53,7 +55,7 @@ public class BLMModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         ToggleControls("Color MP bar by element", ref TweakConfigs.BLM0MpColor);
         if (TweakConfigs.BLM0MpColor)
         {
-            Info("Changes the color of the MP bar to match your current element"); ImGui.SameLine();
+            ImGuiComponents.HelpMarker("Changes the color of the MP bar to match your current element",FontAwesomeIcon.QuestionCircle); ImGui.SameLine();
             ImGui.Text("Test");
             ImGui.SameLine();
             if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview))

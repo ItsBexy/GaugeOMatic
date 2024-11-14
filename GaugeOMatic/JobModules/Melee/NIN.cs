@@ -7,6 +7,8 @@ using GaugeOMatic.Windows.Dropdowns;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using Dalamud.Interface;
+using GaugeOMatic.Utility.DalamudComponents;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -52,7 +54,7 @@ public class NINModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         if (ImGui.Checkbox("##BoolChange color under Higi", ref TweakConfigs.NIN0HigiRecolor)) UpdateFlag |= UpdateFlags.Save;
         if (TweakConfigs.NIN0HigiRecolor)
         {
-            Info("Changes the color of the gauge while the Higi buff is active.");
+            ImGuiComponents.HelpMarker("Changes the color of the gauge while the Higi buff is active.",FontAwesomeIcon.QuestionCircle);
 
             ImGui.SameLine();
             ImGui.Text("Test");

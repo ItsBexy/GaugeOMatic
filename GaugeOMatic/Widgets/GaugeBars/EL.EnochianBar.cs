@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using Dalamud.Interface;
+using GaugeOMatic.Utility.DalamudComponents;
 using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
@@ -295,7 +297,7 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
                 RadioIcons("Direction", ref Config.Direction, [0, 1], [RedoAlt, UndoAlt]);
 
                 if (ToggleControls("Force Clock Hand To Top", ref Config.HandOnTop)) UpdateFlag |= Reset;
-                Info("Attempts to force the clock hand to the top layer, above other widgets.\n\nNOTE: Can be finicky, may not always work.");
+                ImGuiComponents.HelpMarker("Attempts to force the clock hand to the top layer, above other widgets.\n\nNOTE: Can be finicky, may not always work.",FontAwesomeIcon.QuestionCircle);
 
                 break;
             case Colors:

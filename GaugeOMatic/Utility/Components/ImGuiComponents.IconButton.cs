@@ -1,10 +1,10 @@
-using System;
-using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-
 using ImGuiNET;
+using System;
+using System.Numerics;
+// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility.DalamudComponents;
 
@@ -17,27 +17,56 @@ public static partial class ImGuiComponents
     /// IconButton component to use an icon as a button.
     /// </summary>
     /// <param name="icon">The icon for the button.</param>
-   /// <returns>Indicator if button is clicked.</returns>
+    /// <returns>Indicator if button is clicked.</returns>
     public static bool IconButton(FontAwesomeIcon icon) => IconButton(icon, null);
 
     /// <summary>
     /// IconButton component to use an icon as a button.
     /// </summary>
     /// <param name="icon">The icon for the button.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
     /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(FontAwesomeIcon icon, Vector2? size)
-        => IconButton(icon, null, null, null, size);
+    public static bool IconButton(FontAwesomeIcon icon, Vector2 size) => IconButton(icon, null, null, null, size);
+
+    /// <summary>
+    /// IconButton component to use an icon as a button.
+    /// </summary>
+    /// <param name="icon">The icon for the button.</param>
+    /// <param name="defaultColor">The default color of the button.</param>
+    /// <param name="activeColor">The color of the button when active.</param>
+    /// <param name="hoveredColor">The color of the button when hovered.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <returns>Indicator if button is clicked.</returns>
+    public static bool IconButton(FontAwesomeIcon icon, Vector4? defaultColor, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null) => IconButton($"{icon.ToIconString()}", defaultColor, activeColor, hoveredColor, size);
 
     /// <summary>
     /// IconButton component to use an icon as a button.
     /// </summary>
     /// <param name="id">The ID of the button.</param>
     /// <param name="icon">The icon for the button.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
     /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(int id, FontAwesomeIcon icon, Vector2? size = null)
-        => IconButton(id, icon, null, null, null, size);
+    public static bool IconButton(int id, FontAwesomeIcon icon) => IconButton(id, icon, null);
+
+    /// <summary>
+    /// IconButton component to use an icon as a button.
+    /// </summary>
+    /// <param name="id">The ID of the button.</param>
+    /// <param name="icon">The icon for the button.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <returns>Indicator if button is clicked.</returns>
+    public static bool IconButton(int id, FontAwesomeIcon icon, Vector2 size) => IconButton(id, icon, null, null, null, size);
+
+    /// <summary>
+    /// IconButton component to use an icon as a button with color options.
+    /// </summary>
+    /// <param name="id">The ID of the button.</param>
+    /// <param name="icon">The icon for the button.</param>
+    /// <param name="defaultColor">The default color of the button.</param>
+    /// <param name="activeColor">The color of the button when active.</param>
+    /// <param name="hoveredColor">The color of the button when hovered.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <returns>Indicator if button is clicked.</returns>
+    public static bool IconButton(int id, FontAwesomeIcon icon, Vector4? defaultColor, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null) => IconButton($"{icon.ToIconString()}##{id}", defaultColor, activeColor, hoveredColor, size);
 
     /// <summary>
     /// IconButton component to use an icon as a button.
@@ -52,31 +81,9 @@ public static partial class ImGuiComponents
     /// </summary>
     /// <param name="id">The ID of the button.</param>
     /// <param name="icon">The icon for the button.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
     /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(string id, FontAwesomeIcon icon, Vector2? size)
-        => IconButton(id, icon, null, null, null, size);
-
-    /// <summary>
-    /// IconButton component to use an icon as a button.
-    /// </summary>
-    /// <param name="iconText">Text already containing the icon string.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
-    /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(string iconText, Vector2? size = null)
-        => IconButton(iconText, null, null, null, size);
-
-    /// <summary>
-    /// IconButton component to use an icon as a button.
-    /// </summary>
-    /// <param name="icon">The icon for the button.</param>
-    /// <param name="defaultColor">The default color of the button.</param>
-    /// <param name="activeColor">The color of the button when active.</param>
-    /// <param name="hoveredColor">The color of the button when hovered.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
-    /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(FontAwesomeIcon icon, Vector4? defaultColor, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null)
-        => IconButton($"{icon.ToIconString()}", defaultColor, activeColor, hoveredColor, size);
+    public static bool IconButton(string id, FontAwesomeIcon icon, Vector2 size) => IconButton(id, icon, null, null, null, size);
 
     /// <summary>
     /// IconButton component to use an icon as a button with color options.
@@ -86,23 +93,24 @@ public static partial class ImGuiComponents
     /// <param name="defaultColor">The default color of the button.</param>
     /// <param name="activeColor">The color of the button when active.</param>
     /// <param name="hoveredColor">The color of the button when hovered.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
     /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(int id, FontAwesomeIcon icon, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null)
-        => IconButton($"{icon.ToIconString()}##{id}", defaultColor, activeColor, hoveredColor, size);
+    public static bool IconButton(string id, FontAwesomeIcon icon, Vector4? defaultColor, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null) => IconButton($"{icon.ToIconString()}##{id}", defaultColor, activeColor, hoveredColor, size);
 
     /// <summary>
-    /// IconButton component to use an icon as a button with color options.
+    /// IconButton component to use an icon as a button.
     /// </summary>
-    /// <param name="id">The ID of the button.</param>
-    /// <param name="icon">The icon for the button.</param>
-    /// <param name="defaultColor">The default color of the button.</param>
-    /// <param name="activeColor">The color of the button when active.</param>
-    /// <param name="hoveredColor">The color of the button when hovered.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <param name="iconText">Text already containing the icon string.</param>
     /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(string id, FontAwesomeIcon icon, Vector4? defaultColor, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null)
-        => IconButton($"{icon.ToIconString()}##{id}", defaultColor, activeColor, hoveredColor, size);
+    public static bool IconButton(string iconText) => IconButton(iconText, null);
+
+    /// <summary>
+    /// IconButton component to use an icon as a button.
+    /// </summary>
+    /// <param name="iconText">Text already containing the icon string.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <returns>Indicator if button is clicked.</returns>
+    public static bool IconButton(string iconText, Vector2 size) => IconButton(iconText, null, null, null, size);
 
     /// <summary>
     /// IconButton component to use an icon as a button with color options.
@@ -111,9 +119,9 @@ public static partial class ImGuiComponents
     /// <param name="defaultColor">The default color of the button.</param>
     /// <param name="activeColor">The color of the button when active.</param>
     /// <param name="hoveredColor">The color of the button when hovered.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon.</param>
     /// <returns>Indicator if button is clicked.</returns>
-    public static bool IconButton(string iconText, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null)
+    public static bool IconButton(string iconText, Vector4? defaultColor, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null)
     {
         using var col = new ImRaii.Color();
 
@@ -138,9 +146,9 @@ public static partial class ImGuiComponents
         }
 
         var icon = iconText;
-        if (icon.Contains("#"))
+        if (icon.Contains('#'))
         {
-            icon = icon[..icon.IndexOf("#", StringComparison.Ordinal)];
+            icon = icon[..icon.IndexOf('#', StringComparison.Ordinal)];
         }
 
         bool button;
@@ -177,10 +185,19 @@ public static partial class ImGuiComponents
     /// </summary>
     /// <param name="icon">Icon to show.</param>
     /// <param name="text">Text to show.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon & text.</param>
+    /// <returns>Indicator if button is clicked.</returns>
+    public static bool IconButtonWithText(FontAwesomeIcon icon, string text, Vector2 size) => IconButtonWithText(icon, text, null, null, null, size);
+
+    /// <summary>
+    /// IconButton component to use an icon as a button with color options.
+    /// </summary>
+    /// <param name="icon">Icon to show.</param>
+    /// <param name="text">Text to show.</param>
     /// <param name="defaultColor">The default color of the button.</param>
     /// <param name="activeColor">The color of the button when active.</param>
     /// <param name="hoveredColor">The color of the button when hovered.</param>
-    /// <param name="size">Sets the size of the button. If either dimension is set to 0, that dimension will conform to the size of the icon & text.</param>
+    /// <param name="size">Sets the size of the button, scaled by the Dalamud global scale. If either dimension is set to 0, that dimension will conform to the size of the icon & text.</param>
     /// <returns>Indicator if button is clicked.</returns>
     public static bool IconButtonWithText(FontAwesomeIcon icon, string text, Vector4? defaultColor = null, Vector4? activeColor = null, Vector4? hoveredColor = null, Vector2? size = null)
     {
@@ -215,9 +232,9 @@ public static partial class ImGuiComponents
         }
 
         var textStr = text;
-        if (textStr.Contains("#"))
+        if (textStr.Contains('#'))
         {
-            textStr = textStr[..textStr.IndexOf("#", StringComparison.Ordinal)];
+            textStr = textStr[..textStr.IndexOf('#', StringComparison.Ordinal)];
         }
 
         var framePadding = ImGui.GetStyle().FramePadding;

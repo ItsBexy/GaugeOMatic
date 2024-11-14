@@ -1,6 +1,8 @@
 using System.Numerics;
 
 using ImGuiNET;
+// ReSharper disable UnusedMember.Global
+// ReSharper disable ConvertToConstant.Local
 
 namespace GaugeOMatic.Utility.DalamudComponents;
 

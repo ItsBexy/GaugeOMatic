@@ -1,4 +1,3 @@
-using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using GaugeOMatic.Config;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
+using static GaugeOMatic.Utility.DalamudComponents.ImGuiComponents;
 using static GaugeOMatic.Windows.ConfigWindow;
 
 namespace GaugeOMatic.Windows;
@@ -117,13 +117,13 @@ public class PresetWindow : Window, IDisposable
                     else
                     {
                         SetUpRenamePopup(ref selectedPreset);
-                        if (Utility.DalamudComponents.ImGuiComponents.IconButton(Edit)) ImGui.OpenPopup("Rename");
+                        if (IconButton(Edit)) ImGui.OpenPopup("Rename");
                     }
 
                     ImGui.SameLine();
 
                     if (builtIn) ImGuiHelpy.IconButtonDisabled(TrashAlt);
-                    else if (Utility.DalamudComponents.ImGuiComponents.IconButton(TrashAlt))
+                    else if (IconButton(TrashAlt))
                     {
                         Configuration.SavedPresets.Remove(selectedPreset);
                         UIData.PresetList = BuildPresetList();
@@ -131,7 +131,7 @@ public class PresetWindow : Window, IDisposable
                     }
 
                     ImGui.SameLine();
-                    if (Utility.DalamudComponents.ImGuiComponents.IconButtonWithText(SignOutAlt, "Export to clipboard"))
+                    if (IconButtonWithText(SignOutAlt, "Export to clipboard"))
                     {
                         ImGui.SetClipboardText(selectedPreset);
                     }
@@ -139,9 +139,9 @@ public class PresetWindow : Window, IDisposable
                     ImGui.Spacing();
                     DisplayPresetContents(module, selectedPreset);
                     ImGui.Spacing();
-                    if (Utility.DalamudComponents.ImGuiComponents.IconButtonWithText(Plus, $"Add all to {module.Abbr}")) ApplyPreset(module, selectedPreset.Clone());
+                    if (IconButtonWithText(Plus, $"Add all to {module.Abbr}")) ApplyPreset(module, selectedPreset.Clone());
                     ImGui.SameLine();
-                    if (Utility.DalamudComponents.ImGuiComponents.IconButtonWithText(PaintRoller, "Overwrite Current")) ApplyPreset(module, selectedPreset.Clone(), true);
+                    if (IconButtonWithText(PaintRoller, "Overwrite Current")) ApplyPreset(module, selectedPreset.Clone(), true);
                 }
             }
         }
@@ -187,7 +187,7 @@ public class PresetWindow : Window, IDisposable
 
         static void CopyWidgetButton(TrackerConfig trackerConfig)
         {
-            if (Utility.DalamudComponents.ImGuiComponents.IconButton($"CopyWidget{trackerConfig.GetHashCode()}", Copy))
+            if (IconButton($"CopyWidget{trackerConfig.GetHashCode()}", Copy))
             {
                 WidgetClipType = trackerConfig.WidgetType;
                 WidgetClipboard = trackerConfig.WidgetConfig;
@@ -199,7 +199,7 @@ public class PresetWindow : Window, IDisposable
 
         void AddTrackerButton(TrackerConfig trackerConfig)
         {
-            if (Utility.DalamudComponents.ImGuiComponents.IconButton($"##add{trackerConfig.GetHashCode()}", Plus))
+            if (IconButton($"##add{trackerConfig.GetHashCode()}", Plus))
             {
                 var newConfig = trackerConfig.Clone();
                 if (newConfig != null) module.AddTrackerConfig(newConfig);
@@ -241,11 +241,11 @@ public class PresetWindow : Window, IDisposable
             ImGui.SetNextItemWidth(200f * GlobalScale);
             if (ImGui.InputTextWithHint("##SaveName", "New Preset Name", ref saveName, 30u)) UIData.SaveName = saveName;
             ImGui.SameLine();
-            if (Utility.DalamudComponents.ImGuiComponents.IconButtonWithText(Save, "Save")) SaveNewPreset(module, saveName);
+            if (IconButtonWithText(Save, "Save")) SaveNewPreset(module, saveName);
 
             ImGui.Spacing();
             ImGui.Text("Import a preset from the clipboard:");
-            if (Utility.DalamudComponents.ImGuiComponents.IconButtonWithText(SignInAlt, "Import From Clipboard")) ImportNewPreset(ImGui.GetClipboardText());
+            if (IconButtonWithText(SignInAlt, "Import From Clipboard")) ImportNewPreset(ImGui.GetClipboardText());
         }
     }
 

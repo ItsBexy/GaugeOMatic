@@ -69,7 +69,7 @@ public partial class ActionRef
             ImGui.SameLine(0,3);
             if (ReadyStatus?.Icon != null)
             {
-                DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize());
+                DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize() / GlobalScale);
                 ImGui.SameLine(0,3);
             }
             ImGui.TextColored(Yellow, ReadyStatus?.Name ?? "?");
@@ -97,7 +97,7 @@ public partial class ActionRef
             ImGui.SameLine(0,3);
             if (ReadyStatus?.Icon != null)
             {
-                DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize());
+                DrawGameIcon(ReadyStatus.Icon.Value, ImGui.GetFontSize() / GlobalScale);
                 ImGui.SameLine(0,3);
             }
             MulticolorText((Yellow, readyStatus), (Plain, "is active"));

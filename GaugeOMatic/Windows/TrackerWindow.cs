@@ -7,6 +7,7 @@ using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System;
+using GaugeOMatic.Utility.DalamudComponents;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Widgets.WidgetUI;
@@ -85,7 +86,7 @@ public class TrackerWindow : Window, IDisposable
         ImGui.SameLine();
 
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetColumnWidth() - (80 * GlobalScale));
-        if (ImGuiHelpy.IconButtonWithText(FontAwesomeIcon.UndoAlt,"Default",null, null, null,new(80f,0)))
+        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.UndoAlt,"Default",null, null, null, new(80f,0)))
         {
             Widget?.ResetConfigs();
             Widget?.ApplyConfigs();

@@ -1,7 +1,9 @@
+using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 
 using ImGuiNET;
+// ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility.DalamudComponents;
 
@@ -21,8 +23,16 @@ public static partial class ImGuiComponents
     /// </summary>
     /// <param name="helpText">The text to display on hover.</param>
     /// <param name="icon">The icon to use.</param>
-    public static void HelpMarker(string helpText, FontAwesomeIcon icon)
+    /// <param name="color">The color of the icon.</param>
+    public static void HelpMarker(string helpText, FontAwesomeIcon icon, Vector4? color = null)
     {
+        using var col = new ImRaii.Color();
+
+        if (color.HasValue)
+        {
+            col.Push(ImGuiCol.TextDisabled, color.Value);
+        }
+
         ImGui.SameLine();
 
         using (ImRaii.PushFont(UiBuilder.IconFont))
