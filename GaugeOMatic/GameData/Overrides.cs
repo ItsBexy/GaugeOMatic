@@ -391,7 +391,8 @@ internal static class Overrides
     {
         {110, BRDModule.BloodletterFix},
         {117, BRDModule.BloodletterFix},
-        {36975, BRDModule.BloodletterFix}
+        {36975, BRDModule.BloodletterFix},
+        {35347, PCTModule.LivingMuseFix}
     };
 
     public static Dictionary<uint, string> ActionAliases = new()

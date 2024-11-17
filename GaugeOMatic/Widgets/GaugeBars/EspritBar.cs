@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using GaugeOMatic.Widgets.Common;
+using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -50,6 +51,8 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
     public CustomNode MainMask;
     public CustomNode DrainMask;
     public CustomNode GainMask;
+
+    public override Bounds GetBounds() => FanPlate;
 
     public override CustomNode BuildContainer()
     {
@@ -317,8 +320,6 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
                 break;
         }
     }
-
-    // public override Bounds GetBounds() => FanPlate;
 
     #endregion
 }

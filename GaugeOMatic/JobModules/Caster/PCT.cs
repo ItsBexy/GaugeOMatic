@@ -4,6 +4,7 @@ using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GaugeOMatic.GameData;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -87,6 +88,8 @@ public class PCTModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         var gauge = (AddonJobHudRPM1*)GameGui.GetAddonByName("JobHudRPM1");
         VisibilityTweak(TweakConfigs.PCTHide1, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(28));
     }
+
+    public static float LivingMuseFix() => FrameworkData.LocalPlayer?.Level < 96 ? 80f : 120f;
 }
 
 public partial class TweakConfigs

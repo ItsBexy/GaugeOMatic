@@ -82,7 +82,7 @@ public partial class ActionRef
         var gaugeValue = preview == null ? barType switch
         {
             StatusTimer => Math.Abs(ReadyStatus!.TryGetStatus(out var status, Self) ? status?.RemainingTime ?? 0 : 0),
-            ComboTimer => HasAnts() ? ActionManager->Combo.Timer : 0,
+            ComboTimer => HasAnts(true) ? ActionManager->Combo.Timer : 0,
             _ => cooldownRemaining
         } : (preview.Value * maxGauge)!;
 

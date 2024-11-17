@@ -60,5 +60,8 @@ public partial class StatusRef
     }
 
     public override void PrintCounterDesc() => ImGui.Text($"Shows stacks ({MaxStacks})");
-    public override void PrintBarTimerDesc() => ImGui.Text($"Shows time remaining{(MaxTime > 0 ? $" ({MaxTime}s)" : "")}");
+    public override void PrintBarTimerDesc()
+    {
+        ImGui.Text(MaxTime > 0 ? $"Shows time remaining ({MaxTime}s)" : "Fills if active");
+    }
 }

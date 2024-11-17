@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using static CustomNodes.CustomNode;
+using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
@@ -48,8 +49,8 @@ public sealed unsafe class OathSigil(Tracker tracker) : StateWidget(tracker)
         Sigil = ImageNodeFromPart(0, 0).SetOrigin(90, 90).SetAlpha(0).SetScale(0).SetY(50).SetImageFlag(32);
         SigilWrapper = new CustomNode(CreateResNode(), Sigil).SetSize(180, 180);
 
-        WingR = ImageNodeFromPart(0, 1).SetPos(107, 42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1);
-        WingL = ImageNodeFromPart(0, 1).SetPos(-6, 42).SetOrigin(70, 52).SetScale(0).SetAlpha(0);
+        WingR = ImageNodeFromPart(0, 1).SetPos(107, 42).SetOrigin(8, 52).SetScale(0).SetAlpha(0).SetImageWrap(1).SetImageFlag(1).RemoveFlags(SetVisByAlpha);
+        WingL = ImageNodeFromPart(0, 1).SetPos(-6, 42).SetOrigin(70, 52).SetScale(0).SetAlpha(0).RemoveFlags(SetVisByAlpha);
 
         Animator += new Tween(Sigil,
                               new(0) { AddRGB = new(-127, -112, -36) },

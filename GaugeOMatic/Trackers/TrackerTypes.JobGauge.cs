@@ -38,22 +38,35 @@ namespace GaugeOMatic.Trackers;
 
 #region Melee
 
-[TrackerDisplay("Chakra Gauge", MNK, null, "Shows Chakra Count", "Shows if 5 chakras are up")]
+    #region MNK
+
+[TrackerDisplay("Chakra Gauge", MNK, null, "Shows Chakra Count", "Shows if 5 or more Chakras are up.")]
 public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
 {
     public override string GaugeAddonName => "JobHudMNK1";
     public override string TermCount => "Chakras";
+    public override string[] StateNames => ["Below 5 Chakras", "At 5 Chakras", "Above 5 Chakras"];
 
     public override TrackerData GetCurrentData(float? preview = null) =>
-        GaugeAddon == null || GaugeData == null ?
-            new(0, 5, 0, 5, 0, 1, preview) :
-            new(GaugeData->ChakraCount,
-                5,
-                GaugeData->ChakraCount,
-                5,
-                GaugeData->ChakraCount >= 5 ? 1 : 0, 1,
-                preview);
+        GaugeAddon == null || GaugeData == null
+            ? new(0, 10, 0, 10, 0, 2, preview)
+            : new(GaugeData->ChakraCount,
+                  10,
+                  GaugeData->ChakraCount,
+                  10,
+                  GaugeData->ChakraCount switch
+                  {
+                      > 5 => 2,
+                      5 => 1,
+                      _ => 0
+                  },
+                  2,
+                  preview);
 }
+
+    #endregion
+
+    #region DRG
 
 [TrackerDisplay("Firstminds' Focus", DRG, null, "Shows Firstminds' Focus Count", "Shows if 2 stacks are up")]
 public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeData>
@@ -71,6 +84,10 @@ public sealed unsafe class FirstmindsFocusTracker : JobGaugeTracker<DragonGaugeD
                 GaugeData->FirstMindsFocusCount >= 2 ? 1 : 0, 1,
                 preview);
 }
+
+    #endregion
+
+    #region NIN
 
 [TrackerDisplay("Ninki Gauge", NIN, "Shows Ninki Value", "Shows spendable Ninki abilities", "Shows if gauge is at least 50")]
 public sealed unsafe class NinkiGaugeTracker : JobGaugeTracker<NinkiGaugeData>
@@ -107,6 +124,10 @@ public sealed unsafe class KazematoiTracker : JobGaugeTracker<KazematoiGaugeData
                 2,
                 preview);
 }
+
+    #endregion
+
+    #region SAM
 
 [TrackerDisplay("Kenki Gauge", SAM, "Shows Kenki value", "Shows maximum spendable Kenki abilities", "Shows if gauge is at least 10")]
 public sealed unsafe class KenkiGaugeTracker : JobGaugeTracker<KenkiGaugeData>
@@ -208,6 +229,10 @@ public sealed unsafe class SenSealTracker : JobGaugeTracker<SenGaugeData>
     }
 }
 
+    #endregion
+
+    #region RPR
+
 [TrackerDisplay("Soul Gauge", RPR, "Shows Soul Gauge value", "Shows spendable Soul Gauge abilities", "Shows if gauge is at least 50")]
 public sealed unsafe class SoulGaugeTracker : JobGaugeTracker<SoulGaugeData>
 {
@@ -274,6 +299,10 @@ public sealed unsafe class VoidShroudTracker : JobGaugeTracker<DeathGaugeData>
                 preview);
 }
 
+    #endregion
+
+    #region VPR
+
 [TrackerDisplay("Rattling Coils", VPR, null, "Shows Rattling Coils", "Shows whether any Coils remain")]
 public sealed unsafe class RattlingCoilTracker : JobGaugeTracker<VipersightGaugeData>
 {
@@ -328,9 +357,13 @@ public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferi
                 preview);
 }
 
+    #endregion
+
 #endregion
 
 #region Ranged
+
+    #region BRD
 
 [TrackerDisplay("Soul Voice Gauge", BRD, "Shows gauge value", null, "Shows if gauge is at least 80")]
 public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData>
@@ -347,6 +380,12 @@ public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData
                 GaugeData->SoulVoiceValue >= GaugeData->SoulVoiceMinimumNeeded ? 1 : 0, 1,
                 preview);
 }
+
+// TODO: BRD song timer?
+
+    #endregion
+
+    #region MCH
 
 [TrackerDisplay("Heat Gauge", MCH, "Shows Heat Gauge value", "Shows Hypercharge uses available", "Shows if gauge is at least 50")]
 public sealed unsafe class HeatGaugeTracker : JobGaugeTracker<HeatGaugeData>
@@ -401,6 +440,10 @@ public sealed unsafe class AutomatonTracker : JobGaugeTracker<HeatGaugeData>
                 1,
                 preview);
 }
+
+    #endregion
+
+    #region DNC
 
 [TrackerDisplay("Fourfold Feathers", DNC, null, "Shows Feather count", "Shows if any feathers are up")]
 public sealed unsafe class FourfoldTracker : JobGaugeTracker<FeatherGaugeData>
@@ -458,9 +501,13 @@ public sealed unsafe class DanceStepTracker : JobGaugeTracker<StepGaugeData>
     }
 }
 
+    #endregion
+
 #endregion
 
 #region Caster
+
+    #region BLM
 
 [TrackerDisplay("Enochian / Polyglot", BLM, "Shows Enochian timer", "Shows Polyglot stacks", "Shows if Enochian is filling")]
 public sealed unsafe class EnochianTracker : JobGaugeTracker<ElementalGaugeData>
@@ -603,6 +650,10 @@ public sealed unsafe class AstralSoulTracker : JobGaugeTracker<AstralGaugeData>
                 preview);
 }
 
+    #endregion
+
+    #region SMN
+
 [TrackerDisplay("Aetherflow Gauge", SMN, null, "Shows Aetherflow stack count", "Shows if there are any stacks available")]
 public sealed unsafe class AetherflowSMNGaugeTracker : JobGaugeTracker<AetherflowSMNGaugeData>
 {
@@ -632,7 +683,7 @@ public sealed unsafe class RubyTracker : JobGaugeTracker<TranceGaugeData>
         if (GaugeAddon == null || GaugeData == null) return new(0, 2, 0, 30, 0, 1, preview);
 
         var egiCheck = GaugeData->CurrentEgi == 1;
-        return new(egiCheck ? GaugeData->Attunement : 0, 2, egiCheck ? GaugeData->EgiTimeLeft : 0, 30, egiCheck ? 1 : 0, 1, preview);
+        return new(egiCheck ? GaugeData->Attunement : 0, 2, egiCheck ? GaugeData->EgiTimeLeft / 1000f : 0, 30, egiCheck ? 1 : 0, 1, preview);
     }
 }
 
@@ -647,7 +698,7 @@ public sealed unsafe class TopazTracker : JobGaugeTracker<TranceGaugeData>
         if (GaugeAddon == null || GaugeData == null) return new(0, 4, 0, 30, 0, 1, preview);
 
         var egiCheck = GaugeData->CurrentEgi == 2;
-        return new(egiCheck ? GaugeData->Attunement : 0, 4, egiCheck ? GaugeData->EgiTimeLeft : 0, 30, egiCheck ? 1 : 0, 1, preview);
+        return new(egiCheck ? GaugeData->Attunement : 0, 4, egiCheck ? GaugeData->EgiTimeLeft / 1000f : 0, 30, egiCheck ? 1 : 0, 1, preview);
     }
 }
 
@@ -662,7 +713,7 @@ public sealed unsafe class EmeraldTracker : JobGaugeTracker<TranceGaugeData>
         if (GaugeAddon == null || GaugeData == null) return new(0, 4, 0, 30, 0, 1, preview);
 
         var egiCheck = GaugeData->CurrentEgi == 3;
-        return new(egiCheck ? GaugeData->Attunement : 0, 4, egiCheck ? GaugeData->EgiTimeLeft : 0, 30, egiCheck ? 1 : 0, 1, preview);
+        return new(egiCheck ? GaugeData->Attunement : 0, 4, egiCheck ? GaugeData->EgiTimeLeft / 1000f : 0, 30, egiCheck ? 1 : 0, 1, preview);
     }
 }
 
@@ -673,12 +724,12 @@ public sealed unsafe class SummonTracker : JobGaugeTracker<TranceGaugeData>
 
     public override string[] StateNames { get; } =
     [
-        "Inactive",  //0
-        "Carbuncle", //1
+        "Inactive",     //0
+        "Carbuncle",    //1
         "Demi-Bahamut", //2
-        "Bahamut",//3
-        "Phoenix",//4
-        "Solar Bahamut"//5
+        "Bahamut",      //3
+        "Phoenix",      //4
+        "Solar Bahamut" //5
     ];
 
     public override TrackerData GetCurrentData(float? preview = null)
@@ -703,6 +754,10 @@ public sealed unsafe class SummonTracker : JobGaugeTracker<TranceGaugeData>
     }
 
 }
+
+    #endregion
+
+    #region RDM
 
 [TrackerDisplay("Mana Stacks", RDM, "Shows the lesser of White or Black Mana", "Shows Mana stack count", "Shows if both gauges are at least 50")]
 public sealed unsafe class ManaStackTracker : JobGaugeTracker<BalanceGaugeData>
@@ -760,10 +815,13 @@ public sealed unsafe class BalanceCrystalTracker : JobGaugeTracker<BalanceGaugeD
     }
 }
 
+    #endregion
+
+    #region PCT
+
 [TrackerDisplay("Creature Motif Deadline", PCT, "Shows total recast time", "Shows charges", "Shows if ready", "Gives a value of 0 (making the tracker hideable)\nif this motif has already been painted")]
 public sealed unsafe class CreatureMotifDeadline : JobGaugeTracker<CanvasGaugeData>
 {
-
     public override string GaugeAddonName => "JobHudRPM0";
 
     public override TrackerData GetCurrentData(float? preview = null)
@@ -821,9 +879,13 @@ public sealed unsafe class PaletteGaugeTracker : JobGaugeTracker<PaletteGaugeDat
                 preview);
 }
 
+        #endregion
+
 #endregion
 
 #region Tank
+
+    #region PLD
 
 [TrackerDisplay("Oath Gauge", PLD, "Shows Oath Gauge value", "Shows spendable Oath Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
@@ -841,6 +903,10 @@ public sealed unsafe class OathGaugeTracker : JobGaugeTracker<OathGaugeData>
                 preview);
 }
 
+    #endregion
+
+    #region WAR
+
 [TrackerDisplay("Beast Gauge", WAR, "Shows Beast Gauge value", "Shows spendable Beast Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
 {
@@ -857,6 +923,10 @@ public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
                 GaugeData->TankStance ? 1 : 0, 1,
                 preview);
 }
+
+    #endregion
+
+    #region DRK
 
 [TrackerDisplay("JobHudDRK0", DRK, "Shows Blood Gauge value", "Shows spendable Blood Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
@@ -910,6 +980,10 @@ public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeDa
                 preview);
 }
 
+        #endregion
+
+    #region GNB
+
 [TrackerDisplay("JobHudGNB0", GNB, null, "Shows Cartridge Count", "Shows if Tank Stance is on")]
 public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 {
@@ -927,9 +1001,13 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
                 preview);
 }
 
+    #endregion
+
 #endregion
 
 #region Healer
+
+    #region WHM
 
 [TrackerDisplay("Lilies", WHM, "Shows Lily timer", "Shows Lilies available", "Shows if Blood Lily is available")]
 public sealed unsafe class LilyTracker : JobGaugeTracker<HealingGaugeData>
@@ -967,6 +1045,10 @@ public sealed unsafe class BloodLilyTracker : JobGaugeTracker<HealingGaugeData>
                 GaugeData->LiliesSpent >= 3 ? 1 : 0, 1,
                 preview);
 }
+
+    #endregion
+
+    #region SCH
 
 [TrackerDisplay("Aetherflow Gauge", SCH, null, "Shows Aetherflow stacks", "Shows if any stacks are available")]
 public sealed unsafe class AetherflowSCHGaugeTracker : JobGaugeTracker<AetherflowACNGaugeData>
@@ -1018,6 +1100,10 @@ public sealed unsafe class SeraphTracker : JobGaugeTracker<FaerieGaugeData>
                 GaugeData->SeraphTimeLeft > 0 ? 1 : 0, 1,
                 preview);
 }
+
+    #endregion
+
+    #region SGE
 
 [TrackerDisplay("Eukrasia", SGE, null, null, "Shows if Eukrasia is active")]
 public sealed unsafe class EukrasiaTracker : JobGaugeTracker<EukrasiaGaugeData>
@@ -1072,5 +1158,7 @@ public sealed unsafe class AdderstingTracker : JobGaugeTracker<AddersgallGaugeDa
                 GaugeData->Addersting > 0 ? 1 : 0, 1,
                 preview);
 }
+
+    #endregion
 
 #endregion
