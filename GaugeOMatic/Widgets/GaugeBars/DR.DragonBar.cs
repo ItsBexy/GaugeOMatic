@@ -347,7 +347,7 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
                 SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
                 ToggleControls("Invert Fill", ref Config.Invert);
                 HideControls("Collapse Empty", "Collapse Full");
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, MaxGauge);
 
                 if (Config.MilestoneType > 0)
                 {

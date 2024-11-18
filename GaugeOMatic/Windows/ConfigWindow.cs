@@ -54,7 +54,8 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Spacing();
 
-        using (ImRaii.Table("LayoutTable", 3, SizingFixedFit))
+        using var table = ImRaii.Table("LayoutTable", 3, SizingFixedFit);
+        if (table.Success)
         {
             ImGui.TableSetupColumn("VertTabBar");
             ImGui.TableSetupColumn("VertTabBar2");

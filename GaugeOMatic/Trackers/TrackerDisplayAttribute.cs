@@ -82,22 +82,24 @@ public class TrackerDisplayAttribute : Attribute
     {
         using (ImRaii.PushColor(ImGuiCol.PopupBg, new Vector4(0.03f, 0.03f, 0.03f, 1)))
         {
-            using (ImRaii.Tooltip())
+            using (var tt = ImRaii.Tooltip())
             {
-                var startPos = ImGui.GetCursorPos();
+                if (tt.Success) {
+                    var startPos = ImGui.GetCursorPos();
 
-                DrawTooltipIcon(icon, startPos);
+                    DrawTooltipIcon(icon, startPos);
 
-                using (ImRaii.Group())
-                {
-                    ImGui.Text(heading);
+                    using (var gr = ImRaii.Group())
+                    {
+                        if (gr.Success) ImGui.Text(heading);
+                    }
+
+                    ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
+
+                    if (w1 != null || w2 != null || w3 != null) WidgetBehaviorTable(w1, w2, w3);
+
+                    if (footer != null) ImGui.TextDisabled(footer);
                 }
-
-                ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
-
-                if (w1 != null || w2 != null || w3 != null) WidgetBehaviorTable(w1, w2, w3);
-
-                if (footer != null) ImGui.TextDisabled(footer);
             }
         }
     }
@@ -106,7 +108,8 @@ public class TrackerDisplayAttribute : Attribute
     {
         ImGui.TextDisabled("Widget Behavior");
 
-        using (ImRaii.Table("BehaviorTable", 2))
+        using var table = ImRaii.Table("BehaviorTable", 2);
+        if (table.Success)
         {
             ImGui.TableSetupColumn("Widget");
             ImGui.TableSetupColumn("Value");

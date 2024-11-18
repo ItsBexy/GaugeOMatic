@@ -42,7 +42,8 @@ public static partial class ImGuiComponents
 
         if (ImGui.IsItemHovered())
         {
-            using (ImRaii.Tooltip())
+            using var tt = ImRaii.Tooltip();
+            if (tt.Success)
             {
                 using (ImRaii.TextWrapPos(ImGui.GetFontSize() * 35.0f))
                 {

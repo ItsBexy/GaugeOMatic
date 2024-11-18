@@ -12,7 +12,8 @@ public partial class ConfigWindow
     {
         ImGui.TextDisabled("GAUGE-O-MATIC HELP");
 
-        using (ImRaii.TabBar("HelpTabs"))
+        using var tb = ImRaii.TabBar("HelpTabs");
+        if (tb.Success)
         {
             AboutTab();
             HowToTab();

@@ -317,7 +317,7 @@ public unsafe class BatteryReplica : GaugeBarWidget
                 SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
                 ToggleControls("Invert Fill", ref Config.Invert);
                 HideControls();
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, MaxGauge);
                 break;
             case Text:
                 NumTextControls($"{Tracker.TermGauge} Text", ref Config.NumTextProps);

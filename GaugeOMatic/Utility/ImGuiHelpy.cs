@@ -94,7 +94,8 @@ public static class ImGuiHelpy
 
     public static void Tooltip(string tooltipText)
     {
-        using (ImRaii.Tooltip())
+        using var tt = ImRaii.Tooltip();
+        if (tt.Success)
         {
             using (ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f))
             {
@@ -145,8 +146,7 @@ public static class ImGuiHelpy
             var margin = (adjustedHeight - width) / 2f;
 
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + margin);
-            ImGui.Image(tex.ImGuiHandle, new(width, adjustedHeight), new(0), new(1),
-                        new(1, 1, 1, active ? 1 : 0.3f));
+            ImGui.Image(tex.ImGuiHandle, new(width, adjustedHeight), new(0), new(1), new(1, 1, 1, active ? 1 : 0.3f));
             ImGui.SameLine();
         }
 

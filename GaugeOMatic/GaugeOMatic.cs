@@ -21,7 +21,7 @@ public sealed partial class GaugeOMatic : IDalamudPlugin
     internal static WindowSystem WindowSystem = new("Gauge-O-Matic");
     internal static ConfigWindow ConfigWindow { get; set; } = null!;
     internal static PresetWindow PresetWindow { get; set; } = null!;
-    private Configuration Configuration { get; set; }
+    internal Configuration Configuration { get; set; }
     private IDalamudPluginInterface PluginInterface { get; init; }
     private TrackerManager TrackerManager { get; init; }
 

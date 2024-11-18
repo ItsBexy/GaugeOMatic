@@ -308,7 +308,7 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
                 ToggleControls("Invert Fill", ref Config.Invert);
                 HideControls();
 
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, MaxGauge);
                 if (Config.MilestoneType > 0)
                 {
                     ColorPickerRGB("Pulse Colors", ref Config.PulseColor);

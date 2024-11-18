@@ -544,7 +544,7 @@ public unsafe partial class CustomNode
 
     public CustomNode Warning(string str)
     {
-        Service.Log.Warning($"{str}\n{new StackTrace()}");
+        Service.Log.Warning(str);
         return this;
     }
 }

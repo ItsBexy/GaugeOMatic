@@ -1,11 +1,10 @@
 using Dalamud.Interface;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using Dalamud.Interface.Utility.Raii;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
@@ -30,7 +29,8 @@ public static class WidgetUI
         Colors = 0x2,
         Behavior = 0x4,
         Text = 0x8,
-        All = 0xF
+        All = 0x1F,
+        Sound = 0x10
     }
 
     public static void LabelColumn(string label)
@@ -77,6 +77,20 @@ public static class WidgetUI
 
         if (IntInputDrag(label, ref i, min, max, step))
         {
+            UpdateFlag |= Save;
+            return true;
+        }
+        return false;
+    }
+
+    public static bool IntControls(string label, ref uint u, uint min, uint max, uint step)
+    {
+        LabelColumn(label);
+
+        var i = (int)u;
+        if (IntInputDrag(label, ref i, (int)min, (int)max, (int)step))
+        {
+            u = (uint)i;
             UpdateFlag |= Save;
             return true;
         }
@@ -139,8 +153,9 @@ public static class WidgetUI
         return ret;
     }
 
-    public static void ComboControls(string label, ref FontType val, List<FontType> options, List<string> optionNames)
+    public static bool ComboControls<T>(string label, ref T val, List<T> options, List<string> optionNames)
     {
+        var ret = false;
         LabelColumn(label);
 
         ImGui.SetNextItemWidth(142 * GlobalScale);
@@ -149,7 +164,10 @@ public static class WidgetUI
         {
             UpdateFlag |= Save;
             val = options[i];
+            ret = true;
         }
+
+        return ret;
     }
 
     public static bool StringControls(string label, ref string str, string hintText)

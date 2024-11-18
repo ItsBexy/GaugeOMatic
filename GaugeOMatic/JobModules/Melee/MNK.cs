@@ -4,6 +4,7 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Dalamud.Interface;
 using GaugeOMatic.Utility.DalamudComponents;
 using static GaugeOMatic.GameData.JobData;
@@ -42,8 +43,10 @@ public class MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         ToggleControls("Hide Beast Chakra Gauge", ref TweakConfigs.MNKHide0);
         if (!TweakConfigs.MNKHide0)
         {
-            ToggleControls("Reverse Order", ref TweakConfigs.MNK0Reverse);
+            ToggleControls("Reverse Fury Stack Order", ref TweakConfigs.MNK0Reverse);
             ImGuiComponents.HelpMarker("Reverses the order of the Beast Chakras. Useful if you\nprefer to arrange your combo buttons from right to left.",FontAwesomeIcon.QuestionCircle);
+
+            PositionControls("Reposition Fury Stacks", ref TweakConfigs.MNK0BeastPos);
         }
 
         Heading("Chakra Gauge");
@@ -56,6 +59,12 @@ public class MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         VisibilityTweak(TweakConfigs.MNKHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GaugeSimple.Container);
 
         ReorderTweak(gaugeAddon);
+        BeastBarPosTweak(gaugeAddon);
+    }
+
+    private void BeastBarPosTweak(AddonIndex gaugeIndex)
+    {
+        gaugeIndex[3u].SetPos(TweakConfigs.MNK0BeastPos);
     }
 
     private void ReorderTweak(AddonIndex gaugeIndex)
@@ -93,6 +102,7 @@ public partial class TweakConfigs
 {
     public bool MNKHide0;
     public bool MNK0Reverse;
+    public Vector2 MNK0BeastPos;
 
     public bool MNKHide1;
 }

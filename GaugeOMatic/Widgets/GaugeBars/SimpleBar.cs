@@ -234,7 +234,7 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
                 SplitChargeControls(ref Config.SplitCharges, Tracker.RefType, Tracker.CurrentData.MaxCount);
                 ToggleControls("Invert Fill", ref Config.Invert);
                 HideControls();
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, MaxGauge);
                 if (Config.MilestoneType > 0)
                 {
                     ColorPickerRGB("Pulse Colors", ref Config.PulseColor);

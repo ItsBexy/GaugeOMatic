@@ -474,7 +474,7 @@ public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
                     Config.TwinkleInc = twinkleEffect[0];
                     Config.TwinkleDec = twinkleEffect[1];
                 }
-                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone);
+                MilestoneControls("Pulse", ref Config.MilestoneType, ref Config.Milestone, MaxGauge);
                 if (Config.MilestoneType > 0)
                 {
                     ColorPickerRGB("Pulse Colors", ref Config.PulseColor);

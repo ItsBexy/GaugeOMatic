@@ -59,7 +59,8 @@ public class PresetWindow : Window, IDisposable
 
     public void SetUpRenamePopup(ref Preset preset)
     {
-        using (ImRaii.Popup("Rename"))
+        using var pop = ImRaii.Popup("Rename");
+        if (pop.Success)
         {
             var name = UIData.NewPresetName ?? preset.Name;
             ImGui.SetNextItemWidth(180f * GlobalScale);
@@ -82,34 +83,53 @@ public class PresetWindow : Window, IDisposable
 
     public void PresetListUI(JobModule module)
     {
-        using (ImRaii.Group())
+        using var gr = ImRaii.Group();
+
+        if (gr.Success)
         {
             var filter = Configuration.PresetFiltering;
 
             ImGui.SameLine();
-            if (ImGui.RadioButton("All", ref filter, 0)) { Configuration.PresetFiltering = 0; Configuration.Save(); }
-            ImGui.SameLine();
-            if (ImGui.RadioButton("Role Only", ref filter, 1)) { Configuration.PresetFiltering = 1; Configuration.Save(); }
-            ImGui.SameLine();
-            if (ImGui.RadioButton("Job Only", ref filter, 2)) { Configuration.PresetFiltering = 2; Configuration.Save(); }
-
-            var presetList = new List<Preset>(UIData.PresetList.Where(p => filter == 0 || p.Trackers.Any(t => filter switch
+            if (ImGui.RadioButton("All", ref filter, 0))
             {
-                1 => t.JobRoleMatch(module),
-                2 => t.JobMatch(module),
-                _ => true
-            })));
+                Configuration.PresetFiltering = 0;
+                Configuration.Save();
+            }
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton("Role Only", ref filter, 1))
+            {
+                Configuration.PresetFiltering = 1;
+                Configuration.Save();
+            }
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton("Job Only", ref filter, 2))
+            {
+                Configuration.PresetFiltering = 2;
+                Configuration.Save();
+            }
+
+            var presetList = new List<Preset>(UIData.PresetList.Where(
+                                                  p => filter == 0 || p.Trackers.Any(t => filter switch
+                                                  {
+                                                      1 => t.JobRoleMatch(module),
+                                                      2 => t.JobMatch(module),
+                                                      _ => true
+                                                  })));
             var presetNames = presetList.Select(static p => p.Name).ToArray();
             var selectedIndex = Math.Clamp(UIData.PresetSelectedIndex, 0, Math.Max(0, presetList.Count - 1));
             ImGui.SetNextItemWidth(200f * GlobalScale);
-            if (ImGui.ListBox("##Presets", ref selectedIndex, presetNames, presetList.Count, 10)) UIData.PresetSelectedIndex = selectedIndex;
+            if (ImGui.ListBox("##Presets", ref selectedIndex, presetNames, presetList.Count, 10))
+                UIData.PresetSelectedIndex = selectedIndex;
 
             if (presetList.Count > 0)
             {
                 var selectedPreset = presetList[selectedIndex];
 
                 ImGui.SameLine();
-                using (ImRaii.Group())
+                using var gr2 = ImRaii.Group();
+                if (gr2.Success)
                 {
                     var builtIn = selectedPreset.BuiltIn;
 
@@ -139,9 +159,11 @@ public class PresetWindow : Window, IDisposable
                     ImGui.Spacing();
                     DisplayPresetContents(module, selectedPreset);
                     ImGui.Spacing();
-                    if (IconButtonWithText(Plus, $"Add all to {module.Abbr}")) ApplyPreset(module, selectedPreset.Clone());
+                    if (IconButtonWithText(Plus, $"Add all to {module.Abbr}"))
+                        ApplyPreset(module, selectedPreset.Clone());
                     ImGui.SameLine();
-                    if (IconButtonWithText(PaintRoller, "Overwrite Current")) ApplyPreset(module, selectedPreset.Clone(), true);
+                    if (IconButtonWithText(PaintRoller, "Overwrite Current"))
+                        ApplyPreset(module, selectedPreset.Clone(), true);
                 }
             }
         }
@@ -149,7 +171,8 @@ public class PresetWindow : Window, IDisposable
 
     private static void DisplayPresetContents(JobModule module, Preset selectedPreset)
     {
-        using (ImRaii.Table("PresetInfo", 2, ImGuiTableFlags.SizingFixedFit))
+        using var table = ImRaii.Table("PresetInfo", 2, ImGuiTableFlags.SizingFixedFit);
+        if (table.Success)
         {
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
@@ -233,13 +256,15 @@ public class PresetWindow : Window, IDisposable
 
     private void PresetAddUI(JobModule module)
     {
-        using (ImRaii.Group())
+        using var gr = ImRaii.Group();
+        if (gr.Success)
         {
             ImGui.TextColored(new(1, 1, 1, 0.6f), "ADD PRESETS");
             var saveName = UIData.SaveName;
             ImGui.Text($"Save a preset from your current {module.Abbr} trackers:");
             ImGui.SetNextItemWidth(200f * GlobalScale);
-            if (ImGui.InputTextWithHint("##SaveName", "New Preset Name", ref saveName, 30u)) UIData.SaveName = saveName;
+            if (ImGui.InputTextWithHint("##SaveName", "New Preset Name", ref saveName, 30u))
+                UIData.SaveName = saveName;
             ImGui.SameLine();
             if (IconButtonWithText(Save, "Save")) SaveNewPreset(module, saveName);
 

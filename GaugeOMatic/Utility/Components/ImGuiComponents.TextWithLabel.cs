@@ -29,10 +29,8 @@ public static partial class ImGuiComponents
             ImGui.Text(value + "*");
             if (ImGui.IsItemHovered())
             {
-                using (ImRaii.Tooltip())
-                {
-                    ImGui.TextUnformatted(hint);
-                }
+                using var tt = ImRaii.Tooltip();
+                if (tt.Success) ImGui.TextUnformatted(hint);
             }
         }
     }

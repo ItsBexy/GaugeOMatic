@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using CustomNodes;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
@@ -54,7 +55,13 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
 
     #region UpdateFuncs
 
-    public override void PostUpdate() { PlaceOnBar(); }
+    public override void PostUpdate()
+    {
+        if (!Config.PositionFreely)
+        {
+            PlaceOnBar();
+        }
+    }
 
     public override void OnFirstRun(int current)
     {
@@ -72,6 +79,9 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
     {
         public uint Bar;
         public AddRGB Color = new(0);
+        [DefaultValue(160)] public int Width = 160;
+        public float Angle;
+
         public bool PositionFreely; //todo: implement
 
         public ParameterGlowConfig(WidgetConfig widgetConfig) : base(widgetConfig.ParameterGlowCfg)
@@ -83,6 +93,8 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
             Bar = config.Bar;
             Color = config.Color;
             PositionFreely = config.PositionFreely;
+            Width = config.Width;
+            Angle = config.Angle;
         }
 
         public ParameterGlowConfig() { }
@@ -98,8 +110,22 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        BarGlow.SetAddRGB(Config.Color);
-        BarGlow2.SetAddRGB(Config.Color);
+        if (Config.PositionFreely)
+        {
+            WidgetContainer.SetPos(Config.Position+ new Vector2(48- (Config.Width / 2f), 27))
+                           .SetScale(Config.Scale)
+                           .SetRotation(Config.Angle,true)
+                           .SetOrigin(Config.Width/2f,10);
+        }
+        else
+        {
+            WidgetContainer.SetScale(1).SetRotation(0);
+        }
+
+        BarGlow.SetAddRGB(Config.Color)
+               .SetWidth(Config.PositionFreely ? Config.Width : 160);
+        BarGlow2.SetAddRGB(Config.Color)
+                .SetWidth(Config.PositionFreely ? Config.Width : 160);
     }
 
     private void PlaceOnBar()
@@ -113,7 +139,18 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
         switch (UiTab)
         {
             case Layout:
-                RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, ["HP", "MP"]);
+                RadioControls("Placement",ref Config.PositionFreely,[false,true],["Snap to bar","Position Freely"]);
+                if (Config.PositionFreely)
+                {
+                    PositionControls("Position",ref Config.Position);
+                    ScaleControls("Scale", ref Config.Scale);
+                    IntControls("Width", ref Config.Width, 20, 160, 1);
+                    AngleControls("Angle", ref Config.Angle);
+                }
+                else
+                {
+                    RadioControls("Bar", ref Config.Bar, new() { 0, 1 }, ["HP", "MP"]);
+                }
                 break;
             case Colors:
                 ColorPickerRGB("Color", ref Config.Color);

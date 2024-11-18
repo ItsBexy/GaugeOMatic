@@ -56,30 +56,32 @@ public class TrackerWindow : Window, IDisposable
 
     private void HeaderTable()
     {
-        using (ImRaii.Table("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX))
+        using (var table = ImRaii.Table("TrackerHeaderTable" + Hash, 2, SizingFixedFit | PadOuterX))
         {
-            ImGui.TableSetupColumn("Labels", WidthFixed, 60f * GlobalScale);
+            if (table.Success) {
+                ImGui.TableSetupColumn("Labels", WidthFixed, 60f * GlobalScale);
 
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            ImGuiHelpy.TextRightAligned("Widget");
-            ImGui.TableNextColumn();
-            Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f);
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                ImGuiHelpy.TextRightAligned("Widget");
+                ImGui.TableNextColumn();
+                Tracker.WidgetMenuWindow.Draw("[Select Widget]", 182f);
 
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
-            ImGuiHelpy.TextRightAligned("Pinned to:", true);
-            ImGui.TableNextColumn();
-            if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
-            {
-                Tracker.AddonName = Tracker.AddonDropdown.CurrentSelection;
-                UpdateFlag |= Reset | Save;
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+                ImGuiHelpy.TextRightAligned("Pinned to:", true);
+                ImGui.TableNextColumn();
+                if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
+                {
+                    Tracker.AddonName = Tracker.AddonDropdown.CurrentSelection;
+                    UpdateFlag |= Reset | Save;
+                }
+
+                PreviewControls();
+
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
             }
-
-            PreviewControls();
-
-            ImGui.TableNextRow();
-            ImGui.TableNextColumn();
         }
 
         ImGui.TextDisabled("Widget Settings");
@@ -125,28 +127,33 @@ public class TrackerWindow : Window, IDisposable
     {
         ImGui.Spacing();
 
-        using (ImRaii.TabBar("UiTab" + Hash))
+        using (var tb = ImRaii.TabBar("UiTab" + Hash))
         {
-            var tabOptions = Tracker.Widget?.GetAttributes.UiTabOptions ?? WidgetUiTab.None;
-            DrawTab(tabOptions, "Layout", Layout);
-            DrawTab(tabOptions, "Colors", Colors);
-            DrawTab(tabOptions, "Text", Text);
-            DrawTab(tabOptions, "Behavior", Behavior);
+            if (tb.Success) {
+                var tabOptions = Tracker.Widget?.GetAttributes.UiTabOptions ?? WidgetUiTab.None;
+                DrawTab(tabOptions, "Layout", Layout);
+                DrawTab(tabOptions, "Colors", Colors);
+                DrawTab(tabOptions, "Text", Text);
+                DrawTab(tabOptions, "Behavior", Behavior);
+                DrawTab(tabOptions, "Sound", Sound);
+            }
         }
 
-        using (ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip))
+        using (var table = ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip))
         {
-            ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
-            ImGui.TableSetupColumn("Controls", WidthStretch, 1);
+            if (table.Success) {
+                ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
+                ImGui.TableSetupColumn("Controls", WidthStretch, 1);
 
-            ImGui.Spacing();
-            ImGui.Spacing();
+                ImGui.Spacing();
+                ImGui.Spacing();
 
-            Widget?.DrawUI();
+                Widget?.DrawUI();
 
-            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
+                if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
 
-            if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
+                if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
+            }
         }
 
         return;
