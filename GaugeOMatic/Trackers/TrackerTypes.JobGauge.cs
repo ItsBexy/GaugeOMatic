@@ -381,7 +381,97 @@ public sealed unsafe class SoulVoiceGaugeTracker : JobGaugeTracker<SongGaugeData
                 preview);
 }
 
-// TODO: BRD song timer?
+[TrackerDisplay("Song Tracker (Any)", BRD, "Shows time left on the current song.", "Shows Minstrel's Coda count.", "Shows which song is playing.")]
+public sealed unsafe class SongTracker : JobGaugeTracker<SongGaugeData>
+{
+    public override string GaugeAddonName => "JobHudBRD0";
+
+    public override string[] StateNames => ["None", "Mage's Ballad", "Army's Paeon",  "Wanderer's Minuet"];
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null || GaugeData == null)
+        {
+            return new(0, 3, 0, 45, 0, 3, preview);
+        }
+
+        var codaCount = 0;
+        if (GaugeData->HasPlayedArmy) codaCount++;
+        if (GaugeData->HasPlayedMage) codaCount++;
+        if (GaugeData->HasPlayedWanderer) codaCount++;
+
+        return new(codaCount,
+                   3,
+                   GaugeData->SongTimeLeft / 1000f,
+                   GaugeData->SongTimerMax / 1000f,
+                   GaugeData->Song,
+                   3,
+                   preview);
+    }
+}
+
+[TrackerDisplay("Mage's Ballad", BRD, "Shows time left on Mage's Ballad", null, "Shows if the Mage's Ballad coda has been granted.")]
+public sealed unsafe class SongTrackerMage : JobGaugeTracker<SongGaugeData>
+{
+    public override string GaugeAddonName => "JobHudBRD0";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        var blank = new TrackerData(0, 1, 0, 45, 0, 1, preview);
+        return GaugeAddon != null && GaugeData != null &&
+               GaugeData->SongPlaying && GaugeData->Song == 1
+                   ? new(1,
+                         1,
+                         GaugeData->SongTimeLeft / 1000f,
+                         GaugeData->SongTimerMax / 1000f,
+                         GaugeData->HasPlayedMage ? 1 : 0,
+                         1,
+                         preview)
+                   : blank;
+    }
+}
+
+[TrackerDisplay("Army's Paeon", BRD, "Shows time left on Army's Paeon", "Shows Repertoire Stacks", "Shows if the Army's Paeon coda has been granted.")]
+public sealed unsafe class SongTrackerArmy : JobGaugeTracker<SongGaugeData>
+{
+    public override string GaugeAddonName => "JobHudBRD0";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        var blank = new TrackerData(0, 4, 0, 45, 0, 1, preview);
+        return GaugeAddon != null && GaugeData != null &&
+               GaugeData->SongPlaying && GaugeData->Song == 2
+                   ? new(GaugeData->Repertoire,
+                         4,
+                         GaugeData->SongTimeLeft / 1000f,
+                         GaugeData->SongTimerMax / 1000f,
+                         GaugeData->HasPlayedArmy ? 1 : 0,
+                         1,
+                         preview)
+        : blank;
+    }
+}
+
+[TrackerDisplay("Wanderer's Minuet", BRD, "Shows time left on Wanderer's Minuet", "Shows Repertoire Stacks", "Shows if the Wanderer's Minuet coda has been granted.")]
+public sealed unsafe class SongTrackerWanderer : JobGaugeTracker<SongGaugeData>
+{
+    public override string GaugeAddonName => "JobHudBRD0";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        var blank = new TrackerData(0, 3, 0, 45, 0, 1, preview);
+        return GaugeAddon != null && GaugeData != null &&
+               GaugeData->SongPlaying && GaugeData->Song == 3
+                   ? new(GaugeData->Repertoire,
+                         3,
+                         GaugeData->SongTimeLeft / 1000f,
+                         GaugeData->SongTimerMax / 1000f,
+                         GaugeData->HasPlayedWanderer ? 1 : 0,
+                         1,
+                         preview)
+                   : blank;
+    }
+}
 
     #endregion
 

@@ -21,7 +21,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("It's just timer text. That's it. Nothing else. Hope you like numbers, because you are about to see one on your screen.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar)]
-[WidgetUiTabs(Text)]
+[WidgetUiTabs(Text | Behavior)]
 public sealed class SimpleTimer(Tracker tracker) : GaugeBarWidget(tracker)
 {
     #region Nodes

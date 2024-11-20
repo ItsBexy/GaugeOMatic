@@ -19,6 +19,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -29,7 +30,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent | HasAddonRestrictions | HasClippingMask)]
 [MultiCompData("KZ", "Kazematoi Replica", 2)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[AddonRestrictions(ClipConflict)]
 public sealed unsafe class KazematoiSwooshBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =

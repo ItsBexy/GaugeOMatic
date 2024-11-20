@@ -26,7 +26,13 @@ public class BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         new("_ParameterWidget", "Parameter Bar")
     ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = [new("Soul Voice Gauge", nameof(SoulVoiceGaugeTracker))];
+    public override List<MenuOption> JobGaugeMenu { get; } = [
+        new("Soul Voice Gauge", nameof(SoulVoiceGaugeTracker)),
+        new("Song Tracker (Any)", nameof(SongTracker)),
+        new("Army's Paeon", nameof(SongTrackerArmy)),
+        new("Mage's Ballad", nameof(SongTrackerMage)),
+        new("Wanderer's Minuet", nameof(SongTrackerWanderer))
+    ];
 
     public override void Save()
     {

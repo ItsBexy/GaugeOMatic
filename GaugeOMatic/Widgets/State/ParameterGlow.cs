@@ -12,6 +12,7 @@ using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -22,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(HasAddonRestrictions | State)]
 [WidgetUiTabs(Layout | Colors)]
-[AddonRestrictions(true, "_ParameterWidget")]
+[AddonRestrictions(WhiteList, "_ParameterWidget")]
 public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =

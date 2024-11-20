@@ -22,6 +22,7 @@ using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -31,7 +32,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A curved bar based on BLM's Enochian timer.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent | Replica | HasAddonRestrictions | HasClippingMask)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[AddonRestrictions(ClipConflict)]
 [MultiCompData("EL", "Elemental Gauge Replica", 1)]
 public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker)
 {

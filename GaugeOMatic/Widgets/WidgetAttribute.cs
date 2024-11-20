@@ -68,13 +68,30 @@ public class MultiCompDataAttribute(string key, string groupName, int index) : A
 [AttributeUsage(AttributeTargets.Class)]
 public class AddonRestrictionsAttribute : Attribute
 {
+    public enum RestrictionType
+    {
+        BlackList, WhiteList, ClipConflict
+    }
+
+    private readonly List<string> clipConflictAddons = ["JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0"];
+
     public List<string> WhiteList = [];
     public List<string> BlackList = [];
 
-    public AddonRestrictionsAttribute(bool allowed, params string[] addons)
+    public AddonRestrictionsAttribute(RestrictionType type, params string[] addons)
     {
-        if (allowed) WhiteList = addons.ToList();
-        else BlackList = addons.ToList();
+        switch (type)
+        {
+            case RestrictionType.BlackList:
+                BlackList = addons.ToList();
+                break;
+            case RestrictionType.ClipConflict:
+                BlackList = clipConflictAddons;
+                break;
+            default:
+                WhiteList = addons.ToList();
+                break;
+        }
     }
 }
 

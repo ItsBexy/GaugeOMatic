@@ -18,6 +18,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -26,8 +27,8 @@ namespace GaugeOMatic.Widgets;
 [WidgetName("Simple Circle")]
 [WidgetDescription("It's a circle!")]
 [WidgetAuthor("ItsBexy")]
-[WidgetTags(GaugeBar | HasAddonRestrictions)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[WidgetTags(GaugeBar | HasAddonRestrictions | HasClippingMask)]
+[AddonRestrictions(ClipConflict)]
 public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =
