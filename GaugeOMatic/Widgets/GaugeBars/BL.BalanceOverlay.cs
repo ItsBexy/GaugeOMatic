@@ -14,6 +14,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -23,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A glowing gauge bar fitted over the Balance Gauge (or a replica of it).")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | MultiComponent | HasAddonRestrictions | HasClippingMask)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[AddonRestrictions(ClipConflict)]
 [MultiCompData("BL", "Balance Gauge Replica", 3)]
 public sealed unsafe class BalanceOverlay(Tracker tracker) : GaugeBarWidget(tracker)
 {

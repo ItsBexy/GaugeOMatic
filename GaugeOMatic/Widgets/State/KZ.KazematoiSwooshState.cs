@@ -8,6 +8,7 @@ using System.Numerics;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.KazematoiSwooshState;
 using static GaugeOMatic.Widgets.WidgetTags;
@@ -24,7 +25,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetTags(State | MultiComponent | HasClippingMask)]
 [WidgetUiTabs(Layout | Colors)]
 [MultiCompData("KZ", "Kazematoi Replica", 1)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[AddonRestrictions(ClipConflict)]
 public sealed unsafe class KazematoiSwooshState(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =

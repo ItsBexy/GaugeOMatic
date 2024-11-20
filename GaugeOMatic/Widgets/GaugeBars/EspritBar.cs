@@ -20,6 +20,7 @@ using static GaugeOMatic.Widgets.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -29,7 +30,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A curved bar based on DNC's Esprit Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(GaugeBar | HasAddonRestrictions | HasClippingMask)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[AddonRestrictions(ClipConflict)]
 public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } = [DNC1, CircleMask];

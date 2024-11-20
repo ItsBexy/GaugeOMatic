@@ -16,6 +16,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.WidgetUI;
 using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
 
@@ -26,7 +27,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
 [WidgetUiTabs(Layout | Colors)]
-[AddonRestrictions(false, "JobHudRPM1", "JobHudGFF1", "JobHudSMN1", "JobHudBRD0")]
+[AddonRestrictions(ClipConflict)]
 public sealed unsafe class ShimmerHalo(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =
