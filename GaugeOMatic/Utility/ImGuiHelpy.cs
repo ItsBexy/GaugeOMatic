@@ -1,16 +1,16 @@
 using Dalamud.Interface;
+using Dalamud.Interface.Components;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using System.Numerics;
-using GaugeOMatic.Utility.DalamudComponents;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static ImGuiNET.ImGuiCol;
 
 namespace GaugeOMatic.Utility;
 
-public static class ImGuiHelpy
+public static partial class ImGuiHelpy
 {
     public static void MulticolorText(params (Vector4 col, string str)[] stringTuples)
     {

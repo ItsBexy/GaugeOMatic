@@ -12,8 +12,8 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.HeatOverlay;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A glowing overlay over the Heat Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("HT", "Heat Gauge Replica", 2)]
 public sealed unsafe class HeatOverlay(Tracker tracker) : StateWidget(tracker)
 {
@@ -205,8 +205,7 @@ public sealed unsafe class HeatOverlay(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         GlowWrapper.SetRotation(Config.Angle, true);
         SmokeContainer.SetRotation(Config.Angle, true);

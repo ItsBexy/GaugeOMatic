@@ -12,13 +12,12 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleBar;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -78,15 +77,15 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
-        Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+        base.HideBar(instant);
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "ShowHide", Ease = SinInOut };
 
     }
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+        base.RevealBar(instant);
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "ShowHide", Ease = SinInOut };
     }
 
     #endregion
@@ -186,8 +185,8 @@ public sealed unsafe class SimpleBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position + new Vector2(48, 27))
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetPos(Config.Position + new Vector2(48, 27));
 
         var flipFactor = Abs(Config.Angle) > 90 ? -1 : 1;
 

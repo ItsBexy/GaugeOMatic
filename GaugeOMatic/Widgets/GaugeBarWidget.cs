@@ -1,19 +1,15 @@
 using CustomNodes;
-using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
-using ImGuiNET;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static GaugeOMatic.GameData.ActionFlags;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.MilestoneType;
-using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
 // ReSharper disable UnusedMethodReturnValue.Global
 
@@ -69,8 +65,17 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
     protected virtual void StartMilestoneAnim() { }
     protected virtual void StopMilestoneAnim() { }
 
-    public virtual void HideBar(bool instant = false) { }
-    public virtual void RevealBar(bool instant = false) { }
+    public virtual void HideBar(bool instant = false)
+    {
+        Animator -= "ShowHide";
+        FadeIcon(false, instant ? 0 : 150);
+    }
+
+    public virtual void RevealBar(bool instant = false)
+    {
+        Animator -= "ShowHide";
+        FadeIcon(true, instant ? 0 : 150);
+    }
 
     public bool MilestoneActive;
     public bool SoundMilestoneActive;
@@ -177,11 +182,10 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
 
         if (Math.Abs(current - previous) < 0.001f) return;
 
-        Animator = Animator.Remove("DrainGain", main, drain)
-                   + new Tween(increasing || drain.Node == null ? main : drain,
-                               new(0) { TimelineProg = previous },
-                               new(time) { TimelineProg = current })
-                   { Label = "DrainGain" };
+        Animator = Animator.Remove("DrainGain", main, drain);
+        Animator += new Tween(increasing || drain.Node == null ? main : drain,
+                              new(0) { TimelineProg = previous },
+                              new(time) { TimelineProg = current }) { Label = "DrainGain" };
     }
 
     public bool HideControls() => HideControls("Hide Empty", "Hide Full");
@@ -207,6 +211,31 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
         }
 
         return emptyToggle || fullToggle;
+    }
+
+    public static bool MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone, float max)
+    {
+        var input1 = RadioControls(label, ref milestoneType, [MilestoneType.None, Above, Below], ["Never", "Above Threshold", "Below Threshold"]);
+        var scaledMilestone = milestone * max;
+
+        var input2 = milestoneType > 0 && FloatControls("Threshold", ref scaledMilestone,0,max,1,$"%.0f ({Math.Round(milestone*100)}%%)");
+        if (input2)
+        {
+            milestone = scaledMilestone / max;
+        }
+
+        if (input1 || input2)
+        {
+            UpdateFlag |= UpdateFlags.Save;
+            return true;
+        }
+
+        return false;
+    }
+
+    public static bool SplitChargeControls(ref bool splitCharges, RefType refType, int maxCount)
+    {
+        return refType == RefType.Action && maxCount > 1 && RadioControls("Cooldown Style", ref splitCharges, [false, true], ["All Charges", "Per Charge"]);
     }
 
     public override void DrawUI()
@@ -241,9 +270,6 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
         SplitCharges = config.SplitCharges;
         MilestoneType = config.MilestoneType;
         Milestone = config.Milestone;
-        SoundType = config.SoundType;
-        SoundMilestone = config.SoundMilestone;
-        SoundId = config.SoundId;
     }
 
     protected GaugeBarWidgetConfig() => NumTextProps = NumTextDefault;
@@ -257,60 +283,4 @@ public abstract class GaugeBarWidgetConfig : WidgetTypeConfig
     public bool SplitCharges;
     [JsonProperty(DefaultValueHandling = Include)] public MilestoneType MilestoneType;
     [DefaultValue(0.5f)] public float Milestone = 0.5f;
-    [JsonProperty(DefaultValueHandling = Include)] public MilestoneType SoundType;
-    [DefaultValue(0.5f)] public float SoundMilestone = 0.5f;
-    [DefaultValue(78)] public uint SoundId = 78;
-
-    public static bool MilestoneControls(string label, ref MilestoneType milestoneType, ref float milestone, float max)
-    {
-        var input1 = RadioControls(label, ref milestoneType, [MilestoneType.None, Above, Below], ["Never", "Above Threshold", "Below Threshold"]);
-        var scaledMilestone = milestone * max;
-
-        var input2 = milestoneType > 0 && FloatControls("Threshold", ref scaledMilestone,0,max,1,$"%.0f ({Math.Round(milestone*100)}%%)");
-        if (input2)
-        {
-            milestone = scaledMilestone / max;
-        }
-
-        return input1 || input2;
-    }
-
-    public static readonly List<uint> SoundBlackList = [19,21,74];
-    public static bool SoundControls(ref MilestoneType soundType, ref float soundMilestone, ref uint soundId, float max)
-    {
-        var input1 = RadioControls("Play Sound", ref soundType, [MilestoneType.None, Above, Below], ["Never", "Above Threshold", "Below Threshold"]);
-
-        var scaledMilestone = soundMilestone * max;
-        var input2 = soundType > 0 && FloatControls("Threshold", ref scaledMilestone,0,max,1,$"%.0f ({Math.Round(soundMilestone*100)}%%)");
-        if (input2)
-        {
-            soundMilestone = scaledMilestone / max;
-        }
-
-        using  var col = ImRaii.PushColor(ImGuiCol.Text,new Vector4(1f,0.35f,0.35f,1), SoundBlackList.Contains(soundId));
-        var input3 = soundType > 0 && IntControls("Sound ID", ref soundId, 0, 79, 1);
-        if (SoundBlackList.Contains(soundId))
-        {
-            ImGui.TableNextColumn();
-            using (ImRaii.TextWrapPos(ImGui.GetWindowSize().X - 10))
-            {
-                ImGui.TextWrapped($"Sound effect #{soundId} will not be played. It should never be played. We will not play it. We will not help you play it.");
-            }
-        }
-        else
-        {
-            if (input3)
-            {
-                UIGlobals.PlaySoundEffect(soundId);
-            }
-        }
-
-        return input1 || input3 || input2;
-    }
-
-    public static bool SplitChargeControls(ref bool splitCharges, RefType refType, int maxCount)
-    {
-        return refType == RefType.Action && maxCount > 1 &&
-               RadioControls("Cooldown Style", ref splitCharges, [false, true], ["All Charges", "Per Charge"]);
-    }
 }

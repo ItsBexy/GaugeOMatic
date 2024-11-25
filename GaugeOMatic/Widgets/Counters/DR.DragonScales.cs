@@ -14,8 +14,8 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.DragonScales;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -282,8 +282,8 @@ public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker
     public AddRGB ColorOffset = new(40, 100, -11);
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale, Math.Abs(Config.Angle) > 90 ? -Config.Scale : Config.Scale)
+        base.ApplyConfigs();
+        WidgetContainer.SetScale(Config.Scale, Math.Abs(Config.Angle) > 90 ? -Config.Scale : Config.Scale)
                   .SetRotation(Config.Angle, true);
 
         StackContainer.SetAddRGB(Config.ScaleColor + ColorOffset);

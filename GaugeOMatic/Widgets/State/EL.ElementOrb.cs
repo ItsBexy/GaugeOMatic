@@ -10,8 +10,8 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.ElementOrb;
 using static GaugeOMatic.Widgets.ElementOrb.ElementOrbConfig.OrbBase;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -21,7 +21,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A widget recreating the orb on BLM's elemental gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | MultiComponent | Replica)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("EL", "Elemental Gauge Replica", 2)]
 public sealed unsafe class ElementOrb(Tracker tracker) : StateWidget(tracker)
 {
@@ -215,8 +215,7 @@ public sealed unsafe class ElementOrb(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale);
+        base.ApplyConfigs();
         Crescent.SetRotation(Config.CrescentAngle, true);
 
         var state = Tracker.CurrentData.State;

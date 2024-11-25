@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
@@ -13,11 +14,10 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonSpear;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -115,9 +115,8 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
 
-
-        Animator -= "Fade";
         Animator +=
         [
             new(FrameTop,
@@ -127,7 +126,7 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
                 new(instant?0:199.9f){X=40,Y=54,ScaleX=1,AddRGB=-50,PartId=2},
                 new(instant?0:201.1f){X=20,Y=64,ScaleX=1,AddRGB=0,PartId=13},
                 new(instant?0:450){X=44,Y=64,ScaleX=1,AddRGB=0,PartId=13})
-                {Label = "Fade"},
+                { Label = "ShowHide" },
 
             new(FrameBottom,
                 new(0){X=23,Y=84,ScaleX=1,AddRGB=0,PartId=11},
@@ -139,18 +138,18 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
                 new(instant?0:310){X=30,Y=64,ScaleX=1,AddRGB=new(0,20,20),PartId=12},
                 new(instant?0:450){X=30,Y=64,ScaleX=1,AddRGB=new(10,20,20),PartId=12},
                 new(instant?0:525){X=30,Y=64,ScaleX=1,AddRGB=0,PartId=12})
-                {Label = "Fade"},
+                { Label = "ShowHide" },
 
             new(Bar,
                 Visible[0],
                 Hidden[instant?0:40])
-                {Label = "Fade"}
+                { Label = "ShowHide" }
         ];
     }
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Fade";
+        base.RevealBar(instant);
         Animator +=
         [
             new(FrameTop,
@@ -159,7 +158,7 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
                 new(instant?0:99.9f){X=-9,Y=52,ScaleY=1,Alpha=255,PartId=13},
                 new(instant?0:100.1f){X=-9,Y=52,ScaleY=1,Alpha=255,PartId=2},
                 new(instant?0:200){X=23,Y=44,ScaleY=1,Alpha=255,PartId=2})
-                {Label = "Fade"},
+                { Label = "ShowHide" },
 
             new(FrameBottom,
                 new(0){X=23,Y=64,PartId=12},
@@ -167,13 +166,13 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
                 new(instant?0:99.9f){X=-9,Y=75,PartId=12},
                 new(instant?0:100.1f){X=-9,Y=75,PartId=11},
                 new(instant?0:200){X=23,Y=84,PartId=11})
-                {Label = "Fade"},
+                { Label = "ShowHide" },
 
             new(Bar,
                 Hidden[0],
                 Hidden[instant?0:100],
                 Visible[instant?0:200])
-                {Label = "Fade"}
+                { Label = "ShowHide" }
         ];
     }
 
@@ -303,8 +302,7 @@ public sealed unsafe class DragonSpear(Tracker tracker) : GaugeBarWidget(tracker
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         Backdrop.SetAddRGB(Config.BarBg, true);
         Main.SetAddRGB(Config.MainColor);

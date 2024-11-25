@@ -13,8 +13,8 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.SenSeal;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -24,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A widget recreating SAM's Sen Seals.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class SenSeal(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } = [SAM1];
@@ -279,9 +279,8 @@ public sealed unsafe class SenSeal(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale)
-                  .SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State));
+        base.ApplyConfigs();
+        WidgetContainer.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State));
 
         InactiveSeal.SetPartId(3 + Config.Seal)
                     .SetAlpha(Config.Colors.ElementAtOrDefault(0).A);

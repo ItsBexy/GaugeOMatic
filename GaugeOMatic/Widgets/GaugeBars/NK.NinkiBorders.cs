@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
@@ -13,10 +14,10 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.NinkiBorders;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -213,7 +214,7 @@ public sealed unsafe class NinkiBorders(Tracker tracker) : GaugeBarWidget(tracke
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         BorderTop.SetVis(Config.Top).SetRGB((Vector4)Config.BorderColor);
         TickTop.SetVis(Config.Top).SetRGB((Vector4)Config.TickColor);

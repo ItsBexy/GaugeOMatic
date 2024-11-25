@@ -11,8 +11,8 @@ using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.TargetReticle;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
@@ -24,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A revolving reticle that appears while the tracker's condition is met.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [AddonRestrictions(ClipConflict)]
 public sealed unsafe class TargetReticle(Tracker tracker) : StateWidget(tracker)
 {
@@ -210,8 +210,8 @@ public sealed unsafe class TargetReticle(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale * 0.5f)
+        base.ApplyConfigs();
+        WidgetContainer.SetScale(Config.Scale * 0.5f)
                   .SetRotation(Config.Angle * 0.0174532925199433f);
 
         Halo.SetMultiply(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));

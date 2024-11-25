@@ -2,16 +2,16 @@ using CustomNodes;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleTimer;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -82,6 +82,10 @@ public sealed class SimpleTimer(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        WidgetIconContainer.SetVis(Config.ShowIcon)
+                           .SetPos(Config.IconPosition)
+                           .SetScale(Config.IconScale);
+
         NumTextNode.ApplyProps(Config.NumTextProps, Config.Position);
     }
 

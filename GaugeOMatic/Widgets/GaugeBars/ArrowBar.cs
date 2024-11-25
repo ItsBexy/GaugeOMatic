@@ -11,12 +11,11 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ArrowBar;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -81,31 +80,32 @@ public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         var halfWidth = Config.Width / 2;
         var kf = instant ? [0, 0, 0] : new[] { 0, 250, 350 };
 
         Animator +=
         [
-            new (Frame,
+            new(Frame,
                  new(kf[0]) { X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Alpha = 255, Height = 34 },
                  new(kf[1]) { X = halfWidth - 19, Width = 68, AddRGB = 50, Alpha = 255, Height = 34 },
                  new(kf[2]) { X = halfWidth - 19, Width = 68, AddRGB = 255, Alpha = 0, Height = 26 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Bar,
                 new(kf[0]) { X = -halfWidth, Alpha = 255, ScaleX = 1, ScaleY = 1 },
                 new(kf[1]) { X = -halfWidth + 19, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
                 new(kf[2]) { X = -halfWidth + 19, Alpha = 128, ScaleX = 30f / Config.Width, ScaleY = 0 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(BarFrame,
                 new(kf[0]) { Y = 0 },
                 new(kf[1]) { Y = 0 },
                 new(kf[2]) { Y = 4 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
-            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]),
-            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]])
+            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]){ Label = "ShowHide" },
+            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]){ Label = "ShowHide" }
         ];
 
         Bar.SetOrigin(Config.Width, 4);
@@ -113,6 +113,7 @@ public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void RevealBar(bool instant = false)
     {
+        base.RevealBar(instant);
         var halfWidth = Config.Width / 2;
         var kf = instant ? [0, 0, 0] : new[] { 0, 50, 150 };
 
@@ -122,22 +123,22 @@ public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
                 new(kf[0]) { Alpha = 0, X = -halfWidth - 69, Width = 68, AddRGB = new(200), Height = 26 },
                 new(kf[1]) { Alpha = 255, X = -halfWidth - 69, Width = 68, AddRGB = new(255), Height = 34 },
                 new(kf[2]) { Alpha = 255, X = -halfWidth - 19, Width = Config.Width + 38, AddRGB = 0, Height = 34 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Bar,
                 new(kf[0]) { X = -halfWidth - 50, Alpha = 0, ScaleX = 30f / Config.Width, ScaleY = 0 },
                 new(kf[1]) { X = -halfWidth - 50, Alpha = 255, ScaleX = 30f / Config.Width, ScaleY = 1 },
                 new(kf[2]) { X = -halfWidth, Alpha = 255, ScaleX = 1, ScaleY = 1 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(BarFrame,
                 new(kf[0]) { Y = 4 },
                 new(kf[1]) { Y = 0 },
                 new(kf[2]) { Y = 0 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
-            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]),
-            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]])
+            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]){ Label = "ShowHide" },
+            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]){ Label = "ShowHide" }
         ];
 
         Bar.SetOrigin(0, 4);
@@ -238,9 +239,8 @@ public sealed unsafe class ArrowBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var frameWidth = Config.Width + 38;
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
 
         BarFrame.SetRotation(Config.Angle * 0.01745329f)
                 .SetScaleY(Abs(Config.Angle) > 90 ? -1 : 1);

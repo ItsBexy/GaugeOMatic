@@ -8,11 +8,10 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.BalanceOverlay;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
@@ -189,7 +188,7 @@ public sealed unsafe class BalanceOverlay(Tracker tracker) : GaugeBarWidget(trac
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
+        base.ApplyConfigs();
         Plate.SetAddRGB(Config.Color, true);
         Tick.SetAddRGB(Config.TickColor)
             .DefineTimeline(TickTimeline);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.ParamRef.ParamTypes;
+using static GaugeOMatic.Trackers.Tracker;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.GameData;
@@ -62,7 +63,7 @@ public class ParamRef : ItemRef
 
     public override void DrawTooltip() => Attrs[ParamType].DrawTooltip();
 
-    public override unsafe Tracker.TrackerData GetTrackerData(float? preview)
+    public override unsafe TrackerData GetTrackerData(float? preview)
     {
         var count = 0;
         const int maxCount = 1;
@@ -73,6 +74,7 @@ public class ParamRef : ItemRef
 
         var hasLabelOverride = false;
         string? labelOverride = null;
+        uint? iconOverride = null;
         if (FrameworkData.LocalPlayer != null)
         {
             switch (ParamType)
@@ -93,7 +95,10 @@ public class ParamRef : ItemRef
                         maxGauge = FrameworkData.LocalPlayer.TotalCastTime;
                         gaugeValue = FrameworkData.LocalPlayer.CurrentCastTime;
 
-                        labelOverride = Sheets.ActionSheet?.GetRowOrDefault(FrameworkData.LocalPlayer.CastActionId)?.Name.ToString() ?? " ";
+                        var castActionId = FrameworkData.LocalPlayer.CastActionId;
+                        labelOverride = Sheets.ActionSheet?.GetRowOrDefault(castActionId)?.Name.ToString() ?? " ";
+
+                        iconOverride = Sheets.ActionSheet?.GetRowOrDefault(castActionId)?.Icon;
                         state = 1;
                         count = 1;
                     }
@@ -133,6 +138,6 @@ public class ParamRef : ItemRef
             }
         }
 
-        return new(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) { HasLabelOverride = hasLabelOverride, LabelOverride = labelOverride };
+        return new(count, maxCount, gaugeValue, maxGauge, state, maxState, preview) { HasLabelOverride = hasLabelOverride, LabelOverride = labelOverride, IconOverride = iconOverride};
     }
 }

@@ -12,8 +12,8 @@ using static GaugeOMatic.Widgets.FaerieFrame;
 using static GaugeOMatic.Widgets.FaerieFrame.FaerieFrameConfig;
 using static GaugeOMatic.Widgets.FaerieFrame.FaerieFrameConfig.FrameState;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A backplate recreating SCH's Faerie gauge (for use with the Faerie Bar Widget)")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(MultiComponent | State | Replica)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("FA", "Faerie Gauge Replica", 1)]
 public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
 {
@@ -303,8 +303,7 @@ public sealed unsafe class FaerieFrame(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         Frame.SetAddRGB(GetAdjustedColor());
 

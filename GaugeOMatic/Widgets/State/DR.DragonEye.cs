@@ -10,8 +10,8 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.DragonEye;
 using static GaugeOMatic.Widgets.DragonEye.DragonEyeConfig.EyeState;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -388,8 +388,8 @@ public sealed unsafe class DragonEye(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Mirror ? -Config.Scale : Config.Scale, Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetScale(Config.Mirror ? -Config.Scale : Config.Scale, Config.Scale);
     }
 
     public override void DrawUI()

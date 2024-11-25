@@ -12,13 +12,12 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.KazematoiSwooshBar;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
@@ -228,14 +227,14 @@ public sealed unsafe class KazematoiSwooshBar(Tracker tracker) : GaugeBarWidget(
 
     public override void HideBar(bool instant = false)
     {
-        Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+        base.HideBar(instant);
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "ShowHide", Ease = SinInOut };
     }
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+        base.RevealBar(instant);
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "ShowHide", Ease = SinInOut };
     }
 
     #endregion
@@ -325,7 +324,7 @@ public sealed unsafe class KazematoiSwooshBar(Tracker tracker) : GaugeBarWidget(
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         Contents.SetRotation(Config.Angle, true).SetScaleX(Config.Mirror ? -1 : 1);
 

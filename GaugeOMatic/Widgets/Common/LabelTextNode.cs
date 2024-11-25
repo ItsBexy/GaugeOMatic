@@ -10,7 +10,7 @@ using static Dalamud.Interface.FontAwesomeIcon;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static Newtonsoft.Json.DefaultValueHandling;
 
 namespace GaugeOMatic.Widgets.Common;

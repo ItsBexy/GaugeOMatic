@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -11,12 +12,11 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.HeatReplica;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -88,14 +88,14 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public override void HideBar(bool instant = false)
     {
-        Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+        base.HideBar(instant);
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Hidden[instant ? 0 : 250]) { Label = "ShowHide", Ease = SinInOut };
     }
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Fade";
-        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "Fade", Ease = SinInOut };
+        base.RevealBar(instant);
+        Animator += new Tween(WidgetContainer, new(0, WidgetContainer), Visible[instant ? 0 : 250]) { Label = "ShowHide", Ease = SinInOut };
     }
 
     public virtual KeyFrame[] BarTimeline => [new(0) { Width = 20 }, new(1) { Width = Config.Width }];
@@ -233,7 +233,7 @@ public unsafe class HeatReplica : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         Contents.SetRotation(Config.Angle, true);
         HeatClock.SetRotation(-Config.Angle, true);

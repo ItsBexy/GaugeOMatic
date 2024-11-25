@@ -13,8 +13,8 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.EukrasiaReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -24,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A widget recreating Sage's Eukrasia indicator.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class EukrasiaReplica(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =
@@ -370,8 +370,7 @@ public sealed unsafe class EukrasiaReplica(Tracker tracker) : StateWidget(tracke
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         var state = Tracker.CurrentData.State;
 

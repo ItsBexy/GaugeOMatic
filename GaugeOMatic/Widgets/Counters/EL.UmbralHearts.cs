@@ -12,8 +12,8 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.UmbralHearts;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -147,8 +147,8 @@ public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracke
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position + new Vector2(19, 22))
-                       .SetScale(Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetPos(Config.Position + new Vector2(19, 22));
 
         PlaceFreeGems();
 

@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -10,10 +11,10 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.NinkiOverlay;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -169,8 +170,7 @@ public sealed unsafe class NinkiOverlay(Tracker tracker) : GaugeBarWidget(tracke
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale);
+        base.ApplyConfigs();
         Main.SetAddRGB(Config.ScrollColor).DefineTimeline(BarTimeline).SetProgress(CalcProg());
         Tick.SetRGB(Config.TickColor);
         Shine.SetRGB(Config.TickColor);

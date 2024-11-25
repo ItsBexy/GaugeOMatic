@@ -9,9 +9,9 @@ using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Dalamud.Interface.Components.ImGuiComponents;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
-using static GaugeOMatic.Utility.DalamudComponents.ImGuiComponents;
 using static GaugeOMatic.Windows.ConfigWindow;
 
 namespace GaugeOMatic.Windows;

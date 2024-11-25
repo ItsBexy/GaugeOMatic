@@ -16,6 +16,7 @@ public abstract partial class Tracker
 
         public bool HasLabelOverride = false;
         public string? LabelOverride = null;
+        public uint? IconOverride = null;
 
         public TrackerData(int count, int maxCount, float gaugeValue, float maxGauge, int state, int maxState, float? preview = null)
         {

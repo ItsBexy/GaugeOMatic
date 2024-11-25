@@ -5,17 +5,17 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalanceBar;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -279,11 +279,9 @@ public sealed unsafe class BalanceBar : GaugeBarWidget
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var left = Config.Side == 0;
         var light = Config.BaseColor == 0;
-
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
 
         BarContainer.SetScale(left ? 1 : -1, 1);
 

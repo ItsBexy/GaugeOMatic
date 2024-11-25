@@ -10,7 +10,7 @@ using static GaugeOMatic.GameData.JobData.Role;
 using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
-using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;

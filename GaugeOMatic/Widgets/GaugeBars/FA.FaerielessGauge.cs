@@ -3,18 +3,17 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.FaerieLess;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
-using static System.Math;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -109,10 +108,9 @@ public sealed unsafe class FaerieLess(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale.X, Config.Scale.Y * (Config.Mirror ? -1f : 1f));
-        WidgetContainer.Node->Rotation = (float)(Config.Angle * (PI / 180f));
-        WidgetContainer.Node->DrawFlags |= 0xD;
+        base.ApplyConfigs();
+        WidgetContainer.SetScale(Config.Scale.X, Config.Scale.Y * (Config.Mirror ? -1f : 1f))
+                       .SetRotation(Config.Angle,true);
 
         Backdrop.SetRGBA(Config.Background);
         Main.SetRGBA(Config.MainColor).DefineTimeline(BarTimeline);

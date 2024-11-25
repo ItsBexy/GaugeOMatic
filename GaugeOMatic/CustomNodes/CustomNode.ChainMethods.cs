@@ -349,6 +349,12 @@ public unsafe partial class CustomNode
         return this;
     }
 
+    public CustomNode SetIcon(uint iconId, int lang=0)
+    {
+        if (Node != null && Node->Type == Image) Node->GetAsAtkImageNode()->LoadIconTexture(iconId, lang);
+        return this;
+    }
+
     public CustomNode SetText(string text)
     {
         if (Node != null && Node->Type == Text)

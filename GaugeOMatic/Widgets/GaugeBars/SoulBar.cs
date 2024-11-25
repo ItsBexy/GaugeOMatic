@@ -15,14 +15,13 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MilestoneType;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.SoulBar;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -117,8 +116,8 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         TickMark.SetAlpha(0);
-        Animator -= "Expand";
         var bgWidth = Config.Width + 2;
         var frameWidth = Config.Width + 10;
         var cornerWidth = Config.Width + 20;
@@ -133,36 +132,36 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
                 new(kf[1]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
                 new(kf[2]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
                 new(kf[3]) { Width = 0, Height = 0, X = -10, Y = 14.1421356f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Corners,
                 new(kf[0]) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 },
                 new(kf[1]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
                 new(kf[2]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
                 new(kf[3] + (kf[3] > 0 ? 150 : 0)) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Bar,
                 new(kf[0]) { ScaleX = flipFactor, Alpha = 255 },
                 new(kf[1]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
                 new(kf[2]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(MidMarkers,
                 new(kf[0]) { Alpha = 255, X = MidMarkerX() },
                 new(kf[1]) { Alpha = 0, X = -4 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(LabelTextNode,
                 Visible[kf[0]],
                 Hidden[kf[2]])
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(NumTextNode,
                 Visible[kf[0]],
                 Hidden[kf[2]])
-                { Ease = SinInOut, Label = "Collapse" }
+                { Ease = SinInOut, Label = "ShowHide" }
         ];
     }
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Collapse";
+        base.RevealBar(instant);
         var frameWidth = Config.Width + 10;
         var bgWidth = Config.Width + 2;
         var cornerWidth = Config.Width + 20;
@@ -177,32 +176,32 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
                 new(kf[1]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
                 new(kf[2]) { Width = 20, Height = 20, X = -10, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 10 },
                 new(kf[3]) { Width = frameWidth, Height = 20, X = -frameWidth / 2, Y = 0, Alpha = 255, Rotation = 0, AddRGB = 0 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Corners,
                 new(kf[0]) { Width = 0, Height = 0, X = -15, Y = 21.2132f, Alpha = 0, Rotation = 0.785398163397448f, AddRGB = 120 },
                 new(kf[1]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0.785398163397448f, AddRGB = 50 },
                 new(kf[2]) { Width = 30, Height = 30, X = -15, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 10 },
                 new(kf[3]) { Width = cornerWidth, Height = 30, X = -cornerWidth / 2, Y = -5, Alpha = 255, Rotation = 0, AddRGB = 0 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Bar,
                 new(kf[0]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
                 new(kf[1]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
                 new(kf[2]) { ScaleX = 12 / bgWidth * flipFactor, Alpha = 0 },
                 new(kf[3]) { ScaleX = flipFactor, Alpha = 255 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(MidMarkers,
                 new(kf[0]) { Alpha = 0, X = -4 },
                 new(kf[2]) { Alpha = 0, X = -4 },
                 new(kf[3]) { Alpha = 255, X = MidMarkerX() })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(LabelTextNode,
                 Hidden[kf[0]],
                 Visible[kf[2]])
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(NumTextNode,
                 Hidden[kf[0]],
                 Visible[kf[2]])
-                { Ease = SinInOut, Label = "Expand" }
+                { Ease = SinInOut, Label = "ShowHide" }
         ];
 
     }
@@ -349,6 +348,7 @@ public sealed unsafe class SoulBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         WidgetContainer.SetPos(Config.Position)
                   .SetOrigin(0, 16f)
                   .SetScale(Config.Scale)

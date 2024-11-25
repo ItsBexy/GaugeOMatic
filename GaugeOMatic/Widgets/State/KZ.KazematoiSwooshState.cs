@@ -12,8 +12,8 @@ using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.KazematoiSwooshState;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A state indicator based on the backdrop of NIN's Kazematoi.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | MultiComponent | HasClippingMask)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("KZ", "Kazematoi Replica", 1)]
 [AddonRestrictions(ClipConflict)]
 public sealed unsafe class KazematoiSwooshState(Tracker tracker) : StateWidget(tracker)
@@ -217,9 +217,8 @@ public sealed unsafe class KazematoiSwooshState(Tracker tracker) : StateWidget(t
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                       .SetScale(Config.Scale)
-                       .SetRotation(Config.Angle, true);
+        base.ApplyConfigs();
+        WidgetContainer.SetRotation(Config.Angle, true);
 
         var state = Tracker.CurrentData.State;
 

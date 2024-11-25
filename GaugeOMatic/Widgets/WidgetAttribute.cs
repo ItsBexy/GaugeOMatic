@@ -5,8 +5,8 @@ using System.Reflection;
 using static GaugeOMatic.Widgets.MultiCompDataAttribute;
 using static GaugeOMatic.Widgets.WidgetAttribute;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 // ReSharper disable ParameterTypeCanBeEnumerable.Local
 // ReSharper disable SuggestBaseTypeForParameter
 

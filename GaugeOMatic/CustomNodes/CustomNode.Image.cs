@@ -1,5 +1,6 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
+using System.Numerics;
 using static GaugeOMatic.Utility.MemoryHelper;
 
 namespace CustomNodes;
@@ -31,6 +32,13 @@ public unsafe partial class CustomNodeManager
             Log.Error("Failed to create image node!\n" + ex.StackTrace);
             return CreateResNode()->GetAsAtkImageNode();
         }
+    }
+
+    public static AtkImageNode* CreateIconNode(uint iconId)
+    {
+        var iconNode = CreateImageNode(new CustomPartsList(CustomPartsList.CreateAsset(), new Vector4(0, 0, 40, 40)), 0);
+        iconNode->LoadIconTexture(iconId,0);
+        return iconNode;
     }
 
     public static AtkClippingMaskNode* CreateClippingMaskNode(CustomPartsList customPartsList, ushort partId)

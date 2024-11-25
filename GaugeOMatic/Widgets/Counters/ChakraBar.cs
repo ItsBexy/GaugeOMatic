@@ -11,8 +11,8 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ChakraBar;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -296,11 +296,10 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
 
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale)
-                  .SetRotation(Config.Angle, true);
+        WidgetContainer.SetRotation(Config.Angle, true);
         SocketPlate.SetMultiply(Config.FrameColor).SetScale(flipFactor);
         StackContainer.SetAddRGB(Config.GemColor + ColorOffset);
 

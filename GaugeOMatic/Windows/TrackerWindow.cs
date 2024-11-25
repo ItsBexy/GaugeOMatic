@@ -7,12 +7,14 @@ using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
 using ImGuiNET;
 using System;
-using GaugeOMatic.Utility.DalamudComponents;
+using Dalamud.Interface.Components;
+using static Dalamud.Interface.FontAwesomeIcon;
+using static Dalamud.Interface.UiBuilder;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static ImGuiNET.ImGuiCond;
 using static ImGuiNET.ImGuiTableColumnFlags;
 using static ImGuiNET.ImGuiTableFlags;
@@ -50,7 +52,7 @@ public class TrackerWindow : Window, IDisposable
 
         WidgetOptionTable();
 
-        if (UpdateFlag.HasFlag(Save)) Configuration.Save();
+        if (UpdateFlag.HasFlag(UpdateFlags.Save)) Configuration.Save();
         if (UpdateFlag.HasFlag(Reset)) Tracker.JobModule.ResetWidgets();
     }
 
@@ -74,7 +76,7 @@ public class TrackerWindow : Window, IDisposable
                 if (Tracker.AddonDropdown.Draw($"AddonSelect{GetHashCode()}", 182f))
                 {
                     Tracker.AddonName = Tracker.AddonDropdown.CurrentSelection;
-                    UpdateFlag |= Reset | Save;
+                    UpdateFlag |= Reset | UpdateFlags.Save;
                 }
 
                 PreviewControls();
@@ -88,15 +90,22 @@ public class TrackerWindow : Window, IDisposable
         ImGui.SameLine();
 
         ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetColumnWidth() - (80 * GlobalScale));
-        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.UndoAlt,"Default",null, null, null, new(80f,0)))
+        if (ImGuiComponents.IconButtonWithText(UndoAlt,"Default",null, null, null, new(80f,0)))
         {
             Widget?.ResetConfigs();
             Widget?.ApplyConfigs();
             Tracker.UpdateTracker();
-            UpdateFlag |= Save;
+            UpdateFlag |= UpdateFlags.Save;
         }
 
-        if (ImGui.IsItemHovered()) ImGui.SetTooltip($"This will reset to the defaults for {Widget?.GetAttributes.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
+        if (ImGui.IsItemHovered())
+        {
+            using var tt = ImRaii.Tooltip();
+            if (tt.Success)
+            {
+                ImGui.TextUnformatted($"This will reset to the defaults for {Widget?.GetAttributes.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
+            }
+        }
 
     }
 
@@ -129,40 +138,52 @@ public class TrackerWindow : Window, IDisposable
 
         using (var tb = ImRaii.TabBar("UiTab" + Hash))
         {
-            if (tb.Success) {
+            if (tb.Success)
+            {
                 var tabOptions = Tracker.Widget?.GetAttributes.UiTabOptions ?? WidgetUiTab.None;
-                DrawTab(tabOptions, "Layout", Layout);
-                DrawTab(tabOptions, "Colors", Colors);
-                DrawTab(tabOptions, "Text", Text);
-                DrawTab(tabOptions, "Behavior", Behavior);
-                DrawTab(tabOptions, "Sound", Sound);
+                DrawTab(tabOptions, "Layout", Layout, ArrowsUpDownLeftRight);
+                DrawTab(tabOptions, "Colors", Colors, PaintBrush);
+                DrawTab(tabOptions, "Text", Text, Font);
+                DrawTab(tabOptions, "Behavior", Behavior, SlidersH);
+                DrawTab(tabOptions, "Icon", Icon, Tag);
+                DrawTab(tabOptions, "Sound", Sound, VolumeUp);
             }
         }
 
-        using (var table = ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip))
-        {
-            if (table.Success) {
-                ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
-                ImGui.TableSetupColumn("Controls", WidthStretch, 1);
+        using var table = ImRaii.Table($"TrackerWidgetOptionTable{Tracker.Widget?.UiTab}{Hash}", 2, SizingStretchProp | PadOuterX | ImGuiTableFlags.NoClip);
+        if (table.Success) {
+            ImGui.TableSetupColumn("Labels", WidthStretch, 0.75f);
+            ImGui.TableSetupColumn("Controls", WidthStretch, 1);
 
-                ImGui.Spacing();
-                ImGui.Spacing();
+            ImGui.Spacing();
+            ImGui.Spacing();
 
-                Widget?.DrawUI();
+            Widget?.DrawUI();
 
-                if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
+            if (Tracker.Widget?.UiTab == Behavior) DisplayRuleTable();
 
-                if (UpdateFlag.HasFlag(Save)) Tracker.WriteWidgetConfig();
-            }
+            if (UpdateFlag.HasFlag(UpdateFlags.Save)) Tracker.WriteWidgetConfig();
         }
 
         return;
 
-        void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab)
+        void DrawTab(WidgetUiTab tabs, string label, WidgetUiTab uiTab, FontAwesomeIcon icon)
         {
             if (tabs.HasFlag(uiTab))
             {
-                using var ti = ImRaii.TabItem($"{label}##{label}Tab{Hash}");
+                using var f = ImRaii.PushFont(IconFont);
+                using var ti = ImRaii.TabItem($"{icon.ToIconString()}###{label}Tab{Hash}");
+                f.Pop();
+
+                if (ImGui.IsItemHovered())
+                {
+                    using var tt = ImRaii.Tooltip();
+                    if (tt.Success)
+                    {
+                        ImGui.TextUnformatted(label);
+                    }
+                }
+
                 if (ti) Tracker.Widget!.UiTab = uiTab;
             }
         }
@@ -175,8 +196,7 @@ public class TrackerWindow : Window, IDisposable
         ImGui.TextColored(new(1, 1, 1, 0.3f), "Display Rules");
         ImGui.TableNextColumn();
 
-        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, [false, true],
-                                  ["Anytime", "Combat / Duty Only"]);
+        var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, [false, true], ["Anytime", "Combat / Duty Only"]);
         var cond2 = ToggleControls("Set Level Range", ref Tracker.TrackerConfig.LimitLevelRange);
         var cond3 = false;
         var cond4 = false;

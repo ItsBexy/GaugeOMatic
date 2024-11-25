@@ -101,6 +101,7 @@ public abstract partial class Tracker : IDisposable
     {
         UpdateValues();
         Widget?.Update();
+        Widget?.UpdateIcon();
     }
 
     public static Tracker? Create(JobModule jobModule, TrackerConfig trackerConfig)

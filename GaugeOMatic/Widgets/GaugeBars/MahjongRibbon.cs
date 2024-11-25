@@ -12,13 +12,12 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MahjongRibbon;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -91,6 +90,7 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         var halfWidth = Config.Width / 2;
         var kf = instant ? [0, 0, 0, 0] : new[] { 0, 350, 450, 200 };
 
@@ -100,19 +100,19 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
                 new(kf[0]) { X = -halfWidth, Width = Config.Width, Height = 32, AddRGB = 0, Alpha = 255, Y = 0 },
                 new(kf[1]) { X = 0, Width = 0, Height = 32, AddRGB = 50, Alpha = 255, Y = 0 },
                 new(kf[2]) { X = 0, Width = 0, Height = 32, AddRGB = 255, Alpha = 0, Y = 16 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide"},
             new(Bar,
                 new(kf[0]) { X = -halfWidth, Alpha = 255, Y = 0, ScaleX = 1, Height = 32 },
                 new((int)(kf[1]*0.9f)) { X = 0 , Alpha = 128, Y = 0, ScaleX = 0, Height = 32 },
                 new(kf[2]) { X = 0 , Alpha = 0, Y = 16, ScaleX = 0, Height = 0 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(TickWrapper,
                 new(kf[0]) { Alpha = 255, X = -halfWidth, ScaleX = 1 },
                 new(kf[1]) { Alpha = 128, X = 0, ScaleX = 0 },
-                new(kf[2]) { Alpha = 0, X = 0, ScaleX = 0 }),
-            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]),
-            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]),
-            new(Tick, Visible[kf[0]], Hidden[kf[3]])
+                new(kf[2]) { Alpha = 0, X = 0, ScaleX = 0 }){ Label = "ShowHide" },
+            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]){ Label = "ShowHide" },
+            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]){ Label = "ShowHide" },
+            new(Tick, Visible[kf[0]], Hidden[kf[3]]){ Label = "ShowHide" }
         ];
 
         StopBackdropTween();
@@ -120,6 +120,7 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
 
     public override void RevealBar(bool instant = false)
     {
+        base.RevealBar(instant);
         var halfWidth = Config.Width / 2;
         var kf = instant ? [0, 0, 0, 0] : new[] { 0, 100, 350, 200 };
 
@@ -129,30 +130,30 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
                 new(kf[0]) { Alpha = 0, Y = 16, X = -16, Width = 32, Height = 0, AddRGB = new(200) },
                 new(kf[1]) { Alpha = 255, Y = 0, X = -16, Width = 32, Height = 32, AddRGB = new(255) },
                 new(kf[2]) { Alpha = 255, Y = 0, X = -halfWidth, Height = 32, Width = Config.Width, AddRGB = 0 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Bar,
                 new(kf[0]) { Alpha = 0, Y = 16, X = -16, ScaleY = 0, ScaleX = 32f/Config.Width, Height = 0 },
                 new(kf[1]) { Alpha = 255, Y = 0, X = -16 , ScaleY = 1, ScaleX = 32f / Config.Width, Height = 32 },
                 new(kf[2]) { Alpha = 255, Y = 0, X = -halfWidth, ScaleX = 1, Height = 32 })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Backdrop,
                 new(kf[0]) { X = 0, Height = 0, Alpha = 255 },
                 new(kf[1]) { X = 0, Height = 32, Alpha = Config.Background.A },
                 new(kf[2]) { X = 0, Alpha = Config.Background.A })
-                { Ease = SinInOut },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(TickWrapper,
                 new(kf[0]) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
                 new(kf[1]) { Alpha = 0, X = -16, ScaleX = 32f / Config.Width },
-                new(kf[2]) { Alpha = 255, X = -halfWidth, ScaleX = 1 }),
+                new(kf[2]) { Alpha = 255, X = -halfWidth, ScaleX = 1 }){ Label = "ShowHide" },
 
-            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]),
+            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]){ Label = "ShowHide" },
 
-            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]),
+            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]){ Label = "ShowHide" },
 
-            new(Tick, Hidden[kf[0]], Visible[kf[3]])
+            new(Tick, Hidden[kf[0]], Visible[kf[3]]){ Label = "ShowHide" }
         ];
 
         StartBackdropTween();
@@ -281,9 +282,9 @@ public sealed unsafe class MahjongRibbon(Tracker tracker) : GaugeBarWidget(track
     public Vector2 PosAdjust = new(0, -32);
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         WidgetContainer.SetPos(Config.Position + PosAdjust)
-                  .SetWidth(Config.Width)
-                  .SetScale(Config.Scale);
+                       .SetWidth(Config.Width);
 
         Contents.SetRotation(Config.Angle, true).SetOrigin(0, 16);
 

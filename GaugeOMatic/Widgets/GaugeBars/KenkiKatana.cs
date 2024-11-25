@@ -12,12 +12,11 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.KenkiKatana;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -108,20 +107,20 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
 
     public override void HideBar(bool instant = false)
     {
-        Animator -= "Fade";
+        base.HideBar(instant);
         Animator += new Tween(WidgetContainer,
                               new(0, WidgetContainer),
                               Hidden[instant ? 0 : 250])
-        { Label = "Fade", Ease = SinInOut };
+        { Label = "ShowHide", Ease = SinInOut };
     }
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Fade";
+        base.RevealBar(instant);
         Animator += new Tween(WidgetContainer,
                               new(0, WidgetContainer),
                               Visible[instant ? 0 : 250])
-        { Label = "Fade", Ease = SinInOut };
+        { Label = "ShowHide", Ease = SinInOut };
     }
 
     #endregion
@@ -264,10 +263,10 @@ public sealed unsafe class KenkiKatana(Tracker tracker) : GaugeBarWidget(tracker
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var flipFactor = Config.Mirror ? -1 : 1;
 
-        WidgetContainer.SetPos(Config.Position + new Vector2(-15.5F, -6))
-                  .SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position + new Vector2(-15.5F, -6));
 
         Sword.SetRotation(Config.Angle, true)
              .SetScaleX(0.85f * flipFactor);

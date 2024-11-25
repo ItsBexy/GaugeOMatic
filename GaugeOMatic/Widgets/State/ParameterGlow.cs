@@ -10,8 +10,8 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ParameterGlow;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
@@ -22,7 +22,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A glowing border over one of the parameter bars")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(HasAddonRestrictions | State)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [AddonRestrictions(WhiteList, "_ParameterWidget")]
 public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
 {
@@ -111,10 +111,10 @@ public sealed unsafe class ParameterGlow(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         if (Config.PositionFreely)
         {
             WidgetContainer.SetPos(Config.Position+ new Vector2(48- (Config.Width / 2f), 27))
-                           .SetScale(Config.Scale)
                            .SetRotation(Config.Angle,true)
                            .SetOrigin(Config.Width/2f,10);
         }

@@ -7,8 +7,8 @@ using System.Linq;
 using static GaugeOMatic.GameData.ActionRef;
 using static GaugeOMatic.GameData.ParamRef;
 using static GaugeOMatic.GameData.StatusRef;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 using static System.StringComparison;
 
 namespace GaugeOMatic.Windows.Dropdowns;

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using GaugeOMatic.Utility.DalamudComponents;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
@@ -94,21 +93,21 @@ public partial class ConfigWindow : Window, IDisposable
 
         ImGui.Spacing();
         ImGui.Spacing();
-        input |= ImGuiComponents.GameIconButtonSelect("tankJobs",ref jobTab,JobIconZip(PLD,WAR,DRK,GNB),new(26),new(30),1, (ColorRGB)0x052657ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x026999ff);
+        input |= ImGuiHelpy.GameIconButtonSelect("tankJobs",ref jobTab,JobIconZip(PLD,WAR,DRK,GNB),new(26),new(30),1, (ColorRGB)0x052657ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x026999ff);
         ImGui.Spacing();
         ImGui.Spacing();
-        input |= ImGuiComponents.GameIconButtonSelect("meleeJobs",ref jobTab,JobIconZip(MNK,DRG,NIN,SAM,RPR,VPR),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
+        input |= ImGuiHelpy.GameIconButtonSelect("meleeJobs",ref jobTab,JobIconZip(MNK,DRG,NIN,SAM,RPR,VPR),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
 
         ImGui.TableNextColumn();
 
 
-        input |= ImGuiComponents.GameIconButtonSelect("healerJobs",ref jobTab,JobIconZip(WHM,SCH,AST,SGE),new(26),new(30),1, (ColorRGB)0x0a2d23ff, (ColorRGB)0x02992bff,(ColorRGB)0x0c723aff);
+        input |= ImGuiHelpy.GameIconButtonSelect("healerJobs",ref jobTab,JobIconZip(WHM,SCH,AST,SGE),new(26),new(30),1, (ColorRGB)0x0a2d23ff, (ColorRGB)0x02992bff,(ColorRGB)0x0c723aff);
         ImGui.Spacing();
         ImGui.Spacing();
-        input |= ImGuiComponents.GameIconButtonSelect("rangedJobs",ref jobTab,JobIconZip(BRD,MCH,DNC),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
+        input |= ImGuiHelpy.GameIconButtonSelect("rangedJobs",ref jobTab,JobIconZip(BRD,MCH,DNC),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
         ImGui.Spacing();
         ImGui.Spacing();
-        input |= ImGuiComponents.GameIconButtonSelect("casterJobs",ref jobTab,JobIconZip(BLM,SMN,RDM,PCT),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
+        input |= ImGuiHelpy.GameIconButtonSelect("casterJobs",ref jobTab,JobIconZip(BLM,SMN,RDM,PCT),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
 
         if (input)
         {
@@ -129,7 +128,7 @@ public partial class ConfigWindow : Window, IDisposable
                          .Push(ButtonHovered, TabHovered)
                          .Push(Button, active ? TabActive : Tab))
             {
-                if (tex != null && ImGuiComponents.GameIconButton(66313,"Help",new(22),new Vector2(30)))
+                if (tex != null && ImGuiHelpy.GameIconButton(66313,"Help",new(22),new Vector2(30)))
                 {
                     Configuration.GeneralTab = genTab;
                     Configuration.Save();

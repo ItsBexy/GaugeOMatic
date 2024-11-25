@@ -11,8 +11,8 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BloodGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -22,7 +22,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A widget recreating the tank stance gem for DRK.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("BD", "Blood Gauge Replica", 1)]
 public sealed unsafe class BloodGem(Tracker tracker) : StateWidget(tracker)
 {
@@ -209,8 +209,8 @@ public sealed unsafe class BloodGem(Tracker tracker) : StateWidget(tracker)
     public AddRGB HaloOffset = new(72, -15, -74);
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         WidgetContainer.SetPos(Config.Position + new Vector2(14));
-        WidgetContainer.SetScale(Config.Scale);
 
         Ring.SetMultiply(Config.RingColor).SetAlpha(Config.Ring);
 

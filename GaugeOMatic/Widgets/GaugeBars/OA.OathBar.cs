@@ -15,14 +15,13 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MilestoneType;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.OathBar;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -166,34 +165,34 @@ public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         var kf = instant ? [0, 0, 0] : new[] { 0, 150, 350 };
 
-        Animator -= "Expand";
         Animator +=
         [
             new(FrameR,
                 new(kf[0]) { Height = 120, Y = 0 },
                 new(kf[1]) { Height = 96, Y = 12 },
                 new(kf[2]) { Height = 96, Y = 12 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(FrameL,
                 new(kf[0]) { Height = 120, Y = 0 },
                 new(kf[1]) { Height = 96, Y = 12 },
                 new(kf[2]) { Height = 96, Y = 12 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Bar,
                 Visible[kf[0]],
                 Hidden[kf[1] / 2])
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Frame,
                 new(kf[0]) { AddRGB = 0, Alpha = 255, ScaleX = 1 },
                 new(kf[1]) { AddRGB = 120, Alpha = 255, ScaleX = 1 },
-                new(kf[2]) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f }),
+                new(kf[2]) { AddRGB = 250, Alpha = 0, ScaleX = 1.2f }){Label = "ShowHide" },
             new(LabelTextNode,
                 Visible[kf[0]],
                 Hidden[kf[1]])
-                {Label = "Collapse" },
-            new(TickMark, Visible[kf[0]], Hidden[kf[1]])
+                {Label = "ShowHide" },
+            new(TickMark, Visible[kf[0]], Hidden[kf[1]]){Label = "ShowHide" }
         ];
 
         if (kf[2] > 0) Twinkle();
@@ -201,37 +200,37 @@ public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void RevealBar(bool instant = false)
     {
+        base.RevealBar(instant);
         var kf = instant ? [0, 0, 0] : new[] { 0, 100, 350 };
 
-        Animator -= "Collapse";
         Animator +=
         [
             new(FrameR,
                 new(kf[0]) { Height = 94, Y = 13 },
                 new(kf[1]) { Height = 120, Y = 0 },
                 new(kf[2]) { Height = 120, Y = 0 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(FrameL,
                 new(kf[0]) { Height = 94, Y = 13 },
                 new(kf[1]) { Height = 120, Y = 0 },
                 new(kf[2]) { Height = 120, Y = 0 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Bar,
                 Hidden[kf[0]],
                 Hidden[kf[1]],
                 Visible[kf[2]])
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Frame,
                 new(kf[0]) { AddRGB = 200, Alpha = 0, ScaleX = 0.8f },
                 new(kf[1]) { AddRGB = 80, Alpha = 255, ScaleX = 1 },
                 new(kf[2]) { AddRGB = 0, Alpha = 255, ScaleX = 1 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(LabelTextNode,
                 Hidden[kf[0]],
                 Hidden[kf[1]],
                 Visible[kf[2]])
-                {Label = "Expand" },
-            new(TickMark, Hidden[kf[0]], Visible[kf[1]])
+                {Label = "ShowHide" },
+            new(TickMark, Hidden[kf[0]], Visible[kf[1]]){Label = "ShowHide" }
         ];
 
         if (kf[2] > 0) Twinkle();
@@ -381,8 +380,8 @@ public sealed unsafe class OathBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position + new Vector2(119, 36))
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetPos(Config.Position + new Vector2(119, 36));
 
         Contents.SetRotation(Config.Angle, true);
 

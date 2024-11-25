@@ -9,8 +9,8 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BeastGem;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -20,7 +20,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A widget recreating the low-level tank stance gem for MRD / WAR.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | Replica)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class BeastGem(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } = [WAR0];
@@ -146,8 +146,7 @@ public sealed unsafe class BeastGem(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         var state = Tracker.CurrentData.State;
         Gem.SetAddRGB(Config.GetColor(state) + new AddRGB(21, 103, 103));

@@ -3,6 +3,7 @@ using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode.CustomNodeFlags;
 using static CustomNodes.CustomNodeManager;
 using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
@@ -10,12 +11,11 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.InkSlash;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -275,6 +275,7 @@ public sealed unsafe class InkSlash(Tracker tracker) : GaugeBarWidget(tracker)
     public Vector2 PosAdjust = new(60, -50);
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         WidgetContainer.SetPos(Config.Position + PosAdjust);
         Bar.SetScale(Config.Scale);
         Tick.SetAddRGB(Config.TickColor);
@@ -304,6 +305,7 @@ public sealed unsafe class InkSlash(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void DrawUI()
     {
+        base.DrawUI();
         switch (UiTab)
         {
             case Layout:

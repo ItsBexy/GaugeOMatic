@@ -12,8 +12,8 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.FinishIcon;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -24,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A widget recreating DNC's Standard Finish timer.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 public sealed unsafe class FinishIcon(Tracker tracker) : StateWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =
@@ -154,8 +154,7 @@ public sealed unsafe class FinishIcon(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         Symbol.SetAddRGB(Config.Colors.ElementAtOrDefault(Tracker.CurrentData.State))
               .SetPartId(Config.Tech ? 1 : 0);

@@ -16,9 +16,9 @@ using static GaugeOMatic.Widgets.SimpleGem.SimpleGemConfig;
 using static GaugeOMatic.Widgets.SimpleGem.SimpleGemConfig.FrameBases;
 using static GaugeOMatic.Widgets.SimpleGem.SimpleGemConfig.GemShapes;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static ImGuiNET.ImGuiMouseCursor;
 using static System.Math;
 
@@ -240,6 +240,7 @@ public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         WidgetContainer.SetPos(Config.Position - new Vector2(16))
                        .SetScale(Config.Scale / 2f);
 

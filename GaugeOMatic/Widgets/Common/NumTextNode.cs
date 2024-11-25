@@ -12,11 +12,11 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 using static Newtonsoft.Json.DefaultValueHandling;
 
-namespace GaugeOMatic.Widgets;
+namespace GaugeOMatic.Widgets.Common;
 
 public class NumTextNode : CustomNode
 {
@@ -27,10 +27,10 @@ public class NumTextNode : CustomNode
     public unsafe NumTextNode()
     {
         BgNode = new CustomNode(CreateNineGridNode(BgPart, 0)).SetNineGridOffset(0, 21, 0, 21)
-                                                                 .SetSize(65, 40)
-                                                                 .SetPos(-17, -21)
-                                                                 .SetOrigin(16, 20)
-                                                                 .Hide();
+                                                              .SetSize(65, 40)
+                                                              .SetPos(-17, -21)
+                                                              .SetOrigin(16, 20)
+                                                              .Hide();
 
         Node = (AtkResNode*)CreateTextNode(" ", 18, 20);
         SetText(" ");

@@ -8,7 +8,7 @@ using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using Dalamud.Interface;
-using GaugeOMatic.Utility.DalamudComponents;
+using Dalamud.Interface.Components;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.GameData.JobData.Role;
@@ -16,7 +16,7 @@ using static GaugeOMatic.GameData.StatusRef;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.JobModules.Tweaks;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Widgets.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Windows.Dropdowns.TrackerDropdown;
 
 namespace GaugeOMatic.JobModules;

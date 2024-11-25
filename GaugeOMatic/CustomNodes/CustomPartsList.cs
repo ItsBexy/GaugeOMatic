@@ -60,6 +60,14 @@ public unsafe partial class CustomNodeManager
             return atkAsset;
         }
 
+        public static AtkUldAsset* CreateAsset()
+        {
+            var atkAsset = (AtkUldAsset*)Alloc((ulong)sizeof(AtkUldAsset));
+            atkAsset->AtkTexture.Ctor();
+            atkAsset->Id = NextAssetId++;
+            return atkAsset;
+        }
+
         public static AtkUldAsset* AssetFromFile(string filePath)
         {
             var data = DataManager.GameData.GetFileFromDisk<TexFile>(filePath);

@@ -13,9 +13,12 @@ internal static class CommonParts
 
     public static CustomPartsList BgPart { get; } = new("ui/uld/JobHudNumBg.tex", new Vector4(0, 0, 60, 40));
 
+    public static unsafe CustomPartsList IconFrame => new(AssetFromFile(Combine(PluginDirPath, @"TextureAssets\iconFrame.tex")), new Vector4(0, 0, 96, 96));
+
     public static void DisposeSharedParts()
     {
         BgPart.Dispose();
+        IconFrame.Dispose();
     }
 
     #endregion

@@ -1,6 +1,7 @@
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.InteropServices;
 using static CustomNodes.CustomNodeManager;
 
@@ -71,6 +72,8 @@ public unsafe partial class CustomNode(AtkResNode* node, params CustomNode[] chi
             }
         }
     }
+
+    public void Append(CustomNode newChild) => Children = Children.Append(newChild).ToArray();
 
     public CustomNode(AtkResNode* node) : this(node, []) { }
 

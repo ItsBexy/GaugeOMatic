@@ -9,8 +9,8 @@ using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BalancePlate;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -20,7 +20,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A recreation of the Balance Gauge's backplate. Designed to combine with a set of mana bar widgets.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(MultiComponent | Replica | State)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("BL", "Balance Gauge Replica", 1)]
 public sealed unsafe class BalancePlate : StateWidget
 {
@@ -199,7 +199,7 @@ public sealed unsafe class BalancePlate : StateWidget
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         var state = Tracker.CurrentData.State;
 

@@ -9,8 +9,8 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AetherflowReplica;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -228,9 +228,10 @@ public sealed unsafe class AetherflowReplica(Tracker tracker) : CounterWidget(tr
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
+
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale, Config.Scale * flipFactor)
+        WidgetContainer.SetScale(Config.Scale, Config.Scale * flipFactor)
                   .SetRotation(Config.Angle, true)
                   .SetAlpha(Tracker.CurrentData.Count != 0 || !Config.HideEmpty);
 

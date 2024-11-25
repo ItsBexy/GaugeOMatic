@@ -13,8 +13,8 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ShimmerHalo;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
@@ -26,7 +26,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A revolving circular aura that appears while the tracker's condition is met.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | HasAddonRestrictions | HasClippingMask)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [AddonRestrictions(ClipConflict)]
 public sealed unsafe class ShimmerHalo(Tracker tracker) : StateWidget(tracker)
 {
@@ -184,9 +184,8 @@ public sealed unsafe class ShimmerHalo(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale)
-                  .SetRotation(Config.Angle * 0.0174532925199433f);
+        base.ApplyConfigs();
+        WidgetContainer.SetRotation(Config.Angle * 0.0174532925199433f);
 
         Fill.SetRGB(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
 

@@ -7,8 +7,8 @@ using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
 using static GaugeOMatic.Widgets.WidgetAttribute;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 
 namespace GaugeOMatic.Windows.Dropdowns;
 

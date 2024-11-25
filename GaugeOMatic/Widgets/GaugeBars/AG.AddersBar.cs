@@ -17,12 +17,11 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.AddersBar;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 // ReSharper disable SuggestBaseTypeForParameter
 
@@ -122,49 +121,49 @@ public sealed unsafe class AddersBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         var frameWidth = Config.Width + 56;
         var kf = instant ? [0, 0, 0] : new[] { 0, 250, 350 };
 
-        Animator -= "Expand";
         Animator +=
         [
             new(BarFrame,
                 new(kf[0]) { Y = 0 },
                 new(kf[1]) { Y = 1 },
                 new(kf[2]) { Y = 10 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Frame,
                 new(kf[0]) { X = frameWidth / -2f, Width = frameWidth, AddRGB = 0, Alpha = 255 },
                 new(kf[1]) { X = -28, Width = 56, AddRGB = 50, Alpha = 255 },
                 new(kf[2]) { X = -28, Width = 56, AddRGB = 255, Alpha = 0 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Plate,
                 new(kf[0]) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 },
                 new(kf[1]) { Alpha = 255, AddRGB = 255, ScaleY = 0, ScaleX = 0.1f, Y = -20 },
                 new(kf[2]) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
 
             new(Bar,
                 new(kf[0]) { ScaleX = Config.Mirror ? -1 : 1, Alpha = 255 },
                 new(kf[1]) { ScaleX = 0, Alpha = 128 },
                 new(kf[2]) { ScaleX = 0, Alpha = 128 })
-                { Ease = SinInOut, Label = "Collapse" },
+                { Ease = SinInOut, Label = "ShowHide" },
 
-            new(Sparkles, Visible[kf[0]], new((int)(kf[1] * 0.6f)) { Alpha = 0 }) { Label = "Collapse" },
-            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]) { Label = "Collapse" },
-            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]) { Label = "Collapse" }
+            new(Sparkles, Visible[kf[0]], new((int)(kf[1] * 0.6f)) { Alpha = 0 }) { Label = "ShowHide" },
+            new(LabelTextNode, Visible[kf[0]], Hidden[kf[1]]) { Label = "ShowHide" },
+            new(NumTextNode, Visible[kf[0]], Hidden[kf[2]]) { Label = "ShowHide" }
         ];
     }
 
     public override void RevealBar(bool instant = false)
     {
+        base.RevealBar(instant);
         var frameWidth = Config.Width + 56;
 
         var kf = instant ? [0, 0, 0] : new[] { 0, 100, 350 };
 
-        Animator -= "Collapse";
         BarFrame.SetY(0);
 
         Animator +=
@@ -173,20 +172,20 @@ public sealed unsafe class AddersBar(Tracker tracker) : GaugeBarWidget(tracker)
                 new(kf[0]) { Alpha = 0, X = -28, Width = 56, AddRGB = 200 },
                 new(kf[1]) { Alpha = 255, X = -28, Width = 56, AddRGB = 255 },
                 new(kf[2]) { Alpha = 255, X = frameWidth / -2f, Width = frameWidth, AddRGB = 0 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Plate,
                 new(kf[0]) { Alpha = 0, AddRGB = 200, ScaleY = 0, ScaleX = 0, Y = -20 },
                 new(kf[1]) { Alpha = 0, AddRGB = 255, ScaleY = 0, ScaleX = 0, Y = -20 },
                 new(kf[2]) { Alpha = 255, AddRGB = 0, ScaleY = 1, ScaleX = 1, Y = -24 })
-                { Ease = SinInOut, Label = "Expand" },
+                { Ease = SinInOut, Label = "ShowHide" },
             new(Bar,
                 new(kf[0]) { Alpha = 0, ScaleX = 0 },
                 new(kf[1]) { Alpha = 128, ScaleX = 0 },
                 new(kf[2]) { Alpha = 255, ScaleX = Config.Mirror ? -1 : 1 })
-                { Ease = SinInOut, Label = "Expand" },
-            new(Sparkles, Hidden[kf[0]], Hidden[200], Visible[kf[2]]) { Label = "Expand" },
-            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "Expand" },
-            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "Expand" }
+                { Ease = SinInOut, Label = "ShowHide" },
+            new(Sparkles, Hidden[kf[0]], Hidden[200], Visible[kf[2]]) { Label = "ShowHide" },
+            new(LabelTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "ShowHide" },
+            new(NumTextNode, Hidden[kf[0]], Hidden[kf[1]], Visible[kf[2]]) { Label = "ShowHide" }
         ];
     }
 
@@ -357,10 +356,10 @@ public sealed unsafe class AddersBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var frameWidth = Config.Width + 56;
 
-        WidgetContainer.SetPos(Config.Position + new Vector2(100, 38.5f))
-                  .SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position + new Vector2(100, 38.5f));
 
         Frame.SetWidth(frameWidth)
              .SetX(frameWidth / -2f)

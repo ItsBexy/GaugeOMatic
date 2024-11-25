@@ -16,13 +16,12 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.BeastBar;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.Common.LabelTextProps;
 using static GaugeOMatic.Widgets.MilestoneType;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -79,47 +78,47 @@ public sealed unsafe class BeastBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         var kf = instant ? [0, 0, 0] : new[] { 0, 70, 140 };
 
-        Animator -= "Expand";
         Animator +=
         [
             new(Frame,
                 new(kf[0]) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 },
                 new(kf[1]) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
-                new(kf[2]) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 }) { Label = "Collapse" },
+                new(kf[2]) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 }) { Label = "ShowHide" },
             new(Bar,
                 new(kf[0]) { ScaleY = 1, Alpha = 255 },
                 new(kf[1]) { ScaleY = 0.2727273F, Alpha = 0 })
-                { Label = "Collapse" },
+                { Label = "ShowHide" },
             new(LabelTextNode,
                 Visible[kf[0]],
                 Hidden[kf[1]])
-                { Label = "Collapse" }
+                { Label = "ShowHide" }
         ];
     }
 
     public override void RevealBar(bool instant = false)
     {
+        base.RevealBar(instant);
         var kf = instant ? [0, 0, 0] : new[] { 0, 70, 140 };
-        Animator -= "Collapse";
         Animator +=
         [
             new(Frame,
                 new(kf[0]) { Height = 52, Y = 71, X = 23.5f, Width = 200, AddRGB = Config.GainColor, Alpha = 0 },
                 new(kf[1]) { Height = 52, Y = 71, X = 0, Width = 242, AddRGB = Config.GainColor / 2, Alpha = 200 },
                 new(kf[2]) { Height = 66, Y = 64, X = 0, Width = 242, AddRGB = 0, Alpha = 255 })
-                { Label ="Expand" },
+                { Label = "ShowHide" },
             new(Bar,
                 new(kf[0]) { ScaleY = 0.2727273F, Alpha = 0 },
                 new(kf[1]) { ScaleY = 0.2727273F, Alpha = 0 },
                 new(kf[2]) { ScaleY = 1, Alpha = 255 })
-                { Label ="Expand" },
+                { Label = "ShowHide" },
             new(LabelTextNode,
                 Hidden[kf[0]],
                 Hidden[kf[1]],
                 Visible[kf[2]])
-                { Label ="Expand" }
+                { Label = "ShowHide" }
         ];
     }
 
@@ -242,8 +241,8 @@ public sealed unsafe class BeastBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position + new Vector2(-6, 0))
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetPos(Config.Position + new Vector2(-6, 0));
 
         Contents.SetRotation(Config.Angle, true);
 

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using Dalamud.Interface;
-using GaugeOMatic.Utility.DalamudComponents;
+using Dalamud.Interface.Components;
 using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
@@ -15,12 +15,11 @@ using static FFXIVClientStructs.FFXIV.Component.GUI.AlignmentType;
 using static FFXIVClientStructs.FFXIV.Component.GUI.FontType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
@@ -106,19 +105,21 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
 
     public override void RevealBar(bool instant = false)
     {
+        base.RevealBar(instant);
         var scaleX = Config.Direction == 1 ? -1 : 1;
         Animator += new Tween(Contents2,
                               new(0) { ScaleX = scaleX * 1.2f, ScaleY = 1.2f, Alpha = 0 },
-                              new(150) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 });
+                              new(150) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 }){ Label = "ShowHide" };
     }
 
     public override void HideBar(bool instant = false)
     {
+        base.HideBar(instant);
         Contents2.SetAlpha(0);
         var scaleX = Config.Direction == 1 ? -1 : 1;
         Animator += new Tween(Contents2,
                               new(0) { ScaleX = scaleX, ScaleY = 1, Alpha = 255 },
-                              new(150) { ScaleX = scaleX * 0.8f, ScaleY = 0.8f, Alpha = 0 });
+                              new(150) { ScaleX = scaleX * 0.8f, ScaleY = 0.8f, Alpha = 0 }){ Label = "ShowHide" };
     }
 
     private void ActivateNode(CustomNode node) =>
@@ -255,14 +256,14 @@ public sealed unsafe class EnochianBar(Tracker tracker) : GaugeBarWidget(tracker
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var colorOffset = new AddRGB(-25, 52, -90);
 
         Main.SetAddRGB(Config.MainColor + colorOffset, true).SetProgress(CalcProg());
         Gain.SetAddRGB(Config.GainColor + colorOffset, true).SetProgress(0);
         Drain.SetAddRGB(Config.DrainColor + colorOffset, true).SetProgress(0);
 
-        WidgetContainer.SetPos(Config.Position + new Vector2(86, 68))
-                  .SetScale(Config.Scale);
+        WidgetContainer.SetPos(Config.Position + new Vector2(86, 68));
 
         Contents.SetRotation(Config.Angle, true);
 

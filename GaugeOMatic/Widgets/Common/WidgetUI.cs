@@ -8,11 +8,11 @@ using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 using static ImGuiNET.ImGuiCol;
 using static ImGuiNET.ImGuiColorEditFlags;
 
-namespace GaugeOMatic.Widgets;
+namespace GaugeOMatic.Widgets.Common;
 
 [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
 public static class WidgetUI
@@ -29,8 +29,9 @@ public static class WidgetUI
         Colors = 0x2,
         Behavior = 0x4,
         Text = 0x8,
-        All = 0x1F,
-        Sound = 0x10
+        All = 0x3F,
+        Sound = 0x10,
+        Icon = 0x20
     }
 
     public static void LabelColumn(string label)
@@ -247,9 +248,9 @@ public static class WidgetUI
         ImGui.SetNextItemWidth(92f * GlobalScale);
 
         if (ImGui.ColorEdit4($"##{label}RGB", ref baseColor, PickerFlags)) UpdateFlag |= Save;
-        ImGui.SameLine(0,3);
+        ImGui.SameLine(0, 3);
         if (ImGui.ColorEdit3($"##{label}AddRGB", ref add, PickerFlags | NoInputs)) UpdateFlag |= Save;
-        ImGui.SameLine(0,3);
+        ImGui.SameLine(0, 3);
         if (ImGui.ColorEdit3($"##{label}MultiplyRGB", ref multiply, PickerFlags | NoInputs)) UpdateFlag |= Save;
 
 
@@ -296,7 +297,7 @@ public static class WidgetUI
             var option = options[i];
             var icon = icons[i];
 
-            if (i > 0) ImGui.SameLine(0,3);
+            if (i > 0) ImGui.SameLine(0, 3);
 
             if (IconButton($"{label}{option}{i}", icon, 22f, val is not null && val.Equals(option) ? activeColor : buttonColor))
             {
@@ -325,11 +326,11 @@ public static class WidgetUI
 
         ImGui.PushButtonRepeat(true);
 
-        ImGui.SameLine(0,3);
+        ImGui.SameLine(0, 3);
         var input2 = IconButton($"##{label}ButtonDown", icon1);
         if (input2) val = Math.Clamp(val - step, min, max);
 
-        ImGui.SameLine(0,3);
+        ImGui.SameLine(0, 3);
         var input3 = IconButton($"##{label}ButtonUp", icon2);
         if (input3) val = Math.Clamp(val + step, min, max);
 
@@ -347,10 +348,10 @@ public static class WidgetUI
         var input1 = ImGui.DragFloat($"##{label}Drag", ref val, step, min, max, format);
 
         ImGui.PushButtonRepeat(true);
-        ImGui.SameLine(0,3);
+        ImGui.SameLine(0, 3);
         var input2 = IconButton($"##{label}ButtonDown", icon1);
         if (input2) val = Math.Clamp(val - step, min, max);
-        ImGui.SameLine(0,3);
+        ImGui.SameLine(0, 3);
         var input3 = IconButton($"##{label}ButtonUp", icon2);
         if (input3) val = Math.Clamp(val + step, min, max);
         ImGui.PopButtonRepeat();
@@ -384,7 +385,7 @@ public static class WidgetUI
 
         using (ImRaii.PushColor(Text, new Vector4(1, 1, 1, 0.3f)))
         {
-            ImGui.Text(headingText);
+            ImGui.TextUnformatted(headingText);
         }
     }
 }

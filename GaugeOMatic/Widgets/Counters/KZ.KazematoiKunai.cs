@@ -13,8 +13,8 @@ using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.FreeGemCounterConfig.ArrangementStyle;
 using static GaugeOMatic.Widgets.KazematoiKunai;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -212,8 +212,8 @@ public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(trac
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position + new Vector2(-3, 0))
-                       .SetScale(Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetPos(Config.Position + new Vector2(-3, 0));
 
         PlaceFreeGems();
 

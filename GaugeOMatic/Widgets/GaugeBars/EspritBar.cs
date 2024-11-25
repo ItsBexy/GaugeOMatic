@@ -14,12 +14,11 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.EspritBar;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
 using static GaugeOMatic.Widgets.MilestoneType;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
 #pragma warning disable CS8618
@@ -136,7 +135,7 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void RevealBar(bool instant = false)
     {
-        Animator -= "Hide";
+        base.RevealBar(instant);
         if (instant)
         {
             Fan.SetAlpha(255);
@@ -149,11 +148,11 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
                 new(Fan,
                     new(0) { Alpha = 0, ScaleY = 1.2f, ScaleX = Config.Clockwise ? 1.2f : -1.2f },
                     new(150) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f })
-                    { Ease = SinInOut, Label = "Show" },
+                    { Ease = SinInOut, Label = "ShowHide" },
                 new(NumTextNode,
                     Hidden[0],
                     Visible[180])
-                    { Ease = SinInOut, Label = "Show" }
+                    { Ease = SinInOut, Label = "ShowHide" }
             ];
 
         }
@@ -161,7 +160,7 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void HideBar(bool instant = false)
     {
-        Animator -= "Show";
+        base.HideBar(instant);
         if (instant)
         {
             Fan.SetAlpha(0);
@@ -174,11 +173,11 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
                 new(Fan,
                     new(0) { Alpha = 255, ScaleY = 1, ScaleX = Config.Clockwise ? 1f : -1f },
                     new(150) { Alpha = 0, ScaleY = 0.8f, ScaleX = Config.Clockwise ? 0.8f : -0.8f })
-                    { Ease = SinInOut, Label ="Hide" },
+                    { Ease = SinInOut, Label = "ShowHide" },
                 new(NumTextNode,
                     Visible[0],
                     Hidden[120])
-                    { Ease = SinInOut, Label = "Hide" }
+                    { Ease = SinInOut, Label = "ShowHide" }
             ];
         }
     }
@@ -257,10 +256,8 @@ public sealed unsafe class EspritBar(Tracker tracker) : GaugeBarWidget(tracker)
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
         var flipFactor = Config.Clockwise ? 1 : -1;
-
-        WidgetContainer.SetPos(Config.Position)
-                  .SetScale(Config.Scale);
 
         Fan.SetScaleX(flipFactor)
            .SetRotation(Config.Angle, true);

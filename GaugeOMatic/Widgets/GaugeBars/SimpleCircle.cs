@@ -4,19 +4,19 @@ using GaugeOMatic.Trackers;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.Numerics;
+using GaugeOMatic.Widgets.Common;
 using static CustomNodes.CustomNode;
 using static CustomNodes.CustomNodeManager;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.Common.CommonParts;
-using static GaugeOMatic.Widgets.GaugeBarWidgetConfig;
-using static GaugeOMatic.Widgets.NumTextProps;
+using static GaugeOMatic.Widgets.Common.NumTextProps;
 using static GaugeOMatic.Widgets.SimpleCircle;
 using static GaugeOMatic.Widgets.SimpleCircle.SimpleCircleConfig.CircleStyles;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 using static GaugeOMatic.Widgets.AddonRestrictionsAttribute.RestrictionType;
 
@@ -135,12 +135,16 @@ public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracke
 
     public override void HideBar(bool instant = false)
     {
-        Animator += new Tween(Circle, new(0) { Alpha = Circle.Alpha }, Hidden[150]);
+        base.HideBar(instant);
+        Animator += new Tween(Circle, new(0) { Alpha = Circle.Alpha }, Hidden[150]) {Label = "ShowHide"};
         HaloPulse();
     }
 
-    public override void RevealBar(bool instant = false) => Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A });
-
+    public override void RevealBar(bool instant = false)
+    {
+        base.RevealBar(instant);
+        Animator += new Tween(Circle, Hidden[0], new(150) { Alpha = Config.Color.A }){Label = "ShowHide"};
+    }
 
     #endregion
 
@@ -183,7 +187,7 @@ public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracke
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position).SetScale(Config.Scale);
+        base.ApplyConfigs();
         Circle.SetMultiply(40).SetAddRGB(Config.Color, true);
         Halo.SetAddRGB(Config.Color + new AddRGB(30));
         LeftHalf.SetImageFlag((byte)(Config.Dodge ? 0x20 : 0));

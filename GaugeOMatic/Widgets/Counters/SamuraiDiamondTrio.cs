@@ -18,8 +18,8 @@ using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.SamuraiDiamondTrio;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.IO.Path;
 
 #pragma warning disable CS8618
@@ -248,6 +248,8 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
 
     public override void ApplyConfigs()
     {
+        base.ApplyConfigs();
+
         if (Max >= 5)
         {
             Config.PlatePos = Math.Clamp(Config.PlatePos, 0, Max - 4 + (Max % 2));
@@ -258,9 +260,6 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
             Config.PlatePos = 0;
         }
 
-
-        WidgetContainer.SetPos(Config.Position);
-        WidgetContainer.SetScale(Config.Scale);
         Plate.SetMultiply(Config.PlateTint)
              .SetScaleX(Config.MirrorPlate ? -1 : 1)
              .SetX(Config.PlatePos * 23f)

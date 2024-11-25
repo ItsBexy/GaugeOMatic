@@ -13,8 +13,8 @@ using static GaugeOMatic.Widgets.CoilDiamond;
 using static GaugeOMatic.Widgets.Common.CommonParts;
 using static GaugeOMatic.Widgets.CounterWidgetConfig.CounterPulse;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -244,8 +244,7 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                       .SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         PlaceFreeGems();
 

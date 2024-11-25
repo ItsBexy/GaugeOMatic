@@ -13,8 +13,8 @@ using static Dalamud.Interface.FontAwesomeIcon;
 using static GaugeOMatic.Utility.MiscMath;
 using static GaugeOMatic.Widgets.FreeGemCounterConfig.ArrangementStyle;
 using static GaugeOMatic.Widgets.FreeGemCounterConfig.ColorStyles;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 // ReSharper disable VirtualMemberCallInConstructor

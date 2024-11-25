@@ -13,8 +13,8 @@ using static GaugeOMatic.CustomNodes.Animation.Tween.EaseType;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.OathSigil;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 
 #pragma warning disable CS8618
 
@@ -24,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A glowing winged shield sigil recreating Paladin's tank stance indicator.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(State | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors)]
+[WidgetUiTabs(Layout | Colors | Behavior)]
 [MultiCompData("OA", "Oath Gauge Replica", 1)]
 public sealed unsafe class OathSigil(Tracker tracker) : StateWidget(tracker)
 {
@@ -180,8 +180,8 @@ public sealed unsafe class OathSigil(Tracker tracker) : StateWidget(tracker)
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position + new Vector2(30.5F, 0))
-                  .SetScale(Config.Scale);
+        base.ApplyConfigs();
+        WidgetContainer.SetPos(Config.Position + new Vector2(30.5F, 0));
 
         var state = Tracker.CurrentData.State;
         SigilWrapper.SetAddRGB(Config.SigilColors.ElementAtOrDefault(state));

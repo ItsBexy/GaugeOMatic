@@ -1,6 +1,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
-using GaugeOMatic.Utility.DalamudComponents;
+using Dalamud.Interface.Components;
 using ImGuiNET;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 

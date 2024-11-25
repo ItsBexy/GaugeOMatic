@@ -9,8 +9,8 @@ using static GaugeOMatic.CustomNodes.Animation.KeyFrame;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Widgets.ReaperFlame;
 using static GaugeOMatic.Widgets.WidgetTags;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -188,8 +188,7 @@ public sealed unsafe class ReaperFlame(Tracker tracker) : FreeGemCounter(tracker
 
     public override void ApplyConfigs()
     {
-        WidgetContainer.SetPos(Config.Position)
-                       .SetScale(Config.Scale);
+        base.ApplyConfigs();
 
         PlaceFreeGems();
 

@@ -2,8 +2,8 @@ using GaugeOMatic.Trackers;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using static CustomNodes.CustomNodeManager;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.WidgetUiTab;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
 
 namespace GaugeOMatic.Widgets;

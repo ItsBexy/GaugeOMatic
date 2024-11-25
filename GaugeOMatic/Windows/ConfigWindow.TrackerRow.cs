@@ -3,14 +3,13 @@ using ImGuiNET;
 using System;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using GaugeOMatic.Utility.DalamudComponents;
+using Dalamud.Interface.Components;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
-using static GaugeOMatic.Utility.DalamudComponents.ImGuiComponents;
 using static GaugeOMatic.Utility.ImGuiHelpy;
-using static GaugeOMatic.Widgets.WidgetUI;
-using static GaugeOMatic.Widgets.WidgetUI.UpdateFlags;
+using static GaugeOMatic.Widgets.Common.WidgetUI;
+using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 using static ImGuiNET.ImGuiKey;
 
 namespace GaugeOMatic.Windows;
