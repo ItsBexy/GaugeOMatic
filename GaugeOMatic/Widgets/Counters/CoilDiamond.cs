@@ -25,7 +25,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A diamond-shaped counter based on VPR's Rattling Coil stacks.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } = [VPR0];

@@ -15,8 +15,6 @@ using static Newtonsoft.Json.DefaultValueHandling;
 
 namespace GaugeOMatic.Widgets;
 
-public enum MilestoneType { None, Above, Below }
-
 public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
 {
     public abstract override GaugeBarWidgetConfig Config { get; }
@@ -244,7 +242,7 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
         switch (UiTab)
         {
             case WidgetUiTab.Sound:
-                SoundControls(ref Config.SoundType, ref Config.SoundMilestone, ref Config.SoundId, MaxGauge);
+                SoundControls(ref Config.SoundType, ref Config.SoundMilestone, ref Config.SoundId, MaxGauge, true);
                 break;
             default:
                 break;

@@ -7,6 +7,8 @@ using static Newtonsoft.Json.JsonConvert;
 
 namespace GaugeOMatic.Widgets;
 
+public enum MilestoneType { None, Above, Below }
+
 // container class for any/all widget configs associated with a tracker.
 // has a field for each type of widget (my sloppy way of getting around polymorphic deserialization)
 // each widget contributes a part to this class in its own file.

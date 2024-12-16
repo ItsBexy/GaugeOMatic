@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A stack counter made out of a combination of Monk gauge elements.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =

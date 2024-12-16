@@ -163,7 +163,9 @@ public partial class StatusRef : ItemRef
             gaugeValue = MaxTime == 0 ? maxGauge : Math.Abs(status?.RemainingTime ?? 0f);
         }
 
-        return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview);
+        uint? iconOverride = Icon != null && count > 0 && maxCount > 1 ? (uint)(Icon.Value - (maxCount - count)) : null;
+
+        return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview) {IconOverride = iconOverride};
     }
 
 }

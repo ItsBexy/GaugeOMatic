@@ -30,7 +30,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A counter based on Simple Mode job gauges.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
 {
     public static readonly Vector4[] Coords =

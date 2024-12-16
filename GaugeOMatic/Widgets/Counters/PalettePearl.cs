@@ -24,7 +24,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A counter based on Pictomancer's White/Black Paint stacks.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } = [PCT1];

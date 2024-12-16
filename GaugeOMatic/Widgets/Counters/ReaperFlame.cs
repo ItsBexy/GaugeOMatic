@@ -21,7 +21,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A counter imitating the shroud stack display on Reaper's Death Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class ReaperFlame(Tracker tracker) : FreeGemCounter(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =

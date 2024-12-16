@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A counter based on BLM's Umbral Heart counter.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("EL", "Elemental Gauge Replica", 5)]
 public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracker)
 {

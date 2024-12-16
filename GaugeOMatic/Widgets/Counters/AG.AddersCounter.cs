@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A set of gems recreating those on the Addersgall Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("AG", "Addersgall Gauge Replica", 2)]
 public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(tracker)
 {

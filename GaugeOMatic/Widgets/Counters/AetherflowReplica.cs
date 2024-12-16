@@ -21,7 +21,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A recreation of Arcanist/Summoner/Scholar's Aetherflow Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class AetherflowReplica(Tracker tracker) : CounterWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } =

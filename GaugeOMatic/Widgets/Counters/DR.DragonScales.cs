@@ -25,7 +25,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A stack counter recreating DRG's First Minds' Focus counter.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("DR", "Replica Dragon Gauge", 1)]
 public sealed unsafe class DragonScales(Tracker tracker) : CounterWidget(tracker)
 {

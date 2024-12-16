@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A recreation of Red Mage's Mana Stack counter.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | MultiComponent | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("BL", "Balance Gauge Replica", 4)]
 public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
 {

@@ -185,7 +185,8 @@ public sealed unsafe class ShimmerHalo(Tracker tracker) : StateWidget(tracker)
     public override void ApplyConfigs()
     {
         base.ApplyConfigs();
-        WidgetContainer.SetRotation(Config.Angle * 0.0174532925199433f);
+        WidgetContainer.SetScale(Config.Scale)
+                       .SetRotation(Config.Angle * 0.0174532925199433f);
 
         Fill.SetRGB(Config.ColorList.ElementAtOrDefault(Tracker.CurrentData.State));
 

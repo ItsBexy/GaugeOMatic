@@ -30,7 +30,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A counter imitating the Meditation Stack display on Samurai's Kenki Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(tracker)
 {
     public override CustomPartsList[] PartsLists { get; } = [SAM0, new(AssetFromFile(Combine(PluginDirPath, @"TextureAssets\MedDiamondSingleFrame.tex")),new Vector4(0,0,64,64))

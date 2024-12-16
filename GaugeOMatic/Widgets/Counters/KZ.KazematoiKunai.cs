@@ -25,7 +25,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A set of kunai recreating those on the Kazematoi Gauge.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("KZ", "Kazematoi Replica", 3)]
 public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(tracker)
 {

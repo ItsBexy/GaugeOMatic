@@ -15,13 +15,13 @@ public abstract partial class Widget
     public static readonly List<uint> SoundBlackList = [19,21,74];
 
     // ReSharper disable once UnusedMethodReturnValue.Global
-    public static bool SoundControls(ref MilestoneType soundType, ref float soundMilestone, ref uint soundId, float max)
+    public static bool SoundControls(ref MilestoneType soundType, ref float soundMilestone, ref uint soundId, float max, bool percent = false)
     {
         var input1 = RadioControls("Play Sound", ref soundType, [None, Above, Below], ["Never", "Above Threshold", "Below Threshold"]);
 
         var scaledMilestone = soundMilestone * max;
 
-        var input2 = soundType > 0 && FloatControls("Threshold", ref scaledMilestone, 0, max, 1, $"%.0f ({Math.Round(soundMilestone * 100)}%%)");
+        var input2 = soundType > 0 && FloatControls("Threshold", ref scaledMilestone, 0, max, 1, $"%.0f{(percent ? $" ({Math.Round(soundMilestone * 100)}%%)" : "")}");
         if (input2)
         {
             soundMilestone = scaledMilestone / max;

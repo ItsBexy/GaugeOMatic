@@ -1,10 +1,12 @@
 using GaugeOMatic.Trackers;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using static CustomNodes.CustomNodeManager;
 using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
 using static System.Math;
+using static GaugeOMatic.Widgets.MilestoneType;
 
 namespace GaugeOMatic.Widgets;
 
@@ -47,7 +49,8 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
 
         Tracker.JobModule.SoftReset();
     }
-
+    
+    public bool SoundMilestoneActive;
     public override void Update()
     {
         int max;
@@ -85,6 +88,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
         if (FirstRun)
         {
             OnFirstRun(current, max);
+            FadeIcon(current > 0,0);
             FirstRun = false;
         }
         else
@@ -92,12 +96,20 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
             if (current > previous)
             {
                 if (current == max) OnIncreaseToMax(max);
-                if (previous == 0) OnIncreaseFromMin();
+                if (previous == 0)
+                {
+                    FadeIcon(true, 150);
+                    OnIncreaseFromMin();
+                }
                 for (var i = previous; i < current; i++) ShowStack(i);
             }
             else if (current < previous)
             {
-                if (current == 0) OnDecreaseToMin();
+                if (current == 0)
+                {
+                    FadeIcon(false, 150);
+                    OnDecreaseToMin();
+                }
                 if (previous == max) OnDecreaseFromMax(max);
                 for (var i = current; i < previous; i++) HideStack(i);
             }
@@ -105,6 +117,19 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
 
         Animator.RunTweens();
         PostUpdate(current);
+
+        HandleSoundMilestone(max, current);
+    }
+
+    private void HandleSoundMilestone(int max, int current)
+    {
+        var configSoundMilestone = Config.SoundMilestone * max;
+        var soundCheck = ((Config.SoundType == Above && current >= configSoundMilestone) || (Config.SoundType == Below && current < configSoundMilestone));
+        if (!SoundMilestoneActive && soundCheck && !SoundBlackList.Contains(Config.SoundId))
+        {
+            UIGlobals.PlaySoundEffect(Config.SoundId);
+        }
+        SoundMilestoneActive = soundCheck;
     }
 
     public void CounterAsTimerControls(string term)
@@ -123,6 +148,9 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
         base.DrawUI();
         switch (UiTab)
         {
+            case WidgetUiTab.Sound:
+                SoundControls(ref Config.SoundType, ref Config.SoundMilestone, ref Config.SoundId, Tracker.CurrentData.MaxCount);
+                break;
             case Behavior:
                 CounterAsTimerControls(Tracker.TermGauge);
                 break;
@@ -133,10 +161,12 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
 public abstract class CounterWidgetConfig : WidgetTypeConfig
 {
     public enum CounterPulse { Never, Always, AtMax }
+    public enum MilestoneType { None, Above, Below }
 
     public bool AsTimer;
     public bool InvertTimer;
     [DefaultValue(10)] public int TimerSize = 10;
+
 
     protected CounterWidgetConfig(CounterWidgetConfig? config) : base(config)
     {

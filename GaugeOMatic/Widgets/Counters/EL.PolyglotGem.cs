@@ -25,7 +25,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A diamond-shaped counter based on BLM's polyglot counter.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("EL", "Elemental Gauge Replica", 3)]
 public sealed unsafe class PolyglotGem(Tracker tracker) : FreeGemCounter(tracker)
 {

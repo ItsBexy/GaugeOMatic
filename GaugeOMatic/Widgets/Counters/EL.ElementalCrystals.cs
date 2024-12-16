@@ -23,7 +23,7 @@ namespace GaugeOMatic.Widgets;
 [WidgetDescription("A counter based on BLM's element stack display.")]
 [WidgetAuthor("ItsBexy")]
 [WidgetTags(Counter | Replica | MultiComponent)]
-[WidgetUiTabs(Layout | Colors | Behavior)]
+[WidgetUiTabs(Layout | Colors | Behavior | Icon | Sound)]
 [MultiCompData("EL", "Elemental Gauge Replica", 4)]
 public sealed unsafe class ElementalCrystals(Tracker tracker) : FreeGemCounter(tracker)
 {
