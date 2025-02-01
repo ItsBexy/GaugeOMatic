@@ -34,7 +34,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
     public bool FirstRun = true;
 
     public int Max;
-    public int GetMax() => Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
+    public int GetMax() => Config.AsTimer ? Config.TimerSize : (Tracker.GetCurrentData().MaxCount * Config.CounterMultiplier);
     public unsafe void SizeChange()
     {
         Detach();
@@ -71,9 +71,9 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
         }
         else
         {
-            max = Tracker.CurrentData.MaxCount;
-            current = Clamp(Tracker.CurrentData.Count, 0, max);
-            previous = Clamp(Tracker.PreviousData.Count, 0, max);
+            max = Tracker.CurrentData.MaxCount * Config.CounterMultiplier;
+            current = Clamp(Tracker.CurrentData.Count * Config.CounterMultiplier, 0, max);
+            previous = Clamp(Tracker.PreviousData.Count * Config.CounterMultiplier, 0, max);
         }
 
         if (max != Max)
@@ -143,6 +143,12 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
         if (IntControls($"{term} Size", ref Config.TimerSize, 1, 60, 1)) SizeChange();
     }
 
+    public void CounterMulti()
+    {
+        if (Config.AsTimer) return;
+        if (IntControls("Counter multiplier", ref Config.CounterMultiplier, 1, 10, 1)) SizeChange();
+    }
+
     public override void DrawUI()
     {
         base.DrawUI();
@@ -153,6 +159,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
                 break;
             case Behavior:
                 CounterAsTimerControls(Tracker.TermGauge);
+                CounterMulti();
                 break;
         }
     }
@@ -164,6 +171,7 @@ public abstract class CounterWidgetConfig : WidgetTypeConfig
     public enum MilestoneType { None, Above, Below }
 
     public bool AsTimer;
+    [DefaultValue(1)] public int CounterMultiplier = 1;
     public bool InvertTimer;
     [DefaultValue(10)] public int TimerSize = 10;
 
@@ -174,6 +182,7 @@ public abstract class CounterWidgetConfig : WidgetTypeConfig
 
         Scale = config.Scale;
         AsTimer = config.AsTimer;
+        CounterMultiplier = config.CounterMultiplier;
         InvertTimer = config.InvertTimer;
         TimerSize = config.TimerSize;
     }
