@@ -73,7 +73,9 @@ public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracke
 
     #region Animations
 
-    public override void ShowStack(int i) =>
+    public override void ShowStack(int i)
+    {
+        Animator -= Hearts[i];
         Animator +=
         [
             new(Hearts[i],
@@ -84,8 +86,11 @@ public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracke
                 Hidden[0],
                 Visible[300])
         ];
+    }
 
-    public override void HideStack(int i) =>
+    public override void HideStack(int i)
+    {
+        Animator -= Hearts[i];
         Animator +=
         [
             new(Hearts[i],
@@ -97,6 +102,7 @@ public sealed unsafe class UmbralHearts(Tracker tracker) : FreeGemCounter(tracke
                 Visible[0],
                 Hidden[300])
         ];
+    }
 
     #endregion
 

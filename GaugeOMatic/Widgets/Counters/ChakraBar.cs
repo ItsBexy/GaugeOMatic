@@ -150,7 +150,10 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
 
     #region Animations
 
-    public override void ShowStack(int i) =>
+    public override void ShowStack(int i)
+    {
+        Animator -= Pearls[i];
+        Animator -= Rings[i];
         Animator +=
         [
             new(Pearls[i],
@@ -158,25 +161,25 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
                 new(80) { Alpha = 255, Scale = 1 }),
 
             new(Lines[i],
-                new(0) { Alpha = 0, ScaleX = 0f, ScaleY = 1, AddRGB = new(200, 100,-100), MultRGB = new(50) },
-                new(80) { Alpha = 255, ScaleX = 2, ScaleY = 1, AddRGB = new(100, 0,-100), MultRGB = new(100) },
-                new(300) { Alpha = 0, ScaleX = 4, ScaleY = 0, AddRGB = new(200, 100,-100), MultRGB = new(50) }),
+                new(0) { Alpha = 0, ScaleX = 0f, ScaleY = 1, AddRGB = new(200, 100, -100), MultRGB = new(50) },
+                new(80) { Alpha = 255, ScaleX = 2, ScaleY = 1, AddRGB = new(100, 0, -100), MultRGB = new(100) },
+                new(300) { Alpha = 0, ScaleX = 4, ScaleY = 0, AddRGB = new(200, 100, -100), MultRGB = new(50) }),
 
             new(Rings[i],
-                new(0) { Alpha = 0, Scale = 0.3f, AddRGB = new(183, 83,-250), MultRGB = new(50) },
-                new(80) { Alpha = 255, Scale = 1, AddRGB = new(100, 0,-250), MultRGB = new(100) },
-                new(300) { Alpha = 0, Scale = 1.2f , AddRGB = new(200,-100,-250), MultRGB = new(50) }),
+                new(0) { Alpha = 0, Scale = 0.3f, AddRGB = new(183, 83, -250), MultRGB = new(50) },
+                new(80) { Alpha = 255, Scale = 1, AddRGB = new(100, 0, -250), MultRGB = new(100) },
+                new(300) { Alpha = 0, Scale = 1.2f, AddRGB = new(200, -100, -250), MultRGB = new(50) }),
 
             new(Glows[i],
-                new(0)   { Alpha = 0, X = 0, Y = 0 },
-                new(60)  { Alpha = 75, X = 2, Y = 0 },
+                new(0) { Alpha = 0, X = 0, Y = 0 },
+                new(60) { Alpha = 75, X = 2, Y = 0 },
                 new(120) { Alpha = 51, X = -3, Y = 3 },
                 new(180) { Alpha = 100, X = -1, Y = 4 },
                 new(240) { Alpha = 24, X = 0, Y = 0 },
                 new(300) { Alpha = 0, X = 2, Y = 2 }),
 
             new(ActionLines[i],
-                new(0) { Scale = 2, Alpha = 142, AddRGB = new AddRGB(80, 0,-160) },
+                new(0) { Scale = 2, Alpha = 142, AddRGB = new AddRGB(80, 0, -160) },
                 new(144) { Scale = 1, Alpha = 0, AddRGB = new(80, 0, -160) },
                 new(146) { Scale = 2, Alpha = 73, AddRGB = new(150, 0, -150) },
                 new(300) { Scale = 1, Alpha = 0, AddRGB = new(150, 0, -150) }),
@@ -185,11 +188,14 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
                 new(0) { Scale = 1.6f, Alpha = 128 },
                 new(200) { Scale = 1, Alpha = 0 })
         ];
+    }
 
-    public override void HideStack(int i) =>
+    public override void HideStack(int i)
+    {
+        Animator -= Pearls[i];
+        Animator -= Rings[i];
         Animator +=
         [
-
             new(Pearls[i],
                 new(0) { Alpha = 255, Scale = 1, AddRGB = new AddRGB(0) },
                 new(100) { Alpha = 255, Scale = 1.1f, AddRGB = new(100) },
@@ -200,6 +206,7 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
                 new(80) { Alpha = 255, Scale = 1, AddRGB = new(100, 0, -250), MultRGB = new(100) },
                 new(300) { Alpha = 0, Scale = 1.2f, AddRGB = new(200, -100, -250), MultRGB = new(50) })
         ];
+    }
 
     private void PlateAppear() =>
         Animator += new Tween(WidgetContainer,
@@ -251,7 +258,7 @@ public sealed unsafe class ChakraBar(Tracker tracker) : CounterWidget(tracker)
         foreach (var s in Stacks)
         {
             Animator -= s;
-            s.SetAddRGB(0);
+            Animator += new Tween(s, new(0) { AddRGB = s.Add }, new(100) { AddRGB = new(0) });
         }
     }
 

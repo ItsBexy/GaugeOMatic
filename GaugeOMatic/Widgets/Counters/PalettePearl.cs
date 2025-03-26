@@ -88,6 +88,7 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
     {
         //var gemColor = Config.GemColor + GemColorOffset;
 
+        Animator -= Pearls[i];
         Animator += Config.AnimType switch
         {
             1 =>
@@ -127,6 +128,7 @@ public sealed unsafe class PalettePearl(Tracker tracker) : FreeGemCounter(tracke
 
     public override void HideStack(int i)
     {
+        Animator -= Pearls[i];
         Animator +=
         [
             new(Pearls[i],

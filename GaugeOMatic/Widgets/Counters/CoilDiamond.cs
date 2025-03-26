@@ -93,7 +93,8 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
         var gemColor = Config.GemColor + GemColorOffset;
 
         var midAppear = new AddRGB(50);
-
+        
+        Animator -= Gems[i];
         Animator +=
         [
             new(Gems[i],
@@ -117,6 +118,7 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
 
     public override void HideStack(int i)
     {
+        Animator -= Gems[i];
         Animator +=
         [
             new(Gems[i],

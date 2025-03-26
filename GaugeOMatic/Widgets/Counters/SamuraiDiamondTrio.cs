@@ -114,7 +114,7 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
 
     public override void ShowStack(int i)
     {
-        if (Gems[i].Node->Color.A != 0) return;
+        Animator -= Gems[i];
         Glows2[i].Show();
 
         Animator +=
@@ -129,6 +129,7 @@ public sealed unsafe class SamuraiDiamondTrio(Tracker tracker) : CounterWidget(t
 
     public override void HideStack(int i)
     {
+        Animator -= Gems[i];
         for (var j = i; j < Max; j++) Glows2[j].Hide();
 
         Animator +=

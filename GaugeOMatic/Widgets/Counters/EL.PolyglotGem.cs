@@ -94,6 +94,7 @@ public sealed unsafe class PolyglotGem(Tracker tracker) : FreeGemCounter(tracker
 
         var colorOffset = Config.GemColor + new AddRGB(-27, 78, -50);
 
+        Animator -= Gems[i];
         Animator +=
         [
             new(Gems[i],
@@ -115,6 +116,7 @@ public sealed unsafe class PolyglotGem(Tracker tracker) : FreeGemCounter(tracker
     {
         var (flipX, flipY) = FlipFactor(i);
 
+        Animator -= Gems[i];
         Animator +=
         [
             new(Gems[i],

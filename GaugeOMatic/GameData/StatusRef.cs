@@ -159,7 +159,7 @@ public partial class StatusRef : ItemRef
         else if (TryGetStatus(out var status, AppliedTo, AppliedBy))
         {
             state = 1;
-            count = status is { StackCount: > 0 } ? status.StackCount : 1;
+            count = status is { Param: > 0 } ? status.Param : 1;
             gaugeValue = MaxTime == 0 ? maxGauge : Math.Abs(status?.RemainingTime ?? 0f);
         }
 

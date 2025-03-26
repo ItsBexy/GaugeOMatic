@@ -65,7 +65,7 @@ public class RDMModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         SwordplayStatePrev = SwordplayStateCurrent;
         SwordplayStateCurrent = TweakConfigs.RDM0SwordplayCue &&
                                 StatusData[3875].TryGetStatus(out var buff, Self) &&
-                                buff?.StackCount == 3;
+                                buff?.Param == 3;
 
         if (SwordplayStateCurrent)
         {

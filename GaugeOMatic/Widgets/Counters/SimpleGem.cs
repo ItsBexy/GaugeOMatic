@@ -128,6 +128,7 @@ public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
 
     public override void ShowStack(int i)
     {
+        Animator -= Gems[i];
         var colorOffset = new AddRGB(0);
         Animator += new Tween(Gems[i],
                               new(0) { Scale = 2.4f, Alpha = 0, AddRGB = Config.GemColor + colorOffset + new AddRGB(80) },
@@ -136,6 +137,7 @@ public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
 
     public override void HideStack(int i)
     {
+        Animator -= Gems[i];
         var colorOffset = new AddRGB(0);
         Animator += new Tween(Gems[i],
                               new(0) { Alpha = 255, AddRGB = Config.GemColor + colorOffset, Scale = 1 },

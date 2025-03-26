@@ -185,11 +185,16 @@ public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(track
 
     public override void ShowStack(int i)
     {
-        Stacks[i][0].SetAlpha(0);
-        Stacks[i][1].SetAlpha(255);
-
+        Animator -= Stacks[i][0];
+        Animator -= Stacks[i][1];
         Animator +=
         [
+            new(Stacks[i][0],
+              new(0) { Alpha = Stacks[i][0].Alpha },
+              new(1) { Alpha = 0 }),
+            new(Stacks[i][1],
+                new(0) { Alpha = Stacks[i][1].Alpha },
+                new(1) { Alpha = 255 }),
             new(Stacks[i][2],
                 new(0) { Alpha = 0, AddRGB = 0 },
                 new(160) { Alpha = 255, AddRGB = Config.GemColor },
@@ -204,6 +209,8 @@ public sealed unsafe class AddersCounter(Tracker tracker) : FreeGemCounter(track
 
     public override void HideStack(int i)
     {
+        Animator -= Stacks[i][0];
+        Animator -= Stacks[i][1];
         Animator +=
         [
             new(Stacks[i][0],

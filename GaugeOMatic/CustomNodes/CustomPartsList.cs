@@ -3,6 +3,7 @@ using Lumina.Data.Files;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Kernel = FFXIVClientStructs.FFXIV.Client.Graphics.Kernel;
 using static FFXIVClientStructs.FFXIV.Client.Graphics.Kernel.Texture;
 using static FFXIVClientStructs.FFXIV.Client.System.Memory.IMemorySpace;
 using static FFXIVClientStructs.FFXIV.Component.GUI.TextureType;
@@ -74,7 +75,9 @@ public unsafe partial class CustomNodeManager
 
             fixed (byte* dataPtr = data.TextureBuffer.RawData)
             {
-                var newTexture = CreateTexture2D(data.TextureBuffer.Width, data.TextureBuffer.Height, (byte)data.Header.MipCount, (uint)data.Header.Format, 0u, 0u);
+                var format = (Kernel.TextureFormat)data.Header.Format;
+
+                var newTexture = CreateTexture2D(data.TextureBuffer.Width, data.TextureBuffer.Height, (byte)data.Header.MipCount, format, 0u, 0u);
                 newTexture->InitializeContents(dataPtr);
 
                 var atkAsset = (AtkUldAsset*)Alloc((ulong)sizeof(AtkUldAsset));

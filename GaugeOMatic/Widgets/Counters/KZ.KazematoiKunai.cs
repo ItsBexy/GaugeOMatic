@@ -121,6 +121,7 @@ public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(trac
 
     public override void ShowStack(int i)
     {
+        Animator -= Knives[i];
         Animator += new Tween(Knives[i],
                               new(0) { X = 15, Y = -32, Alpha = 0 },
                               new(170) { X = 0, Y = 0, Alpha = 255 });
@@ -128,6 +129,7 @@ public sealed unsafe class KazematoiKunai(Tracker tracker) : FreeGemCounter(trac
 
     public override void HideStack(int i)
     {
+        Animator -= Knives[i];
         Animator += new Tween(Knives[i],
                               new(0) { X = 0, Y = 0, Alpha = 255 },
                               new(90) { X = -15, Y = 32, Alpha = 0 });

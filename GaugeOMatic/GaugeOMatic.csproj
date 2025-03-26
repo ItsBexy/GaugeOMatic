@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.8.1.5</Version>
+    <Version>0.8.1.6</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -13,7 +13,7 @@
     <IsPackable>false</IsPackable>
     <LangVersion>preview</LangVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <RepositoryUrl>https://github.com/ItsBexy/GaugeOMatic</RepositoryUrl>
   </PropertyGroup>
 
@@ -33,6 +33,13 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Include="C:\Users\rebec\Source\Repos\GaugeOMatic\GaugeOMatic\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <Reference Include="InteropGenerator">
+          <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
+          <Private>false</Private>
+      </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -66,7 +73,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="11.0.0" />
+    <PackageReference Update="DalamudPackager" Version="12.0.0" />
   </ItemGroup>
 
 </Project>

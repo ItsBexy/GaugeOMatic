@@ -350,8 +350,8 @@ public sealed unsafe class AnguineTributeTracker : JobGaugeTracker<SerpentOfferi
             new(0, 5, 0, 30, 0, 1, preview) :
             new(GaugeData->TributeStacks,
                 GaugeData->TributeMax,
-                GaugeData->TributeTimeLeft,
-                GaugeData->TributeMaxTime,
+                GaugeData->TributeTimeLeft / 1000f,
+                GaugeData->TributeMaxTime / 1000f,
                 GaugeData->TributeStacks > 0 ? 1 : 0,
                 1,
                 preview);

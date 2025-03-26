@@ -78,6 +78,7 @@ public sealed unsafe class ElementalCrystals(Tracker tracker) : FreeGemCounter(t
 
     public override void ShowStack(int i)
     {
+        Animator -= StackContents[i];
         Animator += new Tween(StackContents[i],
                               new(0) { Y = -20, Alpha = 0 },
                               new(225) { Y = 0, Alpha = 200 },
@@ -90,6 +91,7 @@ public sealed unsafe class ElementalCrystals(Tracker tracker) : FreeGemCounter(t
     {
         Glows2[i].Hide();
 
+        Animator -= StackContents[i];
         Animator +=
         [
             new(StackContents[i],
