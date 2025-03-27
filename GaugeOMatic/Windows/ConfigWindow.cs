@@ -46,7 +46,7 @@ public partial class ConfigWindow : Window, IDisposable
 
     public override void Draw()
     {
-        if (JobChanged && JobModules.Any(static j => j.Job == Current)) Configuration.JobTab = Current;
+        if ((Configuration.JobTab == Job.None || JobChanged) && JobModules.Any(static j => j.Job == Current)) Configuration.JobTab = Current;
 
         ConfigWindowPos = ImGui.GetWindowPos();
         ConfigWindowSize = ImGui.GetWindowSize();

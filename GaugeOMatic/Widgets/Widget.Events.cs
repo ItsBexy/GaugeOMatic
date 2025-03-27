@@ -46,7 +46,7 @@ public abstract partial class Widget
         {
             if (!TrackerConfig.LimitLevelRange) return true;
             if (TrackerConfig is { LevelMin: 1, LevelMax: JobData.LevelCap }) return true;
-            var level = LocalPlayer?.Level ?? 1;
+            var level = LocalPlayer.Lvl;
             return level >= TrackerConfig.LevelMin && level <= TrackerConfig.LevelMax;
         }
 

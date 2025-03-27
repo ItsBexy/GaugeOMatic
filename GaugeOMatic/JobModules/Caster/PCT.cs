@@ -89,7 +89,7 @@ public class PCTModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         VisibilityTweak(TweakConfigs.PCTHide1, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(28));
     }
 
-    public static float LivingMuseFix() => FrameworkData.LocalPlayer?.Level < 96 ? 80f : 120f;
+    public static float LivingMuseFix() => FrameworkData.LocalPlayer.Lvl < 96 ? 80f : 120f;
 }
 
 public partial class TweakConfigs

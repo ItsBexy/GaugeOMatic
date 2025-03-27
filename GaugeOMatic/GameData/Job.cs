@@ -94,7 +94,7 @@ public class JobData
 
     public const byte LevelCap = 100;
 
-    internal static Job Current => LastKnown = (Job)(FrameworkData.LocalPlayer?.ClassJob.RowId ?? 0);
+    internal static Job Current => LastKnown = FrameworkData.LocalPlayer.Job;
     internal static Job LastKnown;
     internal static bool JobChanged => LastKnown != Current;
 

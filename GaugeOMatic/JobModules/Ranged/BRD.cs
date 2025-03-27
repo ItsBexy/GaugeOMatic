@@ -70,7 +70,7 @@ public class BRDModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         }
     }
 
-    public static float BloodletterFix() => FrameworkData.LocalPlayer?.Level < 84 ? 30f : 45f;
+    public static float BloodletterFix() => FrameworkData.LocalPlayer.Lvl < 84 ? 30f : 45f;
 }
 
 public partial class TweakConfigs

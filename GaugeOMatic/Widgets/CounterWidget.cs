@@ -49,7 +49,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
 
         Tracker.JobModule.SoftReset();
     }
-    
+
     public bool SoundMilestoneActive;
     public override void Update()
     {
@@ -124,7 +124,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
     private void HandleSoundMilestone(int max, int current)
     {
         var configSoundMilestone = Config.SoundMilestone * max;
-        var soundCheck = ((Config.SoundType == Above && current >= configSoundMilestone) || (Config.SoundType == Below && current < configSoundMilestone));
+        var soundCheck = (Config.SoundType == Above && current >= configSoundMilestone) || (Config.SoundType == Below && current < configSoundMilestone);
         if (!SoundMilestoneActive && soundCheck && !SoundBlackList.Contains(Config.SoundId))
         {
             UIGlobals.PlaySoundEffect(Config.SoundId);

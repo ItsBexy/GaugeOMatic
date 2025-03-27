@@ -93,7 +93,7 @@ public sealed unsafe class CoilDiamond(Tracker tracker) : FreeGemCounter(tracker
         var gemColor = Config.GemColor + GemColorOffset;
 
         var midAppear = new AddRGB(50);
-        
+
         Animator -= Gems[i];
         Animator +=
         [

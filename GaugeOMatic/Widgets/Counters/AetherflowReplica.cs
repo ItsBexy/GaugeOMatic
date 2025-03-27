@@ -142,7 +142,7 @@ public sealed unsafe class AetherflowReplica(Tracker tracker) : CounterWidget(tr
         if (Gems.Children.Length <= i) return;
 
         var flipFactor = Abs(Config.Angle) >= 90 ? -1 : 1;
-        
+
         Animator -= Gems[i];
         Animator +=
         [

@@ -113,7 +113,7 @@ public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
     public override void ShowStack(int i)
     {
         Pulses[i].Show();
-        
+
         Animator -= Gems[i];
         Animator +=
         [
@@ -142,7 +142,7 @@ public sealed unsafe class ManaDiamond(Tracker tracker) : CounterWidget(tracker)
     public override void HideStack(int i)
     {
         Pulses[i].Hide();
-        
+
         Animator -= Gems[i];
         Animator +=
         [

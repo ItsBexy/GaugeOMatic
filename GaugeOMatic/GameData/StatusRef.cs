@@ -86,7 +86,7 @@ public partial class StatusRef : ItemRef
                 return true;
             case Self:
             {
-                var playerId = FrameworkData.LocalPlayer?.GameObjectId;
+                var playerId = FrameworkData.LocalPlayer.ObjId;
                 return sourceId == playerId || sourceOwnerId == playerId;
             }
             case Party:
@@ -98,7 +98,7 @@ public partial class StatusRef : ItemRef
             }
             case Target:
             {
-                var target = FrameworkData.LocalPlayer?.TargetObject?.GameObjectId;
+                var target = FrameworkData.LocalPlayer.TargetObjId;
                 if (sourceId == target || sourceOwnerId == target) return true;
                 break;
             }
@@ -109,7 +109,7 @@ public partial class StatusRef : ItemRef
 
     public bool TryGetStatus(out DalamudStatus? result, StatusActor appliedTo, StatusActor appliedBy = Self)
     {
-        var statusList = appliedTo == Self ? FrameworkData.PlayerStatus : FrameworkData.EnemyStatus;
+        var statusList = appliedTo == Self ? FrameworkData.LocalPlayer.PlayerStatus : FrameworkData.LocalPlayer.EnemyStatus;
 
         if (statusList != null)
         {
@@ -138,7 +138,7 @@ public partial class StatusRef : ItemRef
 
     public bool TryGetStatus(StatusActor appliedTo, StatusActor appliedBy = Self)
     {
-        var statusList = appliedTo == Self ? FrameworkData.PlayerStatus : FrameworkData.EnemyStatus;
+        var statusList = appliedTo == Self ? FrameworkData.LocalPlayer.PlayerStatus : FrameworkData.LocalPlayer.EnemyStatus;
         return statusList != null && (statusList.Any(StatusMatch(ID, appliedBy)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
     }
 

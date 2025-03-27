@@ -3,7 +3,7 @@ using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
 using System;
 using System.Collections.Generic;
-using static GaugeOMatic.GameData.JobData;
+using GaugeOMatic.GameData;
 using static GaugeOMatic.Trackers.Presets.PluginPresets;
 
 namespace GaugeOMatic.Trackers;
@@ -55,7 +55,10 @@ public class TrackerManager : IDisposable
 
     private void ApplyDisplayRules(ConditionFlag flag, bool value)
     {
-        JobModules.Find(static jm => jm.Job == Current || jm.Class == Current)?.ApplyDisplayRules();
+        if (ClientState.LocalPlayer == null) return;
+        if (JobData.Current == 0) return;
+
+        JobModules.Find(static jm => jm.Job == JobData.LastKnown || jm.Class == JobData.LastKnown)?.ApplyDisplayRules();
     }
 
     public void Dispose()
