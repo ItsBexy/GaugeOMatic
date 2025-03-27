@@ -10,6 +10,7 @@ using Lumina.Excel.Sheets;
 using Action = Lumina.Excel.Sheets.Action;
 using ActionIndirection = Lumina.Excel.Sheets.ActionIndirection;
 using Status = Lumina.Excel.Sheets.Status;
+using ActionProcStatus = Lumina.Excel.Sheets.ActionProcStatus;
 
 namespace GaugeOMatic.GameData;
 
@@ -17,6 +18,7 @@ internal static class Sheets
 {
     public static ExcelSheet<Action>? ActionSheet { get; } = DataManager.Excel.GetSheet<Action>(null,"Action");
     public static ExcelSheet<Status>? StatusSheet { get; } = DataManager.Excel.GetSheet<Status>(null,"Status");
+    public static ExcelSheet<ActionProcStatus>? ApsSheet { get; } = DataManager.Excel.GetSheet<ActionProcStatus>(null,"ActionProcStatus");
     public static SubrowExcelSheet<ClassJobActionUI>? ActionUiSheet { get; } = DataManager.Excel.GetSubrowSheet<ClassJobActionUI>(null,"ClassJobActionUI");
     public static ExcelSheet<ActionIndirection>? ActionIndirectionSheet { get; } = DataManager.Excel.GetSheet<ActionIndirection>(null,"ActionIndirection");
 

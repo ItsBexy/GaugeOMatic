@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lumina.Excel;
+using Lumina.Excel.Sheets;
 using static GaugeOMatic.GameData.ActionFlags;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
@@ -65,7 +67,7 @@ public partial class ActionRef : ItemRef
             SetFlag(LongCooldown, excelRow.Recast100ms > 50);
             SetFlag(HasCharges, excelRow.MaxCharges > 0);
             SetFlag(ComboBonus, excelRow.Recast100ms > 50);
-            SetFlag(RoleAction, Role != Role.None);
+            SetFlag(RoleAction, Role != JobData.Role.None);
             SetFlag(ComboBonus, excelRow.ActionCombo.RowId > 0);
             SetFlag(Unassignable, !excelRow.IsPlayerAction);
             SetFlag(CanGetAnts, AntActions.Contains(ID));
@@ -123,8 +125,13 @@ public partial class ActionRef : ItemRef
 
         void CheckStatusEffects(ActionExcelRow excelRow)
         {
-            var aps = excelRow.ActionProcStatus;
-            if (aps.RowId != 0)
+           // var aps = excelRow.ActionProcStatus;
+
+           // TEMP FIX until sheet correction PR goes through
+            var apsId = excelRow.Unknown26;
+            var aps = ApsSheet?.GetRow(apsId);
+
+            if (apsId != 0 && aps != null)
             {
                 SetFlag(RequiresStatus, true);
 
