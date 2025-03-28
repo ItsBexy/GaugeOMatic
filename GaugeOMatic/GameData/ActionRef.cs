@@ -125,13 +125,9 @@ public partial class ActionRef : ItemRef
 
         void CheckStatusEffects(ActionExcelRow excelRow)
         {
-           // var aps = excelRow.ActionProcStatus;
+            var aps = excelRow.ActionProcStatus;
 
-           // TEMP FIX until sheet correction PR goes through
-            var apsId = excelRow.Unknown26;
-            var aps = ApsSheet?.GetRow(apsId);
-
-            if (apsId != 0 && aps != null)
+            if (aps.Value.RowId != 0)
             {
                 SetFlag(RequiresStatus, true);
 
