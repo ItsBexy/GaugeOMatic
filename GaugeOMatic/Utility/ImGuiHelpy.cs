@@ -2,11 +2,11 @@ using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
-using static ImGuiNET.ImGuiCol;
+using static Dalamud.Bindings.ImGui.ImGuiCol;
 
 namespace GaugeOMatic.Utility;
 
@@ -146,7 +146,7 @@ public static partial class ImGuiHelpy
             var margin = (adjustedHeight - width) / 2f;
 
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + margin);
-            ImGui.Image(tex.ImGuiHandle, new(width, adjustedHeight), new(0), new(1), new(1, 1, 1, active ? 1 : 0.3f));
+            ImGui.Image(tex.Handle, new(width, adjustedHeight), new(0), new Vector2(1), new(1, 1, 1, active ? 1 : 0.3f));
             ImGui.SameLine();
         }
 

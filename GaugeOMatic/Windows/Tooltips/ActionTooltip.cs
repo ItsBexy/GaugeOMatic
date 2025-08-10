@@ -1,5 +1,5 @@
 using Dalamud.Interface.Textures.TextureWraps;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -41,10 +41,10 @@ public partial class ActionRef
         var frameTex = FrameTex;
         if (texture != null && frameTex != null)
         {
-            ImGui.Image(texture.ImGuiHandle, new(40 * GlobalScale));
+            ImGui.Image(texture.Handle, new(40 * GlobalScale));
             ImGui.SetCursorPos(startPos - (new Vector2(4, 3) * GlobalScale));
 
-            ImGui.Image(frameTex.ImGuiHandle, new(48 * GlobalScale));
+            ImGui.Image(frameTex.Handle, new(48 * GlobalScale));
             ImGui.SameLine();
         }
 

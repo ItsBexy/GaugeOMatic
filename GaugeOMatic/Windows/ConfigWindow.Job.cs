@@ -4,7 +4,7 @@ using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using Dalamud.Interface.Components;
 using GaugeOMatic.Widgets;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Collections.Generic;
 using System.Numerics;
 using static CustomNodes.CustomNode;
@@ -14,10 +14,10 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
-using static ImGuiNET.ImGuiKey;
-using static ImGuiNET.ImGuiMouseButton;
-using static ImGuiNET.ImGuiTableColumnFlags;
-using static ImGuiNET.ImGuiTableFlags;
+using static Dalamud.Bindings.ImGui.ImGuiKey;
+using static Dalamud.Bindings.ImGui.ImGuiMouseButton;
+using static Dalamud.Bindings.ImGui.ImGuiTableColumnFlags;
+using static Dalamud.Bindings.ImGui.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 

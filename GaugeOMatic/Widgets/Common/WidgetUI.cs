@@ -1,6 +1,6 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,8 +9,8 @@ using static Dalamud.Interface.Utility.ImGuiHelpers;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
-using static ImGuiNET.ImGuiCol;
-using static ImGuiNET.ImGuiColorEditFlags;
+using static Dalamud.Bindings.ImGui.ImGuiCol;
+using static Dalamud.Bindings.ImGui.ImGuiColorEditFlags;
 
 namespace GaugeOMatic.Widgets.Common;
 
@@ -176,7 +176,7 @@ public static class WidgetUI
         LabelColumn(label);
 
         ImGui.SetNextItemWidth(142f * GlobalScale);
-        if (ImGui.InputTextWithHint($"##{label}", hintText, ref str, 40u))
+        if (ImGui.InputTextWithHint($"##{label}", hintText, ref str, 40))
         {
             UpdateFlag |= Save;
             return true;

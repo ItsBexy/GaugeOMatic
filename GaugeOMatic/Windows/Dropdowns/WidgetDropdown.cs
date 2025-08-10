@@ -1,6 +1,6 @@
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Widgets;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;

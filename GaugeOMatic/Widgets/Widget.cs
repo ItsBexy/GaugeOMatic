@@ -23,7 +23,7 @@ public abstract unsafe partial class Widget : IDisposable
 
         if (!GetAttributes.AddonPermitted(Tracker.AddonName)) Tracker.AddonName = Tracker.JobModule.AddonOptions.First(a => GetAttributes.AddonPermitted(a.Name)).Name;
 
-        Addon = (AtkUnitBase*)GameGui.GetAddonByName(Tracker.AddonName);
+        Addon = (AtkUnitBase*)GameGui.GetAddonByName(Tracker.AddonName).Address;
 
         WidgetContainer = BuildContainer();
         WidgetIconContainer = BuildWidgetIcon(tracker);
@@ -45,7 +45,7 @@ public abstract unsafe partial class Widget : IDisposable
 
         return type == null ? null :
                string.IsNullOrEmpty(tracker.AddonName) ? null :
-               (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName) == null ? null :
+               (AtkUnitBase*)GameGui.GetAddonByName(tracker.AddonName).Address == null ? null :
                (Widget?)CreateInstance(type, tracker);
     }
 

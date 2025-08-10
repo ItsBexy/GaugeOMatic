@@ -3,7 +3,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using Dalamud.Interface;
@@ -83,7 +83,7 @@ public class BLMModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
 
     private unsafe void MpBarTweak(bool tweakActive, bool elementActive = false, int elementStacks = 0)
     {
-        var addon = (AtkUnitBase*)GameGui.GetAddonByName("_ParameterWidget");
+        var addon = (AtkUnitBase*)GameGui.GetAddonByName("_ParameterWidget").Address;
         if (addon == null) return;
 
         AddonIndex addonIndex = addon;

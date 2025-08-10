@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lumina.Excel;
-using Lumina.Excel.Sheets;
 using static GaugeOMatic.GameData.ActionFlags;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;

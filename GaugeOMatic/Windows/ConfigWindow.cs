@@ -3,7 +3,7 @@ using GaugeOMatic.Config;
 using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +14,9 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.JobData.Job;
 using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Windows.ConfigWindow.GeneralTab;
-using static ImGuiNET.ImGuiCol;
-using static ImGuiNET.ImGuiTableColumnFlags;
-using static ImGuiNET.ImGuiTableFlags;
+using static Dalamud.Bindings.ImGui.ImGuiCol;
+using static Dalamud.Bindings.ImGui.ImGuiTableColumnFlags;
+using static Dalamud.Bindings.ImGui.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 

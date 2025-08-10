@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using Dalamud.Interface;

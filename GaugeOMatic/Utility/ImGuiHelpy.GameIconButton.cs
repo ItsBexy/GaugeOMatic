@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 // ReSharper disable UnusedMember.Global
 
 namespace GaugeOMatic.Utility;
@@ -149,7 +149,7 @@ public static partial class ImGuiHelpy
         if (tex != null)
         {
             var iconPos = cursor + ((buttonSize - iconSize) / 2);
-            ImGui.GetWindowDrawList().AddImage(tex.ImGuiHandle, iconPos, iconPos + iconSize);
+            ImGui.GetWindowDrawList().AddImage(tex.Handle, iconPos, iconPos + iconSize);
         }
 
         return button;

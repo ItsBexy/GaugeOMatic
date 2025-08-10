@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Dalamud.NET.Sdk/13.0.0">
   <Import Project="Dalamud.Plugin.Bootstrap.targets" />
 
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.8.1.9</Version>
+    <Version>0.8.2.0</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -28,11 +28,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="TextureAssets\iconFrame.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TextureAssets\simpleGemUI.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
     <None Include="C:\Users\rebec\Source\Repos\GaugeOMatic\GaugeOMatic\.editorconfig" />
+    <None Include="TextureAssets\CircleMask.tex" />
+    <None Include="TextureAssets\huton.tex" />
+    <None Include="TextureAssets\iconFrame.tex" />
+    <None Include="TextureAssets\MedDiamondSingleFrame.tex" />
+    <None Include="TextureAssets\SimpleGems.tex" />
+    <None Include="TextureAssets\SimpleGemsBlack.tex" />
+    <None Include="TextureAssets\SimpleGemsSilver.tex" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,7 +89,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="DalamudPackager" Version="12.0.0" />
+    <PackageReference Update="DalamudPackager" Version="13.0.0" />
   </ItemGroup>
 
 </Project>

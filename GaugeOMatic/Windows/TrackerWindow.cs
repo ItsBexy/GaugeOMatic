@@ -5,8 +5,9 @@ using GaugeOMatic.Config;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
 using GaugeOMatic.Widgets;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
+using System.Numerics;
 using Dalamud.Interface.Components;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.UiBuilder;
@@ -15,9 +16,9 @@ using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
-using static ImGuiNET.ImGuiCond;
-using static ImGuiNET.ImGuiTableColumnFlags;
-using static ImGuiNET.ImGuiTableFlags;
+using static Dalamud.Bindings.ImGui.ImGuiCond;
+using static Dalamud.Bindings.ImGui.ImGuiTableColumnFlags;
+using static Dalamud.Bindings.ImGui.ImGuiTableFlags;
 
 namespace GaugeOMatic.Windows;
 
@@ -193,7 +194,7 @@ public class TrackerWindow : Window, IDisposable
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGui.TextColored(new(1, 1, 1, 0.3f), "Display Rules");
+        ImGui.TextColored(new Vector4(1, 1, 1, 0.3f), "Display Rules");
         ImGui.TableNextColumn();
 
         var cond1 = RadioControls("Visibility", ref Tracker.TrackerConfig.HideOutsideCombatDuty, [false, true], ["Anytime", "Combat / Duty Only"]);

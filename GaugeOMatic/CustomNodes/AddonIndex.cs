@@ -9,7 +9,7 @@ public sealed unsafe class AddonIndex
 {
     public readonly AtkUnitBase* AtkUnitBase;
 
-    public AddonIndex(string addonName) => AtkUnitBase = (AtkUnitBase*)GameGui.GetAddonByName(addonName);
+    public AddonIndex(string addonName) => AtkUnitBase = (AtkUnitBase*)GameGui.GetAddonByName(addonName).Address;
     public AddonIndex(AtkUnitBase* atkUnitBase) => AtkUnitBase = atkUnitBase;
     public AddonIndex(IntPtr ptr) => AtkUnitBase = (AtkUnitBase*)ptr;
 

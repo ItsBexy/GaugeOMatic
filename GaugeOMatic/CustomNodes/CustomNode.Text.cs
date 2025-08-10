@@ -12,7 +12,7 @@ public unsafe partial class CustomNodeManager
 
         node->AlignmentFontType = (byte)alignFontType;
         node->FontSize = (byte)fontSize;
-        node->TextFlags |= 24;
+        node->TextFlags |= (TextFlags)0x18;
         node->AtkResNode.Width = (ushort)((fontSize - 3) * (text.Length + 1));
 
         node->AtkResNode.NodeId = GetFreeId();

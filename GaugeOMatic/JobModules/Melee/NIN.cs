@@ -4,7 +4,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Windows.Dropdowns;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using Dalamud.Interface;
@@ -61,7 +61,7 @@ public class NINModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
             ImGui.SameLine();
             if (ImGui.Checkbox("##TweakPreview", ref TweakConfigs.Preview)) UpdateFlag |= UpdateFlags.Save;
 
-            var gauge0 = (AddonJobHudNIN0*)GameGui.GetAddonByName("JobHudNIN0");
+            var gauge0 = (AddonJobHudNIN0*)GameGui.GetAddonByName("JobHudNIN0").Address;
             if (gauge0 != null && gauge0->UseSimpleGauge)
             {
                 ColorPickerRGB("Fill Color", ref TweakConfigs.NIN0HigiColor3);

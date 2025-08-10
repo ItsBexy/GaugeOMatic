@@ -1,7 +1,7 @@
 using Dalamud.Interface.Utility.Raii;
 using GaugeOMatic.GameData;
 using GaugeOMatic.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
@@ -147,7 +147,7 @@ public class TrackerDisplayAttribute : Attribute
     {
         var texture = ImGuiHelpy.GetGameIconTexture(iconId);
 
-        if (texture != null) ImGui.Image(texture.ImGuiHandle, new(40 * GlobalScale));
+        if (texture != null) ImGui.Image(texture.Handle, new(40 * GlobalScale));
 
         ImGui.SetCursorPos(new(startPos.X + (50 * GlobalScale), startPos.Y + (2 * GlobalScale)));
     }

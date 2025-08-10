@@ -5,10 +5,11 @@ using GaugeOMatic.JobModules;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Trackers.Presets;
 using GaugeOMatic.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using static Dalamud.Interface.Components.ImGuiComponents;
 using static Dalamud.Interface.FontAwesomeIcon;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
@@ -120,8 +121,10 @@ public class PresetWindow : Window, IDisposable
             var presetNames = presetList.Select(static p => p.Name).ToArray();
             var selectedIndex = Math.Clamp(UIData.PresetSelectedIndex, 0, Math.Max(0, presetList.Count - 1));
             ImGui.SetNextItemWidth(200f * GlobalScale);
-            if (ImGui.ListBox("##Presets", ref selectedIndex, presetNames, presetList.Count, 10))
+            if (ImGui.ListBox("##Presets",ref selectedIndex,presetNames,presetList.Count))
+            {
                 UIData.PresetSelectedIndex = selectedIndex;
+            }
 
             if (presetList.Count > 0)
             {
@@ -153,7 +156,7 @@ public class PresetWindow : Window, IDisposable
                     ImGui.SameLine();
                     if (IconButtonWithText(SignOutAlt, "Export to clipboard"))
                     {
-                        ImGui.SetClipboardText(selectedPreset);
+                        ImGui.SetClipboardText(selectedPreset.ExportStr());
                     }
 
                     ImGui.Spacing();
@@ -176,10 +179,10 @@ public class PresetWindow : Window, IDisposable
         {
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
-            ImGui.TextColored(new(1, 1, 1, 0.6f), "TRACKER");
+            ImGui.TextColored(new Vector4(1, 1, 1, 0.6f), "TRACKER");
 
             ImGui.TableNextColumn();
-            ImGui.TextColored(new(1, 1, 1, 0.6f), "WIDGET");
+            ImGui.TextColored(new Vector4(1, 1, 1, 0.6f), "WIDGET");
 
             foreach (var trackerConfig in selectedPreset.Trackers)
             {
@@ -191,7 +194,7 @@ public class PresetWindow : Window, IDisposable
                 ImGuiHelpy.DrawGameIcon(trackerConfig.GetDisplayAttr().GameIcon, 22f);
                 if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
-                ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new(1, 1, 1, 0.3f),
+                ImGui.TextColored(trackerConfig.JobRoleMatch(module) ? new(1) : new Vector4(1, 1, 1, 0.3f),
                                   trackerConfig.GetDisplayAttr().Name);
                 if (ImGui.IsItemHovered()) trackerConfig.DrawTooltip();
 
@@ -259,11 +262,11 @@ public class PresetWindow : Window, IDisposable
         using var gr = ImRaii.Group();
         if (gr.Success)
         {
-            ImGui.TextColored(new(1, 1, 1, 0.6f), "ADD PRESETS");
+            ImGui.TextColored(new Vector4(1, 1, 1, 0.6f), "ADD PRESETS");
             var saveName = UIData.SaveName;
             ImGui.Text($"Save a preset from your current {module.Abbr} trackers:");
             ImGui.SetNextItemWidth(200f * GlobalScale);
-            if (ImGui.InputTextWithHint("##SaveName", "New Preset Name", ref saveName, 30u))
+            if (ImGui.InputTextWithHint("##SaveName", "New Preset Name", ref saveName, (int)30u))
                 UIData.SaveName = saveName;
             ImGui.SameLine();
             if (IconButtonWithText(Save, "Save")) SaveNewPreset(module, saveName);

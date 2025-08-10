@@ -1,7 +1,7 @@
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Components;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 
 namespace GaugeOMatic.Windows;

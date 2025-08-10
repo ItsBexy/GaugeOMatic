@@ -1,7 +1,7 @@
 using CustomNodes;
 using GaugeOMatic.Trackers;
 using GaugeOMatic.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

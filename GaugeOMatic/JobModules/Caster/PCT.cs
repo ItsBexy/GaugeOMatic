@@ -85,7 +85,7 @@ public class PCTModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
 
     public override unsafe void ApplyTweaks1(IntPtr gaugeAddon)
     {
-        var gauge = (AddonJobHudRPM1*)GameGui.GetAddonByName("JobHudRPM1");
+        var gauge = (AddonJobHudRPM1*)GameGui.GetAddonByName("JobHudRPM1").Address;
         VisibilityTweak(TweakConfigs.PCTHide1, gauge->UseSimpleGauge, gauge->GetNodeById(2), gauge->GetNodeById(28));
     }
 

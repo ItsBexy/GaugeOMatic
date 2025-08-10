@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using static GaugeOMatic.Widgets.MilestoneType;
 using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;

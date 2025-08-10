@@ -2,7 +2,7 @@ using CustomNodes;
 using Dalamud.Interface.Textures.TextureWraps;
 using GaugeOMatic.CustomNodes.Animation;
 using GaugeOMatic.Trackers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +19,7 @@ using static GaugeOMatic.Widgets.WidgetTags;
 using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
 using static GaugeOMatic.Widgets.Common.WidgetUI.WidgetUiTab;
-using static ImGuiNET.ImGuiMouseCursor;
+using static Dalamud.Bindings.ImGui.ImGuiMouseCursor;
 using static System.Math;
 
 #pragma warning disable CS8618
@@ -391,7 +391,7 @@ public sealed unsafe class SimpleGem(Tracker tracker) : FreeGemCounter(tracker)
     private static void GemSelect(IDalamudTextureWrap spriteSheet, ref GemShapes currentShape, int col, int row, GemShapes shape)
     {
         if (currentShape == shape) col++;
-        ImGui.Image(spriteSheet.ImGuiHandle, new(32, 32), new(col / 4f, row / 9f), new((col + 1) / 4f, (row + 1) / 9f));
+        ImGui.Image(spriteSheet.Handle, new(32, 32), new(col / 4f, row / 9f), new Vector2((col + 1) / 4f, (row + 1) / 9f));
         if (ImGui.IsItemClicked())
         {
             currentShape = shape;

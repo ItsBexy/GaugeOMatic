@@ -1,5 +1,5 @@
 using GaugeOMatic.Trackers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
@@ -10,7 +10,7 @@ using static GaugeOMatic.Utility.Color;
 using static GaugeOMatic.Utility.ImGuiHelpy;
 using static GaugeOMatic.Widgets.Common.WidgetUI;
 using static GaugeOMatic.Widgets.Common.WidgetUI.UpdateFlags;
-using static ImGuiNET.ImGuiKey;
+using static Dalamud.Bindings.ImGui.ImGuiKey;
 
 namespace GaugeOMatic.Windows;
 

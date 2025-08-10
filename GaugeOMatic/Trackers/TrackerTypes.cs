@@ -61,7 +61,7 @@ public abstract unsafe class JobGaugeTracker<T> : Tracker where T : unmanaged
 
     public abstract string GaugeAddonName { get; }
 
-    public AddonJobHud* GaugeAddon => (AddonJobHud*)GameGui.GetAddonByName(GaugeAddonName);
+    public AddonJobHud* GaugeAddon => (AddonJobHud*)GameGui.GetAddonByName(GaugeAddonName).Address;
     public T* GaugeData => (T*)GaugeAddon->DataCurrentPointer;
 }
 

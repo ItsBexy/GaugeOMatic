@@ -1,4 +1,4 @@
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Linq;
 using System.Numerics;
 using static Dalamud.Interface.Utility.ImGuiHelpers;
@@ -20,7 +20,7 @@ public partial class StatusRef
         var texture = GetIconTexture();
         if (texture != null)
         {
-            ImGui.Image(texture.ImGuiHandle, new Vector2(30 * GlobalScale, 40 * GlobalScale) * 1.2f);
+            ImGui.Image(texture.Handle, new Vector2(30 * GlobalScale, 40 * GlobalScale) * 1.2f);
             ImGui.SameLine();
         }
 
