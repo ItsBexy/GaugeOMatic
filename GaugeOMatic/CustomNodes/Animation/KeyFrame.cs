@@ -35,6 +35,12 @@ public unsafe struct KeyFrame
 
     public KeyFrame(float time, CustomNode n)
     {
+        if (n.Node == null)
+        {
+            Time = 0;
+            return;
+        }
+
         Time = time;
         X = n.X;
         Y = n.Y;

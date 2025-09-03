@@ -21,10 +21,15 @@ public abstract unsafe partial class Widget
         }
     }
 
-    public void FadeIcon(bool show, int time = 300) =>
-        Animator.Add(new Tween(WidgetIconContainer,
-                               new(0, WidgetIconContainer),
-                               new(time) { Alpha = show ? 255 : 0 }) { Label = "ShowHide" });
+    public void FadeIcon(bool show, int time = 300)
+    {
+        if (WidgetIconContainer.Node != null)
+        {
+            Animator.Add(new Tween(WidgetIconContainer,
+                                   new(0, WidgetIconContainer),
+                                   new(time) { Alpha = show ? 255 : 0 }) { Label = "ShowHide" });
+        }
+    }
 
     public CustomNode BuildWidgetIcon(Tracker tracker)
     {
