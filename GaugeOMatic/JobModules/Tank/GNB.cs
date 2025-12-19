@@ -41,7 +41,7 @@ public class GNBModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
     public override unsafe void ApplyTweaks0(IntPtr gaugeAddon)
     {
         var gauge = (AddonJobHudGNB0*)gaugeAddon;
-        VisibilityTweak(TweakConfigs.GNBHide0, gauge->UseSimpleGauge, gauge->GaugeStandard.Container, gauge->GetNodeById(19));
+        VisibilityTweak(TweakConfigs.GNBHide0, gauge->UseSimpleGauge,  gauge->GetNodeById(2), gauge->GetNodeById(22));
     }
 }
 

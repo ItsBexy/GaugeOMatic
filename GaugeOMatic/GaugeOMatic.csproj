@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/13.1.0">
+<Project Sdk="Dalamud.NET.Sdk/14.0.1">
 
   <PropertyGroup>
     <Authors>ItsBexy</Authors>
     <Company></Company>
-    <Version>0.8.2.1</Version>
+    <Version>0.8.2.2</Version>
     <Description>Gauge-O-Matic</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/ItsBexy/GaugeOMatic</PackageProjectUrl>
@@ -12,7 +12,7 @@
     <IsPackable>false</IsPackable>
     <LangVersion>preview</LangVersion>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <TargetFramework>net9.0-windows7.0</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <RepositoryUrl>https://github.com/ItsBexy/GaugeOMatic</RepositoryUrl>
   </PropertyGroup>
 

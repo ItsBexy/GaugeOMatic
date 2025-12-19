@@ -24,8 +24,8 @@ public static class FrameworkData
         internal ulong? ObjId;
         internal uint? CastActionId;
         internal ulong? TargetObjId;
-        internal List<Status>? PlayerStatus;
-        internal List<Status>? EnemyStatus;
+        internal List<IStatus>? PlayerStatus;
+        internal List<IStatus>? EnemyStatus;
 
         public PlayerData(IBattleChara? localPlayer)
         {
@@ -60,5 +60,5 @@ public static class FrameworkData
 
     internal static PlayerData LocalPlayer;
 
-    public static void UpdatePlayerData(IFramework framework) => LocalPlayer = new PlayerData(ClientState.LocalPlayer);
+    public static void UpdatePlayerData(IFramework framework) => LocalPlayer = new PlayerData(ObjectTable.LocalPlayer);
 }

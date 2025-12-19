@@ -1018,7 +1018,7 @@ public sealed unsafe class BeastGaugeTracker : JobGaugeTracker<BeastGaugeData>
 
     #region DRK
 
-[TrackerDisplay("JobHudDRK0", DRK, "Shows Blood Gauge value", "Shows spendable Blood Gauge abilities", "Shows if tank stance is on")]
+[TrackerDisplay("Blood Gauge", DRK, "Shows Blood Gauge value", "Shows spendable Blood Gauge abilities", "Shows if tank stance is on")]
 public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
 {
 
@@ -1035,7 +1035,7 @@ public sealed unsafe class BloodGaugeTracker : JobGaugeTracker<BloodGaugeData>
                 preview);
 }
 
-[TrackerDisplay("JobHudDRK1", DRK, " Shows Darkside timer", null, "Shows if Darkside is active")]
+[TrackerDisplay("Darkside Gauge", DRK, " Shows Darkside timer", null, "Shows if Darkside is active")]
 public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeData>
 {
 
@@ -1053,7 +1053,7 @@ public sealed unsafe class DarksideGaugeTracker : JobGaugeTracker<DarksideGaugeD
                 preview);
 }
 
-[TrackerDisplay("JobHudDRK1", DRK, "Shows Living Shadow timer", null, "Shows if Living Shadow is active")]
+[TrackerDisplay("Living Shadow", DRK, "Shows Living Shadow timer", null, "Shows if Living Shadow is active")]
 public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeData>
 {
     public override string GaugeAddonName => "JobHudDRK1";
@@ -1074,7 +1074,7 @@ public sealed unsafe class LivingShadowTracker : JobGaugeTracker<DarksideGaugeDa
 
     #region GNB
 
-[TrackerDisplay("JobHudGNB0", GNB, null, "Shows Cartridge Count", "Shows if Tank Stance is on")]
+[TrackerDisplay("Powder Gauge", GNB, null, "Shows Cartridge Count", "Shows if Tank Stance is on")]
 public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 {
     public override string GaugeAddonName => "JobHudGNB0";
@@ -1082,11 +1082,11 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
-            new(0, 3, 0, 100, 0, 1, preview) :
+            new(0, 6, 0, 100, 0, 1, preview) :
             new(GaugeData->Ammo,
-                3,
+                6,
                 GaugeData->Ammo,
-                3,
+                6,
                 GaugeData->TankStance ? 1 : 0, 1,
                 preview);
 }

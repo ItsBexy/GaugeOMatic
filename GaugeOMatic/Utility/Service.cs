@@ -14,6 +14,7 @@ public sealed partial class GaugeOMatic
     {
         [PluginService] internal static IAddonLifecycle AddonLifecycle { get; private set; }
         [PluginService] internal static IClientState ClientState { get; private set; }
+        [PluginService] internal static IObjectTable ObjectTable { get; private set; }
         [PluginService] internal static ICommandManager CommandManager { get; private set; }
         [PluginService] internal static ICondition Condition { get; private set; }
         [PluginService] internal static IDataManager DataManager { get; private set; }

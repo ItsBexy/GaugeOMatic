@@ -339,7 +339,7 @@ public unsafe partial class CustomNode
 
     public CustomNode SetImageFlag(byte flags)
     {
-        if (Node != null && Node->Type == Image) Node->GetAsAtkImageNode()->Flags = flags;
+        if (Node != null && Node->Type == Image) Node->GetAsAtkImageNode()->Flags = (ImageNodeFlags)flags;
         return this;
     }
 

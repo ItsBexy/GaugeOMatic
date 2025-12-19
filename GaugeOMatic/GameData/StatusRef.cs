@@ -6,7 +6,7 @@ using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.Sheets;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.Trackers.Tracker;
-using DalamudStatus = Dalamud.Game.ClientState.Statuses.Status;
+using DalamudStatus = Dalamud.Game.ClientState.Statuses.IStatus;
 using StatusExcelRow = Lumina.Excel.Sheets.Status;
 
 namespace GaugeOMatic.GameData;
