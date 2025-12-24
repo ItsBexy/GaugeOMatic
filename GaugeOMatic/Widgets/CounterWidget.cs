@@ -34,7 +34,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
     public bool FirstRun = true;
 
     public int Max;
-    public int GetMax() => Config.AsTimer ? Config.TimerSize : Tracker.GetCurrentData().MaxCount;
+    public int GetMax() => Config.AsTimer ? Config.TimerSize : Tracker.CurrentData.MaxCount;
     public unsafe void SizeChange()
     {
         Detach();

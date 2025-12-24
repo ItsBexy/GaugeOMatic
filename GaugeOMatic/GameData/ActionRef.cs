@@ -65,7 +65,7 @@ public partial class ActionRef : ItemRef
             SetFlag(LongCooldown, excelRow.Recast100ms > 50);
             SetFlag(HasCharges, excelRow.MaxCharges > 0);
             SetFlag(ComboBonus, excelRow.Recast100ms > 50);
-            SetFlag(RoleAction, Role != JobData.Role.None);
+            SetFlag(RoleAction, Role != Role.None);
             SetFlag(ComboBonus, excelRow.ActionCombo.RowId > 0);
             SetFlag(Unassignable, !excelRow.IsPlayerAction);
             SetFlag(CanGetAnts, AntActions.Contains(ID));

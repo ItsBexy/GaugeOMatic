@@ -1082,12 +1082,49 @@ public sealed unsafe class PowderGaugeTracker : JobGaugeTracker<PowderGaugeData>
 
     public override TrackerData GetCurrentData(float? preview = null) =>
         GaugeAddon == null ?
-            new(0, 6, 0, 100, 0, 1, preview) :
+            new(0, 6, 0, 6, 0, 1, preview) :
             new(GaugeData->Ammo,
                 6,
                 GaugeData->Ammo,
                 6,
                 GaugeData->TankStance ? 1 : 0, 1,
+                preview);
+}
+
+[TrackerDisplay("Cartridges (1-3)", GNB, null, "Shows Cartridges 1-3", "Shows if Bloodfest is Active")]
+public sealed unsafe class CartridgeTrackerBase : JobGaugeTracker<PowderGaugeData>
+{
+    public override string GaugeAddonName => "JobHudGNB0";
+    public override string TermCount => "Cartridges";
+
+    public override TrackerData GetCurrentData(float? preview = null)
+    {
+        if (GaugeAddon == null) return new(0, 3, 0, 3, 0, 1, preview);
+
+        var cartCount = GaugeData->Cartridge3Enabled ? 3 : 2;
+        return new(Math.Min(cartCount, GaugeData->Ammo),
+                   cartCount,
+                   Math.Min(cartCount, GaugeData->Ammo),
+                   cartCount,
+                   GaugeData->Bloodfest ? 1 : 0, 1,
+                   preview);
+    }
+}
+
+[TrackerDisplay("Cartridges (4-6)", GNB, null, "Shows Cartridges 4-6", "Shows if Bloodfest is Active")]
+public sealed unsafe class CartridgeTrackerBonus : JobGaugeTracker<PowderGaugeData>
+{
+    public override string GaugeAddonName => "JobHudGNB0";
+    public override string TermCount => "Cartridges";
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null ?
+            new(0, 3, 0, 3, 0, 1, preview) :
+            new(Math.Max(0,GaugeData->Ammo - 3),
+                3,
+                Math.Max(0,GaugeData->Ammo - 3),
+                3,
+                GaugeData->Bloodfest ? 1 : 0, 1,
                 preview);
 }
 

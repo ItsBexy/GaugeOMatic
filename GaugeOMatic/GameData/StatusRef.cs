@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.Types;
+using static GaugeOMatic.GameData.FrameworkData;
 using static GaugeOMatic.GameData.JobData;
 using static GaugeOMatic.GameData.Overrides;
 using static GaugeOMatic.GameData.Sheets;
 using static GaugeOMatic.GameData.StatusRef.StatusActor;
 using static GaugeOMatic.Trackers.Tracker;
-using DalamudStatus = Dalamud.Game.ClientState.Statuses.IStatus;
+using DalamudIStatus = Dalamud.Game.ClientState.Statuses.IStatus;
 using StatusExcelRow = Lumina.Excel.Sheets.Status;
 
 namespace GaugeOMatic.GameData;
@@ -73,45 +76,69 @@ public partial class StatusRef : ItemRef
 
     public static implicit operator StatusRef(uint i) => StatusData.TryGetValue(i, out var result) ? result : new();
 
-    public static Func<DalamudStatus, bool> StatusMatch(uint id, StatusActor appliedBy = Self) => s => s.StatusId == id && CheckSource(s, appliedBy);
+    public static Func<DalamudIStatus, bool> StatusMatch(uint id, StatusActor appliedBy = Self) => s => PlayerCheck && s.StatusId == id && CheckSource(s, appliedBy);
 
-    private static bool CheckSource(DalamudStatus s, StatusActor appliedBy)
+    private static bool CheckSource(DalamudIStatus s, StatusActor appliedBy)
     {
-        var sourceId = s.SourceId;
-        var sourceOwnerId = s.SourceObject?.OwnerId ?? sourceId;
-
-        switch (appliedBy)
+        try
         {
-            case Any:
-                return true;
-            case Self:
-            {
-                var playerId = FrameworkData.LocalPlayer.ObjId;
-                return sourceId == playerId || sourceOwnerId == playerId;
-            }
-            case Party:
-            {
-                foreach (var partyMember in PartyList)
-                    if (sourceId == partyMember.ObjectId || sourceOwnerId == partyMember.ObjectId)
-                        return true;
-                break;
-            }
-            case Target:
-            {
-                var target = FrameworkData.LocalPlayer.TargetObjId;
-                if (sourceId == target || sourceOwnerId == target) return true;
-                break;
-            }
-        }
+            var sourceId = s.SourceId;
+            var sourceOwnerId = s.SourceObject?.OwnerId ?? sourceId;
 
-        return true;
+            switch (appliedBy)
+            {
+                case Any:
+                    break;
+                case Self:
+                {
+                    var playerId = LocalPlayer.ObjId;
+                    return sourceId == playerId || sourceOwnerId == playerId;
+                }
+                case Party:
+                {
+                    foreach (var partyMember in PartyList)
+                        if (sourceId == partyMember.EntityId || sourceOwnerId == partyMember.EntityId)
+                            return true;
+                    break;
+                }
+                case Target:
+                {
+                    var target = LocalPlayer.TargetObjId;
+                    if (sourceId == target || sourceOwnerId == target) return true;
+                    break;
+                }
+            }
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
-    public bool TryGetStatus(out DalamudStatus? result, StatusActor appliedTo, StatusActor appliedBy = Self)
-    {
-        var statusList = appliedTo == Self ? FrameworkData.LocalPlayer.PlayerStatus : FrameworkData.LocalPlayer.EnemyStatus;
+    private static List<DalamudIStatus> PlayerStatusList =>
+        ClientState.IsLoggedIn && ObjectTable.LocalPlayer != null ?
+            ObjectTable.LocalPlayer.StatusList.ToList()
+            : [];
 
-        if (statusList != null)
+    private static List<DalamudIStatus> TargetStatusList =>
+        ClientState.IsLoggedIn && ObjectTable.LocalPlayer is { TargetObject.ObjectKind: ObjectKind.BattleNpc }
+            ? ((IBattleNpc)ObjectTable.LocalPlayer.TargetObject).StatusList.ToList()
+            : [];
+
+    public bool TryGetStatus(out DalamudIStatus? result, StatusActor appliedTo, StatusActor appliedBy = Self)
+    {
+        result = null;
+
+        var statusList = appliedTo switch
+        {
+            Self => PlayerStatusList,
+            Target => TargetStatusList,
+            _ => []
+        };
+
+        if (statusList is { Count: > 0 })
         {
             foreach (var status in statusList.Where(StatusMatch(ID, appliedBy)))
             {
@@ -132,14 +159,15 @@ public partial class StatusRef : ItemRef
             }
         }
 
-        result = null;
         return false;
     }
 
     public bool TryGetStatus(StatusActor appliedTo, StatusActor appliedBy = Self)
     {
-        var statusList = appliedTo == Self ? FrameworkData.LocalPlayer.PlayerStatus : FrameworkData.LocalPlayer.EnemyStatus;
-        return statusList != null && (statusList.Any(StatusMatch(ID, appliedBy)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId))));
+        if (!PlayerCheck) return false;
+
+        var statusList = appliedTo == Self ? PlayerStatusList : TargetStatusList;
+        return statusList.Any(StatusMatch(ID, appliedBy)) || (SeeAlso != null && statusList.Any(s => SeeAlso.Any(s2 => s2 == s.StatusId)));
     }
 
     public override TrackerData GetTrackerData(float? preview)
@@ -156,16 +184,28 @@ public partial class StatusRef : ItemRef
             count = (int)(preview.Value * maxCount)!;
             gaugeValue = preview.Value * maxGauge;
         }
-        else if (TryGetStatus(out var status, AppliedTo, AppliedBy))
+        else
         {
-            state = 1;
-            count = status is { Param: > 0 } ? status.Param : 1;
-            gaugeValue = MaxTime == 0 ? maxGauge : Math.Abs(status?.RemainingTime ?? 0f);
+            try
+            {
+                if (TryGetStatus(out var status, AppliedTo, AppliedBy))
+                {
+                    state = 1;
+                    count = status is { Param: > 0 } ? status.Param : 1;
+                    gaugeValue = MaxTime == 0 ? maxGauge : Math.Abs(status?.RemainingTime ?? 0f);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.StackTrace ?? "");
+                return GetTrackerData(0f);
+            }
+
         }
 
         uint? iconOverride = Icon != null && count > 0 && maxCount > 1 ? (uint)(Icon.Value - (maxCount - count)) : null;
 
-        return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview) {IconOverride = iconOverride};
+        return new(count, maxCount, gaugeValue, maxGauge, state, 1, preview) { IconOverride = iconOverride };
     }
 
 }

@@ -18,3 +18,4 @@ bin/
 /GaugeOMatic/Windows/ConfigWindow.Settings.cs
 /GaugeOMatic/CustomNodes/CustomNode.Bounds.Triangle.cs
 /GaugeOMatic/CustomNodes/CustomNode.Bounds.Concave.cs
+/GaugeOMatic/.editorconfig

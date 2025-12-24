@@ -1,9 +1,5 @@
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.ClientState.Statuses;
 using Dalamud.Plugin.Services;
-using System.Collections.Generic;
-using System.Linq;
-using static Dalamud.Game.ClientState.Objects.Enums.ObjectKind;
 using static GaugeOMatic.GameData.JobData;
 
 namespace GaugeOMatic.GameData;
@@ -12,20 +8,18 @@ public static class FrameworkData
 {
     internal struct PlayerData
     {
-        internal Job Job = 0;
-        internal byte Lvl = 1;
-        internal uint CurHp;
-        internal uint MaxHp;
-        internal uint CurMp;
-        internal uint MaxMp;
-        internal bool IsCasting;
-        internal float CurCastTime;
-        internal float TotalCastTime;
+        internal readonly Job Job = 0;
+        internal readonly byte Lvl = 1;
+        internal readonly uint CurHp;
+        internal readonly uint MaxHp;
+        internal readonly uint CurMp;
+        internal readonly uint MaxMp;
+        internal readonly bool IsCasting;
+        internal readonly float CurCastTime;
+        internal readonly float TotalCastTime;
         internal ulong? ObjId;
         internal uint? CastActionId;
         internal ulong? TargetObjId;
-        internal List<IStatus>? PlayerStatus;
-        internal List<IStatus>? EnemyStatus;
 
         public PlayerData(IBattleChara? localPlayer)
         {
@@ -41,24 +35,15 @@ public static class FrameworkData
             ObjId = localPlayer?.GameObjectId ?? null;
             CastActionId = localPlayer?.CastActionId ?? null;
             TargetObjId = localPlayer?.TargetObject?.GameObjectId ?? null;
-
-            PlayerStatus = localPlayer?.StatusList.ToList();
-
-            var target = localPlayer?.TargetObject;
-            if (target?.ObjectKind == BattleNpc)
-            {
-                var enemyTarget = (IBattleNpc)target;
-                EnemyStatus = enemyTarget.StatusList.ToList();
-            }
-            else
-            {
-                EnemyStatus = null;
-            }
-
         }
     }
 
     internal static PlayerData LocalPlayer;
 
-    public static void UpdatePlayerData(IFramework framework) => LocalPlayer = new PlayerData(ObjectTable.LocalPlayer);
+    public static bool PlayerCheck => ClientState.IsLoggedIn && ObjectTable.LocalPlayer != null;
+
+    public static void UpdatePlayerData(IFramework framework)
+    {
+        LocalPlayer = new PlayerData(PlayerCheck ? ObjectTable.LocalPlayer : null);
+    }
 }

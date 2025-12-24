@@ -58,7 +58,7 @@ public abstract partial class Tracker : IDisposable
 
     public void BuildWidget(Configuration configuration, List<AddonOption> addonOptions)
     {
-        if (TrackerConfig.Enabled == false) return;
+        if (!TrackerConfig.Enabled) return;
 
         UpdateValues();
         Widget = Widget.Create(this);
@@ -93,8 +93,11 @@ public abstract partial class Tracker : IDisposable
 
     public void UpdateValues()
     {
-        PreviousData = CurrentData;
-        CurrentData = GetCurrentData(UsePreviewValue ? TrackerConfig.PreviewValue : null);
+        Framework.RunOnFrameworkThread(() =>
+        {
+            PreviousData = CurrentData;
+            CurrentData = GetCurrentData(UsePreviewValue ? TrackerConfig.PreviewValue : null);
+        });
     }
 
     public void UpdateTracker()

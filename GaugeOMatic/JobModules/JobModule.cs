@@ -52,8 +52,11 @@ public abstract class JobModule : IDisposable
 
         TrackerList = BuildTrackerList();
 
-        RegisterListeners();
-        if ((AtkUnitBase*)GameGui.GetAddonByName(WatchedAddon0).Address != null) BuildWidgets();
+        Framework.RunOnFrameworkThread(() =>
+        {
+            RegisterListeners();
+            if ((AtkUnitBase*)GameGui.GetAddonByName(WatchedAddon0).Address != null) BuildWidgets();
+        });
     }
 
     public void Dispose()

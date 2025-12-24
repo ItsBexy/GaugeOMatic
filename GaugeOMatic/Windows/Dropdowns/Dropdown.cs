@@ -71,9 +71,9 @@ public abstract class BranchingDropdown
         if (IsOpen)
         {
             ImGui.SetWindowPos(popupPos);
-            ImGui.Button("", new(width - 16f, 0.01f));
+            ImGui.Button("##", new(width - 16f, 0.01f));
             for (var i = 0; i < SubMenus.Count; i++) DrawSubMenu(i);
-            ImGui.Button("", new(width - 16f, 0.01f));
+            ImGui.Button("##", new(width - 16f, 0.01f));
         }
     }
 }

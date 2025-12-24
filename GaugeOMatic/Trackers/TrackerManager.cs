@@ -55,7 +55,7 @@ public class TrackerManager : IDisposable
 
     private void ApplyDisplayRules(ConditionFlag flag, bool value)
     {
-        if (ClientState.LocalPlayer == null) return;
+        if (ObjectTable.LocalPlayer == null) return;
         if (JobData.Current == 0) return;
 
         JobModules.Find(static jm => jm.Job == JobData.LastKnown || jm.Class == JobData.LastKnown)?.ApplyDisplayRules();

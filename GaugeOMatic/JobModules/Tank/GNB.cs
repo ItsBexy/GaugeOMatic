@@ -24,7 +24,12 @@ public class GNBModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         new("_ParameterWidget", "Parameter Bar")
     ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = [new("Powder Gauge", nameof(PowderGaugeTracker))];
+    public override List<MenuOption> JobGaugeMenu { get; } =
+    [
+        new("Powder Gauge", nameof(PowderGaugeTracker)),
+        new("Cartridges (1-3)", nameof(CartridgeTrackerBase)),
+        new("Cartridges (4-6)", nameof(CartridgeTrackerBonus))
+    ];
 
     public override void Save()
     {
