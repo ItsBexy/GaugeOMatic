@@ -29,7 +29,11 @@ public class MNKModule(TrackerManager trackerManager, TrackerConfig[] trackerCon
         new("_ParameterWidget", "Parameter Bar")
     ];
 
-    public override List<MenuOption> JobGaugeMenu { get; } = [new("Chakra Gauge", nameof(ChakraGaugeTracker))];
+    public override List<MenuOption> JobGaugeMenu { get; } = [
+        new("Chakra Gauge", nameof(ChakraGaugeTracker)),
+        new("Chakras (1-5)", nameof(ChakraTrackerBase)),
+        new("Chakras (6-10)", nameof(ChakraTrackerBonus))
+    ];
 
     public override void Save()
     {

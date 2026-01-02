@@ -64,6 +64,54 @@ public sealed unsafe class ChakraGaugeTracker : JobGaugeTracker<ChakraGaugeData>
                   preview);
 }
 
+[TrackerDisplay("Chakras (1-5)", MNK, null, "Shows Chakras 1-5", "Shows if 5 or more Chakras are up.")]
+public sealed unsafe class ChakraTrackerBase : JobGaugeTracker<ChakraGaugeData>
+{
+    public override string GaugeAddonName => "JobHudMNK1";
+    public override string TermCount => "Chakras";
+    public override string[] StateNames => ["Below 5 Chakras", "At 5 Chakras", "Above 5 Chakras"];
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null || GaugeData == null
+            ? new(0, 5, 0, 5, 0, 2, preview)
+            : new(Math.Min(5,GaugeData->ChakraCount),
+                  5,
+                  Math.Min(5,GaugeData->ChakraCount),
+                  5,
+                  GaugeData->ChakraCount switch
+                  {
+                      > 5 => 2,
+                      5 => 1,
+                      _ => 0
+                  },
+                  2,
+                  preview);
+}
+
+[TrackerDisplay("Chakras (6-10)", MNK, null, "Shows Chakras 6-10", "Shows if 5 or more Chakras are up.")]
+public sealed unsafe class ChakraTrackerBonus : JobGaugeTracker<ChakraGaugeData>
+{
+    public override string GaugeAddonName => "JobHudMNK1";
+    public override string TermCount => "Chakras";
+    public override string[] StateNames => ["Below 5 Chakras", "At 5 Chakras", "Above 5 Chakras"];
+
+    public override TrackerData GetCurrentData(float? preview = null) =>
+        GaugeAddon == null || GaugeData == null
+            ? new(0, 5, 0, 5, 0, 2, preview)
+            : new(Math.Max(0,GaugeData->ChakraCount-5),
+                  5,
+                  Math.Max(0,GaugeData->ChakraCount-5),
+                  5,
+                  GaugeData->ChakraCount switch
+                  {
+                      > 5 => 2,
+                      5 => 1,
+                      _ => 0
+                  },
+                  2,
+                  preview);
+}
+
     #endregion
 
     #region DRG

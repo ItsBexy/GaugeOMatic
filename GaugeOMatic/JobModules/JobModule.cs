@@ -19,7 +19,7 @@ namespace GaugeOMatic.JobModules;
 
 public abstract class JobModule : IDisposable
 {
-    public static unsafe NumberArrayData* JobUiData => UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(86);
+    public static unsafe NumberArrayData* JobUiData => UIModule.Instance()->GetRaptureAtkModule()->GetNumberArrayData(87);
 
     public abstract Job Job { get; }
     public abstract Job Class { get; }
