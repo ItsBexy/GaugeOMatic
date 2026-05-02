@@ -102,7 +102,7 @@ public class TrackerWindow : Window, IDisposable
         if (ImGui.IsItemHovered())
         {
             using var tt = ImRaii.Tooltip();
-            if (tt.Success)
+            if (tt.Alive)
             {
                 ImGui.TextUnformatted($"This will reset to the defaults for {Widget?.GetAttributes.DisplayName}.\nTo restore a particular preset for this tracker instead, use the Presets window.");
             }
@@ -179,7 +179,7 @@ public class TrackerWindow : Window, IDisposable
                 if (ImGui.IsItemHovered())
                 {
                     using var tt = ImRaii.Tooltip();
-                    if (tt.Success)
+                    if (tt.Alive)
                     {
                         ImGui.TextUnformatted(label);
                     }

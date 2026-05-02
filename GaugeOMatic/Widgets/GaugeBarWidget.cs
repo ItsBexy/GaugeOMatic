@@ -77,7 +77,7 @@ public abstract class GaugeBarWidget(Tracker tracker) : Widget(tracker)
 
     public bool MilestoneActive;
     public bool SoundMilestoneActive;
-    protected void HandleMilestone(float prog, bool reset = false)
+    protected unsafe void HandleMilestone(float prog, bool reset = false)
     {
         if (reset)
         {

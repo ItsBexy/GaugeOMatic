@@ -15,13 +15,13 @@ public abstract partial class ItemRef
         {
             using (var tt = ImRaii.Tooltip())
             {
-                if (tt.Success) {
+                if (tt.Alive) {
                     var startPos = ImGui.GetCursorPos();
 
                     DrawTooltipIcon(startPos);
                     using (var gr = ImRaii.Group())
                     {
-                        if (gr.Success) TooltipHeaderText();
+                        if (gr.Alive) TooltipHeaderText();
                     }
 
                     ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));
@@ -39,7 +39,7 @@ public abstract partial class ItemRef
         ImGui.TextDisabled("Widget Behavior");
 
         using var table = ImRaii.Table("BehaviorTable", 2);
-        if (table.Success) {
+        if (table.Alive) {
             ImGui.TableSetupColumn("Widget");
             ImGui.TableSetupColumn("Value");
 

@@ -117,7 +117,7 @@ public static partial class ImGuiHelpy
         Vector4? activeColor = null,
         Vector4? hoveredColor = null)
     {
-        using var col = new ImRaii.Color();
+        using var col = new ImRaii.ColorDisposable();
 
         if (defaultColor.HasValue)
         {

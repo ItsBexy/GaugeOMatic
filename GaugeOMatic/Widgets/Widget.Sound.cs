@@ -15,7 +15,7 @@ public abstract partial class Widget
     public static readonly List<uint> SoundBlackList = [19,21,74];
 
     // ReSharper disable once UnusedMethodReturnValue.Global
-    public static bool SoundControls(ref MilestoneType soundType, ref float soundMilestone, ref uint soundId, float max, bool percent = false)
+    public static unsafe bool SoundControls(ref MilestoneType soundType, ref float soundMilestone, ref uint soundId, float max, bool percent = false)
     {
         var input1 = RadioControls("Play Sound", ref soundType, [None, Above, Below], ["Never", "Above Threshold", "Below Threshold"]);
 

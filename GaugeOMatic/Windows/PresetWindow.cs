@@ -86,7 +86,7 @@ public class PresetWindow : Window, IDisposable
     {
         using var gr = ImRaii.Group();
 
-        if (gr.Success)
+        if (gr.Alive)
         {
             var filter = Configuration.PresetFiltering;
 
@@ -132,7 +132,7 @@ public class PresetWindow : Window, IDisposable
 
                 ImGui.SameLine();
                 using var gr2 = ImRaii.Group();
-                if (gr2.Success)
+                if (gr2.Alive)
                 {
                     var builtIn = selectedPreset.BuiltIn;
 
@@ -260,7 +260,7 @@ public class PresetWindow : Window, IDisposable
     private void PresetAddUI(JobModule module)
     {
         using var gr = ImRaii.Group();
-        if (gr.Success)
+        if (gr.Alive)
         {
             ImGui.TextColored(new Vector4(1, 1, 1, 0.6f), "ADD PRESETS");
             var saveName = UIData.SaveName;

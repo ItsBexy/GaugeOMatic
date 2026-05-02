@@ -25,7 +25,7 @@ public partial class ActionRef
         { RoleAction, "Role" }
     };
 
-    public static IDalamudTextureWrap? FrameTex => TextureProvider.GetFromFile(Path.Combine(PluginDirPath, @"TextureAssets\iconFrame.png"))
+    public static IDalamudTextureWrap? FrameTex => TextureProvider.GetFromFile(Path.Combine(PluginDirPath, @"TextureAssets\iconFrame.tex"))
                                                                   .GetWrapOrDefault();
 
     public override void TooltipHeaderText()
@@ -46,6 +46,10 @@ public partial class ActionRef
 
             ImGui.Image(frameTex.Handle, new(48 * GlobalScale));
             ImGui.SameLine();
+        }
+        else
+        {
+            DrawGameIcon(Icon??0u,40);
         }
 
         ImGui.SetCursorPos(new(startPos.X + (50 * GlobalScale),

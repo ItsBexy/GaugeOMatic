@@ -121,7 +121,7 @@ public abstract class CounterWidget(Tracker tracker) : Widget(tracker)
         HandleSoundMilestone(max, current);
     }
 
-    private void HandleSoundMilestone(int max, int current)
+    private unsafe void HandleSoundMilestone(int max, int current)
     {
         var configSoundMilestone = Config.SoundMilestone * max;
         var soundCheck = (Config.SoundType == Above && current >= configSoundMilestone) || (Config.SoundType == Below && current < configSoundMilestone);

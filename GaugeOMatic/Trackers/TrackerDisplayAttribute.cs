@@ -84,14 +84,14 @@ public class TrackerDisplayAttribute : Attribute
         {
             using (var tt = ImRaii.Tooltip())
             {
-                if (tt.Success) {
+                if (tt.Alive) {
                     var startPos = ImGui.GetCursorPos();
 
                     DrawTooltipIcon(icon, startPos);
 
                     using (var gr = ImRaii.Group())
                     {
-                        if (gr.Success) ImGui.Text(heading);
+                        if (gr.Alive) ImGui.Text(heading);
                     }
 
                     ImGui.SetCursorPosY(startPos.Y + (50 * GlobalScale));

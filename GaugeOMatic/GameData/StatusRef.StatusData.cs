@@ -210,7 +210,7 @@ public partial class StatusRef
         { 163, new(163, job: BLM, appliedTo: Target, appliedBy: Self, maxtime: 24, seeAlso: [161]) },                               // 
         { 165, new(165, BLM, Self, Self, 30) },                                                         // Firestarter,
         { 168, new(168, BLM, Self, Self, 20) },                                                         // Manaward,
-        { 737, new(737, BLM, Self, Self, 30) },                                                         // Ley Lines,
+        { 737, new(737, BLM, Self, Self, 20) },                                                         // Ley Lines,
         { 738, new(738, BLM, Self, Self, 0) },                                                          // Circle of Power,
         { 1210, new(1210, BLM, Target, Self, 21) },                                                     // Thunder IV,
         { 1211, new(1211, BLM, Self, Self, 15) },                                                       // Triplecast,

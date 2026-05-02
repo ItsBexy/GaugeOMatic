@@ -74,7 +74,7 @@ public static partial class ImGuiHelpy
     public static void WriteIcon(FontAwesomeIcon icon, string? iconHoverText = null, ColorRGB? iconColor = null)
     {
         float adjust;
-        using (var col = new ImRaii.Color())
+        using (var col = new ImRaii.ColorDisposable())
         {
             using (ImRaii.PushFont(UiBuilder.IconFont))
             {
@@ -95,7 +95,7 @@ public static partial class ImGuiHelpy
     public static void Tooltip(string tooltipText)
     {
         using var tt = ImRaii.Tooltip();
-        if (tt.Success)
+        if (tt.Alive)
         {
             using (ImRaii.TextWrapPos(ImGui.GetFontSize() * 35f))
             {

@@ -108,6 +108,7 @@ public partial class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Spacing();
         input |= ImGuiHelpy.GameIconButtonSelect("casterJobs",ref jobTab,JobIconZip(BLM,SMN,RDM,PCT),new(26),new(30),1, (ColorRGB)0x4c0b1cff, (ColorRGB)0xe5482fff,(ColorRGB)0xc20c15ff);
+        input |= ImGuiHelpy.GameIconButtonSelect("limitedJobs", ref jobTab,JobIconZip(BLU),new(26),new(30),1,(ColorRGB)0x052657ff, (ColorRGB)0x1090a7ff, (ColorRGB)0x026999ff);
 
         if (input)
         {
