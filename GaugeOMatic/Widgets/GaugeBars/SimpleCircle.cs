@@ -124,6 +124,7 @@ public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracke
         }
 
         Animator.RunTweens();
+        HandleMilestone(prog);
     }
 
     public override void OnIncrease(float prog, float prevProg) => HaloPulse();
@@ -192,6 +193,8 @@ public sealed unsafe class SimpleCircle(Tracker tracker) : GaugeBarWidget(tracke
         Halo.SetAddRGB(Config.Color + new AddRGB(30));
         LeftHalf.SetImageFlag((byte)(Config.Dodge ? 0x20 : 0));
         RightHalf.SetImageFlag((byte)(Config.Dodge ? 0x21 : 1));
+        
+        HandleMilestone(CalcProg(), true);
 
         NumTextNode.ApplyProps(Config.NumTextProps, new(38, 80));
     }
